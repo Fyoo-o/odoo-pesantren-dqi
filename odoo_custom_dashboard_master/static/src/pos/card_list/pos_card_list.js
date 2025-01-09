@@ -81,14 +81,12 @@ export class PosCardList extends Component {
     } else if (period === "yesterday") {
       startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1, 0, 0, 0);
       endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1, 23, 59, 59);
-    } else if (period === "7") { // Last 7 days
-      startDate = new Date(today);
-      startDate.setDate(today.getDate() - 7);
-      endDate = today;
-    } else if (period === "15") { // Last 15 days
-      startDate = new Date(today);
-      startDate.setDate(today.getDate() - 15);
-      endDate = today;
+    } else if (period === "thisweek") { // Last 7 days
+      startDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() - today.getUTCDay()));
+      endDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() + (6 - today.getUTCDay())));
+    } else if (period === "lastweek") { // Last 15 days
+      startDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() - 14));
+      endDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
     } else if (period === "month") { // Full current month
       startDate = new Date(today.getFullYear(), today.getMonth(), 1); // First day of the month
       endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0); // Last day of the month
@@ -96,6 +94,17 @@ export class PosCardList extends Component {
       startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1); // First day of last month
       endDate = new Date(today.getFullYear(), today.getMonth(), 0); // Last day of last month
     }
+    else if  (period === "thisyear") {
+      startDate = new Date(Date.UTC(today.getUTCFullYear(), 0, 1, 0, 0, 0));
+      endDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 23, 59, 59, 999));
+    }
+
+    else if  (period == "lastyear") {
+      startDate = new Date(Date.UTC(today.getUTCFullYear() - 1, 0, 1, 0, 0, 0));
+      endDate = new Date(Date.UTC(today.getUTCFullYear() - 1, 11, 31, 23, 59, 59, 999));
+    }
+
+    else if (period === "lastyear")
 
     if (startDate && endDate) {
       // Call fetchTopSellingProducts with the correct date range

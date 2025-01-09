@@ -66,7 +66,7 @@ export class MusyrifChartRenderer extends Component {
             this.fetchUangSakuData(
               this.state.currentStartDate,
               this.state.currentEndDate
-            )
+            ),
           ]);
         } catch (error) {
           console.error("Error updating props:", error);
@@ -88,7 +88,7 @@ export class MusyrifChartRenderer extends Component {
           this.fetchUangSakuData(
             this.state.currentStartDate,
             this.state.currentEndDate
-          )
+          ),
         ]);
       } catch (error) {
         console.error("Error in initial data fetch:", error);
@@ -113,7 +113,7 @@ export class MusyrifChartRenderer extends Component {
   showLoading() {
     // Create loading overlay if it doesn't exist
     if (!this.loadingOverlay) {
-      this.loadingOverlay = document.createElement('div');
+      this.loadingOverlay = document.createElement("div");
       this.loadingOverlay.innerHTML = `
         <div class="musyrif-loading-overlay" style="
           position: fixed;
@@ -136,7 +136,7 @@ export class MusyrifChartRenderer extends Component {
     }
     // Ensure loading overlay is visible
     if (this.loadingOverlay) {
-      this.loadingOverlay.style.display = 'flex';
+      this.loadingOverlay.style.display = "flex";
     }
 
     this.state.isLoading = true;
@@ -145,7 +145,7 @@ export class MusyrifChartRenderer extends Component {
   hideLoading() {
     // Hide loading overlay
     if (this.loadingOverlay) {
-      this.loadingOverlay.style.display = 'none';
+      this.loadingOverlay.style.display = "none";
     }
 
     this.state.isLoading = false;
@@ -199,15 +199,13 @@ export class MusyrifChartRenderer extends Component {
     const startDate = this.state.isFiltered
       ? this.state.currentStartDate
       : null;
-    const endDate = this.state.isFiltered
-      ? this.state.currentEndDate
-      : null;
+    const endDate = this.state.isFiltered ? this.state.currentEndDate : null;
 
     try {
       // Fetch both datasets
       await Promise.all([
         this.fetchData(startDate, endDate),
-        this.fetchUangSakuData(startDate, endDate)
+        this.fetchUangSakuData(startDate, endDate),
       ]);
 
       // Update donut chart
@@ -224,24 +222,34 @@ export class MusyrifChartRenderer extends Component {
 
       // Update area chart
       if (this.areaChartInstance) {
-        const masuk = this.state.uangSakuData.masuk.map(value => Number(value) || 0);
-        const keluar = this.state.uangSakuData.keluar.map(value => Number(value) || 0);
+        const masuk = this.state.uangSakuData.masuk.map(
+          (value) => Number(value) || 0
+        );
+        const keluar = this.state.uangSakuData.keluar.map(
+          (value) => Number(value) || 0
+        );
 
-        this.areaChartInstance.updateOptions({
-          series: [
-            {
-              name: "Uang Masuk",
-              data: masuk,
+        this.areaChartInstance.updateOptions(
+          {
+            series: [
+              {
+                name: "Uang Masuk",
+                data: masuk,
+              },
+              {
+                name: "Uang Keluar",
+                data: keluar,
+              },
+            ],
+            xaxis: {
+              categories: this.state.uangSakuData.dates.map((date) =>
+                this.formatDate(date)
+              ),
             },
-            {
-              name: "Uang Keluar",
-              data: keluar,
-            },
-          ],
-          xaxis: {
-            categories: this.state.uangSakuData.dates.map(date => this.formatDate(date)),
-          }
-        }, true, true);
+          },
+          true,
+          true
+        );
       }
     } catch (error) {
       console.error("Error refreshing charts:", error);
@@ -290,7 +298,7 @@ export class MusyrifChartRenderer extends Component {
         try {
           await Promise.all([
             this.fetchData(formattedStartDate, formattedEndDate),
-            this.fetchUangSakuData(formattedStartDate, formattedEndDate)
+            this.fetchUangSakuData(formattedStartDate, formattedEndDate),
           ]);
         } catch (error) {
           console.error("Error in date filter:", error);
@@ -313,10 +321,20 @@ export class MusyrifChartRenderer extends Component {
   formatDate(dateString) {
     const date = new Date(dateString);
     const months = [
-      "Jan", "Feb", "Mar", "Apr", "Mei", "Jun",
-      "Jul", "Agu", "Sep", "Okt", "Nov", "Des"
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "Mei",
+      "Jun",
+      "Jul",
+      "Agu",
+      "Sep",
+      "Okt",
+      "Nov",
+      "Des",
     ];
-    const day = String(date.getDate()).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, "0");
     const month = months[date.getMonth()];
     const year = date.getFullYear();
 
@@ -341,8 +359,8 @@ export class MusyrifChartRenderer extends Component {
     return {
       chart: {
         type: "donut",
-        height: 300,
-        width: "100%",
+        height: "80%",
+        // width: "100%",
         fontFamily: "Inter, sans-serif",
         background: "transparent",
         animations: {
@@ -392,8 +410,8 @@ export class MusyrifChartRenderer extends Component {
         pie: {
           donut: {
             size: "65%",
-            height: 350,
-            width: '100%', // Add explicit width
+            height: "100%",
+            width: "100%", // Add explicit width
             labels: {
               show: true,
               name: {
@@ -445,7 +463,7 @@ export class MusyrifChartRenderer extends Component {
         width: 0,
       },
       legend: {
-        position: "top",
+        position: "bottom",
         horizontalAlign: "center",
         fontSize: "14px",
         fontFamily: "Inter, sans-serif",
@@ -495,6 +513,7 @@ export class MusyrifChartRenderer extends Component {
           options: {
             chart: {
               width: "100%",
+              height: "100%",
             },
             legend: {
               position: "bottom",
@@ -521,8 +540,8 @@ export class MusyrifChartRenderer extends Component {
     return {
       chart: {
         type: "area",
-        height: 450,
-        width: '100%',
+        height: "100%",
+        width: "100%",
         stacked: true,
         toolbar: {
           show: false,
@@ -533,21 +552,29 @@ export class MusyrifChartRenderer extends Component {
         events: {
           click: function (event, chartContext, config) {
             // Validate click event data
-            if (!config || config.dataPointIndex === undefined || config.dataPointIndex < 0) {
-              console.warn('Invalid click event data');
+            if (
+              !config ||
+              config.dataPointIndex === undefined ||
+              config.dataPointIndex < 0
+            ) {
+              console.warn("Invalid click event data");
               return;
             }
 
             // Validate state data
-            if (!self.state.uangSakuData || !Array.isArray(self.state.uangSakuData.dates)) {
-              console.error('Invalid state data structure');
+            if (
+              !self.state.uangSakuData ||
+              !Array.isArray(self.state.uangSakuData.dates)
+            ) {
+              console.error("Invalid state data structure");
               return;
             }
 
             try {
-              const selectedDate = self.state.uangSakuData.dates[config.dataPointIndex];
+              const selectedDate =
+                self.state.uangSakuData.dates[config.dataPointIndex];
               if (!selectedDate) {
-                console.warn('Selected date not found');
+                console.warn("Selected date not found");
                 return;
               }
 
@@ -558,68 +585,73 @@ export class MusyrifChartRenderer extends Component {
               endDate.setHours(23, 59, 59, 999);
 
               // Format dates for domain
-              const formattedStartDate = startDate.toISOString().split('.')[0];
-              const formattedEndDate = endDate.toISOString().split('.')[0];
+              const formattedStartDate = startDate.toISOString().split(".")[0];
+              const formattedEndDate = endDate.toISOString().split(".")[0];
 
               // Determine transaction type based on series index
-              const transactionType = config.seriesIndex === 0 ? "masuk" : "keluar";
+              const transactionType =
+                config.seriesIndex === 0 ? "masuk" : "keluar";
 
               // Build domain query
               const domain = [
                 ["tgl_transaksi", ">=", formattedStartDate],
                 ["tgl_transaksi", "<=", formattedEndDate],
-                ["jns_transaksi", "=", transactionType]
+                ["jns_transaksi", "=", transactionType],
               ];
 
               // Execute action if service is available
               if (!self.actionService) {
-                console.error('Action service not initialized');
+                console.error("Action service not initialized");
                 return;
               }
 
-              self.actionService.doAction({
-                type: 'ir.actions.act_window',
-                name: `Data Uang ${transactionType === 'masuk' ? 'Masuk' : 'Keluar'}`,
-                res_model: 'cdn.uang_saku',
-                view_mode: 'list,form',
-                views: [
-                  [false, 'list'],
-                  [false, 'form']
-                ],
-                target: 'current',
-                domain: domain,
-                context: {
-                  create: false,
-                  search_default_group_by_tgl_transaksi: 1
-                },
-                flags: {
-                  actionViewsInitialized: true
-                }
-              }).catch(error => {
-                console.error('Failed to execute action:', error);
-              });
+              self.actionService
+                .doAction({
+                  type: "ir.actions.act_window",
+                  name: `Data Uang ${
+                    transactionType === "masuk" ? "Masuk" : "Keluar"
+                  }`,
+                  res_model: "cdn.uang_saku",
+                  view_mode: "list,form",
+                  views: [
+                    [false, "list"],
+                    [false, "form"],
+                  ],
+                  target: "current",
+                  domain: domain,
+                  context: {
+                    create: false,
+                    search_default_group_by_tgl_transaksi: 1,
+                  },
+                  flags: {
+                    actionViewsInitialized: true,
+                  },
+                })
+                .catch((error) => {
+                  console.error("Failed to execute action:", error);
+                });
             } catch (error) {
-              console.error('Error handling chart click:', error);
+              console.error("Error handling chart click:", error);
             }
-          }
-        }
+          },
+        },
       },
       plotOptions: {
         area: {
-          fillTo: 'end',
+          fillTo: "end",
           opacity: 1,
           dataLabels: {
-            enabled: false
-          }
-        }
+            enabled: false,
+          },
+        },
       },
       colors: ["#16a34a", "#dc2626"],
       dataLabels: {
-        enabled: false
+        enabled: false,
       },
       stroke: {
         curve: "smooth",
-        width: 2
+        width: 2,
       },
       markers: {
         size: 6,
@@ -627,76 +659,78 @@ export class MusyrifChartRenderer extends Component {
         fillOpacity: 1,
         strokeOpacity: 1,
         hover: {
-          size: 8
-        }
+          size: 8,
+        },
       },
       series: [
         {
           name: "Uang Masuk",
-          data: self.state.uangSakuData?.masuk || []
+          data: self.state.uangSakuData?.masuk || [],
         },
         {
           name: "Uang Keluar",
-          data: self.state.uangSakuData?.keluar || []
-        }
+          data: self.state.uangSakuData?.keluar || [],
+        },
       ],
       xaxis: {
         type: "category",
-        categories: (self.state.uangSakuData?.dates || []).map(date =>
+        categories: (self.state.uangSakuData?.dates || []).map((date) =>
           self.formatDate(date)
         ),
         labels: {
           rotate: 0,
           style: {
-            fontSize: '12px'
-          }
+            fontSize: "12px",
+          },
         },
         tooltip: {
-          enabled: true
-        }
+          enabled: true,
+        },
       },
       yaxis: {
         labels: {
-          formatter: value => new Intl.NumberFormat("id-ID", {
-            style: "currency",
-            currency: "IDR",
-            minimumFractionDigits: 0
-          }).format(value)
-        }
+          formatter: (value) =>
+            new Intl.NumberFormat("id-ID", {
+              style: "currency",
+              currency: "IDR",
+              minimumFractionDigits: 0,
+            }).format(value),
+        },
       },
       tooltip: {
         shared: true,
         intersect: false,
         y: {
-          formatter: value => new Intl.NumberFormat("id-ID", {
-            style: "currency",
-            currency: "IDR",
-            minimumFractionDigits: 0
-          }).format(value)
-        }
+          formatter: (value) =>
+            new Intl.NumberFormat("id-ID", {
+              style: "currency",
+              currency: "IDR",
+              minimumFractionDigits: 0,
+            }).format(value),
+        },
       },
       fill: {
         type: "gradient",
         gradient: {
           opacityFrom: 0.6,
           opacityTo: 0.3,
-          stops: [0, 90, 100]
-        }
+          stops: [0, 90, 100],
+        },
       },
       legend: {
         position: "bottom",
-        horizontalAlign: "center"
+        horizontalAlign: "center",
       },
       noData: {
-        text: 'Tidak ada data',
-        align: 'center',
-        verticalAlign: 'middle',
+        text: "Tidak ada data",
+        align: "center",
+        verticalAlign: "middle",
         style: {
-          color: '#1f2937',
-          fontSize: '16px',
-          fontFamily: 'Inter'
-        }
-      }
+          color: "#1f2937",
+          fontSize: "16px",
+          fontFamily: "Inter",
+        },
+      },
     };
   }
 
@@ -747,20 +781,18 @@ export class MusyrifChartRenderer extends Component {
   }
 
   async fetchUangSakuData(startDate = null, endDate = null) {
-    let domain = [
-      ["musyrif_id", "ilike", session.partner_display_name],
-    ];
+    let domain = [["musyrif_id", "ilike", session.partner_display_name]];
 
     if (startDate) {
       const start = new Date(startDate);
       start.setHours(0, 0, 0, 0);
-      domain.push(["tgl_transaksi", ">=", start.toISOString().split('.')[0]]);
+      domain.push(["tgl_transaksi", ">=", start.toISOString().split(".")[0]]);
     }
 
     if (endDate) {
       const end = new Date(endDate);
       end.setHours(23, 59, 59, 999);
-      domain.push(["tgl_transaksi", "<=", end.toISOString().split('.')[0]]);
+      domain.push(["tgl_transaksi", "<=", end.toISOString().split(".")[0]]);
     }
 
     try {
@@ -775,90 +807,108 @@ export class MusyrifChartRenderer extends Component {
           dates: [],
           masuk: [],
           keluar: [],
-          rawData: {} // Add raw data storage
+          rawData: {}, // Add raw data storage
         };
 
         if (this.areaChartInstance) {
-          this.areaChartInstance.updateOptions({
-            series: [{
-              name: "Uang Masuk",
-              data: []
-            }, {
-              name: "Uang Keluar",
-              data: []
-            }],
-            xaxis: {
-              categories: []
-            }
-          }, true, true);
+          this.areaChartInstance.updateOptions(
+            {
+              series: [
+                {
+                  name: "Uang Masuk",
+                  data: [],
+                },
+                {
+                  name: "Uang Keluar",
+                  data: [],
+                },
+              ],
+              xaxis: {
+                categories: [],
+              },
+            },
+            true,
+            true
+          );
         }
         return;
       }
 
       // Process data for area chart
-      const processedData = data.reduce((acc, record) => {
-        const date = record.tgl_transaksi ? new Date(record.tgl_transaksi).toISOString().split('T')[0] : null;
+      const processedData = data.reduce(
+        (acc, record) => {
+          const date = record.tgl_transaksi
+            ? new Date(record.tgl_transaksi).toISOString().split("T")[0]
+            : null;
 
-        if (date) {
-          // Initialize date entry if it doesn't exist
-          if (!acc.dates.includes(date)) {
-            acc.dates.push(date);
-            acc.masuk.push(0);
-            acc.keluar.push(0);
-            acc.rawData[date] = []; // Initialize array for raw data
+          if (date) {
+            // Initialize date entry if it doesn't exist
+            if (!acc.dates.includes(date)) {
+              acc.dates.push(date);
+              acc.masuk.push(0);
+              acc.keluar.push(0);
+              acc.rawData[date] = []; // Initialize array for raw data
+            }
+
+            // Store raw record data for click handling
+            acc.rawData[date].push(record);
+
+            // Process amounts regardless of state
+            const index = acc.dates.indexOf(date);
+            if (record.jns_transaksi === "masuk" && record.amount_in) {
+              acc.masuk[index] += Number(record.amount_in) || 0;
+            }
+            if (record.jns_transaksi === "keluar" && record.amount_out) {
+              acc.keluar[index] += Number(record.amount_out) || 0;
+            }
           }
 
-          // Store raw record data for click handling
-          acc.rawData[date].push(record);
-
-          // Process amounts regardless of state
-          const index = acc.dates.indexOf(date);
-          if (record.jns_transaksi === 'masuk' && record.amount_in) {
-            acc.masuk[index] += Number(record.amount_in) || 0;
-          }
-          if (record.jns_transaksi === 'keluar' && record.amount_out) {
-            acc.keluar[index] += Number(record.amount_out) || 0;
-          }
+          return acc;
+        },
+        {
+          dates: [],
+          masuk: [],
+          keluar: [],
+          rawData: {}, // Add raw data storage
         }
-
-        return acc;
-      }, {
-        dates: [],
-        masuk: [],
-        keluar: [],
-        rawData: {} // Add raw data storage
-      });
+      );
 
       this.state.uangSakuData = processedData;
 
       // Update chart with click handler
       if (this.areaChartInstance) {
-        this.areaChartInstance.updateOptions({
-          series: [
-            {
-              name: "Uang Masuk",
-              data: processedData.masuk,
+        this.areaChartInstance.updateOptions(
+          {
+            series: [
+              {
+                name: "Uang Masuk",
+                data: processedData.masuk,
+              },
+              {
+                name: "Uang Keluar",
+                data: processedData.keluar,
+              },
+            ],
+            xaxis: {
+              categories: processedData.dates.map((date) =>
+                this.formatDate(date)
+              ),
             },
-            {
-              name: "Uang Keluar",
-              data: processedData.keluar,
-            }
-          ],
-          xaxis: {
-            categories: processedData.dates.map(date => this.formatDate(date)),
-          },
-          chart: {
-            events: {
-              dataPointSelection: (event, chartContext, config) => {
-                const date = processedData.dates[config.dataPointIndex];
-                const records = processedData.rawData[date];
+            chart: {
+              events: {
+                dataPointSelection: (event, chartContext, config) => {
+                  const date = processedData.dates[config.dataPointIndex];
+                  const records = processedData.rawData[date];
 
-                // Handle the click event with all records for that date
-                this.handleChartPointClick(records);
-              }
-            }
-          }
-        }, true, true);
+                  // Handle the click event with all records for that date
+                  this.handleChartPointClick(records);
+                },
+              },
+            },
+          },
+          true,
+          true
+        );
       }
     } catch (error) {
       console.error("Error fetching uang saku data:", error);
@@ -869,10 +919,11 @@ export class MusyrifChartRenderer extends Component {
     if (!records || records.length === 0) return;
 
     // Update the state with all records
-    this.state.selectedRecords = records.map(record => ({
+    this.state.selectedRecords = records.map((record) => ({
       ...record,
       formattedDate: this.formatDate(record.tgl_transaksi),
-      amount: record.jns_transaksi === 'masuk' ? record.amount_in : record.amount_out
+      amount:
+        record.jns_transaksi === "masuk" ? record.amount_in : record.amount_out,
     }));
 
     // If you're using a modal to display the records
@@ -899,7 +950,7 @@ export class MusyrifChartRenderer extends Component {
     // Add default dimensions if data is empty
     if (!this.state.uangSakuData.dates.length) {
       config.chart.height = 350;
-      config.chart.width = '100%';
+      config.chart.width = "100%";
     }
 
     try {
@@ -1000,4 +1051,3 @@ export class MusyrifChartRenderer extends Component {
 }
 
 MusyrifChartRenderer.template = "owl.MusyrifChartRenderer";
-

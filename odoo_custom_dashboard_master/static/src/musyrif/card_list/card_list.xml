@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
     <t t-name="owl.MusyrifPerijinanCardList" owl="1">
+    <style>
+    .rejected {
+        width: 100% !important;
+    }
+    .approved {
+        width: 100% !important;
+    }
+    </style>
     <div class="card dashboard-card">
         <div class="card-header">
             <h3 class="card-title">Pengajuan Perijinan Santri</h3>
@@ -42,13 +50,13 @@
                                     <td>
                                         <div class="" role="group">
                                             <button 
-                                                class="btn btn-sm btn-success"
+                                                class="btn btn-sm btn-success mb-1 approved"
                                                 t-on-click="() => this.handleApprove(perijinan.id,perijinan.student_name)"
                                                 t-att-disabled="perijinan.state === 'Approved'">
                                                 <i class="fa fa-check"></i> Setuju
                                             </button>
                                             <button 
-                                                class="btn btn-sm btn-danger ms-1"
+                                                class="btn btn-sm btn-danger rejected"
                                                 t-on-click="() => this.handleReject(perijinan.id)"
                                                 t-att-disabled="perijinan.state === 'Rejected'">
                                                 <i class="fa fa-times"></i> Tolak

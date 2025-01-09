@@ -6,14 +6,13 @@
 
 @media screen and (max-width: 768px) {
   .dashboard {
-      grid-template-columns: 1fr;
+    grid-template-columns: 1fr;
   }
 }
 
 .shadow-sm {
-  box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
 }
-
 
 /* Ensure the container doesn't add extra spacing */
 .col-lg-8.col-md-12.col-sm-12.m-0.p-2 {

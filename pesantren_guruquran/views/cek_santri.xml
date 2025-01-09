@@ -9,7 +9,7 @@
                 <list create="false" edit="false" delete="false">
                     <header>
                         <!-- Tombol untuk mencetak sertifikat -->
-                        <button name="%(action_report_filter_wizard)d" string="Filter Data" type="action" class="btn-primary"/>
+                        <!-- <button name="(action_report_filter_wizard)d" string="Filter Data" type="action" class="btn-primary"/> -->
                         <button string="Print Sertifikat" name="action_print_sertifikat" type="object" class="oe_highlight"/>
                     </header>
                     <field name="nis" readonly='1'/>
