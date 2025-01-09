@@ -1,6 +1,8 @@
 /** @odoo-module */
 import { registry } from "@web/core/registry";
 import { OrangtuaChartRenderer } from "./chart_renderer/chart_renderer";
+import { OrangtuaKpiCard } from "./kpi_card/kpi_card";
+import { OrangtuaCardList1, OrangtuaCardList2 } from "./card_list/card_list";
 import { Component, useState, useRef } from "@odoo/owl";
 
 class OwlOrangtuaDashboard extends Component {
@@ -170,6 +172,6 @@ class OwlOrangtuaDashboard extends Component {
 }
 
 OwlOrangtuaDashboard.template = "owl.OwlOrangtuaDashboard";
-OwlOrangtuaDashboard.components = { OrangtuaChartRenderer };
+OwlOrangtuaDashboard.components = { OrangtuaChartRenderer, OrangtuaKpiCard, OrangtuaCardList1, OrangtuaCardList2 };
 
 registry.category("actions").add("owl.orangtua_dashboard", OwlOrangtuaDashboard);

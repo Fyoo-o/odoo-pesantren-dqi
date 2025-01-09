@@ -1,0 +1,846 @@
+<odoo>
+
+  <template id="pendaftaran_karyawan_form_template" name="Pendaftaran Karyawan Form">
+    <t t-call="web.html_container">
+      <t t-set="title">Pendaftaran Karyawan - Daarul Qur'an Istiqomah</t>
+      <link rel="icon" type="image/x-icon" href="/pesantren_karyawan/static/img/favicon.ico?v=1" />
+      <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+      <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
+      <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css" />
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css"
+        rel="stylesheet" />
+      <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css" rel="stylesheet"/>
+
+      <style>
+        <!-- body {
+          min-height: 100vh !important;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .main-container {
+          flex: 1;
+          background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          height: 100vh;
+        } -->
+
+        <!-- body {
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          margin: 0; /* Menghilangkan margin default */
+        }
+
+        .main-container {
+          flex: 1;
+          background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        } -->
+
+        html, body {
+          height: 100%; /* Pastikan html dan body mengisi seluruh layar */
+          margin: 0; /* Menghilangkan margin default */
+          padding: 0; /* Menghilangkan padding default */
+          display: flex;
+          flex-direction: column;
+        }
+
+        .main-container {
+          flex: 1;
+          background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          min-height: 100vh;
+          max-height: 100%;
+        }
+
+        .offcanvas.offcanvas-end {
+        width: 250px; /* Lebar kustom untuk offcanvas */
+        }
+
+        .offcanvas .nav-link {
+        color: #ffffff; /* teks warna putih */
+        }
+
+        .offcanvas .btn-close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        filter: invert(1);
+        }
+
+        .background {
+        background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+        }
+
+        #tgl_lahir {
+        caret-color: transparent !important;
+        cursor: default !important;
+        }
+
+        .step-indicator {
+          background-color: #EAE7E7;
+          padding: 0px 10px; /* Mengurangi padding */
+          display: flex;
+          justify-content: center;
+          flex-wrap: nowrap; /* Mencegah step turun ke baris baru */
+          gap: 10px; /* Menambahkan jarak antar elemen step */
+        }
+
+        .step {
+          padding: 6px 15px;  /* Padding kecil */
+          border-radius: 5px;
+          font-size: 13px;  /* Ukuran font lebih kecil */
+          white-space: nowrap; /* Mencegah teks terpotong */
+          text-align: center; /* Menyelaraskan teks agar tetap di tengah */
+          text-transform: uppercase;
+          width: 100%;
+        }
+
+        .step.active {
+          box-shadow: 0 3px 20px rgba(0,0,0,0.5);
+          background-color: #FD0870;
+          color: white;
+        }
+
+        /* CSS untuk memastikan alert di bagian atas dengan z-index paling besar */
+        .alert-container {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 9999; /* Pastikan alert berada di atas elemen lain */
+          margin: 0;
+          padding: 10px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .alert {
+          width: 90%;
+          margin: 0 auto;
+        }
+
+      </style>
+      
+      <div class="main-container">
+        <nav class="navbar navbar-expand-lg" style="height: 65px;">
+          <div class="container-fluid">
+            <a class="navbar-brand ms-5 fw-semibold" href="/beranda_karyawan" style="color: white !important;">
+              <img src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" width="50"
+                alt="Logo Pesantren" /> Daarul Qur'an Istiqomah </a>
+            <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="offcanvas"
+              data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav ms-auto">
+                <li class="nav-item me-3">
+                  <a class="nav-link text-white" style="color: white !important;" href="/beranda_karyawan"><i
+                      class="fa-solid fa-house me-2"></i>Beranda</a>
+                </li>
+                <li class="nav-item me-3">
+                  <a class="nav-link" style="color: white !important;" href="/pendaftaran_karyawan"><i
+                      class="fa-solid fa-note-sticky me-2"></i>Pendaftaran</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+
+        <div class="offcanvas offcanvas-end background" tabindex="-1" id="offcanvasNavbar"
+          aria-labelledby="offcanvasNavbarLabel">
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+            aria-label="Close"></button>
+          <a class="navbar-brand mt-1 fw-semibold" href="/beranda_karyawan"
+            style="display: flex; flex-direction: column; align-items: center; color: white !important;">
+            <img src="https://i.ibb.co.com/f9j819p/1731466812700.png" width="50"
+              alt="Logo Pesantren" /> Daarul Qur'an Istiqomah </a>
+          <div class="offcanvas-body">
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item me-3">
+                <a class="nav-link text-white" style="color: white !important;" href="/beranda_karyawan"><i
+                    class="fa-solid fa-house me-2"></i>Beranda</a>
+              </li>
+              <li class="nav-item me-3">
+                <a class="nav-link text-white" href="/pendaftaran_karyawan"><i class="fa-solid fa-note-sticky me-2"></i>
+                  Pendaftaran</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <form class="needs-validation" action="/pendaftaran_karyawan/submit" method="post"
+          enctype="multipart/form-data" novalidate="true">
+          <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+
+          <div class="container" id="containerDataPelamar">
+            <div style="max-width: 100%;" class="bg-white rounded mt-5 p-3">
+              <div class="step-indicator mb-3 overflow-auto">
+                <span class="fw-semibold step active">
+                  Data Pelamar</span>
+                <span class="fw-semibold step">Data Berkas</span>
+              </div>
+              <div class="mb-4 d-flex justify-content-between align-items-center">
+                <h4 class="fw-semibold fs-3">Data Pelamar</h4>
+                <p style="font-style: italic;">Data yang ada tanda <span class="text-danger">*</span> wajib diisi.</p>
+              </div>
+              <div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label for="name" class="form-label">Nama Lengkap<span class="text-danger">*</span></label>
+                      <input type="text" name="name" class="form-control" id="name"
+                        placeholder="Nama Lengkap" required="true" autocomplete="off" />
+                      <div class="invalid-feedback">
+                        Masukkan nama lengkap.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label for="email_kantor" class="form-label">Email<span class="text-danger">*</span></label>
+                      <input type="email" name="email_kantor" class="form-control" id="email_kantor" placeholder="Email"
+                        required="true" autocomplete="off" />
+                      <div class="invalid-feedback">
+                        Masukkan email.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="no_telp" class="form-label">No Telp<span class="text-danger">*</span></label>
+                            <input type="text" name="no_telp" class="form-control" id="no_telp"
+                                placeholder="No Telp" required="true" autocomplete="off" />
+                            <div class="invalid-feedback">
+                                Masukkan No Telepon.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="tgl_lahir" class="form-label">Tgl Lahir<span
+                                class="text-danger">*</span></label>
+                            <input type="text" name="tgl_lahir" id="tgl_lahir"
+                                placeholder="dd / mm / yyyy" required="true" autocomplete="off"
+                                class="form-control" style="cursor: disabled !important;" />
+                            <div class="invalid-feedback">
+                                Pilih Tgl Lahir.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="no_ktp" class="form-label">No KTP<span class="text-danger">*</span></label>
+                            <input type="text" name="no_ktp" class="form-control" id="no_ktp" placeholder="Nomor KTP"
+                                required="true" autocomplete="off" />
+                            <div class="invalid-feedback">
+                                Nomor KTP harus 16 digit
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="alamat" class="form-label">Alamat<span class="text-danger">*</span></label>
+                            <textarea class="form-control" name="alamat" id="alamat" rows="3"
+                                placeholder="Alamat" required="true" autocomplete="off"></textarea>
+                            <div class="invalid-feedback">
+                                Masukkan Alamat.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="tmp_lahir" class="form-label">Tempat Lahir<span
+                                class="text-danger">*</span></label>
+                            <input type="text" name="tmp_lahir" class="form-control" id="tmp_lahir"
+                                placeholder="Tempat Lahir" required="true" autocomplete="off" />
+                            <div class="invalid-feedback">
+                                Masukkan Tempat Lahir.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="gender" class="form-label">Jenis Kelamin<span class="text-danger">
+                                *</span></label>
+                            <select class="form-select" required="true" name="gender" id="gender">
+                                <option selected="true" disabled="true" hidden="true" value="">Pilih Jenis
+                                Kelamin</option>
+                                <option value="L">Laki - Laki</option>
+                                <option value="P">Perempuan</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Pilih Jenis Kelamin
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="lembaga" class="form-label">Jenis Lembaga<span
+                                class="text-danger">*</span></label>
+                            <select class="form-select" required="true" name="lembaga" id="lembaga">
+                                <option selected="true" disabled="true" hidden="true" value="">Pilih Jenis Lembaga</option>
+                                <option value="paud">PAUD</option>
+                                <option value="tk">TK</option>
+                                <option value="sdmi">SD / MI</option>
+                                <option value="smpmts">SMP / MTS</option>
+                                <option value="smama">SMA / MA</option>
+                                <option value="smk">SMK</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Pilih posisi yang dilamar.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="job_id" class="form-label">Posisi Yang Dilamar<span
+                                class="text-danger">*</span></label>
+                            <select class="form-select" required="true" name="job_id" id="job_id">
+                                <option selected="true" disabled="true" hidden="true" value="">Pilih Posisi Yang Ingin Dilamar</option>
+                                <t t-foreach="job_id_list" t-as="job_id">
+                                <option t-att-value="job_id.id">
+                                    <t t-esc="job_id.name" />
+                                </option>
+                                </t>
+                            </select>
+                            <div class="invalid-feedback">
+                                Pilih posisi yang dilamar.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="profile_linkedin" class="form-label">Profil LinkedIn (Jika Ada)</label>
+                        <input type="text" name="profile_linkedin" class="form-control" id="profile_linkedin"
+                            placeholder="contoh. https://www.linkedin.com/in/..." autocomplete="off" />
+                    </div>
+                  </div>
+                   <div class="col-md-6">
+            
+                          <label for="gelar" class="form-label">Gelar (Jika Ada)</label>
+                          <select class="form-select" name="gelar" id="gelar">
+                              <option selected="true" disabled="true" hidden="true" value="">Pilih Gelar</option>
+                              <t t-foreach="gelar_list" t-as="gelar">
+                              <option t-att-value="gelar.id">
+                                  <t t-esc="gelar.name" />
+                              </option>
+                              </t>
+                          </select>
+                      </div>
+                  <!-- <div class="col-md-6">
+                    <h6>Pilih Kategori Keahlian (Opsional)</h6>
+                    <div class="form-check">
+                      <t t-foreach="category_list" t-as="category">
+                        <div>
+                          <input class="form-check-input" type="checkbox" t-att-id="'category_' + str(category.id)" t-att-name="'category_' + str(category.id)" t-att-value="category.id" />
+                          <label class="form-check-label" t-att-for="'category_' + str(category.id)">
+                            <t t-esc="category.name" />
+                          </label>
+                        </div>
+                      </t>
+                    </div>
+                  </div> -->
+                </div>
+
+                <!-- <div class="row">
+                  <div class="col-md-6">
+                      <div class="mb-3">
+                          <label for="gelar" class="form-label">Gelar (Jika Ada)</label>
+                          <select class="form-select" name="gelar" id="gelar">
+                              <option selected="true" disabled="true" hidden="true" value="">Pilih Gelar</option>
+                              <t t-foreach="gelar_list" t-as="gelar">
+                              <option t-att-value="gelar.id">
+                                  <t t-esc="gelar.name" />
+                              </option>
+                              </t>
+                          </select>
+                      </div>
+                  </div>
+                  <div class="col-md-6">
+                  </div>
+                </div> -->
+
+                <div class="mb-3 d-flex justify-content-end">
+                  <button type="button"
+                    style="background-color: #4CAF50 !important; text-decoration: none; color: white; padding: 10px 20px; text-align: center; display: inline-block; font-size: 16px; border-radius: 5px; cursor: pointer;"
+                    class="btn btn-success btn-next" data-next="containerDataBerkas">Selanjutnya</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="container" id="containerDataBerkas" style="display: none;">
+            <div style="max-width: 100%;" class="bg-white rounded mt-3 p-3">
+              <div class="step-indicator mb-3 overflow-auto">
+                <span class="fw-semibold step">
+                  Data Pelamar</span>
+                <span class="fw-semibold step active">Data
+                  Berkas</span>
+              </div>
+              <h4 class="fw-semibold fs-3 mb-4">Data Berkas</h4>
+              <div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label for="cv" class="form-label">CV<span
+                          class="text-danger">*</span></label>
+                      <input type="file" class="form-control" name="cv"
+                        id="cv" required="true" autocomplete="off" />
+                      <div class="invalid-feedback">
+                        Masukkan File.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label for="ktp" class="form-label">Kartu Tanda Penduduk<span
+                          class="text-danger">*</span></label>
+                      <input type="file" name="ktp" class="form-control"
+                        id="ktp" placeholder="Kartu Tanda Penduduk" required="true"
+                        autocomplete="off" />
+                      <div class="invalid-feedback">
+                        Masukkan File.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label for="pas_foto" class="form-label">Pas Foto Berwarna<span
+                          class="text-danger">*</span></label>
+                      <input type="file" name="pas_foto" class="form-control" id="pas_foto"
+                        placeholder="Pas Foto" required="true" autocomplete="off" />
+                      <div class="invalid-feedback">
+                        Masukkan File.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label for="ijazah" class="form-label">Ijazah<span class="text-danger">*</span></label>
+                      <input type="file" name="ijazah" class="form-control" id="ijazah"
+                        placeholder="Pas Foto" required="true" autocomplete="off" />
+                      <div class="invalid-feedback">
+                        Masukkan File.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label for="npwp" class="form-label">NPWP<span class="text-danger">*</span></label>
+                      <input type="file" name="npwp" class="form-control"
+                        id="npwp" placeholder="NPWP" required="true" autocomplete="off" />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label for="surat_kesehatan" class="form-label">Surat Kesehatan (Jika Ada)</label>
+                      <input type="file" name="surat_kesehatan" class="form-control"
+                        id="surat_kesehatan" placeholder="Surat Kesehatan"
+                        autocomplete="off" />
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label for="surat_pengalaman" class="form-label">Surat Pengalaman (Jika Ada)</label>
+                      <input type="file" name="surat_pengalaman" class="form-control" id="surat_pengalaman"
+                        placeholder="Surat Pengalaman" autocomplete="off" />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label for="sertifikat" class="form-label">Sertifikat (Jika Ada)</label>
+                      <input type="file" name="sertifikat" class="form-control" id="sertifikat"
+                        placeholder="Sertifikat" autocomplete="off" />
+                    </div>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-center align-items-center mt-2 mb-2">
+                    <!-- CAPTCHA -->
+                    <div class="g-recaptcha" data-sitekey="6LfoWrIqAAAAADDp0NgZCc4TEip5P9kGcIVRO5qt"></div>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                  <button type="button"
+                    style="background-color: #4CAF50 !important; text-decoration: none; color: white; padding: 10px 20px; text-align: center; display: inline-block; font-size: 16px; border-radius: 5px; cursor: pointer;"
+                    class="btn btn-secondary btn-prev" data-prev="containerDataPelamar">Kembali</button>
+                  <button type="submit"
+                    style="background-color: #180cf2 !important; cursor: pointer; padding: 10px 20px; text-align: center; color: white; display: inline-block; font-size: 16px; border-radius: 5px; border: none;"
+                    class="btn btn-primary">Daftar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <footer class="mt-5">
+        </footer>
+            <!-- Modal untuk alert -->
+            <div class="modal fade" id="recaptchaModal" tabindex="-1" role="dialog" aria-labelledby="recaptchaModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="recaptchaModalLabel">Peringatan!</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&#215;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Silakan verifikasi reCAPTCHA terlebih dahulu sebelum melanjutkan.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          
+      </div>
+      <!-- CAPTCHA -->
+      <script src="https://www.google.com/recaptcha/api.js" async="true" defer="true"></script>
+      <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+      <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+      <script type="text/javascript">
+
+        (() => {
+  'use strict';
+
+  const form = document.querySelector('.needs-validation');
+
+  // Fungsi untuk menampilkan alert
+  const showAlert = (message) => {
+    const alertContainer = document.createElement('div');
+    alertContainer.classList.add('alert-container');  // Menambahkan class untuk positioning
+    const alertBox = document.createElement('div');
+    alertBox.classList.add('alert', 'alert-danger', 'alert-dismissible', 'fade', 'show');
+    alertBox.setAttribute('role', 'alert');
+
+    const alertIcon = document.createElement('i');
+    alertIcon.classList.add('bi', 'bi-exclamation-circle-fill');
+    alertBox.appendChild(alertIcon);
+
+    const alertText = document.createElement('span');
+    alertText.classList.add('ms-2');
+    alertText.textContent = message;
+    alertBox.appendChild(alertText);
+
+    alertContainer.appendChild(alertBox);
+
+    // Menambahkan alert ke body dan memastikan tampil di bagian atas tanpa menggeser elemen
+    document.body.appendChild(alertContainer);
+
+    // Menghapus alert setelah 3 detik
+    setTimeout(() => {
+      alertBox.classList.remove('show');
+      alertBox.classList.add('fade');
+      setTimeout(() => alertContainer.remove(), 500); // Hapus elemen setelah animasi selesai
+    }, 3000); // Waktu 3 detik
+  };
+
+  // Navigasi antar langkah
+  const goToStep = (currentStep, targetStep) => {
+    document.getElementById(currentStep).style.display = 'none';
+    document.getElementById(targetStep).style.display = 'block';
+  };
+
+  // Fungsi validasi untuk nomor telepon/WA
+  const isValidPhoneNumber = (phoneNumber) => {
+    const phoneRegex = /^\d+$/; // Regex untuk memastikan hanya angka
+    return phoneRegex.test(phoneNumber);
+  };
+
+  // Validasi semua input dalam container
+  const validateInputs = (container) => {
+    const inputs = container.querySelectorAll('input, select, textarea');
+    let isValid = true;
+
+    inputs.forEach(input => {
+      if (input.id === 'no_ktp') {
+        // Validasi khusus No KTP
+        if (input.value.length !== 16 || !/^\d+$/.test(input.value)) {
+          input.classList.add('is-invalid');
+          input.classList.remove('is-valid');
+          isValid = false;
+        } else {
+          input.classList.remove('is-invalid');
+          input.classList.add('is-valid');
+        }
+      } else if (input.id === 'no_telp') {
+        // Validasi khusus No Telp dengan regex
+        if (!isValidPhoneNumber(input.value)) {
+          input.classList.add('is-invalid');
+          input.classList.remove('is-valid');
+          isValid = false;
+        } else {
+          input.classList.remove('is-invalid');
+          input.classList.add('is-valid');
+        }
+      } else if (!input.checkValidity()) {
+        // Validasi umum
+        input.classList.add('is-invalid');
+        input.classList.remove('is-valid');
+        isValid = false;
+      } else {
+        input.classList.remove('is-invalid');
+        input.classList.add('is-valid');
+      }
+    });
+
+    return isValid;
+  };
+
+  // Validasi file input khusus untuk langkah terakhir
+  const validateFileInputs = () => {
+    const fileInputs = document.querySelectorAll('#containerDataBerkas input[type="file"]');
+    let isValid = true;
+
+    fileInputs.forEach(fileInput => {
+      // Abaikan validasi jika input adalah Surat Kesehatan dll
+      if (fileInput.id === 'sertifikat' || fileInput.id === 'surat_pengalaman' || fileInput.id === 'surat_kesehatan') {
+        return;
+      }
+      if (fileInput.files.length === 0) {
+        fileInput.classList.add('is-invalid');
+        fileInput.classList.remove('is-valid');
+        isValid = false;
+      } else {
+        fileInput.classList.remove('is-invalid');
+        fileInput.classList.add('is-valid');
+      }
+    });
+
+    return isValid;
+  };
+
+  // Navigasi "Selanjutnya"
+  document.querySelectorAll('.btn-next').forEach(button => {
+    button.addEventListener('click', () => {
+      const currentStep = button.closest('.container').id;
+      const nextStep = button.dataset.next;
+      const currentContainer = document.getElementById(currentStep);
+
+      if (!validateInputs(currentContainer)) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Perhatian',
+          text: 'Terdapat data yang belum di isi.',
+          confirmButtonText: 'OK',
+        });
+        return;
+      }
+
+      goToStep(currentStep, nextStep);
+    });
+  });
+
+  // Navigasi "Kembali"
+  document.querySelectorAll('.btn-prev').forEach(button => {
+    button.addEventListener('click', () => {
+      const currentStep = button.closest('.container').id;
+      const prevStep = button.dataset.prev;
+      goToStep(currentStep, prevStep);
+    });
+  });
+
+  // Validasi real-time
+  document.querySelectorAll('input, select, textarea').forEach(input => {
+    input.addEventListener('input', () => {
+      if (input.id === 'no_ktp') {
+        if (input.value.length === 16 &amp;&amp; /^\d+$/.test(input.value)) {
+          input.classList.remove('is-invalid');
+          input.classList.add('is-valid');
+        } else {
+          input.classList.add('is-invalid');
+          input.classList.remove('is-valid');
+        }
+      } else if (input.id === 'no_telp') {
+        if (isValidPhoneNumber(input.value)) {
+          input.classList.remove('is-invalid');
+          input.classList.add('is-valid');
+        } else {
+          input.classList.add('is-invalid');
+          input.classList.remove('is-valid');
+        }
+      } else if (!input.checkValidity()) {
+        input.classList.add('is-invalid');
+        input.classList.remove('is-valid');
+      } else {
+        input.classList.remove('is-invalid');
+        input.classList.add('is-valid');
+      }
+    });
+  });
+
+  // Tombol submit pada langkah terakhir
+  const submitButton = document.querySelector('button[type="submit"]');
+  submitButton.addEventListener('click', (event) => {
+    event.preventDefault(); // Mencegah pengiriman form secara default
+
+    const currentContainer = document.getElementById('containerDataBerkas');
+    const isInputValid = validateInputs(currentContainer);
+    const isFileValid = validateFileInputs();
+
+    if (isInputValid &amp;&amp; isFileValid) {
+      // Periksa reCAPTCHA setelah semua data tervalidasi
+      const recaptchaResponse = grecaptcha.getResponse();
+      if (!recaptchaResponse) {
+        // Jika reCAPTCHA tidak dicentang, tampilkan alert peringatan
+        showAlert('Anda perlu menyelesaikan verifikasi CAPTCHA untuk melanjutkan.');
+        return;
+      }
+
+      form.submit(); // Kirim form jika validasi berhasil
+    } else {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Perhatian',
+        text: 'Mohon lengkapi semua data dan berkas yang diperlukan sebelum mengirim form.',
+        confirmButtonText: 'OK',
+      });
+    }
+  });
+})();
+
+
+
+      
+
+        $(document).ready(function() {
+        // Pengaturan terjemahan manual untuk bahasa Indonesia
+        $.datepicker.regional['id'] = {
+        closeText: 'Tutup',
+        prevText: 'Sebelumnya',
+        nextText: 'Berikutnya',
+        currentText: 'Hari Ini',
+        monthNames: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus',
+        'September', 'Oktober', 'November', 'Desember'],
+        monthNamesShort: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt',
+        'Nov', 'Des'],
+        dayNames: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
+        dayNamesShort: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
+        dayNamesMin: ['Mi', 'Se', 'Sa', 'Ra', 'Ka', 'Ju', 'Sa'],
+        weekHeader: 'Ming',
+        dateFormat: 'dd/mm/yy',
+        firstDay: 0,
+        isRTL: false,
+        showMonthAfterYear: false,
+        yearSuffix: ''
+        };
+
+        $.datepicker.setDefaults($.datepicker.regional['id']);
+
+        // Inisialisasi Datepicker
+        $("#tgl_lahir").datepicker({
+        changeMonth: true,
+        changeYear: true,
+        yearRange: "1900:" + new Date().getFullYear(),
+        maxDate: new Date()
+        });
+        });
+
+        // Cari elemen body dengan class spesifik
+        const bodyElement = document.querySelector('body.o_body_html.container.overflow-x-hidden');
+        // Jika elemen ditemukan, hapus class "container"
+        if (bodyElement) {
+        bodyElement.classList.remove('o_body_html');
+        bodyElement.classList.remove('container');
+        }
+
+
+        function handleSkillTypeChange(event) {
+        // Mendapatkan nilai (value) dari radio button yang dipilih
+        var selectedValue = event.target.value;
+        
+        // Menampilkan nilai tersebut di konsol
+        console.log("Selected Skill Type ID:", selectedValue);
+        }
+
+        //favicon
+        document.addEventListener('DOMContentLoaded', function () {
+          // Membuat elemen link
+          var linkElement = document.createElement('link');
+          linkElement.rel = 'icon';
+          linkElement.type = 'image/x-icon';
+          linkElement.href = '/pesantren_pendaftaran/static/img/favicon.ico?v=1';
+
+          // Menambahkan elemen ke dalam tag head
+          document.head.appendChild(linkElement);
+
+         });
+
+
+
+
+
+
+
+
+    
+
+    <!-- document.addEventListener('DOMContentLoaded', function () {
+    // Data keterampilan berdasarkan tipe, yang dikirim dari Python
+    const skillsByType = JSON.parse('<t t-esc="skills_by_type | tojson"/>');
+
+    // Fungsi untuk memperbarui opsi di dropdown keterampilan
+    window.updateSkillOptions = function (skillTypeId) {
+        const skillFieldContainer = document.getElementById('skillFieldContainer');
+        const skillSelect = document.getElementById('skill_id');
+
+        // Kosongkan opsi lama
+        skillSelect.innerHTML = '';
+
+        // Tampilkan opsi baru jika skillTypeId valid
+        if (skillsByType[skillTypeId]) {
+            skillsByType[skillTypeId].skills.forEach(skill => {
+                const option = document.createElement('option');
+                option.value = skill.id;
+                option.textContent = skill.name;
+                skillSelect.appendChild(option);
+            });
+
+            // Tampilkan field skill_id
+            skillFieldContainer.style.display = 'block';
+        } else {
+            // Sembunyikan field skill_id jika tidak ada data
+            skillFieldContainer.style.display = 'none';
+        }
+    };
+}); -->
+      
+
+
+
+
+      </script>
+    </t>
+  </template>
+
+</odoo>

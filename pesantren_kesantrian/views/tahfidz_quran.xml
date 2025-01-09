@@ -67,12 +67,14 @@
                                 <field name="ayat_awal" domain="[('surah_id','=',surah_id)]"
                                 options="{'no_create_edit':True, 'no_create':True}" required="1" />
                                 <field name="jml_baris" required="1" />
+                                <field name="nilai" readonly="0"/>
                             </group>
                             <group>
                                 <field name="ayat_akhir" domain="[('surah_id','=',surah_id),('name','>',ayat_awal_name)]"
                                     options="{'no_create_edit':True, 'no_create':True}" required="1" />
                                 
                                 <field name="nilai_id" string="Kategori Penilaian" required="1" />
+                                <field name="predikat" readonly="1"/>
                             </group>
                         </group>
                         <group>

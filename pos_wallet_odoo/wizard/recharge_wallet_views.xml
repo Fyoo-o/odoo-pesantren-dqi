@@ -14,8 +14,7 @@
                         <field name="journal_id"/>
                     </group>
                 </group>
-                <footer>Fixing 
-                    
+                <footer> 
                 </footer>
             </form>
         </field>

@@ -61,6 +61,8 @@
         ],'web.assets_backend': [
             'pos_wallet_odoo/static/src/js/PopupOnce.js',
             'pos_wallet_odoo/static/src/xml/custom_number_popup.xml',
+            'pos_wallet_odoo/static/src/xml/wallet_templates.xml',
+            'pos_wallet_odoo/static/src/js/wallet.js',
             'pos_wallet_odoo/static/src/js/icon.js',
         ],
     },

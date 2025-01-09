@@ -18,6 +18,18 @@ class PerijinanCheckOut(models.TransientModel):
     tgl_kembali = fields.Date(string='Tgl Kembali', related='perijinan_id.tgl_kembali', readonly=True)
     penjemput   = fields.Char(string='Penjemput', related='perijinan_id.penjemput', readonly=True)
 
+
+    barcode = fields.Char(string='Barcode', compute='_source_siswa_id')
+
+    @api.depends('barcode')
+    def _source_siswa_id(self):
+        for record in self:
+            if record.barcode:
+                # Cari siswa berdasarkan barcode
+                siswa = self.env['cdn.siswa'].search([('barcode', '=', record.barcode)], limit=1)
+                if siswa:
+                    record.siswa_id = siswa.id  # Set siswa_id dengan ID siswa yang ditemukan
+    
     @api.onchange('siswa_id')
     def _onchange_siswa_id(self):
         if self.siswa_id:
@@ -40,10 +52,4 @@ class PerijinanCheckOut(models.TransientModel):
             'view_mode': 'form',
             'res_id': self.perijinan_id.id,
             'target': 'current',
-        }
-
-    def scan_barcode_popup(self):
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_popup_scan_kts',
         }

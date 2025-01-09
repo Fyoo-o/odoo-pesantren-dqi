@@ -1,0 +1,76 @@
+<odoo>
+    <!-- <data>
+        <record id="res_config_settings_view_form" model="ir.ui.view">
+            <field name="name">pesantren.keuangan.config.settings</field>
+            <field name="model">res.config.settings</field>
+            <field name="priority" eval="15"/>
+            <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form" position="inside">
+                    <app data-string="Keuangan Management" string="Keuangan Management" name="pesantren_keuangan" web_icon="pesantren_keuangan,static/description/icon.png">
+                        <block title="Pengaturan Keuangan Management" name="pesantren_management">
+                            <group string="Tanggal keuangan" name="group_tanggal_keuangan">
+                                <field name="auto_topup" string="Auto Top-Up Approval"/>
+                                <field name="tgl_akhir_keuangan" string="Tanggal Akhir keuangan"/>
+                            </group>
+                            <div class="text-warning mt16">
+                                <strong>Simpan</strong>
+                                halaman ini dan kembali ke sini untuk menyiapkan fitur.
+                            </div>
+                        </block>
+                    </app>
+                </xpath>
+            </field>
+        </record>
+        <record id="res_config_settings_action" model="ir.actions.act_window">
+            <field name="name">Configuration</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.config.settings</field>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+            <field name="context">{'module' : 'pesantren_keuangan'}</field>
+        </record>
+        <record id="action_wallet_topup" model="ir.actions.act_window">
+            <field name="name">Wallet Top-Up</field>
+            <field name="res_model">cdn.wallet_topup</field>
+            <field name="view_mode">form,list</field>
+            <field name="context">{}</field>
+            <field name="target">main</field>
+        </record>
+        <record id="view_wallet_topup_list" model="ir.ui.view">
+            <field name="name">cdn.wallet_topup.list</field>
+            <field name="model">cdn.wallet_topup</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="name"/>
+                    <field name="tgl_request"/>
+                    <field name="siswa_id"/>
+                    <field name="topup_amount"/>
+                    <field name="approval_state"/>
+                </list>
+            </field>
+        </record>
+        <record id="view_wallet_topup_form" model="ir.ui.view">
+            <field name="name">cdn.wallet_topup.form</field>
+            <field name="model">cdn.wallet_topup</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="tgl_request" readonly="1"/>
+                            <field name="siswa_id"/>
+                            <field name="wallet_balance" readonly="1"/>
+                            <field name="topup_amount"/>
+                            <field name="approval_state" readonly="1"/>
+                            <field name="approved_by" readonly="1"/>
+                            <field name="approved_date" readonly="1"/>
+                            <field name="bukti_pembayaran" widget="image"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <menuitem id="menu_wallet_topup" name="Wallet Top-Up" action="action_wallet_topup" sequence="50" web_icon="pesantren_keuangan,static/description/icon.png"/>
+    </data> -->
+</odoo>

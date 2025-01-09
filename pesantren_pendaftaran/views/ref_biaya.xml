@@ -48,11 +48,23 @@
                             </group>
                         </group>
                         <notebook>
-                            <page name="biaya" string="Biaya">
+                            <page name="biaya" string="Biaya" invisible="1">
                                 <field colspan="4" name="biaya_ids" readonly="status == 'konfirm'">
                                     <list editable="bottom">
                                         <field name="name"/>
-                                        <field name="nominal"/>
+                                        <field name="gambar"/>
+                                        <field name="is_alumni"/> 
+                                        <field name="is_pindahan_sd" invisible="jenjang not in 'sdmi'"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page name="Rincian Biaya" string="Rincian Biaya">
+                                <field colspan="4" name="rincian_ids" readonly="status == 'konfirm'">
+                                    <list editable="bottom">
+                                        <field name="name"/>
+                                        <field name="gambar"/>
+                                        <field name="is_alumni"/> 
+                                        <field name="is_pindahan_sd" invisible="jenjang not in 'sdmi'"/>
                                     </list>
                                 </field>
                             </page>

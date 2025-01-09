@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t t-name="owl.PosKpiCard" owl="1">
+         <div class="row g-4"> <!-- Added g-4 class for gutters -->
+           <t t-foreach="state.kpiData" t-as="kpi" t-key="kpi.name">
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="position-relative shadow-sm border rounded-lg p-3 bg-white kpi-card mb-4" 
+                         t-att-data-name="kpi.name" style="cursor: pointer;">
+
+                        <!-- KPI Value -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="h1 fw-bold text-primary" style="font-size: 32px; color: #0cba3e;">
+                                <span t-esc="kpi.value"/>
+                            </div>
+                            <!-- KPI Icon -->
+                            <div>
+                                <i t-att-class="'fa ' + kpi.icon" style="font-size: 24px; color: #0cba3e;"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- KPI Name -->
+                        <div class="fw-bold text-muted mt-1" style="font-size: 14px;">
+                            <span t-esc="kpi.name"/>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>

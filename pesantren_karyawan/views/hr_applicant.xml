@@ -1,0 +1,114 @@
+<odoo>
+	<!-- Kanban -->
+
+	<record model="ir.ui.view" id="inherit_kanban_applicant">
+		<field name="name">applicant.kanban.inherit</field>
+		<field name="model">hr.applicant</field>
+		<field name="inherit_id" ref="hr_recruitment.hr_kanban_view_applicant"/>
+		<field name="arch" type="xml">
+			<xpath expr="//field[@name='categ_ids']" position="replace">
+				<field name="categ_ids" invisible="1" />
+			</xpath>
+		</field>
+	</record>
+
+    <!-- Form View -->
+    <record model="ir.ui.view" id="inherit_form_applicant">
+		<field name="name">applicant.form.inherit</field>
+		<field name="model">hr.applicant</field>
+		<field name="inherit_id" ref="hr_recruitment.hr_applicant_view_form"/>
+		<field name="arch" type="xml">
+		<header>
+			<button string="Kirim Email" name="kirim_email_applicant" type="object" invisible="stage_id == 1 or stage_id == 2 or stage_id == 6 or not active" class="oe_highlight"/>
+			
+			<button string="Tetapkan Pertemuan" name="aturMeeting" type="object" invisible="stage_id == 1 or stage_id == 2 or stage_id == 6 or not active" class="oe_highlight"/>
+
+		</header>
+
+
+			<!-- Menambahkan grup 'Data Diri Pelamar' -->
+			<xpath expr="//field[@name='categ_ids']" position="replace">
+				<field name="categ_ids" invisible="1" />
+			</xpath>
+			<!-- Menambahkan grup 'Data Diri Pelamar' -->
+			<xpath expr="//group[group/field[@name='linkedin_profile']]" position="after">
+				<group>
+					<group string="Data Diri Pelamar">
+						<field name="token" invisible="1" />
+						<field name="no_ktp"/>
+						<field name="tgl_lahir" />
+						<field name="tmp_lahir" />
+						<field name="gender" />
+						<field name="alamat" />
+					</group>
+					<group string="Data Pendaftaran">
+						<field name="lembaga" />
+
+						<!-- Wawancara Pertama -->
+						<field name="tgl_wawancara_p_m" invisible="stage_id != 3" />
+						<field name="tgl_wawancara_p_a" invisible="stage_id != 3" />
+
+						<!-- Wawancara Kedua -->
+						<field name="tgl_wawancara_k_m" invisible="stage_id != 4" />
+						<field name="tgl_wawancara_k_a" invisible="stage_id != 4" />
+						<!-- Ttd Kontrak -->
+						<field name="batas_waktu_m" invisible="stage_id != 5" />
+						<field name="batas_waktu_a" invisible="stage_id != 5" />
+					</group>
+				</group>
+			</xpath>
+
+			<!-- Dokumen Pendaftaran -->	
+			<xpath expr="//page[3]" position="replace">
+				<page string="Dokumen Pendaftaran">
+					<group>
+						<group string="Dokumen Calon Karyawan" class="o_group">
+							<field name="cv" filename="cv_filename" />
+							<field name="ktp" filename="ktp_filename" />
+							<field name="npwp" filename="npwp_filename" />
+						</group>
+						<group string="Dokumen Pendukung">
+							<field name="sertifikat" filename="sertifikat_filename" />
+							<field name="surat_pengalaman" filename="surat_pengalaman_filename" />
+						</group>
+					</group>
+					<group>
+						<group string="Dokumen Pendidikan" class="o_group">
+							<field name="ijazah" filename="ijazah_filename" />
+							<field name="pas_foto" filename="pas_foto_filename" />
+						</group>
+						<group string="Dokumen Kesehatan" class="o_group">
+							<field name="surat_kesehatan" filename="surat_kesehatan_filename" />
+						</group>
+					</group>
+				</page>
+                    
+            </xpath>
+		</field>
+	</record>
+
+
+	<!-- List View -->
+	<record model="ir.ui.view" id="inherit_list_applicant">
+		<field name="name">applicant.list.inherit</field>
+		<field name="model">hr.applicant</field>
+		<field name="inherit_id" ref="hr_recruitment.crm_case_tree_view_job"/>
+		<field name="arch" type="xml">
+			<xpath expr="//field[@name='categ_ids']" position="replace" optional="hide"/>
+			<xpath expr="//field[@name='stage_id']" position="after" multi_edit="1" optional="show">
+				<field name="tgl_wawancara_p_m" optional="show" string="Wawancara Prtm Mulai" invisible="stage_id != 3"/>
+				<field name="tgl_wawancara_p_a" optional="show" string="Wawancara Prtm Berakhir" invisible="stage_id != 3"/>
+				<field name="tgl_wawancara_k_m" optional="show" string="Wawancara Dua Mulai" invisible="stage_id != 4"/>
+				<field name="tgl_wawancara_k_a" optional="show" string="Wawancara Dua Berakhir" invisible="stage_id != 4"/>
+				<field name="batas_waktu_m" optional="show" string="Waktu Proposal Mulai" invisible="stage_id != 5"/>
+				<field name="batas_waktu_a" optional="show" string="Waktu Proposal Berakhir" invisible="stage_id != 5"/>
+			</xpath>
+			<xpath expr="//list" position="inside">
+				<header>
+					<button string="Tetapkan Pertemuan" name="aturMeeting" type="object"  class="oe_highlight" />
+					<button string="Kirim Email" name="kirim_email_applicant" type="object" class="oe_highlight" />
+				</header>
+			</xpath>
+		</field>
+	</record>
+</odoo>

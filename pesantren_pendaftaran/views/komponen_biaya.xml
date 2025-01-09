@@ -36,13 +36,13 @@
                             <field name="name"/>
                             <field name="tipe_bayar" />
                             <field name="product_id" />
-                            <field name="biaya_tahunan">
+                            <!-- <field name="biaya_tahunan">
                                 <list edit="false" create="false" delete="false">
                                     <field name="daftarulang_id"/>
                                     <field name="name"/>
                                     <field name="nominal"/>
                                 </list>
-                            </field>
+                            </field> -->
                         </group>
                         <group>
                             <field name="active"/>

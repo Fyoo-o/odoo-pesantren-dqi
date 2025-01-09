@@ -7,68 +7,81 @@
             <field name="model">cdn.siswa</field>
             <field name="arch" type="xml">
                 <list create="false" edit="false" delete="false">
-                    <field name="nis"/>
-                    <field name="name"/>
-                    <field name="ruang_kelas_id"/>
-                    <field name="halaqoh_id"/>
-                    <field name="penanggung_jawab_id"/>
-                    <field name="last_tahfidz"/>
+                    <header>
+                        <!-- Tombol untuk mencetak sertifikat -->
+                        <button name="%(action_report_filter_wizard)d" string="Filter Data" type="action" class="btn-primary"/>
+                        <button string="Print Sertifikat" name="action_print_sertifikat" type="object" class="oe_highlight"/>
+                    </header>
+                    <field name="nis" readonly='1'/>
+                    <field name="name" readonly='1'/>
+                    <field name="ruang_kelas_id" readonly='1'/>
+                    <field name="halaqoh_id" readonly='1'/>
+                    <field name="penanggung_jawab_id" readonly='1'/>
+                    <field name="last_tahfidz" readonly='1'/>
                 </list>
             </field>
         </record>
+
         <!-- cdn.siswa form view -->
         <record id="guruquran_cek_santri_view_form" model="ir.ui.view">
             <field name="name">guruguran.cdn.siswa.view.form</field>
             <field name="model">cdn.siswa</field>
             <field name="arch" type="xml">
-                <form string="" edit="false" create="false" delete="false">
+                <form string="" create="false" delete="false">
                     <sheet>
                         <h1>
-                            <field name="name" nolable="1"/>
+                            <field name="name" nolable="1" readonly='1'/>
                         </h1>
                         <group string="Data Siswa">
                             <group>
-                                <field name="street"/>
-                                <field name="street2"/>
-                                <field name="rt_rw"/>
-                                <field name="city"/>
-                                <field name="phone"/>
+                                <field name="street" readonly='1'/>
+                                <field name="street2" readonly='1'/>
+                                <field name="rt_rw" readonly='1'/>
+                                <field name="city" readonly='1'/>
+                                <field name="phone" readonly='1'/>
                             </group>
                             <group>
-                                <field name="mobile"/>
-                                <field name="ayah_nama"/>
-                                <field name="ayah_telp"/>
-                                <field name="ibu_nama"/>
-                                <field name="ibu_telp"/>
+                                <field name="mobile" readonly='1'/>
+                                <field name="ayah_nama" readonly='1'/>
+                                <field name="ayah_telp" readonly='1'/>
+                                <field name="ibu_nama" readonly='1'/>
+                                <field name="ibu_telp" readonly='1'/>
                             </group>
                         </group>
                         <group string="Data Akademik">
                             <group>
-                                <field name="nis"/>
-                                <field name="ruang_kelas_id"/>
-                                <field name="halaqoh_id"/>
+                                <field name="nis" readonly='1'/>
+                                <field name="ruang_kelas_id" readonly='1'/>
+                                <field name="halaqoh_id" readonly='1'/>
                             </group>
                             <group>
-                                <field name="last_tahfidz"/>
-                                <field name="virtual_account"/>
-                                <field name="va_saku"/>
+                                <field name="last_tahfidz" readonly='1'/>
+                                <field name="virtual_account" readonly='1'/>
+                                <field name="va_saku" readonly='1'/>
                             </group>
                         </group>
                         <notebook>
                             <page name="tahfiz" string="Data Tahfidz">
                                 <field name="tahfidz_quran_ids">
                                     <list create="0" edit="0" delete="0">
-                                        <field name="tanggal"/>
+                                        <field name="tanggal" />
                                         <field name="sesi_tahfidz_id"/>
                                         <field name="surah_id"/>
                                         <field name="ayat_awal"/>
                                         <field name="ayat_akhir"/>
-                                        <field name="jml_baris"/>
                                         <field name="nilai_id"/>
+                                        <field name="nilai" />
+                                        <field name="predikat" />
                                         <field name="ustadz_id"/>
                                         <field name="state"/>
                                     </list>
                                 </field>
+                            </page>
+                            <page name="catatan_santri" string="Catatan Siswa">
+                                <group name="name" string="string">
+                                    <field name="catatan_ortu" widget='html'/>
+                                    <field name="catatan" widget='html'/>
+                                </group>
                             </page>
                         </notebook>
                     </sheet>
@@ -84,9 +97,7 @@
             <!-- <field name="view_id" ref="cek_santri_view_tree" /> -->
             <!-- <field name="domain">
             [
-                '|',
-                ('halaqoh_id.penanggung_jawab_id.user_id','=',uid),
-                ('halaqoh_id.pengganti_ids.user_id','=',uid)
+                '|', ('halaqoh_id.penanggung_jawab_id.user_id','=',uid), ('halaqoh_id.pengganti_ids.user_id','=',uid)
             ]
             </field> -->
         </record>

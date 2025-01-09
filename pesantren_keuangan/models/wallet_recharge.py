@@ -94,16 +94,17 @@ class WalletRecharge(models.TransientModel):
     # onchange
     @api.onchange('recharge_amount')
     def _onchange_recharge_amount(self):
-        if self.recharge_type == 'saku_based' and (self.recharge_amount+self.wallet_balance) > self.env.user.company_id.max_wallet:
+        if self.recharge_type == 'saku_based' and self.recharge_amount > self.env.user.company_id.max_wallet:
             return {
                 'warning': {
-                    'title': 'Warning',
+                    'title': 'Warning', 
                     'message': 'Pengisian saldo dompet melebihi batas maksimal dompet, batas maksimal dompet adalah Rp. ' + str(self.env.user.company_id.max_wallet)
                 },
                 'value': {
                     'recharge_amount': self._default_amount()
                 },
             }
+
 
     @api.onchange('recharge_type')
     def _onchange_recharge_type(self):

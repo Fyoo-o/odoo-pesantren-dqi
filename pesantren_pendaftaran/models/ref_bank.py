@@ -10,3 +10,12 @@ class Bank(models.Model):
     active          = fields.Boolean(string='Active', default=True)
     petunjuk_pembayaran = fields.Text(string='Petunjuk Pembayaran')
     keterangan      = fields.Text(string="Keterangan")
+
+
+
+    def action_open_route(self):
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/kartu_santri?id={self.id}',
+            'target': 'new',  # atau 'new' untuk membuka di tab baru
+        }

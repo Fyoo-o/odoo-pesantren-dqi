@@ -1,0 +1,53 @@
+<odoo>
+    <!-- List View -->
+    <record model="ir.ui.view" id="inherit_form_karywan">
+		<field name="name">Karyawan.form.inherit</field>
+		<field name="model">hr.employee</field>
+		<field name="inherit_id" ref="hr.view_employee_form"/>
+		<field name="arch" type="xml">
+
+			<!-- Menambahkan grup 'Data Diri Pelamar' -->
+			<xpath expr="//field[@name='mobile_phone']" position="after">
+                <field name="token" invisible="1" />
+                <field name="no_ktp"/>
+                <field name="tmp_lahir" />
+                <field name="jk" />
+                <field name="alamat" />
+			</xpath>
+
+            <xpath expr="//field[@name='parent_id']" position="after">
+                <field name="tgl_lahir" />
+			</xpath>
+
+
+			<!-- Dokumen Pendaftaran -->
+            <xpath expr="//page" position="after">
+                <page string="Dokumen Karyawan">
+                    <group>
+                        <group string="Dokumen Calon Karyawan" class="o_group">
+                            <field name="cv" filename="cv_filename" />
+                            <field name="ktp" filename="ktp_filename" />
+                            <field name="npwp" filename="npwp_filename" />
+                        </group>
+                        <group string="Dokumen Pendukung">
+                            <field name="sertifikat" filename="sertifikat_filename" />
+                            <field name="surat_pengalaman" filename="surat_pengalaman_filename" />
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Dokumen Pendidikan" class="o_group">
+                            <field name="ijazah" filename="ijazah_filename" />
+                            <field name="pas_foto" filename="pas_foto_filename" />
+                        </group>
+                        <group string="Dokumen Kesehatan" class="o_group">
+                            <field name="surat_kesehatan" filename="surat_kesehatan_filename" />
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+
+			
+		</field>
+	</record>
+
+</odoo>

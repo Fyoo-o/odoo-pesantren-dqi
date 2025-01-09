@@ -79,14 +79,14 @@ class SiswaController(http.Controller):
         try:
             # Jika barcode tidak diberikan, kembalikan error
             if not barcode:
-                return {'error': 'Barcode tidak diberikan'}
+                return #{'error': 'Barcode tidak diberikan'}
 
             # Cari data siswa berdasarkan barcode
             siswa_record = request.env['res.partner'].sudo().search([('barcode', '=', barcode)], limit=1)
 
             # Jika tidak ditemukan, kembalikan pesan error
             if not siswa_record:
-                return {'error': 'Data siswa tidak ditemukan'}
+                return #{'error': 'Data siswa tidak ditemukan'}
 
             data = {
                 'partner_id': siswa_record.id,
@@ -99,4 +99,4 @@ class SiswaController(http.Controller):
             return data
         except Exception as e:
             # raise ValidationError(f"Error fetching data for barcode {barcode}: {str(e)}")
-            return {'error': str(e)}
+            return #{'error': str(e)}

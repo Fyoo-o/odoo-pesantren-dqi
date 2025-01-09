@@ -25,6 +25,8 @@
             <field name="arch" type="xml">
                 <field name="partner_id" position="attributes">
                     <attribute name="readonly">True</attribute>
+                    <!-- Gunakan domain yang sesuai dengan field jns_partner -->
+                    <attribute name="domain">[('email', '!=', '')]</attribute>
                     <attribute name="force_save">True</attribute>
                 </field>
             </field>

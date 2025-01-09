@@ -5,16 +5,20 @@ import { Component, useState, useRef } from "@odoo/owl";
 
 class OwlKeuanganDashboard extends Component {
     setup() {
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
         this.state = useState({
-            selectedDateRange: null,
+            selectedDateRange: {
+                start: this.getLocalDateString(startOfMonth),
+                end: this.getLocalDateString(endOfMonth)
+            },
             tempDateRange: { start: '', end: '' },
             showDatePicker: false,
-            selectedPeriod: 'thisMonth', 
+            selectedPeriod: 'thisMonth',
             isLoading: false
         });
-        
-        // Initialize with thisWeek period
-        this.setPeriod('thisMonth');
     }
     
     toggleDatePicker() {
@@ -91,7 +95,7 @@ class OwlKeuanganDashboard extends Component {
     }
     
     isPeriodSelected(period) {
-        return this.state.selectedPeriod === period;
+        return this.state.selectedPeriod == period;
     }
     
     getLocalDateString(date) {
@@ -108,12 +112,11 @@ class OwlKeuanganDashboard extends Component {
             return;
         }
     
-        // Get current date in local timezone
         const now = new Date();
         const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         
         let start, end;
-    
+
         switch (period) {
             case 'today':
                 start = todayStart;

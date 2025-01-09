@@ -8,18 +8,12 @@
             <field name="arch" type="xml">
                 <form string="Santri Ijin Keluar">
                     <header>
-                        <button
-                            string="Scan KTS"
-                            type="object"
-                            class="btn-primary"
-                            name="scan_barcode_popup" />
-                    </header>                    
+                    </header>
                     <group string="Data Ijin Santri">
                         <group>
+                            <field name="barcode" autofocus="true" />
                             <field name="tgl_ijin" />
-                            <field name="siswa_id"
-                                options="{'no_create_edit':True, 'no_create':True, 'no_open':True}"
-                                context="{'default_partner_id': id}" />
+                            <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" context="{'default_partner_id': id}" />
                             <field name="kelas_id" />
                             <field name="perijinan_id" readonly="1" force_save="1" />
                         </group>
@@ -43,9 +37,7 @@
                     </group>
 
                     <footer>
-                        <button name="action_checkout" string="Ijin Keluar" type="object"
-                            class="btn-primary"
-                            confirm="Apakah yakin Santri tersebut akan melakukan IJIN KELUAR ?" />
+                        <button name="action_checkout" string="Ijin Keluar" type="object" class="btn-primary" confirm="Apakah yakin Santri tersebut akan melakukan IJIN KELUAR ?" />
                         <button string="Cancel" class="btn-secondary" special="cancel" />
                     </footer>
                 </form>
@@ -63,8 +55,7 @@
             <field name="target">new</field>
         </record>
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="wizard_checkout_menu_act" name="Santri Keluar" parent="satpam_menu_root"
-            action="action_wizard_perijinan_checkout" sequence="20" />
+        <menuitem id="wizard_checkout_menu_act" name="Santri Keluar" parent="satpam_menu_root" action="action_wizard_perijinan_checkout" sequence="20" />
 
 
     </data>

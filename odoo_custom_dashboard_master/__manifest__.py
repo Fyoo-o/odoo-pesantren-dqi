@@ -13,6 +13,7 @@
         'views/dashboard_musyrif.xml',
         'views/dashboard_orangtua.xml',
         'views/dashboard_guruquran.xml',
+        'views/dashboard_pos.xml',
     ],
     'demo': [
     ],
@@ -44,6 +45,11 @@
             'odoo_custom_dashboard_master/static/src/guruquran/**/*.js', 
             'odoo_custom_dashboard_master/static/src/guruquran/**/*.xml', 
             'odoo_custom_dashboard_master/static/src/guruquran/**/*.scss', 
+            
+            # POS
+            'odoo_custom_dashboard_master/static/src/pos/**/*.js', 
+            'odoo_custom_dashboard_master/static/src/pos/**/*.xml', 
+            'odoo_custom_dashboard_master/static/src/pos/**/*.scss', 
             
             'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css',
             

@@ -77,7 +77,7 @@
         'views/pos_order.xml',
         'views/siswa.xml',
         # wizard
-        
+        'views/res_config_setting_inherit.xml'
 
     ],
     'assets': {

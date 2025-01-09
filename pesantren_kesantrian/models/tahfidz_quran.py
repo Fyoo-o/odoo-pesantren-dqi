@@ -24,6 +24,32 @@ class TahfidzQuran(models.Model):
     state           = fields.Selection([('draft', 'Draft'),('done', 'Done')], default='draft', string='Status')
     penanggung_jawab_id = fields.Many2one('hr.employee', string='Penanggung Jawab', related='halaqoh_id.penanggung_jawab_id', readonly=True, store=True)
     
+    nilai = fields.Integer(string='Nilai', default=75, states={'done': [('readonly', True)]})
+
+    predikat = fields.Selection(
+        string='Predikat',
+        selection=[('a+', 'A+'), ('a', 'A'), ('b+', 'B+'), ('b', 'B'), ('c+', 'C+'), ('c', 'C')],
+        compute='_compute_predikat',
+        store=True,
+        states={'done': [('readonly', True)]}
+    )
+
+    @api.depends('nilai')
+    def _compute_predikat(self):
+        for record in self:
+            if record.nilai >= 90:
+                record.predikat = 'a+'
+            elif 80 <= record.nilai < 90:
+                record.predikat = 'a'
+            elif 70 <= record.nilai < 80:
+                record.predikat = 'b+'
+            elif 60 <= record.nilai < 70:
+                record.predikat = 'b'
+            elif record.nilai < 60:
+                record.predikat = 'c+'
+            else:
+                record.predikat = 'c'
+
     def get_last_tahfidz(self):
         last_tahfidz = self.env['cdn.tahfidz_quran'].search([
             ('siswa_id', '=', self.siswa_id.id),

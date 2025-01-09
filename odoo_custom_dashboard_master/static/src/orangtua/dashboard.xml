@@ -158,34 +158,34 @@
                 </div>
             </div>
 
+            <div class="mx-0 my-3">
+                <OrangtuaKpiCard
+                startDate="state.selectedDateRange?.start" endDate="state.selectedDateRange?.end"/>
+            </div>
+
             <!-- Bar Chart -->
             <div class="row mx-0 my-3">
                 <div class="col-lg-12 col-md-12 col-sm-12 m-0 p-2">
                     <div class="shadow-sm border p-4 bg-white h-100">
                         <OrangtuaChartRenderer type="'bar'" 
                                              title="'Tagihan Siswa'"
-                                             startDate="state.selectedDateRange?.start"
-                                             endDate="state.selectedDateRange?.end" />
+                                             />
                     </div>
                 </div>
             </div>
 
-            <!-- Line Charts -->
-            <div class="row mx-0 my-3">
+             <div class="row mx-0 my-3">
+                <!-- Pelanggaran Card -->
                 <div class="col-lg-6 col-md-12 col-sm-12 m-0 p-2">
-                    <div class="shadow-sm border p-4 bg-white h-100">
-                        <OrangtuaChartRenderer type="'line'" 
-                                             title="'Uang Masuk'"
-                                             startDate="state.selectedDateRange?.start"
-                                             endDate="state.selectedDateRange?.end" />
+                    <div class="shadow-sm bg-white h-100" style="border-radius: 0.375rem; overflow: hidden;">
+                        <OrangtuaCardList1 startDate="state.selectedDateRange?.start" endDate="state.selectedDateRange?.end"/>
                     </div>
                 </div>
+
+                <!-- Tahfidz Card -->
                 <div class="col-lg-6 col-md-12 col-sm-12 m-0 p-2">
-                    <div class="shadow-sm border p-4 bg-white h-100">
-                        <OrangtuaChartRenderer type="'line'" 
-                                             title="'Uang Keluar'"
-                                             startDate="state.selectedDateRange?.start"
-                                             endDate="state.selectedDateRange?.end" />
+                    <div class="shadow-sm bg-white h-100" style="border-radius: 0.375rem; overflow: hidden;">
+                        <OrangtuaCardList2 startDate="state.selectedDateRange?.start" endDate="state.selectedDateRange?.end"/>
                     </div>
                 </div>
             </div>

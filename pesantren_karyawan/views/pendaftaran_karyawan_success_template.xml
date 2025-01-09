@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="pendaftaran_karyawan_success_template" name="Pendaftaran Karyawan Success">
+        <t t-call="web.html_container">
+            <t t-set="title">Pendaftaran Karyawan Sukses - Daarul Qur'an Istiqomah</t>
+            <link rel="icon" type="image/x-icon" href="/pesantren_karyawan/static/img/favicon.ico?v=1" />
+            <link rel="stylesheet"
+                href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+                integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+                crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css"
+                rel="stylesheet" />
+            <style>
+
+                body {
+                    background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+                }
+
+                .offcanvas.offcanvas-end {
+                width: 250px; /* Lebar kustom untuk offcanvas */
+                }
+
+                .offcanvas .nav-link {
+                color: #ffffff; /* teks warna putih */
+                }
+
+                .offcanvas .btn-close {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                filter: invert(1);
+                }
+
+                .background {
+                background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+                }
+            </style>
+
+            <div class="container-main">
+                <nav class="navbar navbar-expand-lg" style="height: 65px;">
+                    <div class="container-fluid">
+                        <a class="navbar-brand ms-5 text-white fw-semibold" style="color: white;"
+                            href="/pendaftaran_karyawan">
+                            <img src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" width="50"
+                                alt="Logo Pesantren" /> Daarul Qur'an Istiqomah </a>
+                        <button class="navbar-toggler ms-auto" type="button"
+                            data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
+                            aria-controls="offcanvasNavbar">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" style="color: white;" id="navbarNav">
+                            <ul class="navbar-nav ms-auto">
+                                <li class="nav-item me-3">
+                                    <a class="nav-link stext-white" style="color: white !important;"
+                                        href="/pendaftaran_karyawan"><i class="fa-solid fa-house me-2"></i>Beranda</a>
+                                </li>
+                                <li class="nav-item me-3">
+                                    <a class="nav-link text-white" style="color: white !important;"
+                                        href="/pendaftaran_karyawan"><i class="fa-solid fa-note-sticky me-2"></i>
+                                        Pendaftaran</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+
+                <div class="offcanvas offcanvas-end background" tabindex="-1" id="offcanvasNavbar"
+                    aria-labelledby="offcanvasNavbarLabel">
+                    <button type="button" class="btn-close btn-close-white"
+                        data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    <a class="navbar-brand mt-1 text-white fw-semibold" href="/pendaftaran_karyawan"
+                        style="display: flex; flex-direction: column; align-items: center; color: white;">
+                        <img src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" width="50"
+                            alt="Logo Pesantren" /> Daarul Qur'an Istiqomah </a>
+                    <div class="offcanvas-body">
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item me-3">
+                                <a class="nav-link text-white" style="color: white !important;"
+                                    href="/pendaftaran_karyawan"><i class="fa-solid fa-house me-2"></i>Beranda</a>
+                            </li>
+                            <li class="nav-item me-3">
+                                <a class="nav-link text-white" href="/pendaftaran_karyawan"><i
+                                        class="fa-solid fa-note-sticky me-2"></i>Pendaftaran</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <div class="d-flex justify-content-center">
+                    <div style="width: 600px; padding-top: 30px;" class="bg-white rounded mt-5 mb-3">
+                        <h4 class="text-center mb-2">Alhamdulillah pendaftaran Karyawan sudah berhasil</h4>
+                        <p class="text-center m-3">Pastikan selalu memantau email yang telah diisi tadi, untuk info
+                            tentang pendaftaran karyawan dibagian menu kotak masuk (Inbox) atau Spam.</p>
+                        <div style="display: flex; flex-wrap: wrap; justify-content: space-around;">
+                            <div>
+                                <div class="mb-3">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <i class="fa-solid fa-user-group me-2"
+                                            style="color: #A812AE; font-size: 20px;"></i>
+                                        <span class="fs-5">Data Pelamar Kerja</span>
+                                    </div>
+                                    <div
+                                        style="display: flex; flex-direction: column; margin-left: 30px;">
+                                        <span>Nama : <t t-esc="pendaftaran.partner_name" /></span>
+                                        <span>Email : <t t-esc="pendaftaran.email_from" /></span>
+                                        <span>TTL : <span class="text-capitalize">
+                                                <t t-esc="pendaftaran.tmp_lahir" />
+                                            </span>
+                                            , <t t-esc="pendaftaran.get_formatted_tanggal_lahir()" /></span>
+                                        <span>Alamat : <t t-esc="pendaftaran.alamat" /></span>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fa-solid fa-building-columns me-2 text-info"
+                                            style="font-size: 20px;"></i>
+                                        <span class="fs-5">Lembaga Yang Dipilih</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-capitalize" style="margin-left: 30px;">
+                                            <t t-esc="pendaftaran.lembaga.replace('paud', 'PAUD').replace('tk', 'TK').replace('sdmi', 'SD / MI').replace('smpmts', 'SMP / MTS').replace('smama', 'SMA / MA').replace('smk', 'SMK')" />
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="mb-5">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fa-solid fa-briefcase me-2 text-warning"
+                                            style="font-size: 20px;"></i>
+                                        <span class="fs-5">Posisi yang dilamar</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-capitalize" style="margin-left: 30px;">
+                                            <t t-esc="pendaftaran.job_id.name" />
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Modal -->
+            <div class="modal fade" id="modalPendaftaranTutup" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Pendaftaran ditutup!</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Mohon maaf, pendaftaran telah ditutup.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+                </div>
+            </div>
+            </div>
+
+            <script
+                src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+            <script>
+                // Cari elemen body dengan class spesifik
+                const bodyElement =
+                document.querySelector('body.o_body_html.container.overflow-x-hidden');
+
+                // Jika elemen ditemukan, hapus class "container"
+                if (bodyElement) {
+                bodyElement.classList.remove('o_body_html');
+                bodyElement.classList.remove('container');
+                }
+            </script>
+        </t>
+    </template>
+</odoo>
