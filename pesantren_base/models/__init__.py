@@ -26,4 +26,4 @@ from . import organisasi
 from . import ekstrakulikuler
 from . import hr_employee
 from . import mobile_fasilitas
-# from . import res_config
+from . import res_config_setting

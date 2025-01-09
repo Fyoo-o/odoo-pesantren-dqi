@@ -5,7 +5,7 @@
             <field name="name">ubig.bank.view.list</field>
             <field name="model">ubig.bank</field>
             <field name="type">list</field>
-            <field name="priority" eval="8"/>
+            <field name="priority" eval="8" />
             <field name="arch" type="xml">
                 <list string="Data Pendaftaran">
                     <field name="name" />
@@ -21,17 +21,21 @@
             <field name="name">ubig_bank_form</field>
             <field name="model">ubig.bank</field>
             <field name="type">form</field>
-            <field name="priority" eval="8"/>
+            <field name="priority" eval="8" />
             <field name="arch" type="xml">
                 <form string="Data Bank">
                     <header>
+                        <button name="action_open_route" type="object" string="Call Route"
+                            class="btn-primary" />
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
                         </div>
                         <div class="oe_title">
-                            <label for="name" class="oe_edit_only" string="Nama Bank"/>
-                            <h1><field name="name"/></h1>
+                            <label for="name" class="oe_edit_only" string="Nama Bank" />
+                            <h1>
+                                <field name="name" />
+                            </h1>
                         </div>
                         <group>
                             <group>
@@ -58,10 +62,10 @@
             <field name="context">{"search_default_fieldname":1}</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
-                Klik Untuk Mendaftarkan Bank
+                    Klik Untuk Mendaftarkan Bank
                 </p>
                 <p>
-                Klik Tombol Buat Untuk Mendaftarkan Bank
+                    Klik Tombol Buat Untuk Mendaftarkan Bank
                 </p>
             </field>
         </record>

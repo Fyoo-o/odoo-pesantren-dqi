@@ -5,6 +5,29 @@ import { rpc } from "@web/core/network/rpc";
 
 // Patch untuk menambahkan fungsi baru ke komponen InheritTabel
 patch(InheritTabel.prototype, {
+    async handleEnterKey(ev) {
+        // Memeriksa jika tombol yang ditekan adalah Enter
+        if (ev.key === 'Enter') {
+            const query = this.state.query;
+
+            try {
+                const response = await rpc('/siswa/get_data/bar', { barcode: query }, {
+                    headers: {
+                        "accept": "application/json"
+                    }
+                });
+
+                if (response && response.partner_id) {
+                    // Jika data partner ditemukan, pilih partner
+                    this.clickPartner(response.partner_id);
+                } else {
+                    console.warn("Partner tidak ditemukan atau data tidak lengkap.");
+                }
+            } catch (error) {
+                console.error("Terjadi kesalahan saat memanggil API:", error);
+            }
+        }
+    },
     setup() {
         super.setup();
         this.isCameraVisible = false; // Menandai status kamera
@@ -171,7 +194,7 @@ patch(InheritData.prototype, {
                 this.props.partner.wallet_balance = 0; // Atur ke 0 jika ada error
             }
         } catch (error) {
-            console.error("Error fetching wallet balance:", error);
+            // console.error("Error fetching wallet balance:", error);
             this.props.partner.wallet_balance = 0; // Atur ke 0 jika ada error
         }
     },

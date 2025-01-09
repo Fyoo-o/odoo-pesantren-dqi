@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <!--    Change invoicing menu to Accounting     -->
-    <record model="ir.ui.menu" id="account.menu_finance">
+    <record model="ir.ui.menu" id="account.menu_finance" groups="account.group_account_manager">
         <field name="name">Accounting</field>
     </record>
 <!--    Menu Generic Statements-->

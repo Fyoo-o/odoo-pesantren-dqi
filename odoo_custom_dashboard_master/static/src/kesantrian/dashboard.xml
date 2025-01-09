@@ -124,7 +124,7 @@
 
             <!-- KPI Cards -->
             <div class="mx-0 my-3">
-                <KpiCard/>
+                <KpiCard />
             </div>
 
             <!-- Charts -->

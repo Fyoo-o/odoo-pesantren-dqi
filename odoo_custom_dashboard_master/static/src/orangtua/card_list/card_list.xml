@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+<t t-name="owl.OrangtuaCardList1" owl="1">
+    <div class="card dashboard-card">
+        <div class="card-header">
+            <h3 class="card-title">Data Mutabaah Terbaru</h3>
+        </div>
+        <div class="card-body p-0" style="height: 50vh;">
+            <div class="h-100">
+                <t t-if="state.isLoading">
+                    <div class="d-flex align-items-center justify-content-center h-100">
+                        <div>
+                            <i class="fa fa-spinner fa-spin"></i>
+                            <span class="ms-2">Loading...</span>
+                        </div>
+                    </div>
+                </t>
+                <t t-elif="state.hasData">
+                    <div class="table-responsive h-100" style="max-height: 400px; overflow-y: auto; overflow-x: auto;">
+                        <table class="table table-hover table-striped mb-0">
+                            <thead style="position: sticky; top: 0; background-color: white; z-index: 1;">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Tanggal</th>
+                                    <th>Nama Siswa</th>
+                                    <th>Sesi</th>
+                                    <th>Halaqoh</th>
+                                    <th>Skor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="state.mutabaahData" t-as="mutabaah" t-key="mutabaah.number">
+                                    <tr class="cursor-pointer hover:bg-gray-100" 
+                                        t-on-click="() => mutabaah.onClick()">
+                                        <td><t t-esc="mutabaah.number"/></td>
+                                        <td><t t-esc="mutabaah.date"/></td>
+                                        <td><t t-esc="mutabaah.student_name"/></td>
+                                        <td><t t-esc="mutabaah.session"/></td>
+                                        <td><t t-esc="mutabaah.halaqah"/></td>
+                                        <td><t t-esc="mutabaah.score"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="d-flex align-items-center justify-content-center h-100">
+                        <p class="text-muted mb-0">Belum ada data yang bisa ditampilkan.</p>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </div>
+</t>
+
+ <t t-name="owl.OrangtuaCardList2" owl="1">
+    <div class="card dashboard-card">
+        <div class="card-header">
+            <h3 class="card-title">Data Hafalan Santri</h3>
+        </div>
+        <div class="card-body p-0" style="height: 50vh;">
+            <div class="h-100">
+                <t t-if="state.isLoading">
+                    <div class="d-flex align-items-center justify-content-center h-100">
+                        <div>
+                            <i class="fa fa-spinner fa-spin"></i>
+                            <span class="ms-2">Loading...</span>
+                        </div>
+                    </div>
+                </t>
+                <t t-elif="state.hasData">
+                    <div class="table-responsive h-100" style="max-height: 400px; overflow-y: auto;">
+                        <table class="table table-hover table-striped mb-0">
+                            <thead style="position: sticky; top: 0; background-color: white; z-index: 1;">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Nama Santri</th>
+                                    <th>Halaqoh</th>
+                                    <th>Tanggal</th>
+                                    <th>Surah</th> 
+                                    <th>Ayat Awal</th>
+                                    <th>Ayat Akhir</th> 
+                                    <th>Nilai</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="state.topTahfidz" t-as="tahfidz" t-key="tahfidz_index">
+                                    <tr class="cursor-pointer hover:bg-gray-100" 
+                                        t-on-click="() => tahfidz.onClick()">
+                                        <td><t t-esc="tahfidz.number"/></td>
+                                        <td><t t-esc="tahfidz.name"/></td>
+                                        <td><t t-esc="tahfidz.halaqoh"/></td>
+                                        <td><t t-esc="tahfidz.tanggal"/></td>
+                                        <td><t t-esc="tahfidz.surah"/></td>
+                                        <td><t t-esc="tahfidz.ayatAwal"/></td>
+                                        <td><t t-esc="tahfidz.ayatAkhir"/></td>
+                                        <td><t t-esc="tahfidz.nilai"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="d-flex align-items-center justify-content-center h-100">
+                        <p class="text-muted mb-0">Belum ada data yang bisa ditampilkan.</p>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </div>
+</t>
+
+</templates>

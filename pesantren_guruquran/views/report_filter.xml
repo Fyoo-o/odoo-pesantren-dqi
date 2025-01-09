@@ -1,0 +1,25 @@
+<odoo>
+    <record id="view_report_filter_wizard_form" model="ir.ui.view">
+        <field name="name">report.filter.wizard.form</field>
+        <field name="model">report.filter.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Filter Report">
+                <group>
+                    <field name="start_month"/>
+                    <field name="end_month"/>
+                </group>
+                <footer>
+                    <button string="Print Report" type="object" name="action_print_report" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_report_filter_wizard" model="ir.actions.act_window">
+        <field name="name">Filter Report</field>
+        <field name="res_model">report.filter.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

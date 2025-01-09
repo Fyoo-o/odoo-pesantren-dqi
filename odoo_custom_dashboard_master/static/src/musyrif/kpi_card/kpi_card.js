@@ -184,31 +184,31 @@ export class MusyrifKpiCard extends Component {
 
     async fetchData(startDate, endDate) {
         try {
-            // Ensure dates are defined
             startDate = startDate || this.defaultStartDate;
             endDate = endDate || this.defaultEndDate;
     
-            // Create date domain filter
+            const baseMusyrifDomain = [["musyrif_id", "ilike", session.partner_display_name]];
             const dateDomain = [
                 ['create_date', '>=', startDate],
                 ['create_date', '<=', endDate],
-                ["musyrif_id", "ilike", session.partner_display_name]
+                ...baseMusyrifDomain
             ];
     
-            // Wrap each ORM call in try-catch to handle individual model access errors
             let siswaData = [], perijinanData = [], pelanggaranData = [], kesehatanData = [];
     
+            // Fetch all siswa data without date filter
             try {
                 siswaData = await this.orm.call(
                     'cdn.siswa', 
                     'search_read', 
-                    [[...dateDomain], ['id', 'complete_name', 'jns_kelamin', 'last_tahfidz', 'pelanggaran_count', 'tahfidz_quran_count', 'create_date']],
+                    [baseMusyrifDomain, ['id', 'complete_name', 'jns_kelamin', 'tahfidz_quran_count', 'create_date']],
                     { context: this.env.context }
                 );
             } catch (error) {
                 console.warn('Error fetching siswa data:', error);
             }
     
+            // Fetch filtered data for other models
             try {
                 perijinanData = await this.orm.call(
                     'cdn.perijinan', 
@@ -249,8 +249,8 @@ export class MusyrifKpiCard extends Component {
             const totalPerijinan = perijinanData?.length || 0;
             const totalPelanggaran = pelanggaranData?.length || 0;
             const totalKesehatan = kesehatanData?.length || 0;
-    
 
+            // Update KPI data with modified domains
             this.state.kpiData = [
                 {
                     name: 'Santri',
@@ -258,7 +258,7 @@ export class MusyrifKpiCard extends Component {
                     icon: 'fa-user-graduate',
                     color: '#00e396',
                     res_model: 'cdn.siswa',
-                    domain: [...dateDomain],
+                    domain: baseMusyrifDomain, // Use base domain without date filter for siswa
                 },
                 {
                     name: 'Pengajuan Izin Santri',

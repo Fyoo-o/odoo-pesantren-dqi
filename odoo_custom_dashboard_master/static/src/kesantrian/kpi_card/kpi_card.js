@@ -14,13 +14,10 @@ export class KpiCard extends Component {
             currentEndDate: this.props.endDate,
             isFiltered: false
         };
-
-        // Countdown related properties
         this.countdownInterval = null;
         this.countdownTime = 10;
         this.isCountingDown = false;
 
-        // Set default dates if not provided
         const today = new Date();
         const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
         
@@ -42,7 +39,6 @@ export class KpiCard extends Component {
         });
 
         onMounted(() => {
-            // Attach event listener to the main dashboard timer button
             const timerButton = document.getElementById("timerButton");
             if (timerButton) {
                 timerButton.addEventListener("click", () => this.handleTimerClick());
@@ -64,7 +60,6 @@ export class KpiCard extends Component {
 
         onWillUnmount(() => {
             this.cleanup();
-            // Remove event listener when component unmounts
             const timerButton = document.getElementById("timerButton");
             if (timerButton) {
                 timerButton.removeEventListener("click", () => this.handleTimerClick());
@@ -182,58 +177,56 @@ export class KpiCard extends Component {
 
     async fetchData(startDate, endDate) {
         try {
-            // Ensure dates are defined
-            startDate = startDate || this.defaultStartDate;
-            endDate = endDate || this.defaultEndDate;
-    
-            // Create date domain filter
-            const dateDomain = [
-                ['create_date', '>=', startDate],
-                ['create_date', '<=', endDate]
-            ];
-    
-            // Wrap each ORM call in try-catch to handle individual model access errors
+            // Remove date domain filter, use empty domain instead
+            const domain = [];
+            
             let siswaData = [], orangtuaData = [], employeeData = [];
-    
+        
             try {
                 siswaData = await this.orm.call(
                     'cdn.siswa', 
                     'search_read', 
-                    [[...dateDomain], ['id', 'complete_name', 'jns_kelamin', 'last_tahfidz', 'pelanggaran_count', 'tahfidz_quran_count', 'create_date']],
+                    [domain, ['id', 'complete_name', 'jns_kelamin', 'last_tahfidz', 'pelanggaran_count', 'tahfidz_quran_count']],
                     { context: this.env.context }
                 );
             } catch (error) {
                 console.warn('Error fetching siswa data:', error);
             }
-    
+        
             try {
                 orangtuaData = await this.orm.call(
                     'cdn.orangtua', 
                     'search_read', 
-                    [[...dateDomain], ['id', 'complete_name', 'create_date']],
+                    [domain, ['id', 'complete_name']],
                     { context: this.env.context }
                 );
             } catch (error) {
                 console.warn('Error fetching orangtua data:', error);
             }
-    
+        
             try {
                 employeeData = await this.orm.call(
                     'hr.employee', 
                     'search_read', 
-                    [[...dateDomain], ['id', 'jns_pegawai', 'create_date']],
+                    [domain, ['id', 'jns_pegawai']],
                     { context: this.env.context }
                 );
             } catch (error) {
                 console.warn('Error fetching employee data:', error);
             }
-    
+
+            console.log('Raw Data:', {
+                siswaData,
+                orangtuaData,
+                employeeData
+            });
+
             // Calculate totals (with null checks)
             const totalSiswa = siswaData?.length || 0;
             const totalOrangtua = orangtuaData?.length || 0;
             const musyrifCount = employeeData?.filter(employee => employee.jns_pegawai === 'musyrif')?.length || 0;
             const guruQuranCount = employeeData?.filter(employee => employee.jns_pegawai === 'guruquran')?.length || 0;
-    
+
             // Update state with new data
             this.state.kpiData = [
                 {
@@ -242,7 +235,7 @@ export class KpiCard extends Component {
                     icon: 'fa-user-graduate',
                     color: '#00e396',
                     res_model: 'cdn.siswa',
-                    domain: [...dateDomain],
+                    domain: domain,
                 },
                 {
                     name: 'Orangtua',
@@ -250,7 +243,7 @@ export class KpiCard extends Component {
                     icon: 'fa-users',
                     color: '#00e396',
                     res_model: 'cdn.orangtua',
-                    domain: [...dateDomain],
+                    domain: domain,
                 },
                 {
                     name: 'Musyrif',
@@ -258,7 +251,7 @@ export class KpiCard extends Component {
                     icon: 'fa-user-tie',
                     color: '#00e396',
                     res_model: 'hr.employee',
-                    domain: [...dateDomain, ['jns_pegawai', '=', 'musyrif']],
+                    domain: [...domain, ['jns_pegawai', '=', 'musyrif']],
                 },
                 {
                     name: 'Guru Quran',
@@ -266,23 +259,15 @@ export class KpiCard extends Component {
                     icon: 'fa-book',
                     color: '#00e396',
                     res_model: 'hr.employee',
-                    domain: [...dateDomain, ['jns_pegawai', '=', 'guruquran']],
+                    domain: [...domain, ['jns_pegawai', '=', 'guruquran']],
                 },
             ];
-    
-            // Start animations for new values only if there's data
-            if (this.state.kpiData.some(kpi => kpi.value > 0)) {
-                this.startKpiAnimations();
-            }
+
+            // Start animations for new values
+            this.startKpiAnimations();
                 
         } catch (error) {
             console.error('Error in fetchData:', error);
-            // Optionally show a notification to the user
-            this.env.services.notification.notify({
-                title: 'Error',
-                message: 'Failed to fetch KPI data. Please check your permissions or try again later.',
-                type: 'danger',
-            });
         }
     }
 

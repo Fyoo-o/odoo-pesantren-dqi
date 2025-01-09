@@ -10,7 +10,8 @@ class BiayaPendidikan(models.Model):
     biaya           = fields.Integer(string='Biaya Pendidikan')
     keterangan      = fields.Char(string='Keterangan', help='')
     status          = fields.Selection(string='Status', selection=[('draft', 'Draft'), ('konfirm', 'Terkonfirmasi')], default="draft")
-    biaya_ids       = fields.One2many(comodel_name="ubig.biaya_daftarulang", inverse_name="daftarulang_id",  string="Biaya",  help="")
+    biaya_ids       = fields.One2many('ubig.biaya_daftarulang',inverse_name="biaya_id", string='Rincian Biaya')
+    rincian_ids     = fields.One2many('ubig.rincian_biaya',inverse_name="biaya_id", string='Rincian Biaya')
 
 
     # Action untuk mengubah status ke 'konfirm'

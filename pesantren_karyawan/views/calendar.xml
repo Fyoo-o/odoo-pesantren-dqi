@@ -1,0 +1,36 @@
+<odoo>
+    <!-- List View -->
+    <record model="ir.ui.view" id="inherit_calendar_search">
+        <field name="name">calendar.inherit.search</field>
+        <field name="model">calendar.event</field>
+        <!-- <field name="inherit_id" ref="calendar.view_calendar_event_calendar"/> -->
+        <field name="inherit_id" ref="calendar.view_calendar_event_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='mymeetings']" position="replace">
+                <!-- Filter Pertemuan Saya (Peserta) -->
+                <filter string="Pertemuan Saya (Peserta)" 
+                        help="My Meetings" 
+                        name="mymeetings" 
+                        domain="[('partner_ids.user_ids', 'in', [uid])]"/>
+                
+                <!-- Filter Berdasarkan Pengelola, menggunakan 'create_uid' -->
+                <filter string="Pertemuan Saya (Pengelola)" 
+                        name="filter_pengelola"
+                        domain="[('user_id', 'in', [uid])]"/>
+                
+                <!-- Filter Berdasarkan Nama Wawancara -->
+                <filter string="Wawancara Pertama" 
+                        name="filter_wawancara_pertama"
+                        domain="[('name', 'ilike', 'Wawancara Pertama')]"/>
+
+                <filter string="Wawancara Kedua" 
+                        name="filter_wawancara_kedua"
+                        domain="[('name', 'ilike', 'Wawancara Kedua')]"/>
+
+                <filter string="Proposal Kontrak" 
+                        name="filter_proposal_kontrak"
+                        domain="[('name', 'ilike', 'Proposal Kontrak')]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

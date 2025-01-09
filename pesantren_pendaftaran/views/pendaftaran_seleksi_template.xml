@@ -1,18 +1,32 @@
 <odoo>
-    <template id="pendaftaran_seleksi_sdmi_template"
-        name="Pengumuman Hasil Seleksi PSB Program SD / MI">
+    <template id="pendaftaran_seleksi_sdmi_template" name="Pengumuman Hasil Seleksi PSB Program SD / MI">
         <t t-call="web.html_container">
+            <head>
+                <!-- Primary Meta Tags -->
+                <title>PSB Daarul Qur`an Istiqomah</title>
+                <meta name="title" content="PSB Daarul Qur`an Istiqomah" />
+                <meta name="description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" />
+
+                <!-- Open Graph / Facebook -->
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content="https://aplikasi.dqi.ac.id/pendaftaran" />
+                <meta property="og:title" content="PSB Daarul Qur`an Istiqomah" />
+                <meta property="og:description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" />
+                <meta property="og:image" content="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" />
+
+                <!-- Twitter -->
+                <meta property="twitter:card" content="summary_large_image" />
+                <meta property="twitter:url" content="https://aplikasi.dqi.ac.id/pendaftaran" />
+                <meta property="twitter:title" content="PSB Daarul Qur`an Istiqomah" />
+                <meta property="twitter:description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" />
+                <meta property="twitter:image" content="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" />
+            </head>
             <t t-set="title">Pengumuman - Daarul Qur'an Istiqomah</t>
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-                rel="stylesheet"
-                integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-                crossorigin="anonymous" />
-            <link rel="stylesheet"
-                href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
-            <link rel="stylesheet"
-                href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" />
-            <link rel="stylesheet"
-                href="https://cdn.datatables.net/2.1.8/css/dataTables.bootstrap5.css" />
+            <link rel="icon" type="image/x-icon" href="/pesantren_pendaftaran/static/img/favicon.ico?v=1" />
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" />
+            <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.bootstrap5.css" />
             <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css" rel="stylesheet"/>
             <style>
                 .container-main {
@@ -96,20 +110,17 @@
                 <nav class="navbar navbar-expand-lg shadow-lg" style="height: 65px;">
                     <div class="container-fluid">
                         <a class="navbar-brand ms-5 text-white fw-semibold" href="/psb">
-                            <!-- <img src="logoweb.png" alt="Logo" width="30" height="24"
-                            class="d-inline-block align-text-top"> -->
-                            <img
-                                src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" width="50"
-                                alt="Logo Pesantren" /> Daarul Qur'an Istiqomah </a>
-                        <button class="navbar-toggler ms-auto" type="button"
-                            data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
-                            aria-controls="offcanvasNavbar">
+                            <!-- <img src="logoweb.png" alt="Logo" width="30" height="24" class="d-inline-block align-text-top"> -->
+                            <img src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" width="50" alt="Logo Pesantren" />
+ Daarul Qur'an Istiqomah </a>
+                        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
                             <span class="navbar-toggler-icon"></span>
                         </button>
                         <div class="collapse navbar-collapse" id="navbarNav">
                             <ul class="navbar-nav ms-auto">
                                 <li class="nav-item me-3">
-                                    <a class="nav-link text-white" style="color: white !important;" href="/psb"><i class="fa-solid fa-house me-2"></i>Beranda</a>
+                                    <a class="nav-link text-white" style="color: white !important;" href="/psb">
+                                        <i class="fa-solid fa-house me-2"></i>Beranda</a>
                                 </li>
                                 <t t-if="is_halaman_pendaftaran">
                                     <li class="nav-item me-3">
@@ -126,8 +137,7 @@
                                     </li>
                                 </t>
                                 <li class="nav-item dropdown">
-                                    <a href="#" class="dropdown-link nav-link"
-                                        style="color: white !important;">
+                                    <a href="#" class="dropdown-link nav-link" style="color: white !important;">
                                         <i class="fa-solid fa-fingerprint me-2"></i>Login</a>
                                     <div class="dropdown-content">
                                         <a href="/login">Login PSB</a>
@@ -139,8 +149,7 @@
                                         <i class="fa-solid fa-lock me-2"></i>Bantuan</a>
                                 </li>
                                 <li class="nav-item dropdown">
-                                    <a href="#" class="dropdown-link nav-link"
-                                        style="color: white !important;">
+                                    <a href="#" class="dropdown-link nav-link" style="color: white !important;">
                                         <i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>
                                     <div class="dropdown-content">
                                         <a href="/pengumuman/sd-mi">SD / MI</a>
@@ -153,18 +162,16 @@
                     </div>
                 </nav>
 
-                <div class="offcanvas offcanvas-end background" tabindex="-1" id="offcanvasNavbar"
-                    aria-labelledby="offcanvasNavbarLabel">
-                    <button type="button" class="btn-close btn-close-white"
-                        data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                    <a class="navbar-brand mt-1 text-white fw-semibold" href="/psb"
-                        style="display: flex; flex-direction: column; align-items: center;">
-                        <img src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" width="50"
-                            alt="Logo Pesantren" /> Daarul Qur'an Istiqomah </a>
+                <div class="offcanvas offcanvas-end background" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    <a class="navbar-brand mt-1 text-white fw-semibold" href="/psb" style="display: flex; flex-direction: column; align-items: center;">
+                        <img src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" width="50" alt="Logo Pesantren" />
+ Daarul Qur'an Istiqomah </a>
                     <div class="offcanvas-body">
                         <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
                             <li class="nav-item me-3">
-                                <a class="nav-link text-white" style="color: white !important;" href="/psb"><i class="fa-solid fa-house me-2"></i>Beranda</a>
+                                <a class="nav-link text-white" style="color: white !important;" href="/psb">
+                                    <i class="fa-solid fa-house me-2"></i>Beranda</a>
                             </li>
                             <t t-if="is_halaman_pendaftaran">
                                 <li class="nav-item me-3">
@@ -181,8 +188,7 @@
                                 </li>
                             </t>
                             <li class="nav-item dropdown">
-                                <a href="#" class="dropdown-link nav-link"
-                                    style="color: white !important;">
+                                <a href="#" class="dropdown-link nav-link" style="color: white !important;">
                                     <i class="fa-solid fa-fingerprint me-2"></i>Login</a>
                                 <div class="dropdown-content">
                                     <a href="/login">Login PSB</a>
@@ -194,8 +200,7 @@
                                     <i class="fa-solid fa-lock me-2"></i>Bantuan</a>
                             </li>
                             <li class="nav-item dropdown">
-                                <a href="#" class="dropdown-link nav-link"
-                                    style="color: white !important;">
+                                <a href="#" class="dropdown-link nav-link" style="color: white !important;">
                                     <i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>
                                 <div class="dropdown-content">
                                     <a href="/pengumuman/sd-mi">SD / MI</a>
@@ -207,8 +212,7 @@
                     </div>
                 </div>
 
-                <marquee class="fw-bold" behavior="" direction=""
-                    style="color: white !important; background: linear-gradient(to right, #C600FF, #772EC9) !important;">
+                <marquee class="fw-bold" behavior="" direction="" style="color: white !important; background: linear-gradient(to right, #C600FF, #772EC9) !important;">
                     <i class="fa-solid fa-bullhorn me-2"></i>Ayo Lihat Papan Pengumuman, Apakah anak
                     anda diterima?</marquee>
 
@@ -216,8 +220,7 @@
                     Seleksi PSB Program SD / MI</h4>
 
                 <div class="d-flex justify-content-center">
-                    <div style="width: 900px; padding: 20px 40px;"
-                        class="bg-white shadow-lg rounded mb-3">
+                    <div style="width: 900px; padding: 20px 40px;" class="bg-white shadow-lg rounded mb-3">
                         <table id="myTable" class="table table-striped" style="width:100%">
                             <thead>
                                 <tr>
@@ -237,10 +240,14 @@
                                             <t t-esc="record.partner_id.name" />
                                         </td>
                                         <td>
-                                            <span style="text-transform: uppercase;"><t t-esc="record.jenjang_id.jenjang.replace('sdmi', 'SD / MI')" /></span>
+                                            <span style="text-transform: uppercase;">
+                                                <t t-esc="record.jenjang_id.jenjang.replace('sdmi', 'SD / MI')" />
+                                            </span>
                                         </td>
                                         <td>
-                                            <span style="text-transform: capitalize;"><t t-esc="record.state" /></span>
+                                            <span style="text-transform: capitalize;">
+                                                <t t-esc="record.state" />
+                                            </span>
                                         </td>
                                     </tr>
                                 </t>
@@ -249,26 +256,18 @@
                     </div>
                 </div>
 
-                <footer class="text-white p-2"
-                    style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-top: 135px;">
+                <footer class="text-white p-2" style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-top: 135px;">
                     <div class="ms-5">
-                        <ul
-                            style="list-style-type: none; display: flex; text-transform: uppercase; font-size: 13px;"
-                            class="fw-semibold">
+                        <ul style="list-style-type: none; display: flex; text-transform: uppercase; font-size: 13px;" class="fw-semibold">
                             <li>
-                                <a href="/psb" class="me-4"
-                                    style="text-decoration: none; color: white;">Home</a>
+                                <a href="/psb" class="me-4" style="text-decoration: none; color: white;">Home</a>
                             </li>
                             <li>
-                                <a href="/beranda" class="me-4"
-                                    style="text-decoration: none; color: white;" target="_blank">Info
+                                <a href="/beranda" class="me-4" style="text-decoration: none; color: white;" target="_blank">Info
                                     Pondok</a>
                             </li>
                             <li>
-                                <a
-                                    href="https://drive.google.com/drive/folders/1KxQ0V4bd7RpSFqJKJfQ6JGn1z2-Ld7Wr"
-                                    class="me-4" style="text-decoration: none; color: white;"
-                                    target="_blank">Brosur</a>
+                                <a href="https://drive.google.com/drive/mobile/folders/1EYat5411joyoOmH_DkJ3g2DeJKgyyuBQ?usp=share_link&amp;fbclid=IwY2xjawGflGlleHRuA2FlbQIxMQABHTusVv9hD3VRDSLW9-671QhOL86e3KMv30smsAYW0DHkkWf7zwPlcBlbeA_aem_XXofAY-ay0syx043L5BLvw" class="me-4" style="text-decoration: none; color: white;" target="_blank">Brosur</a>
                             </li>
                             <li>
                                 <a href="" class="me-4" style="text-decoration: none; color: white;">
@@ -284,29 +283,25 @@
 
             <!-- Modal -->
             <div class="modal fade" id="modalPendaftaranTutup" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Pendaftaran ditutup!</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Pendaftaran ditutup!</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Mohon maaf, pendaftaran telah ditutup.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="modal-body">
-                    <p>Mohon maaf, pendaftaran telah ditutup.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                </div>
-                </div>
-            </div>
             </div>
 
-            <script
-                src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-                integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-                crossorigin="anonymous"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
             <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-            <script
-                src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
             <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
             <script src="https://cdn.datatables.net/2.1.8/js/dataTables.bootstrap5.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
@@ -323,6 +318,15 @@
                 bodyElement.classList.remove('container');
                 }
 
+                // Membuat elemen link
+                var linkElement = document.createElement('link');
+                linkElement.rel = 'icon';
+                linkElement.type = 'image/x-icon';
+                linkElement.href = '/pesantren_pendaftaran/static/img/favicon.ico?v=1';
+
+                // Menambahkan elemen ke dalam tag head
+                document.head.appendChild(linkElement);
+
                 document.querySelectorAll('.offcanvas').forEach((offcanvas) => {
                     offcanvas.addEventListener('show.bs.offcanvas', () => {
                         document.querySelectorAll('.offcanvas-backdrop').forEach((backdrop) => {
@@ -337,20 +341,14 @@
         </t>
     </template>
 
-    <template id="pendaftaran_seleksi_smpmts_template"
-        name="Pengumuman Hasil Seleksi PSB Program SMP / MTS">
+    <template id="pendaftaran_seleksi_smpmts_template" name="Pengumuman Hasil Seleksi PSB Program SMP / MTS">
         <t t-call="web.html_container">
             <t t-set="title">Pengumuman - Daarul Qur'an Istiqomah</t>
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-                rel="stylesheet"
-                integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-                crossorigin="anonymous" />
-            <link rel="stylesheet"
-                href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
-            <link rel="stylesheet"
-                href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" />
-            <link rel="stylesheet"
-                href="https://cdn.datatables.net/2.1.8/css/dataTables.bootstrap5.css" />
+            <link rel="icon" type="image/x-icon" href="/pesantren_pendaftaran/static/img/favicon.ico?v=1" />
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" />
+            <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.bootstrap5.css" />
             <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css" rel="stylesheet"/>
             <style>
                 .container-main {
@@ -435,20 +433,17 @@
                 <nav class="navbar navbar-expand-lg shadow-lg" style="height: 65px;">
                     <div class="container-fluid">
                         <a class="navbar-brand ms-5 text-white fw-semibold" href="/psb">
-                            <!-- <img src="logoweb.png" alt="Logo" width="30" height="24"
-                            class="d-inline-block align-text-top"> -->
-                            <img
-                                src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" width="50"
-                                alt="Logo Pesantren" /> Daarul Qur'an Istiqomah </a>
-                        <button class="navbar-toggler ms-auto" type="button"
-                            data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar2"
-                            aria-controls="offcanvasNavbar">
+                            <!-- <img src="logoweb.png" alt="Logo" width="30" height="24" class="d-inline-block align-text-top"> -->
+                            <img src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" width="50" alt="Logo Pesantren" />
+ Daarul Qur'an Istiqomah </a>
+                        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar2" aria-controls="offcanvasNavbar">
                             <span class="navbar-toggler-icon"></span>
                         </button>
                         <div class="collapse navbar-collapse" id="navbarNav">
                             <ul class="navbar-nav ms-auto">
                                 <li class="nav-item me-3">
-                                    <a class="nav-link text-white" style="color: white !important;" href="/psb"><i class="fa-solid fa-house me-2"></i>Beranda</a>
+                                    <a class="nav-link text-white" style="color: white !important;" href="/psb">
+                                        <i class="fa-solid fa-house me-2"></i>Beranda</a>
                                 </li>
                                 <t t-if="is_halaman_pendaftaran">
                                     <li class="nav-item me-3">
@@ -469,8 +464,7 @@
                                         <i class="fa-solid fa-lock me-2"></i>Bantuan</a>
                                 </li>
                                 <li class="nav-item dropdown">
-                                    <a href="#" class="dropdown-link nav-link"
-                                        style="color: white !important;">
+                                    <a href="#" class="dropdown-link nav-link" style="color: white !important;">
                                         <i class="fa-solid fa-fingerprint me-2"></i>Login</a>
                                     <div class="dropdown-content">
                                         <a href="/login">Login PSB</a>
@@ -478,8 +472,7 @@
                                     </div>
                                 </li>
                                 <li class="nav-item dropdown">
-                                    <a href="#" class="dropdown-link nav-link"
-                                        style="color: white !important;">
+                                    <a href="#" class="dropdown-link nav-link" style="color: white !important;">
                                         <i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>
                                     <div class="dropdown-content">
                                         <a href="/pengumuman/sd-mi">SD / MI</a>
@@ -492,18 +485,16 @@
                     </div>
                 </nav>
 
-                <div class="offcanvas offcanvas-end background" tabindex="-1" id="offcanvasNavbar2"
-                    aria-labelledby="offcanvasNavbarLabel">
-                    <button type="button" class="btn-close btn-close-white"
-                        data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                    <a class="navbar-brand mt-1 text-white fw-semibold" href="/psb"
-                        style="display: flex; flex-direction: column; align-items: center;">
-                        <img src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" width="50"
-                            alt="Logo Pesantren" /> Daarul Qur'an Istiqomah </a>
+                <div class="offcanvas offcanvas-end background" tabindex="-1" id="offcanvasNavbar2" aria-labelledby="offcanvasNavbarLabel">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    <a class="navbar-brand mt-1 text-white fw-semibold" href="/psb" style="display: flex; flex-direction: column; align-items: center;">
+                        <img src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" width="50" alt="Logo Pesantren" />
+ Daarul Qur'an Istiqomah </a>
                     <div class="offcanvas-body">
                         <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
                             <li class="nav-item me-3">
-                                <a class="nav-link text-white" style="color: white !important;" href="/psb"><i class="fa-solid fa-house me-2"></i>Beranda</a>
+                                <a class="nav-link text-white" style="color: white !important;" href="/psb">
+                                    <i class="fa-solid fa-house me-2"></i>Beranda</a>
                             </li>
                             <t t-if="is_halaman_pendaftaran">
                                 <li class="nav-item me-3">
@@ -520,8 +511,7 @@
                                 </li>
                             </t>
                             <li class="nav-item dropdown">
-                                <a href="#" class="dropdown-link nav-link"
-                                    style="color: white !important;">
+                                <a href="#" class="dropdown-link nav-link" style="color: white !important;">
                                     <i class="fa-solid fa-fingerprint me-2"></i>Login</a>
                                 <div class="dropdown-content">
                                     <a href="/login">Login PSB</a>
@@ -533,8 +523,7 @@
                                     <i class="fa-solid fa-lock me-2"></i>Bantuan</a>
                             </li>
                             <li class="nav-item dropdown">
-                                <a href="#" class="dropdown-link nav-link"
-                                    style="color: white !important;">
+                                <a href="#" class="dropdown-link nav-link" style="color: white !important;">
                                     <i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>
                                 <div class="dropdown-content">
                                     <a href="/pengumuman/sd-mi">SD / MI</a>
@@ -546,8 +535,7 @@
                     </div>
                 </div>
 
-                <marquee class="fw-bold" behavior="" direction=""
-                    style="color: white !important; background: linear-gradient(to right, #C600FF, #772EC9) !important;">
+                <marquee class="fw-bold" behavior="" direction="" style="color: white !important; background: linear-gradient(to right, #C600FF, #772EC9) !important;">
                     <i class="fa-solid fa-bullhorn me-2"></i>Ayo Lihat Papan Pengumuman, Apakah anak
                     anda diterima?</marquee>
 
@@ -555,8 +543,7 @@
                     Seleksi PSB Program SMP / MTS</h4>
 
                 <div class="d-flex justify-content-center">
-                    <div style="width: 900px; padding: 20px 40px;"
-                        class="bg-white shadow-lg rounded mb-3">
+                    <div style="width: 900px; padding: 20px 40px;" class="bg-white shadow-lg rounded mb-3">
                         <table id="myTable" class="table table-striped" style="width:100%">
                             <thead>
                                 <tr>
@@ -576,10 +563,14 @@
                                             <t t-esc="record.partner_id.name" />
                                         </td>
                                         <td>
-                                            <span style="text-transform: uppercase;"><t t-esc="record.jenjang_id.jenjang.replace('smpmts', 'SMP / MTS')" /></span>
+                                            <span style="text-transform: uppercase;">
+                                                <t t-esc="record.jenjang_id.jenjang.replace('smpmts', 'SMP / MTS')" />
+                                            </span>
                                         </td>
                                         <td>
-                                            <span style="text-transform: capitalize;"><t t-esc="record.state" /></span>
+                                            <span style="text-transform: capitalize;">
+                                                <t t-esc="record.state" />
+                                            </span>
                                         </td>
                                     </tr>
                                 </t>
@@ -588,26 +579,18 @@
                     </div>
                 </div>
 
-                <footer class="text-white p-2"
-                    style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-top: 135px;">
+                <footer class="text-white p-2" style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-top: 135px;">
                     <div class="ms-5">
-                        <ul
-                            style="list-style-type: none; display: flex; text-transform: uppercase; font-size: 13px;"
-                            class="fw-semibold">
+                        <ul style="list-style-type: none; display: flex; text-transform: uppercase; font-size: 13px;" class="fw-semibold">
                             <li>
-                                <a href="/psb" class="me-4"
-                                    style="text-decoration: none; color: white;">Home</a>
+                                <a href="/psb" class="me-4" style="text-decoration: none; color: white;">Home</a>
                             </li>
                             <li>
-                                <a href="/beranda" class="me-4"
-                                    style="text-decoration: none; color: white;" target="_blank">Info
+                                <a href="/beranda" class="me-4" style="text-decoration: none; color: white;" target="_blank">Info
                                     Pondok</a>
                             </li>
                             <li>
-                                <a
-                                    href="https://drive.google.com/drive/folders/1KxQ0V4bd7RpSFqJKJfQ6JGn1z2-Ld7Wr"
-                                    class="me-4" style="text-decoration: none; color: white;"
-                                    target="_blank">Brosur</a>
+                                <a href="https://drive.google.com/drive/mobile/folders/1EYat5411joyoOmH_DkJ3g2DeJKgyyuBQ?usp=share_link&amp;fbclid=IwY2xjawGflGlleHRuA2FlbQIxMQABHTusVv9hD3VRDSLW9-671QhOL86e3KMv30smsAYW0DHkkWf7zwPlcBlbeA_aem_XXofAY-ay0syx043L5BLvw" class="me-4" style="text-decoration: none; color: white;" target="_blank">Brosur</a>
                             </li>
                             <li>
                                 <a href="" class="me-4" style="text-decoration: none; color: white;">
@@ -623,29 +606,25 @@
 
             <!-- Modal -->
             <div class="modal fade" id="modalPendaftaranTutup" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Pendaftaran ditutup!</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Pendaftaran ditutup!</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Mohon maaf, pendaftaran telah ditutup.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="modal-body">
-                    <p>Mohon maaf, pendaftaran telah ditutup.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                </div>
-                </div>
-            </div>
             </div>
 
-            <script
-                src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-                integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-                crossorigin="anonymous"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
             <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-            <script
-                src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
             <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
             <script src="https://cdn.datatables.net/2.1.8/js/dataTables.bootstrap5.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
@@ -662,6 +641,15 @@
                 bodyElement.classList.remove('container');
                 }
 
+                // Membuat elemen link
+                var linkElement = document.createElement('link');
+                linkElement.rel = 'icon';
+                linkElement.type = 'image/x-icon';
+                linkElement.href = '/pesantren_pendaftaran/static/img/favicon.ico?v=1';
+
+                // Menambahkan elemen ke dalam tag head
+                document.head.appendChild(linkElement);
+
                 document.querySelectorAll('.offcanvas').forEach((offcanvas) => {
                     offcanvas.addEventListener('show.bs.offcanvas', () => {
                         document.querySelectorAll('.offcanvas-backdrop').forEach((backdrop) => {
@@ -676,20 +664,14 @@
         </t>
     </template>
 
-    <template id="pendaftaran_seleksi_smama_template"
-        name="Pengumuman Hasil Seleksi PSB Program SMA / MA">
+    <template id="pendaftaran_seleksi_smama_template" name="Pengumuman Hasil Seleksi PSB Program SMA / MA">
         <t t-call="web.html_container">
             <t t-set="title">Pengumuman - Daarul Qur'an Istiqomah</t>
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-                rel="stylesheet"
-                integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-                crossorigin="anonymous" />
-            <link rel="stylesheet"
-                href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
-            <link rel="stylesheet"
-                href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" />
-            <link rel="stylesheet"
-                href="https://cdn.datatables.net/2.1.8/css/dataTables.bootstrap5.css" />
+            <link rel="icon" type="image/x-icon" href="/pesantren_pendaftaran/static/img/favicon.ico?v=1" />
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" />
+            <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.bootstrap5.css" />
             <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css" rel="stylesheet"/>
             <style>
                 .container-main {
@@ -773,20 +755,17 @@
                 <nav class="navbar navbar-expand-lg shadow-lg" style="height: 65px;">
                     <div class="container-fluid">
                         <a class="navbar-brand ms-5 text-white fw-semibold" href="/psb">
-                            <!-- <img src="logoweb.png" alt="Logo" width="30" height="24"
-                            class="d-inline-block align-text-top"> -->
-                            <img
-                                src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" width="50"
-                                alt="Logo Pesantren" /> Daarul Qur'an Istiqomah </a>
-                        <button class="navbar-toggler ms-auto" type="button"
-                            data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar3"
-                            aria-controls="offcanvasNavbar">
+                            <!-- <img src="logoweb.png" alt="Logo" width="30" height="24" class="d-inline-block align-text-top"> -->
+                            <img src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" width="50" alt="Logo Pesantren" />
+ Daarul Qur'an Istiqomah </a>
+                        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar3" aria-controls="offcanvasNavbar">
                             <span class="navbar-toggler-icon"></span>
                         </button>
                         <div class="collapse navbar-collapse" id="navbarNav">
                             <ul class="navbar-nav ms-auto">
                                 <li class="nav-item me-3">
-                                    <a class="nav-link text-white" style="color: white !important;" href="/psb"><i class="fa-solid fa-house me-2"></i>Beranda</a>
+                                    <a class="nav-link text-white" style="color: white !important;" href="/psb">
+                                        <i class="fa-solid fa-house me-2"></i>Beranda</a>
                                 </li>
                                 <t t-if="is_halaman_pendaftaran">
                                     <li class="nav-item me-3">
@@ -803,8 +782,7 @@
                                     </li>
                                 </t>
                                 <li class="nav-item dropdown">
-                                    <a href="#" class="dropdown-link nav-link"
-                                        style="color: white !important;">
+                                    <a href="#" class="dropdown-link nav-link" style="color: white !important;">
                                         <i class="fa-solid fa-fingerprint me-2"></i>Login</a>
                                     <div class="dropdown-content">
                                         <a href="/login">Login PSB</a>
@@ -816,8 +794,7 @@
                                         <i class="fa-solid fa-lock me-2"></i>Bantuan</a>
                                 </li>
                                 <li class="nav-item dropdown">
-                                    <a href="#" class="dropdown-link nav-link"
-                                        style="color: white !important;">
+                                    <a href="#" class="dropdown-link nav-link" style="color: white !important;">
                                         <i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>
                                     <div class="dropdown-content">
                                         <a href="/pengumuman/sd-mi">SD / MI</a>
@@ -830,18 +807,16 @@
                     </div>
                 </nav>
 
-                <div class="offcanvas offcanvas-end background" tabindex="-1" id="offcanvasNavbar3"
-                    aria-labelledby="offcanvasNavbarLabel">
-                    <button type="button" class="btn-close btn-close-white"
-                        data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                    <a class="navbar-brand mt-1 text-white fw-semibold" href="/psb"
-                        style="display: flex; flex-direction: column; align-items: center;">
-                        <img src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" width="50"
-                            alt="Logo Pesantren" /> Daarul Qur'an Istiqomah </a>
+                <div class="offcanvas offcanvas-end background" tabindex="-1" id="offcanvasNavbar3" aria-labelledby="offcanvasNavbarLabel">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    <a class="navbar-brand mt-1 text-white fw-semibold" href="/psb" style="display: flex; flex-direction: column; align-items: center;">
+                        <img src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" width="50" alt="Logo Pesantren" />
+ Daarul Qur'an Istiqomah </a>
                     <div class="offcanvas-body">
                         <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
                             <li class="nav-item me-3">
-                                <a class="nav-link text-white" style="color: white !important;" href="/psb"><i class="fa-solid fa-house me-2"></i>Beranda</a>
+                                <a class="nav-link text-white" style="color: white !important;" href="/psb">
+                                    <i class="fa-solid fa-house me-2"></i>Beranda</a>
                             </li>
                             <t t-if="is_halaman_pendaftaran">
                                 <li class="nav-item me-3">
@@ -858,8 +833,7 @@
                                 </li>
                             </t>
                             <li class="nav-item dropdown">
-                                <a href="#" class="dropdown-link nav-link"
-                                    style="color: white !important;">
+                                <a href="#" class="dropdown-link nav-link" style="color: white !important;">
                                     <i class="fa-solid fa-fingerprint me-2"></i>Login</a>
                                 <div class="dropdown-content">
                                     <a href="/login">Login PSB</a>
@@ -871,8 +845,7 @@
                                     <i class="fa-solid fa-lock me-2"></i>Bantuan</a>
                             </li>
                             <li class="nav-item dropdown">
-                                <a href="#" class="dropdown-link nav-link"
-                                    style="color: white !important;">
+                                <a href="#" class="dropdown-link nav-link" style="color: white !important;">
                                     <i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>
                                 <div class="dropdown-content">
                                     <a href="/pengumuman/sd-mi">SD / MI</a>
@@ -884,8 +857,7 @@
                     </div>
                 </div>
 
-                <marquee class="fw-bold" behavior="" direction=""
-                    style="color: white !important; background: linear-gradient(to right, #C600FF, #772EC9) !important;">
+                <marquee class="fw-bold" behavior="" direction="" style="color: white !important; background: linear-gradient(to right, #C600FF, #772EC9) !important;">
                     <i class="fa-solid fa-bullhorn me-2"></i>Ayo lihat papan pengumuman. Apakah anak
                     anda diterima?</marquee>
 
@@ -893,8 +865,7 @@
                     Seleksi PSB Program SMA / MA</h4>
 
                 <div class="d-flex justify-content-center">
-                    <div style="width: 900px; padding: 20px 40px;"
-                        class="bg-white shadow-lg rounded mb-3">
+                    <div style="width: 900px; padding: 20px 40px;" class="bg-white shadow-lg rounded mb-3">
                         <table id="myTable" class="table table-striped" style="width:100%">
                             <thead>
                                 <tr>
@@ -914,7 +885,9 @@
                                             <t t-esc="record.partner_id.name" />
                                         </td>
                                         <td>
-                                            <span style="text-transform: uppercase;"><t t-esc="record.jenjang_id.jenjang.replace('smama', 'SMA / MA')" /></span>
+                                            <span style="text-transform: uppercase;">
+                                                <t t-esc="record.jenjang_id.jenjang.replace('smama', 'SMA / MA')" />
+                                            </span>
                                         </td>
                                         <td>
                                             <t t-esc="record.state" />
@@ -926,26 +899,18 @@
                     </div>
                 </div>
 
-                <footer class="text-white p-2"
-                    style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-top: 135px;">
+                <footer class="text-white p-2" style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-top: 135px;">
                     <div class="ms-5">
-                        <ul
-                            style="list-style-type: none; display: flex; text-transform: uppercase; font-size: 13px;"
-                            class="fw-semibold">
+                        <ul style="list-style-type: none; display: flex; text-transform: uppercase; font-size: 13px;" class="fw-semibold">
                             <li>
-                                <a href="/psb" class="me-4"
-                                    style="text-decoration: none; color: white;">Home</a>
+                                <a href="/psb" class="me-4" style="text-decoration: none; color: white;">Home</a>
                             </li>
                             <li>
-                                <a href="/beranda" class="me-4"
-                                    style="text-decoration: none; color: white;" target="_blank">Info
+                                <a href="/beranda" class="me-4" style="text-decoration: none; color: white;" target="_blank">Info
                                     Pondok</a>
                             </li>
                             <li>
-                                <a
-                                    href="https://drive.google.com/drive/folders/1KxQ0V4bd7RpSFqJKJfQ6JGn1z2-Ld7Wr"
-                                    class="me-4" style="text-decoration: none; color: white;"
-                                    target="_blank">Brosur</a>
+                                <a href="https://drive.google.com/drive/mobile/folders/1EYat5411joyoOmH_DkJ3g2DeJKgyyuBQ?usp=share_link&amp;fbclid=IwY2xjawGflGlleHRuA2FlbQIxMQABHTusVv9hD3VRDSLW9-671QhOL86e3KMv30smsAYW0DHkkWf7zwPlcBlbeA_aem_XXofAY-ay0syx043L5BLvw" class="me-4" style="text-decoration: none; color: white;" target="_blank">Brosur</a>
                             </li>
                             <li>
                                 <a href="" class="me-4" style="text-decoration: none; color: white;">
@@ -961,29 +926,25 @@
 
             <!-- Modal -->
             <div class="modal fade" id="modalPendaftaranTutup" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Pendaftaran ditutup!</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Pendaftaran ditutup!</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Mohon maaf, pendaftaran telah ditutup.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="modal-body">
-                    <p>Mohon maaf, pendaftaran telah ditutup.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                </div>
-                </div>
-            </div>
             </div>
 
-            <script
-                src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-                integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-                crossorigin="anonymous"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
             <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-            <script
-                src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
             <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
             <script src="https://cdn.datatables.net/2.1.8/js/dataTables.bootstrap5.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
@@ -1000,6 +961,15 @@
                 bodyElement.classList.remove('container');
                 }
 
+                // Membuat elemen link
+                var linkElement = document.createElement('link');
+                linkElement.rel = 'icon';
+                linkElement.type = 'image/x-icon';
+                linkElement.href = '/pesantren_pendaftaran/static/img/favicon.ico?v=1';
+
+                // Menambahkan elemen ke dalam tag head
+                document.head.appendChild(linkElement);
+
                 document.querySelectorAll('.offcanvas').forEach((offcanvas) => {
                     offcanvas.addEventListener('show.bs.offcanvas', () => {
                         document.querySelectorAll('.offcanvas-backdrop').forEach((backdrop) => {
@@ -1013,6 +983,6 @@
 
         </t>
     </template>
-    
+
 
 </odoo>

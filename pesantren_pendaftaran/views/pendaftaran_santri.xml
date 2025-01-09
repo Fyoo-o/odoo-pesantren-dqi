@@ -86,11 +86,18 @@
                             <group>
                                 <field name="jenjang_id"
                                     readonly="state in 'terdaftar,seleksi,diterima,ditolak,batal'" />
+                                <field name="jenjang" invisible="1" />
+                                    <!-- Perubahan -->
+                                <field name="is_pindahan_sd"
+                                    invisible="jenjang not in 'sdmi'" />
                                 <field name="keterangan"
                                     readonly="state in 'terdaftar,seleksi,diterima,ditolak,batal'" />
                             </group>
                             <group>
                                 <field name="biaya"
+                                    readonly="state in 'terdaftar,seleksi,diterima,ditolak,batal'" />
+                                    <!-- Perubahan -->
+                                <field name="is_alumni"
                                     readonly="state in 'terdaftar,seleksi,diterima,ditolak,batal'" />
                             </group>
                         </group>
@@ -282,6 +289,8 @@
                             <page string="Akun">
                                 <group string="Akun Login" class="o_group">
                                     <field name="email"
+                                        readonly="state in 'terdaftar,seleksi,diterima,ditolak,batal'" />
+                                    <field name="nomor_login"
                                         readonly="state in 'terdaftar,seleksi,diterima,ditolak,batal'" />
                                     <field name="password" password="True"
                                         readonly="state in 'terdaftar,seleksi,diterima,ditolak,batal'" />

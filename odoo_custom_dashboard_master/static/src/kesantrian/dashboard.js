@@ -3,9 +3,9 @@ import { registry } from "@web/core/registry";
 import { KpiCard } from "./kpi_card/kpi_card";
 import { ChartRenderer } from "./chart_renderer/chart_renderer";
 import { PelanggaranCardList, TahfidzCardList } from "./card_list/card_list";
-import { Component, useState } from "@odoo/owl";
+import { Component, useState, useRef } from "@odoo/owl";
 
-export class OwlKesantrianDashboard extends Component {
+class OwlKesantrianDashboard extends Component {
     setup() {
         this.state = useState({
             selectedDateRange: null,
@@ -15,10 +15,9 @@ export class OwlKesantrianDashboard extends Component {
             isLoading: false
         });
         
-        // Initialize with thisWeek period
         this.setPeriod('thisMonth');
     }
-
+    
     toggleDatePicker() {
         this.state.showDatePicker = !this.state.showDatePicker;
         if (this.state.showDatePicker && this.state.selectedDateRange) {
@@ -28,21 +27,21 @@ export class OwlKesantrianDashboard extends Component {
             };
         }
     }
-
+    
     closeDatePicker() {
         this.state.showDatePicker = false;
         this.state.tempDateRange = { start: '', end: '' };
     }
-
+    
     async applyDateRange() {
         if (this.state.tempDateRange.start && this.state.tempDateRange.end) {
             const start = new Date(this.state.tempDateRange.start);
             const end = new Date(this.state.tempDateRange.end);
-
+    
             if (start > end) {
                 return;
             }
-
+    
             this.state.selectedDateRange = {
                 start: this.state.tempDateRange.start,
                 end: this.state.tempDateRange.end
@@ -51,7 +50,7 @@ export class OwlKesantrianDashboard extends Component {
         }
         this.closeDatePicker();
     }
-
+    
     formatDate(dateString) {
         if (!dateString) return '';
         
@@ -67,7 +66,7 @@ export class OwlKesantrianDashboard extends Component {
         
         return `${day} ${month} ${year}`;
     }
-
+    
     formatDateRange(start, end) {
         if (!start || !end) return '';
         
@@ -76,7 +75,7 @@ export class OwlKesantrianDashboard extends Component {
         }
         return `${this.formatDate(start)} - ${this.formatDate(end)}`;
     }
-
+    
     getPeriodLabel(period) {
         const periodLabels = {
             all: 'Pilih Periode',
@@ -91,31 +90,31 @@ export class OwlKesantrianDashboard extends Component {
         };
         return periodLabels[period] || 'Pilih Periode';
     }
-
+    
     isPeriodSelected(period) {
         return this.state.selectedPeriod === period;
     }
-
+    
     getLocalDateString(date) {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     }
-
+    
     setPeriod(period) {
         if (period === 'all') {
             this.state.selectedDateRange = null;
             this.state.selectedPeriod = 'all';
             return;
         }
-
+    
         // Get current date in local timezone
         const now = new Date();
         const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         
         let start, end;
-
+    
         switch (period) {
             case 'today':
                 start = todayStart;
@@ -151,18 +150,18 @@ export class OwlKesantrianDashboard extends Component {
                 start = new Date(todayStart.getFullYear(), todayStart.getMonth() - 1, 1);
                 end = new Date(todayStart.getFullYear(), todayStart.getMonth(), 0);
                 break;
-
+    
             case 'thisYear':
-                start = new Date(todayStart.getFullYear(), 0, 1); // January 1st of current year
-                end = new Date(todayStart.getFullYear(), 11, 31); // December 31st of current year
+                start = new Date(todayStart.getFullYear(), 0, 1); 
+                end = new Date(todayStart.getFullYear(), 11, 31); 
                 break;
-
+    
             case 'lastYear':
-                start = new Date(todayStart.getFullYear() - 1, 0, 1); // January 1st of last year
-                end = new Date(todayStart.getFullYear() - 1, 11, 31); // December 31st of last year
+                start = new Date(todayStart.getFullYear() - 1, 0, 1); 
+                end = new Date(todayStart.getFullYear() - 1, 11, 31); 
                 break;
         }
-
+    
         this.state.selectedPeriod = period;
         this.state.selectedDateRange = {
             start: this.getLocalDateString(start),
@@ -170,13 +169,13 @@ export class OwlKesantrianDashboard extends Component {
         };
     }   
 }
-
+    
 OwlKesantrianDashboard.template = "owl.OwlKesantrianDashboard";
 OwlKesantrianDashboard.components = { 
-    KpiCard, 
-    ChartRenderer, 
-    PelanggaranCardList, 
-    TahfidzCardList 
+    ChartRenderer ,
+    KpiCard,
+    PelanggaranCardList,
+    TahfidzCardList
 };
 
 registry.category("actions").add("owl.kesantrian_dashboard", OwlKesantrianDashboard);

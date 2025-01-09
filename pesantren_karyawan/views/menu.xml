@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- <menuitem 
+        id="pendaftaran_menu_root" 
+        name="Pendaftaran Karyawan Baru" 
+        web_icon="pesantren_karyawan,static/description/icon.png"/> -->
+
+    <!-- <menuitem 
+        id="pendaftaran_menu" 
+        name="Pendaftaran" 
+        parent="pendaftaran_menu_root" 
+        action="action_pendaftaran" 
+        sequence="10"/> -->
+</odoo>

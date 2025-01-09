@@ -9,25 +9,51 @@ import { rpc } from "@web/core/network/rpc";
 let pinAttempt = 0; // Counter untuk percobaan PIN
 
 patch(BaypasPayment.prototype, {
+    async checkPaymentMethod() {
+        super.setup();
+
+        // Ambil order aktif
+        const order = this.pos.get_order();
+        console.log(order)
+
+        // Ambil payment_ids dari order
+        const data = order.payment_ids.map(paymentline => {
+            // Pengecekan nama metode pembayaran dengan beberapa variasi penulisan
+            const paymentMethodName = paymentline.payment_method_id.name.toLowerCase();
+            if (!['kas', 'cash'].includes(paymentMethodName)) {
+                return {
+                    payment_method_id: paymentline.payment_method_id,
+                    amount: paymentline.amount,
+                };
+            }
+        }).filter(Boolean); // Filter untuk menghapus nilai null/undefined dalam array
+
+        console.log(data)
+        return data;
+    },
+
     async clickSetSubTotal() {
-        const currentOrder = this.pos.get_order();
-        const client = currentOrder.get_partner();
+        const paymentMethodCount = await this.checkPaymentMethod();
+        if (paymentMethodCount.length > 0) {
+            const currentOrder = this.pos.get_order();
+            const client = currentOrder.get_partner();
+            if (!client) {
+                this.dialog.add(AlertDialog, {
+                    title: _t('Pelanggan Tidak Dipilih'),
+                    body: _t('Silakan pilih pelanggan dari daftar sebelum memasukkan PIN.'),
+                });
+                return;
+            }
 
-        if (!client) {
-            this.dialog.add(AlertDialog, {
-                title: _t('Pelanggan Tidak Dipilih'),
-                body: _t('Silakan pilih pelanggan dari daftar sebelum memasukkan PIN.'),
-            });
-            return;
-        }
-
-        // Ambil PIN siswa
-        // console.log(client.name);
-        const clientData = await this.getData(client.name);
-        if (clientData) {
-            const clientPin = clientData.pin || "654321";
-            const walletBalance = clientData.wallet_balance || 0;
-            this.showPinInputPopup(clientPin, walletBalance, client.id);
+            // Ambil PIN siswa
+            const clientData = await this.getData(client.name);
+            if (clientData) {
+                const clientPin = clientData.pin || "654321";
+                const walletBalance = clientData.wallet_balance || 0;
+                this.showPinInputPopup(clientPin, walletBalance, client.id);
+            }
+        } else {
+            this.validateOrder();
         }
     },
 
@@ -91,13 +117,13 @@ patch(BaypasPayment.prototype, {
                 </div>
             </div>
         `;
-    
+
         document.body.appendChild(popup);
-    
+
         const submitButton = document.getElementById('submitPinButton');
         const cancelButton = document.getElementById('cancelButton');
         const pinInput = document.getElementById('pinInput');
-    
+
         // Event handler untuk tombol submit
         submitButton.onclick = async () => {
             const enteredPin = pinInput.value.trim();
@@ -108,19 +134,19 @@ patch(BaypasPayment.prototype, {
             document.body.removeChild(popup);
             await this.apply_pin(enteredPin, clientPin, walletBalance, clientId);
         };
-    
+
         // Event handler untuk tombol cancel
         cancelButton.onclick = () => {
             document.body.removeChild(popup);
         };
-    
+
         // Tambahkan event listener untuk close popup saat klik di luar box
         popup.addEventListener('click', (e) => {
             if (e.target === popup) {
                 document.body.removeChild(popup);
             }
         });
-    },    
+    },
 
     async apply_pin(enteredPin, clientPin, walletBalance, clientId) {
         if (pinAttempt >= 3) {
@@ -139,9 +165,9 @@ patch(BaypasPayment.prototype, {
 
         if (enteredPin === clientPin) {
             pinAttempt = 0; // Reset counter PIN
-            const currentOrder = this.pos.get_order();
-            const totalAmount = currentOrder.get_total_with_tax();
-
+            const paymentMethodCount = await this.checkPaymentMethod();
+            const totalAmount = paymentMethodCount[0].amount;
+            console.log('Data:', totalAmount)
             if (totalAmount > walletBalance) {
                 this.dialog.add(AlertDialog, {
                     title: _t('Saldo Tidak Mencukupi'),

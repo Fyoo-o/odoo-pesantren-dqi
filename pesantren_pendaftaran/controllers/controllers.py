@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
 # from odoo import http
-import json
+from odoo.exceptions import UserError
 from odoo import http
 from odoo.http import request
-import random
 from datetime import date
+import requests
 import datetime
-from odoo.exceptions import UserError
-import hashlib
-import locale
 import base64
+import tempfile
+import os
+import json
+from .nobox import Nobox
+
+
 
 # class PsbController(http.Controller):
 #     @http.route('/psb/statistics', type='http', auth='public', methods=['POST'], csrf=False)
@@ -52,7 +55,7 @@ import base64
 
 
 class PesantrenBeranda(http.Controller):
-    @http.route('/beranda', type='http', auth='public')
+    @http.route('/beranda_psb', type='http', auth='public')
     def index(self, **kwargs):
 
         # Ambil perusahaan yang aktif (current company)
@@ -83,8 +86,6 @@ class PesantrenBeranda(http.Controller):
 
         tgl_mulai_pendaftaran = config_obj.get_param('pesantren_pendaftaran.tgl_mulai_pendaftaran')
         tgl_akhir_pendaftaran = config_obj.get_param('pesantren_pendaftaran.tgl_akhir_pendaftaran')
-        tgl_mulai_verifikasi_berkas = config_obj.get_param('pesantren_pendaftaran.tgl_mulai_verifikasi_berkas')
-        tgl_akhir_verifikasi_berkas = config_obj.get_param('pesantren_pendaftaran.tgl_akhir_verifikasi_berkas')
         tgl_mulai_seleksi = config_obj.get_param('pesantren_pendaftaran.tgl_mulai_seleksi')
         tgl_akhir_seleksi = config_obj.get_param('pesantren_pendaftaran.tgl_akhir_seleksi')
         tgl_pengumuman_hasil_seleksi = config_obj.get_param('pesantren_pendaftaran.tgl_pengumuman_hasil_seleksi')
@@ -101,18 +102,6 @@ class PesantrenBeranda(http.Controller):
             tgl_akhir_pendaftaran = tgl_akhir_pendaftaran_dt.strftime('%Y-%m-%d %H:%M:%S')
         else:
             tgl_akhir_pendaftaran_dt = datetime.datetime.strptime(tgl_akhir_pendaftaran, '%Y-%m-%d %H:%M:%S')
-
-        if not tgl_mulai_verifikasi_berkas:
-            tgl_mulai_verifikasi_berkas_dt = datetime.datetime.now() + datetime.timedelta(days=1)
-            tgl_mulai_verifikasi_berkas = tgl_mulai_verifikasi_berkas_dt.strftime('%Y-%m-%d %H:%M:%S')
-        else:
-            tgl_mulai_verifikasi_berkas_dt = datetime.datetime.strptime(tgl_mulai_verifikasi_berkas, '%Y-%m-%d %H:%M:%S')
-
-        if not tgl_akhir_verifikasi_berkas:
-            tgl_akhir_verifikasi_berkas_dt = tgl_mulai_verifikasi_berkas_dt + datetime.timedelta(days=3)
-            tgl_akhir_verifikasi_berkas = tgl_akhir_verifikasi_berkas_dt.strftime('%Y-%m-%d %H:%M:%S')
-        else:
-            tgl_akhir_verifikasi_berkas_dt = datetime.datetime.strptime(tgl_akhir_verifikasi_berkas, '%Y-%m-%d %H:%M:%S')
 
         if not tgl_mulai_seleksi:
             tgl_mulai_seleksi_dt = tgl_akhir_pendaftaran_dt
@@ -143,26 +132,38 @@ class PesantrenBeranda(http.Controller):
         # Format tanggal untuk ditampilkan di halaman
         tgl_mulai_pendaftaran_formatted = format_tanggal_manual(tgl_mulai_pendaftaran_dt)
         tgl_akhir_pendaftaran_formatted = format_tanggal_manual(tgl_akhir_pendaftaran_dt)
-        tgl_mulai_verifikasi_berkas_formatted = format_tanggal_manual(tgl_mulai_verifikasi_berkas_dt)
-        tgl_akhir_verifikasi_berkas_formatted = format_tanggal_manual(tgl_akhir_verifikasi_berkas_dt)
         tgl_mulai_seleksi_formatted = format_tanggal_manual(tgl_mulai_seleksi_dt)
         tgl_akhir_seleksi_formatted = format_tanggal_manual(tgl_akhir_seleksi_dt)
         tgl_pengumuman_hasil_seleksi_formatted = format_tanggal_manual(tgl_pengumuman_hasil_seleksi_dt)
-
-        current_year = datetime.datetime.now().year
-
-        next_year = current_year + 1
-        year_range = f"{current_year} - {next_year}"
-
 
         html_content = f"""
                     <!doctype html>
                     <html lang="en">
 
             <head>
+            <!-- Primary Meta Tags --> 
+            <title>PSB Daarul Qur`an Istiqomah</title> 
+            <meta name="title" content="PSB Daarul Qur`an Istiqomah" /> 
+            <meta name="description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
+ 
+            <!-- Open Graph / Facebook --> 
+            <meta property="og:type" content="website" /> 
+            <meta property="og:url" content="https://aplikasi.dqi.ac.id/pendaftaran" /> 
+            <meta property="og:title" content="PSB Daarul Qur`an Istiqomah" /> 
+            <meta property="og:description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
+            <meta property="og:image" content="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" /> 
+ 
+            <!-- Twitter --> 
+            <meta property="twitter:card" content="summary_large_image" /> 
+            <meta property="twitter:url" content="https://aplikasi.dqi.ac.id/pendaftaran" /> 
+            <meta property="twitter:title" content="PSB Daarul Qur`an Istiqomah" /> 
+            <meta property="twitter:description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
+            <meta property="twitter:image" content="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" />
+
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <title>Daarul Qur'an Istiqomah</title>
+            <link rel="icon" type="image/x-icon" href="/pesantren_pendaftaran/static/img/favicon.ico?v=1">
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
                 integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -349,7 +350,7 @@ class PesantrenBeranda(http.Controller):
                     <h1 class="fw-bold">Pendaftaran Santri Baru</h1>
                     <h3 class="fw-bold pb-3">Pondok Pesantren Daarul Qur’an Istiqomah</h3>
                     <h5 class="fw-bold">Daarul Qur’an Istiqomah Boarding School for Education and Science</h5>
-                    <h5 class="fw-bold">Tahun Ajaran { year_range }</h5>
+                    <h5 class="fw-bold">Tahun Ajaran 2024 - 2025</h5>
                     <a href="/psb" class="btn btn-light rounded-5 text-primary mt-2">Daftar Sekarang</a>
                 </div>
                 </div>
@@ -400,7 +401,7 @@ class PesantrenBeranda(http.Controller):
                     <div class="step">
                     <div class="step-circle">2</div>
                     <div class="step-line d-md-block d-none"></div>
-                    <p class="mt-3 fw-bold">Melengkapi Data</p>
+                    <p class="mt-3 fw-bold">Login & Melengkapi Data</p>
                     <p class="text-muted">Melengkapi data peserta didik, data orang tua / wali atau mahram khususnya santri putri.
                     </p>
                     </div>
@@ -464,7 +465,7 @@ class PesantrenBeranda(http.Controller):
                 </div>
                 <!-- Image Section -->
                 <div class="col-md-6">
-                    <img src="pesantren_pendaftaran/static/src/img/PAGE2.44b0e259.png" class="img-fluid rounded-4"
+                    <img src="https://psb.nuruljadid.net/img/PAGE2.44b0e259.png" class="img-fluid rounded-4"
                     alt="Syarat Pendaftaran">
                 </div>
                 </div>
@@ -562,7 +563,7 @@ class PesantrenBeranda(http.Controller):
             <div class="container my-5">
                 <div class="row align-items-center">
                 <div class="col-md-6">
-                    <img src="pesantren_pendaftaran/static/src/img/PAGE3.e3b6d704.png" alt="Image" class="rounded-custom img-fluid" />
+                    <img src="https://psb.nuruljadid.net/img/PAGE3.e3b6d704.png" alt="Image" class="rounded-custom img-fluid" />
                 </div>
                 <div class="col-md-6 col-sm-12">
                     <h3 class="fw-bold"><span class="text-primary ">Informasi</span> Pelayanan Pendaftaran</h3>
@@ -571,14 +572,18 @@ class PesantrenBeranda(http.Controller):
                         <h2 class="accordion-header" id="headingOne">
                         <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
                             aria-expanded="true" aria-controls="collapseOne">
-                            Pembukaan Pendaftaran:
+                            Pembukaan Pendaftaran & Kantor Layanan:
                         </button>
                         </h2>
                         <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
                         data-bs-parent="#accordionExample">
                         <div class="accordion-body">
                             <p class="m-0">Tanggal:</p>
-                            <p class="fw-bold">{tgl_mulai_pendaftaran_formatted} s.d {tgl_akhir_pendaftaran_formatted}</p>
+                            <p class="fw-bold">1 Maret s.d. 8 Juli 2024</p>
+                            <p class="m-0">Layanan Putra:</p>
+                            <p class="fw-bold">Kantor Sekretariat Putra</p>
+                            <p class="m-0">Layanan Putri:</p>
+                            <p class="fw-bold">Kantor Sekretariat Putri</p>
                         </div>
                         </div>
                     </div>
@@ -594,7 +599,7 @@ class PesantrenBeranda(http.Controller):
                         <div class="accordion-body">
                             <!-- Konten untuk Verifikasi Berkas -->
                             <p class="m-0">Tanggal:</p>
-                            <p class="fw-bold">{tgl_mulai_verifikasi_berkas_formatted} s.d {tgl_akhir_verifikasi_berkas_formatted}</p>
+                            <p class="fw-bold">{tgl_mulai_pendaftaran_formatted} s.d {tgl_akhir_pendaftaran_formatted}</p>
                             <p class="m-0">Tempat Penerimaan:</p>
                             <p class="fw-bold">Pondok Pesantren Daarul Qur'an Istiqomah, {alamat_lengkap} </p>
                         </div>
@@ -632,10 +637,11 @@ class PesantrenBeranda(http.Controller):
                     <h5>Pondok Pesantren Daarul Qur’an Istiqomah</h5>
                     <p>
                         {alamat_lengkap} <br>
+                        Telp. (0888-307-7077)
                     </p>
                     </div>
                     <div class="col-md-4">
-                    <h5>Social Pages</h5>
+                    <h5>Social /pesantren_pendaftaran/static/src/Pages</h5>
                     <ul class="list-unstyled">
                         <li><a href="https://www.facebook.com/daquistiqomah?mibextid=ZbWKwL" class="text-white"><i class="bi bi-facebook"></i> Facebook</a></li>
                         <li><a href="https://www.instagram.com/dqimedia?igsh=NTVwdWlwd3o5MTF1" class="text-white"><i class="bi bi-instagram"></i> Instagram</a></li>
@@ -645,7 +651,7 @@ class PesantrenBeranda(http.Controller):
                     <div class="col-md-4">
                     <h5><i class="bi bi-telephone"></i> Pusat Layanan Informasi</h5>
                     <p>
-                        0853-9051-1124 (Layanan Umum)
+                        0822 5207 9785
                     </p>
                     </div>
                 </div>
@@ -659,7 +665,7 @@ class PesantrenBeranda(http.Controller):
             <!-- Footer end -->
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
                 integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-                crossorigin="anonymous"></script>
+                crossorigin="anonymous"></>
 
                 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
                 <script>
@@ -751,7 +757,7 @@ function animateCount(elementId, targetValue) {{
 
             </html>
         """
-        return request.make_response(html_content)
+        return request.make_response(html_content, headers=[('Content-Type', 'text/html')])
 
 class PesantrenPendaftaran(http.Controller):
     @http.route('/psb', auth='public')
@@ -819,9 +825,28 @@ class PesantrenPendaftaran(http.Controller):
             <!DOCTYPE html>
 <html lang="en">
             <head>
+            <!-- Primary Meta Tags --> 
+            <title>PSB Daarul Qur`an Istiqomah</title> 
+            <meta name="title" content="PSB Daarul Qur`an Istiqomah" /> 
+            <meta name="description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
+ 
+            <!-- Open Graph / Facebook --> 
+            <meta property="og:type" content="website" /> 
+            <meta property="og:url" content="https://aplikasi.dqi.ac.id/pendaftaran" /> 
+            <meta property="og:title" content="PSB Daarul Qur`an Istiqomah" /> 
+            <meta property="og:description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
+            <meta property="og:image" content="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" /> 
+ 
+            <!-- Twitter --> 
+            <meta property="twitter:card" content="summary_large_image" /> 
+            <meta property="twitter:url" content="https://aplikasi.dqi.ac.id/pendaftaran" /> 
+            <meta property="twitter:title" content="PSB Daarul Qur`an Istiqomah" /> 
+            <meta property="twitter:description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
+            <meta property="twitter:image" content="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" />
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>PSB - Daarul Qur'an Istiqomah</title>
+                <link rel="icon" type="image/x-icon" href="/pesantren_pendaftaran/static/img/favicon.ico?v=1">
                 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
                 <link href=" https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css " rel="stylesheet">
@@ -1018,7 +1043,7 @@ class PesantrenPendaftaran(http.Controller):
                 <div class="text-center text-white">
                     <h4 class="fs-2 fw-semibold mb-2">Aplikasi penerimaan santri baru</h4>
                     <span>Daarul Qur'an Istiqomah Tanah Laut Kalimantan Selatan</span> <br><br>
-                    {f'<a href="/pendaftaran" {"data-bs-toggle='modal' data-bs-target='#modalPendaftaranTutup'" if not is_halaman_pendaftaran else ""} style="background-color: #e91e63; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px;" class=" id="daftar">Daftar Sekarang</a>'}
+                    <a href="/pendaftaran" style="background-color: #e91e63; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px;" class=" id="daftar">Daftar Sekarang</a>
                 </div>
             </div>
 
@@ -1088,7 +1113,7 @@ class PesantrenPendaftaran(http.Controller):
             		<ul style="list-style-type: none; display: flex; text-transform: uppercase; font-size: 13px;" class="fw-semibold">
             			<li><a href="/psb" class="me-4" style="text-decoration: none; color: white;">Home</a></li>
             			<li><a href="/beranda" class="me-4" style="text-decoration: none; color: white;" target="_blank">Info Pondok</a></li>
-            			<li><a href="https://drive.google.com/drive/folders/1KxQ0V4bd7RpSFqJKJfQ6JGn1z2-Ld7Wr" class="me-4" style="text-decoration: none; color: white;" target="_blank">Brosur</a></li>
+            			<li><a href="https://drive.google.com/drive/mobile/folders/1EYat5411joyoOmH_DkJ3g2DeJKgyyuBQ?usp=share_link&fbclid=IwY2xjawGflGlleHRuA2FlbQIxMQABHTusVv9hD3VRDSLW9-671QhOL86e3KMv30smsAYW0DHkkWf7zwPlcBlbeA_aem_XXofAY-ay0syx043L5BLvw" class="me-4" style="text-decoration: none; color: white;" target="_blank">Brosur</a></li>
             			<li><a href="" class="me-4" style="text-decoration: none; color: white;">Panduan</a></li>
             		</ul>
             	</div>
@@ -1186,9 +1211,7 @@ class PesantrenPendaftaran(http.Controller):
                         <div class="col-md-8">
                             <div>
                                 <span class="fw-semibold">2. Pelaksanaan Test Masuk</span>
-                                <p class="text-secondary">Gel 1: {tgl_mulai_seleksi_formatted} - {tgl_akhir_seleksi_formatted} <br> Gel 2: {tgl_mulai_seleksi_formatted} - {tgl_akhir_seleksi_formatted} <br> (Test seleksi dilaksanakan secara ONLINE dengan
-                                    kuota
-                                    sebanyak 100 peserta per hari).</p>
+                                <p class="text-secondary">Gel 1: {tgl_mulai_seleksi_formatted} - {tgl_akhir_seleksi_formatted} <br> Gel 2: {tgl_mulai_seleksi_formatted} - {tgl_akhir_seleksi_formatted}</p>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -1288,7 +1311,6 @@ class PesantrenPendaftaran(http.Controller):
 
         return request.make_response(html_response)
     
-
 class UbigPendaftaranController(http.Controller):
     @http.route('/pendaftaran', type='http', auth='public')
     def pendaftaran_form(self, **kwargs):
@@ -1305,14 +1327,42 @@ class UbigPendaftaranController(http.Controller):
 
     @http.route('/pendaftaran/submit', type='http', auth='public', methods=['POST'], csrf=True)
     def pendaftaran_submit(self, **post):
+        def verify_recaptcha(response_token):
+            secret_key = '6Ld7s6wqAAAAAA3mQOtgyZg25id_TTJhqvLGXwwH'
+
+            payload = {
+                'secret': secret_key,
+                'response': response_token,
+            }
+
+            # Kirim permintaan ke API Google reCAPTCHA
+            verify_url = 'https://www.google.com/recaptcha/api/siteverify'
+            response = requests.post(verify_url, data=payload)
+            result = response.json()
+
+            # Kembalikan status verifikasi
+            return result.get('success')
+        
+          # Ambil token reCAPTCHA dari form
+        recaptcha_response_token = post.get('g-recaptcha-response')
+
+        if not recaptcha_response_token:
+            raise UserError("reCAPTCHA tidak terisi. Silakan coba lagi.")
+
+        # Verifikasi token reCAPTCHA
+        if not verify_recaptcha(recaptcha_response_token):
+            raise UserError("Verifikasi reCAPTCHA gagal. Silakan coba lagi.")
 
         # Ambil data dari form
         # kode_akses             = post.get('kode_akses')
         nama                   = post.get('nama')
         nik                    = post.get('nik')
-        email                  = post.get('email')
+        email                  = post.get('email') if post.get('email') else ''
         password               = post.get('password')
+        nomor_login            = post.get('nomor_login') if post.get('nomor_login') else ''
         jenjang_id             = post.get('jenjang_id')
+        is_alumni              = request.params.get('is_alumni') if request.params.get('is_alumni') else ''
+        is_pindahan_sd         = request.params.get('is_pindahan_sd') if request.params.get('is_pindahan_sd') else ''
         gender                 = request.params.get('gender')
         kota_lahir             = post.get('kota_lahir')
         tanggal_lahir_str      = request.params.get('tanggal_lahir')
@@ -1430,6 +1480,8 @@ class UbigPendaftaranController(http.Controller):
         ktp_ortu_b64 = process_file(ktp_ortu)
         skhun_b64 = process_file(skhun)
 
+        nama = post.get('nama')
+
         wali_terdaftar = request.env['ubig.pendaftaran'].sudo().search([('wali_email', '=', wali_email)])
 
         # if wali_terdaftar:
@@ -1442,7 +1494,10 @@ class UbigPendaftaranController(http.Controller):
             'nik'                    : nik,
             'email'                  : email,
             'password'               : password,
+            'nomor_login'            : nomor_login,
             'jenjang_id'             : int(jenjang_id),
+            'is_alumni'              : is_alumni,
+            'is_pindahan_sd'         : is_pindahan_sd,
             'gender'                 : gender,
             'kota_lahir'             : kota_lahir,
             'tanggal_lahir'          : tanggal_lahir,
@@ -1466,7 +1521,7 @@ class UbigPendaftaranController(http.Controller):
             'penghasilan_ayah'       : penghasilan_ayah,
             # 'email_ayah'             : email_ayah,
             'kewarganegaraan_ayah'   : kewarganegaraan_ayah,
-            'pendidikan_ayah'        : pendidikan_ayah,
+            'pendidikan_ayah'        : pendidikan_ayah, 
 
             # Data Orang Tua - Ibu
             'nama_ibu'               : nama_ibu,
@@ -1531,13 +1586,85 @@ class UbigPendaftaranController(http.Controller):
         if not pendaftaran:
             return request.not_found()
 
-        # Kirim email
-        if pendaftaran.email:
+        # Kirim whatsapp
+        if pendaftaran.nomor_login:
             # Contoh password (validasi minimal 8 karakter sudah dilakukan)
-            password = pendaftaran.password
+            pw = pendaftaran.password
 
             # Sembunyikan bagian tengah kecuali dua karakter awal dan dua karakter akhir
-            masked_password = password[:2] + '*' * (len(password) - 4) + password[-2:]
+            masked_password = pw[:2] + '*' * (len(pw) - 4) + pw[-2:]
+            biaya_formatted = f"Rp. {pendaftaran.biaya:,.0f}".replace(",", ".")
+            
+            pesan = f"""
+_*Pesantren Tahfizh Daarul Qur'an Istiqomah*_
+
+_*Assalamualaikum Wr. Wb*_
+
+Bapak/Ibu {pendaftaran.wali_nama or pendaftaran.nama_ayah or pendaftaran.nama_ibu},
+
+Pendaftaran telah berhasil! Berikut adalah informasi login Anda:
+
+*Akun Login:*
+- No Telp/Wa: {pendaftaran.nomor_login}
+- Kata Sandi: {masked_password}
+
+*Data Pendaftaran:*
+- Nama: {pendaftaran.partner_id.name}
+- TTL: {pendaftaran.kota_lahir}, {pendaftaran.get_formatted_tanggal_lahir()}
+- Alamat: {pendaftaran.alamat}
+- NIK: {pendaftaran.nik}
+
+*Jenjang Pendidikan:* {pendaftaran.jenjang_id.name}
+
+*Informasi Pembayaran:*
+- Bank: BSI (Bank Syariah Indonesia)
+- No. Rekening: {no_rekening}
+- Jumlah: {biaya_formatted}
+
+Untuk mengakses akun Anda, silakan klik link berikut: _https://aplikasi.dqi.ac.id/login_
+
+Terima kasih!
+            """
+            
+            # Mengambil informasi untuk login ke API Nobox
+            username = "ponpesdqi@gmail.com"  # Ganti dengan username yang sesuai
+            password = "dqimedia123"  # Ganti dengan password yang sesuai
+
+            # Kirim pesan menggunakan Nobox API
+            try:
+                nobox = Nobox()
+                response = nobox.generateToken(username, password)
+
+                if response.get('IsError'):
+                    return request.redirect('/error')
+
+                token_nobox = response.get('Data')  # Token dari API Nobox
+
+
+                # lakukan send wa
+                nobox = Nobox(token_nobox)
+                sendRes = nobox.sendMessageExt(pendaftaran.nomor_login, 1, 624718353219589, 1, pesan, attachment=None)
+
+                if sendRes.get('IsError', False):
+                    raise UserError(f"Gagal mengirim pesan WhatsApp: {sendRes.get('Error')}")
+                else:
+                    return request.render('pesantren_pendaftaran.pendaftaran_success_template', {
+                        'pendaftaran': pendaftaran,
+                        'is_halaman_pengumuman': is_halaman_pengumuman,
+                        'no_rekening': no_rekening,
+                    })
+            except Exception as e:
+                raise UserError(f"Terjadi kesalahan saat mengirim pesan WhatsApp: {str(e)}")
+
+        # Kirim email
+        if pendaftaran.email:
+            thn_sekarang = datetime.now().year
+            # Contoh password (validasi minimal 8 karakter sudah dilakukan)
+            pw = pendaftaran.password
+            
+
+            # Sembunyikan bagian tengah kecuali dua karakter awal dan dua karakter akhir
+            masked_password = pw[:2] + '*' * (len(pw) - 4) + pw[-2:]
             biaya_formatted = f"Rp. {pendaftaran.biaya:,.0f}".replace(",", ".")
 
             email_values = {
@@ -1554,7 +1681,7 @@ class UbigPendaftaranController(http.Controller):
                             <div style="padding: 20px; color: #555555;">
                                 <p style="margin: 0 0 10px;">Assalamualaikum Wr. Wb,</p>
                                 <p style="margin: 0 0 20px;">
-                                    Bapak/Ibu <strong>{pendaftaran.wali_nama}</strong>,<br>
+                                    Bapak/Ibu <strong>{pendaftaran.wali_nama or pendaftaran.nama_ayah or pendaftaran.nama_ibu}</strong>,<br>
                                     Akun Login telah dibuat di sistem pesantren kami. Berikut adalah informasi login Anda:
                                 </p>
                                 <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0;">
@@ -1634,7 +1761,7 @@ class UbigPendaftaranController(http.Controller):
                             <!-- Footer -->
                             <div style="background-color: #f1f1f1; text-align: center; padding: 10px;">
                                 <p style="font-size: 12px; color: #888888; margin: 0;">
-                                    &copy; 2024 Pesantren Tahfizh Daarul Qur'an Istiqomah. All rights reserved.
+                                    &copy; {thn_sekarang} Pesantren Tahfizh Daarul Qur'an Istiqomah. All rights reserved.
                                 </p>
                             </div>
                         </div>
@@ -1649,7 +1776,7 @@ class UbigPendaftaranController(http.Controller):
             'pendaftaran': pendaftaran,
             'is_halaman_pengumuman': is_halaman_pengumuman,
             'no_rekening': no_rekening,
-        })
+        })  
 
 class PesantrenCetakPembayaran(http.Controller):
     @http.route('/pendaftaran/cetak', type='http', auth='public')
@@ -1691,9 +1818,28 @@ class PesantrenPsbBantuan(http.Controller):
         html_response = f"""
                 <html lang="en">
             <head>
+            <!-- Primary Meta Tags --> 
+            <title>PSB Daarul Qur`an Istiqomah</title> 
+            <meta name="title" content="PSB Daarul Qur`an Istiqomah" /> 
+            <meta name="description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
+ 
+            <!-- Open Graph / Facebook --> 
+            <meta property="og:type" content="website" /> 
+            <meta property="og:url" content="https://aplikasi.dqi.ac.id/pendaftaran" /> 
+            <meta property="og:title" content="PSB Daarul Qur`an Istiqomah" /> 
+            <meta property="og:description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
+            <meta property="og:image" content="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" /> 
+ 
+            <!-- Twitter --> 
+            <meta property="twitter:card" content="summary_large_image" /> 
+            <meta property="twitter:url" content="https://aplikasi.dqi.ac.id/pendaftaran" /> 
+            <meta property="twitter:title" content="PSB Daarul Qur`an Istiqomah" /> 
+            <meta property="twitter:description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
+            <meta property="twitter:image" content="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" />
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Bantuan - Daarul Qur'an Istiqomah</title>
+                <link rel="icon" type="image/x-icon" href="/pesantren_pendaftaran/static/img/favicon.ico?v=1">
                 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
                 <link href=" https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css " rel="stylesheet">
@@ -1982,7 +2128,7 @@ class PesantrenPsbBantuan(http.Controller):
                         <i class="fa-solid fa-fingerprint text-white"></i>
                     </div>
                     <div class="timeline-content bg-white rounded p-3">
-                        <span class="badge text-bg-info text-white text-uppercase">Video Profil Ponpes <br> Daarul Qur'an Istiqomah</span>
+                        <span class="badge text-bg-info text-white text-uppercase">Video Profil Ponpes Daarul Qur'an Istiqomah</span>
                         <div class="ratio ratio-16x9 my-4">
                         <iframe width="437" height="315" src="https://www.youtube.com/embed/OiPEDy0Sv1U" title="" frameborder="0" allowfullscreen></iframe>
                         </div>
@@ -2018,7 +2164,7 @@ class PesantrenPsbBantuan(http.Controller):
                     <ul style="list-style-type: none; display: flex; text-transform: uppercase; font-size: 13px;" class="fw-semibold">
                         <li><a href="/psb" class="me-4" style="text-decoration: none; color: white;">Home</a></li>
                         <li><a href="/beranda" class="me-4" style="text-decoration: none; color: white;" target="_blank">Info Pondok</a></li>
-                        <li><a href="https://drive.google.com/drive/folders/1KxQ0V4bd7RpSFqJKJfQ6JGn1z2-Ld7Wr" class="me-4" style="text-decoration: none; color: white;" target="_blank">Brosur</a></li>
+                        <li><a href="https://drive.google.com/drive/mobile/folders/1EYat5411joyoOmH_DkJ3g2DeJKgyyuBQ?usp=share_link&fbclid=IwY2xjawGflGlleHRuA2FlbQIxMQABHTusVv9hD3VRDSLW9-671QhOL86e3KMv30smsAYW0DHkkWf7zwPlcBlbeA_aem_XXofAY-ay0syx043L5BLvw" class="me-4" style="text-decoration: none; color: white;" target="_blank">Brosur</a></li>
                         <li><a href="" class="me-4" style="text-decoration: none; color: white;">Panduan</a></li>
                     </ul>
                     </ul>
@@ -2092,7 +2238,6 @@ class PendaftaranSeleksiSdMi(http.Controller):
             })
         else:
             return request.redirect('/psb')
-
 
 class PendaftaranSeleksiSmpMts(http.Controller):
     @http.route('/pengumuman/smp-mts', type='http', auth='public')
@@ -2467,8 +2612,13 @@ class PortalOrangTua(http.Controller):
             return request.redirect('/login')
 
         email = record.email
+        no_telp = record.nomor_login
 
-        records = request.env['ubig.pendaftaran'].sudo().search([('email', '=', email)])
+        if email:
+            records = request.env['ubig.pendaftaran'].sudo().search([('email', '=', email)])
+
+        if no_telp:
+            records = request.env['ubig.pendaftaran'].sudo().search([('nomor_login', '=', no_telp)])
 
         first_record = records[0]
 
@@ -2585,16 +2735,77 @@ class PortalOrangTua(http.Controller):
             </tr>
             """
 
+        next_rows = ""
+        for data in records:
+            # Filter biaya_ids berdasarkan kondisi
+            filtered_biaya = [
+                biaya for biaya in data.jenjang_id.rincian_ids
+                if (data.is_alumni and biaya.is_alumni) or (data.is_pindahan_sd and biaya.is_pindahan_sd) or (not data.is_alumni and not data.is_pindahan_sd and not biaya.is_alumni and not biaya.is_pindahan_sd)
+            ]
+
+            biaya_details = ""
+            if data.status_pembayaran == 'sudahbayar':  # Cek apakah sudah bayar
+                for biaya in filtered_biaya:
+                    # Buat URL untuk unduh file
+                    download_url = f"/download/biaya/{biaya.id}"
+                    
+                    # Tambahkan detail biaya dengan tautan unduhan
+                    biaya_details += f"""
+                    <div class="d-flex justify-content-between mb-3">
+                        <p class="fw-semibold">({biaya.name})</p>
+                        <a href="{download_url}" class="btn btn-secondary">Unduh Rincian Biaya Masuk</a>
+                    </div>
+                    """
+
+            # Tentukan status pembayaran
+            if data.status_pembayaran == 'belumbayar':
+                status_pembayaran = f"Rp {int(data.biaya):,}".replace(',', '.') + " (Belum Bayar)"
+            elif data.status_pembayaran == 'sudahbayar':
+                status_pembayaran = "Rp 0 (Sudah Bayar)"
+            elif data.state == 'ditolak':
+                status_pembayaran = "Pendaftaran Dibatalkan"
+            else:
+                status_pembayaran = ""
+
+            # Buat HTML untuk setiap record
+            next_rows += f"""
+            <div class="mb-1" style="border-bottom: 1px solid black;">
+                <h6>- {data.partner_id.name}</h6>
+                <p>Jenjang : {data.jenjang.replace('sdmi', 'SD / MI').replace('smpmts', 'SMP / MTS').replace('smama', 'SMA / MA').replace('paud', 'PAUD').replace('tk', 'TK')}</p>
+                <div>{biaya_details}</div>
+                <p><strong>{status_pembayaran}</strong></p>
+            </div>
+            """
+
         # Membuat HTML dinamis
         html_content = f"""
                 <html lang="en">
             <head>
+            <!-- Primary Meta Tags --> 
+            <title>PSB Daarul Qur`an Istiqomah</title> 
+            <meta name="title" content="PSB Daarul Qur`an Istiqomah" /> 
+            <meta name="description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
+ 
+            <!-- Open Graph / Facebook --> 
+            <meta property="og:type" content="website" /> 
+            <meta property="og:url" content="https://aplikasi.dqi.ac.id/pendaftaran" /> 
+            <meta property="og:title" content="PSB Daarul Qur`an Istiqomah" /> 
+            <meta property="og:description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
+            <meta property="og:image" content="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" /> 
+ 
+            <!-- Twitter --> 
+            <meta property="twitter:card" content="summary_large_image" /> 
+            <meta property="twitter:url" content="https://aplikasi.dqi.ac.id/pendaftaran" /> 
+            <meta property="twitter:title" content="PSB Daarul Qur`an Istiqomah" /> 
+            <meta property="twitter:description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
+            <meta property="twitter:image" content="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" />
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Portal Orang Tua - Daarul Qur'an Istiqomah</title>
+                <link rel="icon" type="image/x-icon" href="/pesantren_pendaftaran/static/img/favicon.ico?v=1">
                 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+                <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css" rel="stylesheet"/>
                 <style>
 
                     body {{
@@ -2781,7 +2992,7 @@ class PortalOrangTua(http.Controller):
                             f'</div>'
                             f'</li>' if is_halaman_pengumuman else ''}
                             <li class="nav-item me-3">
-                                <a class="nav-link text-white" href="/logout" onclick="return confirm('Apakah anda yakin untuk logout?');"><i class="fa-solid fa-right-from-bracket me-2"></i>Logout</a>
+                                <a class="nav-link text-white log" href="/logout"><i class="fa-solid fa-right-from-bracket me-2"></i>Keluar</a>
                             </li>
                             </ul>
                     </div>
@@ -2824,7 +3035,7 @@ class PortalOrangTua(http.Controller):
                         f'</div>'
                         f'</li>' if is_halaman_pengumuman else ''}
                         <li class="nav-item me-3">
-                            <a class="nav-link text-white" href="/logout" onclick="return confirm('Apakah anda yakin untuk logout?');"><i class="fa-solid fa-right-from-bracket me-2"></i>Logout</a>
+                            <a class="nav-link text-white log" href="/logout"><i class="fa-solid fa-right-from-bracket me-2"></i>Keluar</a>
                         </li>
                         </ul>
                     </ul>
@@ -2865,20 +3076,7 @@ class PortalOrangTua(http.Controller):
                         <div class="row">
                             <div class="col-md-6">
                                 <h5 class="mb-3">Biaya PSB:</h5>
-                                {''.join([f"""
-                                <div class="mb-1" style="border-bottom: 1px solid black;">
-                                    <h6>- {data.partner_id.name}</h6>
-                                    <p>Jenjang : {data.jenjang.replace('sdmi', 'SD / MI').replace('smpmts', 'SMP / MTS').replace('smama', 'SMA / MA').replace('paud', 'PAUD').replace('tk', 'TK')}</p>
-                                    <p>
-                                        <strong>
-                                            {'Rp ' + str(f"{int(data.biaya):,}").replace(',', '.') + ' (Belum Bayar)' if data.status_pembayaran == 'belumbayar' else 
-                                            'Rp 0 (Sudah Bayar)' if data.status_pembayaran == 'sudahbayar' else 
-                                            'Pendaftaran Dibatalkan' if data.state == 'ditolak' else ''}
-                                        </strong>
-
-                                    </p>
-                                </div>
-                                """ for data in records])}
+                                {next_rows}
                                 <div class="mt-3 mb-3">
                                     <h6><strong>Total Bayar : Rp {str(f"{sum(int(data.biaya) if data.status_pembayaran == 'belumbayar' else 0 for data in records):,}").replace(',', '.')}</strong></h6>
                                 </div>
@@ -2946,7 +3144,7 @@ class PortalOrangTua(http.Controller):
                     <ul style="list-style-type: none; display: flex; text-transform: uppercase; font-size: 13px;" class="fw-semibold">
                         <li><a href="/psb" class="me-4" style="text-decoration: none; color: white;">Home</a></li>
                         <li><a href="/beranda" class="me-4" style="text-decoration: none; color: white;" target="_blank">Info Pondok</a></li>
-                        <li><a href="https://drive.google.com/drive/folders/1KxQ0V4bd7RpSFqJKJfQ6JGn1z2-Ld7Wr" class="me-4" style="text-decoration: none; color: white;" target="_blank">Brosur</a></li>
+                        <li><a href="https://drive.google.com/drive/mobile/folders/1EYat5411joyoOmH_DkJ3g2DeJKgyyuBQ?usp=share_link&fbclid=IwY2xjawGflGlleHRuA2FlbQIxMQABHTusVv9hD3VRDSLW9-671QhOL86e3KMv30smsAYW0DHkkWf7zwPlcBlbeA_aem_XXofAY-ay0syx043L5BLvw" class="me-4" style="text-decoration: none; color: white;" target="_blank">Brosur</a></li>
                         <li><a href="" class="me-4" style="text-decoration: none; color: white;">Panduan</a></li>
                     </ul>
                     </ul>
@@ -2976,12 +3174,42 @@ class PortalOrangTua(http.Controller):
 
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
             <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
 
             <script>
 
             const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
             console.log(tooltipTriggerList)
             const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+            document.addEventListener("DOMContentLoaded", function () {{
+                // Ambil semua elemen dengan class "log"
+                const logoutButtons = document.querySelectorAll('.log');
+
+                // Tambahkan event listener ke setiap tombol
+                logoutButtons.forEach(button => {{
+                    button.addEventListener('click', function (event) {{
+                        event.preventDefault(); // Mencegah tindakan default (navigasi)
+                        const logoutUrl = this.getAttribute('href'); // Ambil URL logout
+
+                        // Tampilkan SweetAlert
+                        Swal.fire({{
+                            title: 'Keluar',
+                            text: "Apakah anda ingin keluar?",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Logout'
+                        }}).then((result) => {{
+                            if (result.isConfirmed) {{
+                                // Redirect ke URL logout jika dikonfirmasi
+                                window.location.href = logoutUrl;
+                            }}
+                        }});
+                    }});
+                }});
+            }});
 
             </script>
             </body>
@@ -2994,26 +3222,21 @@ class PesantrenLogin(http.Controller):
     def index(self, **kwargs):
         # Ambil data dari sesi
         user_id = request.session.get('user_id')
-        # Ambil nilai dari field konfigurasi
-        config_obj = http.request.env['ir.config_parameter'].sudo()
-
-        is_halaman_pendaftaran = config_obj.get_param('pesantren_pendaftaran.is_halaman_pendaftaran')
-        is_halaman_pengumuman = config_obj.get_param('pesantren_pendaftaran.is_halaman_pengumuman')
-
         if user_id:
             return request.redirect('/portal_orang_tua')
         
-        return request.render('pesantren_pendaftaran.pendaftaran_login_template', {
-            'is_halaman_pengumuman': is_halaman_pengumuman,
-            'is_halaman_pendaftaran': is_halaman_pendaftaran,
-
-        })
+        return request.render('pesantren_pendaftaran.pendaftaran_login_template')
     
     @http.route('/login/submit', type='http', auth='public', methods=['POST'], csrf=True)
     def login(self, **post):
-        email = post.get('email')
-        
-        record = request.env['ubig.pendaftaran'].sudo().search([('email', '=', email)], limit=1)
+        phone = post.get('phone') if post.get('phone') else ''
+        email = post.get('email') if post.get('email') else ''
+
+        if phone:
+            record = request.env['ubig.pendaftaran'].sudo().search([('nomor_login', '=', phone)], limit=1)
+
+        if email:
+            record = request.env['ubig.pendaftaran'].sudo().search([('email', '=', email)], limit=1)
 
         if record:
             password = post.get('password')
@@ -3024,22 +3247,82 @@ class PesantrenLogin(http.Controller):
                 return """
                     <html>
                         <head>
-                            <script>
-                                alert('Kata sandi salah!');
-                                window.location.href = '/login'; // Redirect ke halaman login
-                            </script>
+                        <!-- Primary Meta Tags --> 
+            <title>PSB Daarul Qur`an Istiqomah</title> 
+            <meta name="title" content="PSB Daarul Qur`an Istiqomah" /> 
+            <meta name="description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
+ 
+            <!-- Open Graph / Facebook --> 
+            <meta property="og:type" content="website" /> 
+            <meta property="og:url" content="https://aplikasi.dqi.ac.id/pendaftaran" /> 
+            <meta property="og:title" content="PSB Daarul Qur`an Istiqomah" /> 
+            <meta property="og:description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
+            <meta property="og:image" content="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" /> 
+ 
+            <!-- Twitter --> 
+            <meta property="twitter:card" content="summary_large_image" /> 
+            <meta property="twitter:url" content="https://aplikasi.dqi.ac.id/pendaftaran" /> 
+            <meta property="twitter:title" content="PSB Daarul Qur`an Istiqomah" /> 
+            <meta property="twitter:description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
+            <meta property="twitter:image" content="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" />
+                            <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css" rel="stylesheet"/>
                         </head>
+                        <body>
+                            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+                            <script>
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal',
+                                    text: 'Kata sandi salah!',
+                                    confirmButtonText: 'OK'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.location.href = '/login';
+                                    }
+                                });
+                            </script>
+                        </body>
                     </html>
                 """
         else:
             return """
                     <html>
                         <head>
-                            <script>
-                                alert('Email belum terdaftar!');
-                                window.location.href = '/login'; // Redirect ke halaman login
-                            </script>
+                        <!-- Primary Meta Tags --> 
+            <title>PSB Daarul Qur`an Istiqomah</title> 
+            <meta name="title" content="PSB Daarul Qur`an Istiqomah" /> 
+            <meta name="description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
+ 
+            <!-- Open Graph / Facebook --> 
+            <meta property="og:type" content="website" /> 
+            <meta property="og:url" content="https://aplikasi.dqi.ac.id/pendaftaran" /> 
+            <meta property="og:title" content="PSB Daarul Qur`an Istiqomah" /> 
+            <meta property="og:description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
+            <meta property="og:image" content="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" /> 
+ 
+            <!-- Twitter --> 
+            <meta property="twitter:card" content="summary_large_image" /> 
+            <meta property="twitter:url" content="https://aplikasi.dqi.ac.id/pendaftaran" /> 
+            <meta property="twitter:title" content="PSB Daarul Qur`an Istiqomah" /> 
+            <meta property="twitter:description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
+            <meta property="twitter:image" content="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" />
+                            <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css" rel="stylesheet"/>
                         </head>
+                        <body>
+                            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+                            <script>
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal',
+                                    text: 'No Telp/Wa atau Email belum terdaftar!',
+                                    confirmButtonText: 'OK'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.location.href = '/login';
+                                    }
+                                });
+                            </script>
+                        </body>
                     </html>
                 """
 
@@ -3077,4 +3360,78 @@ class UploadBuktiPembayaran(http.Controller):
                 record.sudo().write({
                     'bukti_pembayaran': bukti_pembayaran_b64,
                 })
-                return request.redirect('/portal_orang_tua')
+                return """
+                    <html>
+                        <head>
+                        <!-- Primary Meta Tags --> 
+            <title>PSB Daarul Qur`an Istiqomah</title> 
+            <meta name="title" content="PSB Daarul Qur`an Istiqomah" /> 
+            <meta name="description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
+ 
+            <!-- Open Graph / Facebook --> 
+            <meta property="og:type" content="website" /> 
+            <meta property="og:url" content="https://aplikasi.dqi.ac.id/pendaftaran" /> 
+            <meta property="og:title" content="PSB Daarul Qur`an Istiqomah" /> 
+            <meta property="og:description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
+            <meta property="og:image" content="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" /> 
+ 
+            <!-- Twitter --> 
+            <meta property="twitter:card" content="summary_large_image" /> 
+            <meta property="twitter:url" content="https://aplikasi.dqi.ac.id/pendaftaran" /> 
+            <meta property="twitter:title" content="PSB Daarul Qur`an Istiqomah" /> 
+            <meta property="twitter:description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
+            <meta property="twitter:image" content="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" />
+                            <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css" rel="stylesheet"/>
+                        </head>
+                        <body>
+                            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+                            <script>
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil',
+                                    text: 'Berhasil mengunggah bukti pembayaran.',
+                                    confirmButtonText: 'OK'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.location.href = '/portal_orang_tua';
+                                    }
+                                });
+                            </script>
+                        </body>
+                    </html>
+                """
+
+class RincianBiayaController(http.Controller):
+    @http.route('/download/biaya/<int:biaya_id>', type='http', auth='public')
+    def download_biaya(self, biaya_id, **kwargs):
+
+        def convert_binary_to_pdf(binary_data, file_name="converted_file.pdf"):
+            # Mengonversi data biner kembali ke format PDF
+            pdf_data = base64.b64decode(binary_data)
+            
+            # Gunakan tempfile untuk membuat file sementara
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
+                temp_file.write(pdf_data)
+                return temp_file.name  # Mengembalikan path ke file sementara
+        # Ambil data biaya berdasarkan ID
+        biaya = request.env['ubig.rincian_biaya'].sudo().browse(biaya_id)
+        
+        if biaya.gambar:
+            binary_data = biaya.gambar
+            file_path = convert_binary_to_pdf(binary_data)
+            # Pastikan file ada sebelum melanjutkan
+            if os.path.exists(file_path):
+                with open(file_path, 'rb') as file:
+                    dt = file.read()
+
+            nama_file_download = f"RincianBiaya{biaya.name}.pdf"
+
+            # Kirimkan file ke pengguna sebagai download
+            return request.make_response(dt, headers=[
+                ('Content-Type', 'application/pdf'),
+                ('Content-Disposition', f'attachment; filename={nama_file_download}'),
+            ])
+        else:
+            return "No PDF found"
+
+

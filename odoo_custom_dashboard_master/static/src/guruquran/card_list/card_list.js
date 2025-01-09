@@ -36,7 +36,6 @@ export class GuruquranTahsinCardList extends Component {
 
     async onTahsinRowClick(tahsin) {
         try {
-            // Search for the tahsin record that matches the student and details
             const tahsinRecord = await this.orm.searchRead(
                 'cdn.tahsin_quran', 
                 [
@@ -48,7 +47,6 @@ export class GuruquranTahsinCardList extends Component {
             );
     
             if (tahsinRecord.length > 0) {
-                // Open the form view for the tahsin record
                 this.actionService.doAction({
                     type: 'ir.actions.act_window',
                     res_model: 'cdn.tahsin_quran',
@@ -61,7 +59,6 @@ export class GuruquranTahsinCardList extends Component {
             console.error("Error navigating to tahsin record:", error);
         }
     }
-    
 
     async fetchTahsinData() {
         try {
@@ -107,7 +104,6 @@ export class GuruquranTahsinCardList extends Component {
                 page: record.halaman_tahsin || 'N/A'
             }));
     
-            // Group by student and get their latest entry
             const studentLatestEntries = {};
             processedData.forEach(record => {
                 const studentName = record.student_name;
@@ -239,7 +235,6 @@ export class GuruquranTahfidzCardList extends Component {
                 return;
             }
     
-            // Group by student name and get their highest jml_baris
             const studentTahfidz = {};
             tahfidzRecords.forEach(record => {
                 if (record.jml_baris > 0) {
@@ -254,7 +249,6 @@ export class GuruquranTahfidzCardList extends Component {
                 }
             });
     
-            // Convert to array, sort by jml_baris, and apply sequential numbering
             let sortedData = Object.entries(studentTahfidz)
                 .map(([name, data]) => ({
                     name: name,
@@ -264,7 +258,6 @@ export class GuruquranTahfidzCardList extends Component {
                 .sort((a, b) => b.total_baris - a.total_baris)
                 .slice(0, 10);
     
-            // Apply sequential numbering after sorting
             this.state.topTahfidz = sortedData.map((item, index) => {
                 const tahfidz = {
                     number: index + 1,

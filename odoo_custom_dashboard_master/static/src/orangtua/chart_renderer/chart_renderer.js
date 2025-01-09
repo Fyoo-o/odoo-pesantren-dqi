@@ -5,7 +5,6 @@ const { Component, onWillStart, useRef, onMounted, onWillUnmount, onWillUpdatePr
 import { useService } from "@web/core/utils/hooks";
 import { session } from "@web/session";
 
-// Penting
 export class OrangtuaChartRenderer extends Component {
     static props = {
         type: { type: String },
@@ -77,6 +76,22 @@ export class OrangtuaChartRenderer extends Component {
         onWillUnmount(() => {
             this.cleanup();
         });
+    }
+
+    async fetchData(startDate = null, endDate = null) {
+        // Jika tanggal diberikan, format ke format Odoo
+        const formattedStartDate = startDate ? this.formatDateToOdoo(startDate) : null;
+        const formattedEndDate = endDate ? this.formatDateToOdoo(endDate) : null;
+    
+        if (this.props.title === 'Tagihan Siswa') {
+            await this.fetchTagihanData(formattedStartDate, formattedEndDate);
+        }
+    
+        if (this.chartInstance) {
+            this.updateChart();
+        } else if (this.chartRef.el) {
+            this.renderChart();
+        }
     }
 
     showLoading() {
@@ -243,45 +258,6 @@ export class OrangtuaChartRenderer extends Component {
         return date.toISOString().split('.')[0] + 'Z';
     }
 
-    async fetchData(startDate = null, endDate = null) {
-        // Jika tanggal diberikan, format ke format Odoo
-        const formattedStartDate = startDate ? this.formatDateToOdoo(startDate) : null;
-        const formattedEndDate = endDate ? this.formatDateToOdoo(endDate) : null;
-
-        switch (this.props.title) {
-            case 'Tagihan Siswa':
-                await this.fetchTagihanData(formattedStartDate, formattedEndDate);
-                break;
-            case 'Uang Masuk':
-                await this.fetchUangSakuMasukData(formattedStartDate, formattedEndDate);
-                break;
-            case 'Uang Keluar':
-                await this.fetchUangSakuKeluarData(formattedStartDate, formattedEndDate);
-                break;
-        }
-
-        if (this.chartInstance) {
-            this.updateChart();
-        } else if (this.chartRef.el) {
-            this.renderChart();
-        }
-    }
-
-    updateChart() {
-        if (this.chartInstance) {
-            this.chartInstance.updateOptions({
-                xaxis: {
-                    categories: this.state.chartData.labels
-                },
-                series: this.state.chartData.series
-            });
-        }
-    }
-
-    formatDate(date) {
-        return date.toISOString().split('.')[0] + 'Z';
-    }
-
     parseDate(dateStr) {
         const date = new Date(dateStr);
         return new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
@@ -368,127 +344,6 @@ export class OrangtuaChartRenderer extends Component {
         }
     }
 
-    async fetchUangSakuMasukData(startDate = null, endDate = null) {
-        try {
-            if (!startDate && !endDate) {
-                endDate = new Date();
-                startDate = new Date();
-                startDate.setDate(startDate.getDate() - 6); // Get last 7 days including today
-
-                // Convert to YYYY-MM-DD format for API
-                startDate = startDate.toISOString().split('T')[0];
-                endDate = endDate.toISOString().split('T')[0];
-            }
-
-            const domain = [
-                ['amount_in', '>', 0],
-                ['create_date', '>=', startDate],
-                ['create_date', '<=', endDate],
-                ["orangtua_id", "ilike", session.partner_display_name]
-            ];
-
-            const result = await this.orm.searchRead(
-                'cdn.uang_saku',
-                domain,
-                ['create_date', 'amount_in', 'state', 'siswa_id', 'orangtua_id'],
-                { order: 'create_date asc' }
-            );
-
-            if (!result || result.length === 0) {
-                this.state.chartData = { series: [], labels: [] };
-                return;
-            }
-
-            // Store the current view range in state
-            this.state.currentViewRange = {
-                startDate,
-                endDate,
-                viewType: 'masuk'
-            };
-
-            this.processUangSakuData(result, 'amount_in', 'Uang Masuk');
-        } catch (error) {
-            console.error('Error fetching uang saku masuk data:', error);
-            this.state.chartData = { series: [], labels: [] };
-            this.state.currentViewRange = null;
-        }
-    }
-
-    async fetchUangSakuKeluarData(startDate = null, endDate = null) {
-        try {
-            // If no dates provided, set default range to last 7 days
-            if (!startDate && !endDate) {
-                endDate = new Date();
-                startDate = new Date();
-                startDate.setDate(startDate.getDate() - 6); // Get last 7 days including today
-
-                // Convert to YYYY-MM-DD format for API
-                startDate = startDate.toISOString().split('T')[0];
-                endDate = endDate.toISOString().split('T')[0];
-            }
-
-            const domain = [
-                ['amount_out', '>', 0],
-                ['create_date', '>=', startDate],
-                ['create_date', '<=', endDate],
-                ["orangtua_id", "ilike", session.partner_display_name]
-            ];
-
-            const result = await this.orm.searchRead(
-                'cdn.uang_saku',
-                domain,
-                ['create_date', 'amount_out', 'state', 'siswa_id', 'orangtua_id'],
-                { order: 'create_date asc' }
-
-            );
-
-            if (!result || result.length === 0) {
-                this.state.chartData = { series: [], labels: [] };
-                return;
-            }
-
-            // Store the current view range in state
-            this.state.currentViewRange = {
-                startDate,
-                endDate,
-                viewType: 'keluar'
-            };
-
-            this.processUangSakuData(result, 'amount_out', 'Uang Keluar');
-        } catch (error) {
-            console.error('Error fetching uang saku keluar data:', error);
-            this.state.chartData = { series: [], labels: [] };
-            this.state.currentViewRange = null;
-        }
-    }
-
-    // Helper methods for managing date ranges
-    isCustomDateRange() {
-        if (!this.state.currentViewRange) return false;
-
-        const today = new Date();
-        const weekAgo = new Date();
-        weekAgo.setDate(weekAgo.getDate() - 6);
-
-        const currentStartDate = new Date(this.state.currentViewRange.startDate);
-        const currentEndDate = new Date(this.state.currentViewRange.endDate);
-
-        // Check if current range matches default week range
-        return !(
-            currentStartDate.toISOString().split('T')[0] === weekAgo.toISOString().split('T')[0] &&
-            currentEndDate.toISOString().split('T')[0] === today.toISOString().split('T')[0]
-        );
-    }
-
-    resetToDefaultWeekView() {
-        const viewType = this.state.currentViewRange?.viewType;
-        if (viewType === 'masuk') {
-            this.fetchUangSakuMasukData();
-        } else if (viewType === 'keluar') {
-            this.fetchUangSakuKeluarData();
-        }
-    }
-
     processTagihanData(data) {
         if (!Array.isArray(data) || data.length === 0) {
             this.state.chartData = { series: [], labels: [] };
@@ -558,30 +413,12 @@ export class OrangtuaChartRenderer extends Component {
         };
     }
 
-    processUangSakuData(data, field, label) {
-        if (!Array.isArray(data) || data.length === 0) {
-            this.state.chartData = { series: [], labels: [] };
-            return;
-        }
-
-        const dateData = this.processDateData(data, field);
-        const sortedDates = Object.keys(dateData).sort((a, b) => new Date(a) - new Date(b));
-
-        this.state.chartData = {
-            labels: sortedDates,
-            series: [{
-                name: label,
-                data: sortedDates.map(date => dateData[date] || 0)
-            }]
-        };
-    }
-
     getChartConfig() {
         const baseConfig = {
             chart: {
-                type: this.props.type === 'bar' ? 'bar' : 'area',
+                type: 'bar',
                 height: 450,
-                stacked: true, // Enable stacking for better visualization
+                stacked: true,
                 toolbar: {
                     show: false,
                     tools: {
@@ -758,89 +595,47 @@ export class OrangtuaChartRenderer extends Component {
             context: {},
         };
 
-        switch (this.props.title) {
-            case 'Tagihan Siswa': {
-                const studentData = this.state.chartData.fullData[dataPointIndex];
-                const seriesName = this.state.chartData.series[seriesIndex].name;
+        // Only handle Tagihan Siswa case
+        if (this.props.title === 'Tagihan Siswa') {
+            const studentData = this.state.chartData.fullData[dataPointIndex];
+            const seriesName = this.state.chartData.series[seriesIndex].name;
 
-                actionConfig.res_model = 'account.move.line';
-                actionConfig.name = `${this.props.title} - ${studentData.name} - ${seriesName}`;
+            actionConfig.res_model = 'account.move.line';
+            actionConfig.name = `${this.props.title} - ${studentData.name} - ${seriesName}`;
 
-                // Get the relevant invoice lines based on series clicked
-                const relevantLines = seriesName === 'Lunas'
-                    ? studentData.lunas
-                    : studentData.belumLunas;
+            const relevantLines = seriesName === 'Lunas'
+                ? studentData.lunas
+                : studentData.belumLunas;
 
-                // Extract move_ids and line_ids
-                const moveIds = [...new Set(relevantLines.map(line => line.move_id))];
-                const lineIds = relevantLines.map(line => line.line_id);
+            const moveIds = [...new Set(relevantLines.map(line => line.move_id))];
+            const lineIds = relevantLines.map(line => line.line_id);
 
-                // Build domain with the specific line IDs and move IDs
-                const domain = [
-                    ['id', 'in', lineIds],
-                    ['move_id', 'in', moveIds],
-                    ['display_type', 'in', ['product']],
-                    ['product_id', '!=', false],
-                    ['move_id.partner_id', '=', parseInt(studentData.id)]
-                ];
+            const domain = [
+                ['id', 'in', lineIds],
+                ['move_id', 'in', moveIds],
+                ['display_type', 'in', ['product']],
+                ['product_id', '!=', false],
+                ['move_id.partner_id', '=', parseInt(studentData.id)]
+            ];
 
-                // Add date filters if they exist
-                if (this.state.isFiltered) {
-                    if (this.state.currentStartDate) {
-                        domain.push(['move_id.invoice_date', '>=', this.state.currentStartDate]);
-                    }
-                    if (this.state.currentEndDate) {
-                        domain.push(['move_id.invoice_date', '<=', this.state.currentEndDate]);
-                    }
+            if (this.state.isFiltered) {
+                if (this.state.currentStartDate) {
+                    domain.push(['move_id.invoice_date', '>=', this.state.currentStartDate]);
                 }
-
-                // Add state filter based on series
-                if (seriesName === 'Lunas') {
-                    domain.push(['parent_state', '=', 'posted']);
-                } else {
-                    domain.push(['parent_state', '!=', 'posted']);
+                if (this.state.currentEndDate) {
+                    domain.push(['move_id.invoice_date', '<=', this.state.currentEndDate]);
                 }
-
-                actionConfig.domain = domain;
-                break;
             }
 
-            case 'Uang Masuk':
-            case 'Uang Keluar': {
-                const selectedDate = this.state.chartData.labels[dataPointIndex];
-                const [day, month, year] = selectedDate.split('/');
-
-                // Create start and end date for the selected day
-                const startDate = new Date(year, month - 1, day);
-                startDate.setHours(0, 0, 0, 0);
-                const endDate = new Date(year, month - 1, day);
-                endDate.setHours(23, 59, 59, 999);
-
-                actionConfig.res_model = 'cdn.uang_saku';
-                actionConfig.name = `${this.props.title} - ${selectedDate}`;
-
-                const formattedStartDate = startDate.toISOString().split('.')[0] + 'Z';
-                const formattedEndDate = endDate.toISOString().split('.')[0] + 'Z';
-
-                const domain = [
-                    ['create_date', '>=', formattedStartDate],
-                    ['create_date', '<=', formattedEndDate],
-                    ["orangtua_id", "ilike", session.partner_display_name]
-                ];
-
-                // Add specific amount filter based on chart type
-                if (this.props.title === 'Uang Saku Masuk') {
-                    domain.push(['amount_in', '>', 0]);
-                } else {
-                    domain.push(['amount_out', '>', 0]);
-                }
-
-                actionConfig.domain = domain;
-                break;
+            if (seriesName === 'Lunas') {
+                domain.push(['parent_state', '=', 'posted']);
+            } else {
+                domain.push(['parent_state', '!=', 'posted']);
             }
+
+            actionConfig.domain = domain;
+            await this.actionService.doAction(actionConfig);
         }
-
-        await this.actionService.doAction(actionConfig);
     }
 }
 

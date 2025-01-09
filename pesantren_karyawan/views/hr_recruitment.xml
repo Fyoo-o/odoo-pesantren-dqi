@@ -1,0 +1,84 @@
+<odoo>
+
+	<!-- Kanban View -->
+	<record model="ir.ui.view" id="inherit_kanban_candidates">
+		<field name="name">candidates.kanban.inherit</field>
+		<field name="model">hr.candidate</field>
+		<field name="inherit_id" ref="hr_recruitment.hr_candidate_view_kanban"/>
+		<field name="arch" type="xml">
+			<xpath expr="//field[@name='categ_ids']" position="replace">
+				<field name="categ_ids" invisible="1" />
+			</xpath>
+		</field>
+	</record>
+
+
+    <!-- Form View -->
+    <record model="ir.ui.view" id="inherit_form_candidates">
+		<field name="name">candidates.form.inherit</field>
+		<field name="model">hr.candidate</field>
+		<field name="inherit_id" ref="hr_recruitment.hr_candidate_view_form"/>
+		<field name="arch" type="xml">
+
+			<xpath expr="//field[@name='categ_ids']" position="replace">
+				<field name="categ_ids" invisible="1" />
+			</xpath>
+
+			<!-- Menambahkan label dan field 'tgl_pendaftaran' setelah 'name' -->
+			<xpath expr="//group[group/field[@name='active']]" position="before">
+				<div class="oe_title">
+					<label for="tgl_pendaftaran" class="oe_edit_only" string="Tanggal Pendaftaran" />
+					<h3>
+						<field name="tgl_pendaftaran"/>
+					</h3>
+				</div>
+			</xpath>
+
+			<!-- Menambahkan grup 'Data Diri Pelamar' -->
+			<xpath expr="//group[group/field[@name='active']]" position="after">
+				<group>
+					<group string="Data Diri Pelamar">
+						<field name="token" invisible="1" />
+						<field name="no_ktp"/>
+						<field name="tgl_lahir" />
+						<field name="tmp_lahir" />
+						<field name="gender" />
+						<field name="alamat" />
+					</group>
+					<group string="Data Pendaftaran">
+						<field name="lembaga" />
+						<field name="job_id" />
+					</group>
+				</group>
+			</xpath>
+
+			<!-- Dokumen Pendaftaran -->	
+			<xpath expr="//page[1]" position="replace">
+				<page string="Dokumen Pendaftaran">
+					<group>
+						<group string="Dokumen Calon Karyawan" class="o_group">
+							<field name="cv" filename="cv_filename" />
+							<field name="ktp" filename="ktp_filename" />
+							<field name="npwp" filename="npwp_filename" />
+						</group>
+						<group string="Dokumen Pendukung">
+							<field name="sertifikat" filename="sertifikat_filename" />
+							<field name="surat_pengalaman" filename="surat_pengalaman_filename" />
+						</group>
+					</group>
+					<group>
+						<group string="Dokumen Pendidikan" class="o_group">
+							<field name="ijazah" filename="ijazah_filename" />
+							<field name="pas_foto" filename="pas_foto_filename" />
+						</group>
+						<group string="Dokumen Kesehatan" class="o_group">
+							<field name="surat_kesehatan" filename="surat_kesehatan_filename" />
+						</group>
+					</group>
+				</page>
+                    
+            </xpath>
+		</field>
+	</record>
+
+</odoo>

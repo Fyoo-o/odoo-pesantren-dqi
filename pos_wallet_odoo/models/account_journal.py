@@ -101,7 +101,8 @@ class DonationDetail(models.Model):
     donation_id = fields.Many2one(
         'cdn.donation', 
         string='Terkait Sumbangan', 
-        help='Penggalangan donasi yang terkait dengan detail donasi ini'
+        help='Penggalangan donasi yang terkait dengan detail donasi ini',
+        domain=[('is_active', '=', True)]
     )
     state = fields.Selection(
         string='Status',

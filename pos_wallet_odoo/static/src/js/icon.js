@@ -12,9 +12,11 @@ class SystrayIcon extends Component {
         super.setup(...arguments);
         this.action = useService("action");
         this.fetchDonasiData();
+        // this.fetchDataWallet();
         this.state = useState({
             dropdownVisible: false,  // Mengatur state untuk menampilkan atau menyembunyikan dropdown
             donasiData: 0,
+            // wallet_belance: 0,
         });
     }
 
@@ -174,7 +176,7 @@ class SystrayIcon extends Component {
             view_mode: "list",
             views: [[false, "list"], [false, "form"]],
             target: "main",
-            domain: [['created_by.name','=',session.partner_display_name]]
+            domain: [['created_by.name', '=', session.partner_display_name]]
         });
     }
 }
@@ -186,3 +188,5 @@ SystrayIcon.components = { Dropdown, DropdownItem };
 // Menambahkan item systray ke dalam registry
 export const systrayItem = { Component: SystrayIcon, };
 registry.category("systray").add("SystrayIcon", systrayItem, { sequence: 1 });
+
+//Buatkan pengaitan template lagi tapi sekarang dengan name "Wallet"
