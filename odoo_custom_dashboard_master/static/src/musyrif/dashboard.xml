@@ -1,18 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
     <t t-name="owl.OwlMusyrifDashboard" owl="1">
+    <style>
+    @media (max-width: 768px) {
+       .controls-wrapper {
+            flex-direction: column;
+            width: 100%;
+            <!-- gap: 0.5rem;  -->
+          }
+           .dateButton {
+            width: 100%;
+       }
+       .timerDropdown {
+            display: flex;
+            margin-top: 0.5rem;
+            justify-content: between;
+            width: 100%;
+       }
+
+       .header-text {
+        font-size: 1.2rem;
+       }
+
+        .dropdown-menu {
+            width: 100%;
+        }
+
+       .dropdownButton {
+        width: 100%;
+        <!-- width: 15rem; -->
+       }
+       .timerButton {
+        width: 30%;
+        <!-- width: 3rem; -->
+       }
+
+       }
+       .timerDropdown {
+            display: flex;
+            margin: 1rem;
+       }
+      
+    </style>
         <div class="container-fluid vh-100">
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
             <!-- Header Full Width -->
-            <div class="mx-3 my-3">
+            <div class="mx-2 my-1">
                 <div class="col-12">
-                    <div class="p-4">
+                    <div class="py-2">
                         <div class="d-flex flex-wrap align-items-center justify-content-between">
-                            <h2 class="text-primary fw-bold">Dashboard Musyrif</h2>
-                            <div class="d-md-flex align-items-center">
+                            <div class="d-flex">
+                                <h2 class="text-primary fw-bold ms-1 header-text">Dashboard Musyrif</h2>
+                            </div>
+                            <div class="controls-wrapper d-flex align-items-center mt-1">
+
+                             <!-- Custom Date Range Button -->
+                                <button class="btn btn-outline-secondary dateButton" 
+                                        t-on-click="toggleDatePicker">
+                                    <i class="fas fa-calendar"></i>
+                                    <t t-if="state.selectedDateRange">
+                                        <span t-esc="formatDateRange(state.selectedDateRange.start, state.selectedDateRange.end)" class="ms-2"/>
+                                    </t>
+                                    <t t-else="">
+                                        
+                                    </t>
+                                </button>
+
+                                <div class="timerDropdown">
                                 <!-- Dropdown Periode -->
-                                <div class="dropdown me-3">
-                                    <button class="btn btn-outline-secondary dropdown-toggle" 
+                                <div class="dropdown me-3 dropdownButton">
+                                    <button class="btn btn-outline-secondary dropdown-toggle dropdownButton" 
                                             type="button" 
                                             data-bs-toggle="dropdown" 
                                             aria-expanded="false">
@@ -23,9 +80,9 @@
                                             <a class="dropdown-item d-flex justify-content-between align-items-center" 
                                             href="#" 
                                             id="selectionFilter"
-                                            t-on-click.prevent="() => this.setPeriod('all')">
+                                            t-on-click.prevent="() => this.setPeriod('bawaan')">
                                                 Default
-                                                <i class="fas fa-check" t-att-class="{'invisible': !isPeriodSelected('all')}"></i>
+                                                <i class="fas fa-check" t-att-class="{'invisible': !isPeriodSelected('bawaan')}"></i>
                                             </a>
                                         </li>
                                         <li>
@@ -103,23 +160,13 @@
                                     </ul>
                                 </div>
 
-                                <!-- Custom Date Range Button -->
-                                <button class="btn btn-outline-secondary me-3" 
-                                        t-on-click="toggleDatePicker">
-                                    <i class="fas fa-calendar"></i>
-                                    <t t-if="state.selectedDateRange">
-                                        <span t-esc="formatDateRange(state.selectedDateRange.start, state.selectedDateRange.end)" class="ms-2"/>
-                                    </t>
-                                    <t t-else="">
-                                        
-                                    </t>
-                                </button>
-
+                               
                                 <!-- Timer Button -->
-                                <button id="timerButton" class="btn btn-outline-secondary">
+                                <button id="timerButton" class="btn btn-outline-secondary timerButton">
                                     <i id="timerIcon" class="fas fa-stopwatch"></i>
                                     <span id="timerCountdown"></span>
                                 </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -160,7 +207,7 @@
             </div>
 
            <!-- Main Content -->
-            <div class="mx-0 my-3">
+            <div class="mx-0 my-0">
                 <MusyrifKpiCard
                 startDate="state.selectedDateRange?.start"
                 endDate="state.selectedDateRange?.end"
@@ -170,11 +217,11 @@
             <div class="row mx-0 my-3">
                 <div class="col-lg-6 col-md-12 col-sm-12 p-2">
                     <div class="shadow-sm border p-3 bg-white h-100">
-                        <h2>Perijinan</h2>
+                        <h2 class="mb-4">Perijinan</h2>
                         <MusyrifChartRenderer 
                             type="'chart'" 
                             startDate="state.selectedDateRange?.start"
-                            endDate="state.selectedDateRange?.end"
+                            endDate="state.selectedDateRange?.end" 
                         />
                     </div>
                 </div>

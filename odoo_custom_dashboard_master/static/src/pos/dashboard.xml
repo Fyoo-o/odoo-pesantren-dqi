@@ -43,6 +43,10 @@
                 z-index: 10000;
                 right: 0;
             }
+            
+            .timer-and-periode {
+                display: flex;
+            }
 
             @media (max-width: 768px) {
                 .controls-wrapper {
@@ -54,6 +58,20 @@
                 .controls-wrapper > * {
                     width: 100% !important;
                     margin-right: 0 !important;
+                }
+
+                .timer-and-periode {
+                    display: flex;
+                    width: 100%;
+                    justify-content: between;
+                }
+                
+                .periodSelection {
+                    width: 100%;
+                }
+
+                .timer-button {
+                    width: 30% !important;
                 }
 
                 .popup-container {
@@ -126,21 +144,25 @@
                                         </div>
                                     </div>
                                 </div>
-                                <select id="periodSelection" class="form-select me-2" style="width: 150px;">
+                                <div class="timer-and-periode">
+                                <select id="periodSelection" class="form-select me-2 periodSelection">
                                     <option value="">Pilih Periode</option>
                                     <option value="today">Hari Ini</option>
                                     <option value="yesterday">Kemarin</option>
-                                    <option value="7">7 Hari</option>
-                                    <option value="15">15 Hari</option>
+                                    <option value="thisweek">Minggu Ini</option>
+                                    <option value="lastweek">Minggu Lalu</option>
                                     <option value="month">Bulan Ini</option>
                                     <option value="lastMonth">Bulan Kemarin</option>
+                                    <option value="thisyear">Tahun Ini</option>
+                                    <option value="lastyear">Tahun Lalu</option>
                                 </select>
-                                <button id="timerButton" class="btn btn-outline-secondary me-2">
+                                <button id="timerButton" class="btn btn-outline-secondary timer-button">
                                     <i id="timerIcon" class="fas fa-clock"></i>
                                     <span id="timerCountdown"></span>
                                 </button>
-                                <div class="help-link">
+                                <!-- <div class="help-link">
                                     <a href="https://youtu.be/viwr6v9HHmw" target="_blank" class="ms-2 fa-solid fa-question rounded-circle border"></a>
+                                </div> -->
                                 </div>
                             </div>
                         </div>
