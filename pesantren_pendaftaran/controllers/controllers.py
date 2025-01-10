@@ -1328,7 +1328,7 @@ class UbigPendaftaranController(http.Controller):
     @http.route('/pendaftaran/submit', type='http', auth='public', methods=['POST'], csrf=True)
     def pendaftaran_submit(self, **post):
         def verify_recaptcha(response_token):
-            secret_key = '6Ld7s6wqAAAAAA3mQOtgyZg25id_TTJhqvLGXwwH'
+            secret_key = '6LfoWrIqAAAAADQdz3rMzi5QSJu_Zv9pZ-B5XW2H'
 
             payload = {
                 'secret': secret_key,
