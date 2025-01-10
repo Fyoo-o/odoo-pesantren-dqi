@@ -1166,7 +1166,7 @@
                 </div>
                 <div class="d-flex justify-content-center align-items-center mt-2 mb-2">
                   <!-- CAPTCHA -->
-                  <div class="g-recaptcha" data-sitekey="6Ld7s6wqAAAAAJPAzzfYZEyEQQwl6TkwhdctX6AZ"></div>
+                  <div class="g-recaptcha" data-sitekey="6LfoWrIqAAAAADDp0NgZCc4TEip5P9kGcIVRO5qt"></div>
                 </div>
                 <div class="d-flex justify-content-between mb-3">
                   <button type="button" style="background-color: #4CAF50 !important; text-decoration: none; color: white; padding: 10px 20px; text-align: center; display: inline-block; font-size: 16px; border-radius: 5px; cursor: pointer;" class="btn btn-secondary btn-prev" data-prev="containerDataSekolahAsal">Kembali</button>

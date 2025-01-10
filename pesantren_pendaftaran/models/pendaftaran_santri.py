@@ -286,6 +286,9 @@ class DataPendaftaran(models.Model):
 
     def write(self, vals):
 
+        if 'status_pembayaran' in vals and vals['status_pembayaran'] == 'sudahbayar':
+            self._create_journal_entry()
+
         if 'state' in vals and vals['state'] == 'diterima':
             for record in self:
                 # Buat akun orang tua jika belum ada
@@ -316,7 +319,7 @@ class DataPendaftaran(models.Model):
                 #     nisn = record.nisn
                 #     record.nis = record._generate_nis(nisn)
 
-        elif 'state' in vals and vals['state'] == 'ditolak':
+        if 'state' in vals and vals['state'] == 'ditolak':
             for record in self:
                 record.virtual_account = False # Menghapus Virtual Account
                 record.status_va = 'inactive'
@@ -328,6 +331,53 @@ class DataPendaftaran(models.Model):
         #             record.virtual_account = "01" + record._generate_virtual_account()
 
         return super(DataPendaftaran, self).write(vals)
+    
+    def _create_journal_entry(self):
+        """Mencatat jurnal secara otomatis."""
+        for rec in self:
+            if rec.status_pembayaran != 'sudahbayar':
+                continue  # Lewati jika status bukan "sudah_bayar"
+
+            # Ambil jurnal tipe "Cash"
+            journal = self.env['account.journal'].search([('type', '=', 'cash')], limit=1)
+            if not journal:
+                raise ValidationError('Tidak ada jurnal tipe "Cash" yang ditemukan.')
+
+            if not journal.default_account_id:
+                raise ValidationError("Akun default tidak diatur untuk jurnal ini.")
+            
+            # Dapatkan akun debit dan kredit
+            debit_account = journal.default_account_id
+            credit_account = self.env['account.account'].search([('code', '=', '11110001')], limit=1)  # Sesuaikan dengan akun Anda
+
+            if not credit_account:
+                raise ValidationError("Akun kredit tidak ditemukan.")
+
+            if not credit_account:
+                raise ValidationError("Akun kredit tidak ditemukan.")
+
+            # Buat journal entry
+            move = self.env['account.move'].create({
+                'journal_id': journal.id,
+                'date': fields.Date.today(),
+                'line_ids': [
+                    (0, 0, {
+                        'account_id': debit_account.id,
+                        'partner_id': self.partner_id.id if self.partner_id else False,
+                        'name': 'Debit Entry',
+                        'debit': self.biaya,
+                        'credit': 0.0,
+                    }),
+                    (0, 0, {
+                        'account_id': credit_account.id,
+                        'partner_id': self.partner_id.id if self.partner_id else False,
+                        'name': 'Credit Entry',
+                        'debit': 0.0,
+                        'credit': self.biaya,
+                    }),
+                ],
+            })
+            move.action_post()
     
     def create_orangtua(self):
         for record in self:
