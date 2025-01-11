@@ -1,5 +1,5 @@
 from odoo import api, fields, models
-
+from odoo.tools.translate import _
 
 class OrangTua(models.Model):
     _inherit = 'cdn.orangtua'
@@ -63,6 +63,18 @@ class OrangTua(models.Model):
                 self.env.ref('pesantren_guru.group_guru_user').id,
                 self.env.ref('pesantren_keuangan.group_keuangan_user').id
             ])]
+        
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _("Warning head"),
+                'type': 'notification',
+                'message': _("This is the detailed warning"),
+                'sticky': True,
+            },
+        }
+
 
 
 
