@@ -29,13 +29,11 @@
                 <form create="0" edit="0" delete="0" duplicate="0">
                     <header>
                         <button string="Santri Keluar" type="object" name="action_permission"
-                            groups="pesantren_kesantrian.group_kesantrian_manager,
-                                pesantren_kesantrian.group_kesantrian_keamanan"
+                            groups="pesantren_kesantrian.group_kesantrian_keamanan"
                             confirm="Santri akan keluar dari pesantren?"
                             invisible="state != 'Approved'" />
                         <button string="Santri Masuk" type="object" name="action_return"
-                            groups="pesantren_kesantrian.group_kesantrian_manager,
-                                pesantren_kesantrian.group_kesantrian_keamanan"
+                            groups="pesantren_kesantrian.group_kesantrian_keamanan"
                             confirm="Santri akan kembali / masuk ke dalam pesantren?"
                             invisible="state != 'Permission'" />
                         

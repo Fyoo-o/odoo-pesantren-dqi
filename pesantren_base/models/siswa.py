@@ -151,9 +151,10 @@ class siswa(models.Model):
         """Generate a random numeric barcode (10 digits)."""
         return f"{random.randint(1000000000000000, 9999999999999999)}"
 
-    _sql_constraints = [('nis_uniq', 'unique(nis)', 'Data NIS tersebut sudah pernah terdaftar, pastikan NIS harus unik !'),
-                        ('nisn_uniq', 'unique(nisn)', 'Data NISN tersebut sudah pernah terdaftar, pastikan NISN harus unik !'),
-                        ('nik_uniq', 'unique(nik)', 'Data NIK tersebut sudah pernah terdaftar, pastikan NIK harus unik !')]
+    # _sql_constraints = [('nis_uniq', 'unique(nis)', 'Data NIS tersebut sudah pernah terdaftar, pastikan NIS harus unik !'),
+    #                     ('nisn_uniq', 'unique(nisn)', 'Data NISN tersebut sudah pernah terdaftar, pastikan NISN harus unik !'),
+    #                     ('nik_uniq', 'unique(nik)', 'Data NIK tersebut sudah pernah terdaftar, pastikan NIK harus unik !')]
+    _sql_constraints = [('nik_uniq', 'unique(nik)', 'Data NIK tersebut sudah pernah terdaftar, pastikan NIK harus unik !')]
     
     # @api.model
     # def create(self, vals):

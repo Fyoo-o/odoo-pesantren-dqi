@@ -10,7 +10,20 @@ class CdnSiswa(models.Model):
     catatan = fields.Char(string='Catatan', 
     default='Disarankan untuk meningkatkan murojaah harian agar hafalan lebih kuat. Dari segi adab, santri sudah menunjukkan sikap yang baik dan disiplin selama sesi halaqoh.'
     )
-    
+    adab_ke_guru = fields.Selection(
+        string='Adab Kepada Guru',
+        selection=[('+a', 'A+'), ('a', 'A'), ('+b', 'B+'), ('b', 'B'), ('+c', 'C+'), ('c', 'C')]
+    )
+
+    adab_ke_teman = fields.Selection(
+        string='Adab Kepada Teman',
+        selection=[('+a', 'A+'), ('a', 'A'), ('+b', 'B+'), ('b', 'B'), ('+c', 'C+'), ('c', 'C')]
+    )
+
+    kedisiplinan = fields.Selection(
+        string='Kedisiplinan',
+        selection=[('+a', 'A+'), ('a', 'A'), ('+b', 'B+'), ('b', 'B'), ('+c', 'C+'), ('c', 'C')]
+)
 
     def action_print_sertifikat(self):
         """

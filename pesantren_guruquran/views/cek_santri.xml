@@ -77,10 +77,15 @@
                                     </list>
                                 </field>
                             </page>
-                            <page name="catatan_santri" string="Catatan Siswa">
-                                <group name="name" string="string">
+                            <page name="catatan_santri" string="Penilaian Lanjutan Santri">
+                                <group name="data_catatan" string="Catatan Santri">
                                     <field name="catatan_ortu" widget='html'/>
                                     <field name="catatan" widget='html'/>
+                                </group>
+                                <group name="penilaian" string="Penilaian Santri">
+                                    <field name="adab_ke_guru"/>
+                                    <field name="adab_ke_teman"/>
+                                    <field name="kedisiplinan"/>
                                 </group>
                             </page>
                         </notebook>
@@ -95,11 +100,11 @@
             <field name="res_model">cdn.siswa</field>
             <field name="view_mode">list,form</field>
             <!-- <field name="view_id" ref="cek_santri_view_tree" /> -->
-            <!-- <field name="domain">
+            <field name="domain">
             [
                 '|', ('halaqoh_id.penanggung_jawab_id.user_id','=',uid), ('halaqoh_id.pengganti_ids.user_id','=',uid)
             ]
-            </field> -->
+            </field>
         </record>
         <record id="action_tree_view_cek_santri_guruquran" model="ir.actions.act_window.view">
             <field name="sequence" eval="2" />

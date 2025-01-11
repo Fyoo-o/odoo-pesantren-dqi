@@ -105,6 +105,13 @@ class SiswaController(http.Controller):
                     </tr>
                 """
                 nomor_urut += 1
+            
+            # Pastikan 'hadir' ada di dictionary dan total tidak nol
+            persen_hadir = 0
+            if 'hadir' in kehadiran and sum(kehadiran.values()) > 0:
+                persen_hadir = int((kehadiran['hadir'] / sum(kehadiran.values())) * 100)
+            else:
+                persen_hadir = 0  # Default nilai jika tidak valid
 
             # Membangun konten HTML sertifikat untuk setiap siswa
             content += f"""
@@ -264,7 +271,7 @@ class SiswaController(http.Controller):
                                                     </tr>
                                                     <tr>
                                                         <th>Pers. Kehadiran</th>
-                                                        <td class="text-center">{int((kehadiran['hadir']/sum(kehadiran.values())) * 100)}%</td>
+                                                        <td class="text-center">{persen_hadir}%</td>
                                                     </tr>
                                                     <tr>
                                                         <th colspan="2" class="text-uppercase text-center">Akhlaq Keseharian</th>
