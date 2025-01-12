@@ -1346,12 +1346,12 @@ class UbigPendaftaranController(http.Controller):
           # Ambil token reCAPTCHA dari form
         recaptcha_response_token = post.get('g-recaptcha-response')
 
-        if not recaptcha_response_token:
-            raise UserError("reCAPTCHA tidak terisi. Silakan coba lagi.")
+        # if not recaptcha_response_token:
+        #     raise UserError("reCAPTCHA tidak terisi. Silakan coba lagi.")
 
         # Verifikasi token reCAPTCHA
-        if not verify_recaptcha(recaptcha_response_token):
-            raise UserError("Verifikasi reCAPTCHA gagal. Silakan coba lagi.")
+        # if not verify_recaptcha(recaptcha_response_token):
+        #     raise UserError("Verifikasi reCAPTCHA gagal. Silakan coba lagi.")
 
         # Ambil data dari form
         # kode_akses             = post.get('kode_akses')
