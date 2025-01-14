@@ -12,18 +12,26 @@ class CdnSiswa(models.Model):
     )
     adab_ke_guru = fields.Selection(
         string='Adab Kepada Guru',
-        selection=[('+a', 'A+'), ('a', 'A'), ('+b', 'B+'), ('b', 'B'), ('+c', 'C+'), ('c', 'C')]
+        selection=[('+a', 'A+'), ('a', 'A'), ('+b', 'B+'), ('b', 'B'), ('+c', 'C+'), ('c', 'C')],
+        default='b'
     )
 
     adab_ke_teman = fields.Selection(
         string='Adab Kepada Teman',
-        selection=[('+a', 'A+'), ('a', 'A'), ('+b', 'B+'), ('b', 'B'), ('+c', 'C+'), ('c', 'C')]
+        selection=[('+a', 'A+'), ('a', 'A'), ('+b', 'B+'), ('b', 'B'), ('+c', 'C+'), ('c', 'C')],
+        default='b'
     )
 
     kedisiplinan = fields.Selection(
         string='Kedisiplinan',
-        selection=[('+a', 'A+'), ('a', 'A'), ('+b', 'B+'), ('b', 'B'), ('+c', 'C+'), ('c', 'C')]
-)
+        selection=[('+a', 'A+'), ('a', 'A'), ('+b', 'B+'), ('b', 'B'), ('+c', 'C+'), ('c', 'C')],
+        default='b')
+    
+    peringkat = fields.Integer(
+        string='Peringkat dalam Kelas',
+        default=0
+    )
+    
 
     def action_print_sertifikat(self):
         """
