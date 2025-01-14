@@ -21,7 +21,10 @@ class SiswaController(http.Controller):
 
         # Mencari record siswa berdasarkan ID yang diberikan
         records = request.env['cdn.siswa'].sudo().search([('id', 'in', record_ids)])
-
+        
+        # Mencari record siswa berdasarkan ID yang diberikan
+        records = request.env['cdn.siswa'].sudo().search([('id', 'in', record_ids)])
+        
         # Jika tidak ditemukan record siswa, return 404
         if not records:
             return request.not_found()
@@ -51,8 +54,42 @@ class SiswaController(http.Controller):
                 else:
                     kehadiran['hadir'] += 1
 
+            # Mapping hari dan bulan ke bahasa Indonesia
+            HARI_INDONESIA = {
+                'Monday': 'Senin',
+                'Tuesday': 'Selasa',
+                'Wednesday': 'Rabu',
+                'Thursday': 'Kamis',
+                'Friday': 'Jumat',
+                'Saturday': 'Sabtu',
+                'Sunday': 'Minggu'
+            }
+
+            BULAN_INDONESIA = {
+                'January': 'Januari',
+                'February': 'Februari',
+                'March': 'Maret',
+                'April': 'April',
+                'May': 'Mei',
+                'June': 'Juni',
+                'July': 'Juli',
+                'August': 'Agustus',
+                'September': 'September',
+                'October': 'Oktober',
+                'November': 'November',
+                'December': 'Desember'
+            }
+
+            # Mendapatkan tanggal sekarang
             tanggal_sekarang = datetime.now()
-            tanggal_formatted = tanggal_sekarang.strftime('%A, %d %B %Y')
+
+            # Memetakan hari dan bulan
+            hari = HARI_INDONESIA[tanggal_sekarang.strftime('%A')]
+            bulan = BULAN_INDONESIA[tanggal_sekarang.strftime('%B')]
+
+            # Format tanggal
+            tanggal_formatted = f"{hari}, {tanggal_sekarang.day} {bulan} {tanggal_sekarang.year}"
+
 
             # Mendapatkan data siswa
             data = {
@@ -65,6 +102,11 @@ class SiswaController(http.Controller):
                 'tahfidz': record.tahfidz_quran_ids,
                 'catatan_ortu':record.catatan_ortu or 'Ananda menunjukkan kemajuan baik dalam hafalan, namun perlu memperbaiki tajwid dan memperkuat murojaah harian. Bacaan cukup lancar, dengan sikap yang santun dan disiplin selama belajar. Mohon dukungan orang tua untuk rutin memantau hafalan di rumah.',
                 'catatan':record.catatan or 'Disarankan untuk meningkatkan murojaah harian agar hafalan lebih kuat. Dari segi adab, santri sudah menunjukkan sikap yang baik dan disiplin selama sesi halaqoh.' ,
+                'adab_ke_guru':record.adab_ke_guru or 'B',
+                'adab_ke_teman': record.adab_ke_guru or 'B',
+                'kedisiplinan': record.kedisiplinan or 'B',
+                'peringkat': record.peringkat,
+                'total_santri': request.env['cdn.siswa'].sudo().search_count([('halaqoh_id', '=', record.halaqoh_id.id)])
             }
 
             # Generate konten dinamis dari tahfidz_quran_ids
@@ -275,7 +317,7 @@ class SiswaController(http.Controller):
                                                     </tr>
                                                     <tr>
                                                         <th>Adab dengan Guru</th>
-                                                        <td class="text-uppercase text-center">B</td>
+                                                        <td class="swap-text text-uppercase text-center">{data['adab_ke_guru']}</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -288,15 +330,15 @@ class SiswaController(http.Controller):
                                                 <th>Predikat Tahsin</th>
                                                 <th>Naik Ke: Jenjang Qur'an</th>
                                                 <th>Adab dengan Teman</th>
-                                                <th>B</th>
+                                                <th  class="swap-text text-uppercase text-center">{data['adab_ke_teman']}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr>
                                                 <th>Peringkat</th>
-                                                <td>(1) Dari 3 Santri/wati</td>
+                                                <td>({data['peringkat']}) Dari {data['total_santri']} Santri/wati</td>
                                                 <td>Kedisiplinan</td>
-                                                <th>B</th>
+                                                <th class="swap-text text-uppercase text-center">{data['kedisiplinan']}</th>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -315,7 +357,7 @@ class SiswaController(http.Controller):
                                             {content_data}
                                             <tr>
                                                 <td colspan="5" class="text-start p-2">
-                                                    <str  ong>Catatan untuk Orang Tua/Wali:</strong> {data['catatan_ortu']}
+                                                    <strong>Catatan untuk Orang Tua/Wali:</strong> {data['catatan_ortu']}
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -324,7 +366,7 @@ class SiswaController(http.Controller):
 
                                 <div class="d-flex align-items-end flex-column me-3 mt-1">
                                     <div class="">
-                                        <p class="m-0">Diberikan di, Pelaihari ...</p>
+                                        <p class="m-0">Diberikan di, Pelaihari</p>
                                         <p>Hari,tanggal : {tanggal_formatted}</p>
                                     </div>
                                 </div>
@@ -351,6 +393,12 @@ class SiswaController(http.Controller):
                         </div>
                     </div>
                     <script>
+                    document.querySelectorAll('.swap-text').forEach(el => {{
+                        const text = el.textContent.trim();
+                        if (text.startsWith('+')) {{
+                            el.textContent = text.slice(1) + '+';
+                        }}
+                    }});
                         window.print()
                     </script>
                 </body>

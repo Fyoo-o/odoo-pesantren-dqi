@@ -2,23 +2,23 @@
 <odoo>
     <data>
         <!-- cdn.tahsin_quran inherit form view -->
-        <!-- <record id="guruquran_cdn_tahsin_quran" model="ir.ui.view">
+        <record id="guruquran_cdn_tahsin_quran" model="ir.ui.view">
             <field name="name">guruquran.tahsin_quran.inherit.view.form</field>
             <field name="model">cdn.tahsin_quran</field>
             <field name="inherit_id" ref="pesantren_kesantrian.cdn_tahsin_quran_view_form"/>
             <field name="arch" type="xml">
-                
-                <xpath expr="//button[@name='action_confirm']" position="replace">
-                    <button string="Selesai" type="object" name="action_confirm" 
-                             invisible="state != 'draft'"
-                            groups="
-                                pesantren_kesantrian.group_kesantrian_manager,
-                                pesantren_guruquran.group_guru_quran_staff
-                            " />
+
+                <xpath expr="//sheet" position="inside">
+                    <group name="nilai_tahsin" string="Nilai">
+                        <field name="fashohah"/>
+                        <field name="tajwid"/>
+                        <field name="ghorib_musykilat"/>
+                        <field name="suara_lagu"/>
+                    </group>
                 </xpath>
-                
+
             </field>
-        </record> -->
+        </record>
         <!-- cdn.tahsin_quran action window -->
         <record id="cdn_tahsin_quran_action" model="ir.actions.act_window">
             <field name="name">Tahsin Al Qur'an</field>
@@ -28,9 +28,7 @@
             <field name="view_id" ref="pesantren_kesantrian.cdn_tahsin_view_tree" />
             <field name="domain">
                 [
-                    '|',
-                    ('halaqoh_id.penanggung_jawab_id.user_id','=',uid),
-                    ('halaqoh_id.pengganti_ids.user_id','=',uid)
+                    '|', ('halaqoh_id.penanggung_jawab_id.user_id','=',uid), ('halaqoh_id.pengganti_ids.user_id','=',uid)
                 ]
             </field>
         </record>
@@ -43,7 +41,7 @@
         <record id="action_form_view_cdn_tahsin" model="ir.actions.act_window.view">
             <field name="sequence" eval="3" />
             <field name="view_mode">form</field>
-            <field name="view_id" ref="pesantren_kesantrian.cdn_tahsin_quran_view_form" />
+            <field name="view_id" ref="guruquran_cdn_tahsin_quran" />
             <field name="act_window_id" ref="cdn_tahsin_quran_action" />
         </record>
         <!-- This Menu Item must have a parent and an action -->
