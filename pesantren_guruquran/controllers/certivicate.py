@@ -1,7 +1,6 @@
 from odoo import http
 from odoo.http import request
 from datetime import datetime
-import locale
 
 class SiswaController(http.Controller):
 
@@ -52,8 +51,6 @@ class SiswaController(http.Controller):
                 else:
                     kehadiran['hadir'] += 1
 
-            # Format tanggal
-            locale.setlocale(locale.LC_TIME, 'id_ID.utf8')
             tanggal_sekarang = datetime.now()
             tanggal_formatted = tanggal_sekarang.strftime('%A, %d %B %Y')
 
