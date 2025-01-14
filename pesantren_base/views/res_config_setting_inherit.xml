@@ -28,41 +28,5 @@
             <field name="target">inline</field>
             <field name="context">{'module' : 'hr_attendance', 'bin_size': False}</field>
         </record>
-
-        <!-- Inherit the existing form view of hr.attendance -->
-        <record id="view_hr_attendance_form_inherit" model="ir.ui.view">
-            <field name="name">hr.attendance.form.inherit</field>
-            <field name="model">hr.attendance</field>
-            <field name="inherit_id" ref="hr_attendance.hr_attendance_view_form"/>
-            <field name="arch" type="xml">
-                <!-- Add buttons to the header -->
-                <xpath expr="//header" position="inside">
-                    <button name="action_check_location" type="object" string="Cek Lokasi Absensi" class="oe_highlight" invisible="overtime_status in ['refused','approved']" icon="fa-location-arrow" groups="hr.group_hr_manager" />
-                    <button name="action_cancel_attendance" type="object" string="Tolak Absensi" class="oe_red" invisible="overtime_status == 'refused'" icon="fa-times" groups="hr.group_hr_manager"/>
-                    <button name="action_approv_attendance" type="object" string="Setujui Absensi" class="oe_red" invisible="overtime_status == 'approved'" icon="fa-check" groups="hr.group_hr_manager"/>
-                </xpath>
-
-                <xpath expr="//field[@name='overtime_hours']" position="before">
-                    <field name="image_1920" widget="image"/>
-                </xpath>
-
-            </field>
-        </record>
-        
-        <!-- Inherit the existing tree view of hr.attendance -->
-        <!-- <record id="view_hr_attendance_tree_inherit" model="ir.ui.view">
-            <field name="name">hr.attendance.tree.inherit</field>
-            <field name="model">hr.attendance</field>
-            <field name="inherit_id" ref="hr_attendance.view_attendance_tree"/>
-            <field name="arch" type="xml">
-                <xpath expr="//header" position="inside">
-                    <button name="action_check_location" type="object" string="Cek Lokasi Absensi" class="oe_highlight" invisible="overtime_status in ['refused','approved']" icon="fa-location-arrow" groups="hr.group_hr_manager" />
-                    <button name="action_cancel_attendance" type="object" string="Tolak Absensi" class="oe_red" invisible="overtime_status == 'refused'" icon="fa-times" groups="hr.group_hr_manager"/>
-                    <button name="action_approv_attendance" type="object" string="Tolak Absensi" class="oe_red" invisible="overtime_status == 'approved'" icon="fa-check" groups="hr.group_hr_manager"/>
-                </xpath>
-            </field>
-        </record> -->
-
-
     </data>
 </odoo>
