@@ -37,9 +37,9 @@
             <field name="arch" type="xml">
                 <!-- Add buttons to the header -->
                 <xpath expr="//header" position="inside">
-                    <button name="action_check_location" type="object" string="Cek Lokasi Absensi" class="oe_highlight" invisible="overtime_status in ['refused','approved']" icon="fa-location-arrow" groups="hr.group_hr_manager" />
-                    <button name="action_cancel_attendance" type="object" string="Tolak Absensi" class="oe_red" invisible="overtime_status == 'refused'" icon="fa-times" groups="hr.group_hr_manager"/>
-                    <button name="action_approv_attendance" type="object" string="Setujui Absensi" class="oe_red" invisible="overtime_status == 'approved'" icon="fa-check" groups="hr.group_hr_manager"/>
+                    <button name="action_check_location" type="object" string="Cek Lokasi Absensi" class="oe_highlight" groups="hr.group_hr_manager" />
+                    <button name="action_cancel_attendance" type="object" string="Tolak Absensi" class="oe_red" groups="hr.group_hr_manager"/>
+                    <button name="action_approv_attendance" type="object" string="Setujui Absensi" class="oe_red" groups="hr.group_hr_manager"/>
                 </xpath>
 
                 <xpath expr="//field[@name='overtime_hours']" position="before">
@@ -56,9 +56,9 @@
             <field name="inherit_id" ref="hr_attendance.view_attendance_tree"/>
             <field name="arch" type="xml">
                 <xpath expr="//header" position="inside">
-                    <button name="action_check_location" type="object" string="Cek Lokasi Absensi" class="oe_highlight" invisible="overtime_status in ['refused','approved']" icon="fa-location-arrow" groups="hr.group_hr_manager" />
-                    <button name="action_cancel_attendance" type="object" string="Tolak Absensi" class="oe_red" invisible="overtime_status == 'refused'" icon="fa-times" groups="hr.group_hr_manager"/>
-                    <button name="action_approv_attendance" type="object" string="Tolak Absensi" class="oe_red" invisible="overtime_status == 'approved'" icon="fa-check" groups="hr.group_hr_manager"/>
+                    <button name="action_check_location" type="object" string="Cek Lokasi Absensi" class="oe_highlight" groups="hr.group_hr_manager" />
+                    <button name="action_cancel_attendance" type="object" string="Tolak Absensi" class="oe_red" groups="hr.group_hr_manager"/>
+                    <button name="action_approv_attendance" type="object" string="Tolak Absensi" class="oe_red" groups="hr.group_hr_manager"/>
                 </xpath>
             </field>
         </record>
