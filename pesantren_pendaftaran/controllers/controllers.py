@@ -1658,7 +1658,7 @@ Terima kasih!
 
         # Kirim email
         if pendaftaran.email:
-            thn_sekarang = datetime.now().year
+            thn_sekarang = datetime.datetime.now().year
             # Contoh password (validasi minimal 8 karakter sudah dilakukan)
             pw = pendaftaran.password
             
