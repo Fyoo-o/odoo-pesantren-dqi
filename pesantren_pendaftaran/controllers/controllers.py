@@ -2664,8 +2664,19 @@ class PortalOrangTua(http.Controller):
         for rec in records:
             csrf_token = request.csrf_token()  # Ambil CSRF token
             # Tentukan status pembayaran dan kelas badge
-            status_text = rec.status_pembayaran.replace('belumbayar', 'Belum Bayar').replace('sudahbayar', 'Sudah Bayar')
-            badge_class = 'success' if rec.status_pembayaran == 'sudahbayar' else 'danger'
+            status_text = (
+                'Menunggu Validasi'
+                if rec.bukti_pembayaran
+                else rec.status_pembayaran.replace('belumbayar', 'Belum Bayar').replace('sudahbayar', 'Sudah Bayar')
+            )
+
+            badge_class = (
+                'success'
+                if rec.status_pembayaran == 'sudahbayar'
+                else 'warning' if rec.bukti_pembayaran
+                else 'danger'
+            )
+
             is_disabled = 'disabled' if rec.status_pembayaran == 'sudahbayar' else ''
             state_html = ''
             # Buat HTML untuk status pendaftaran siswa

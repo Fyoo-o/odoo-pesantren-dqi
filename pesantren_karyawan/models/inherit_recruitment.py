@@ -122,116 +122,17 @@ class inheritRecruitment(models.Model):
             'npwp'                  : self.npwp
         }
 
+class HrJob(models.Model):
+    _inherit = 'hr.job'
 
+    salary_range = fields.Char(
+        string="Rate Gaji", 
+        help="Format: Rp 10.000 - Rp 20.000"
+    )
 
-
-        # email_values = {
-        #         'subject': "Informasi Login Sistem Pesantren Daarul Qur'an Istiqomah",
-        #         'email_to': pendaftaran.email,
-        #         'body_html': f'''
-        #             <div style="background-color: #d9eaf7; padding: 20px; font-family: Arial, sans-serif;">
-        #                 <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden;">
-        #                     <!-- Header -->
-        #                     <div style="background-color: #0066cc; color: #ffffff; text-align: center; padding: 20px;">
-        #                         <h1 style="margin: 0; font-size: 24px;">Pesantren Daarul Qur'an Istiqomah</h1>
-        #                     </div>
-        #                     <!-- Body -->
-        #                     <div style="padding: 20px; color: #555555;">
-        #                         <p style="margin: 0 0 10px;">Assalamualaikum Wr. Wb,</p>
-        #                         <p style="margin: 0 0 20px;">
-        #                             Bapak/Ibu <strong>{pendaftaran.wali_nama or pendaftaran.nama_ayah or pendaftaran.nama_ibu}</strong>,<br>
-        #                             Akun Login telah dibuat di sistem pesantren kami. Berikut adalah informasi login Anda:
-        #                         </p>
-        #                         <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0;">
-        #                             <h3>Akun Login</h3>
-        #                             <table style="width: 100%; border-collapse: collapse;">
-        #                                 <tr>
-        #                                     <td style="padding: 8px; font-weight: bold; color: #333333;">Email :</td>
-        #                                     <td style="padding: 8px; color: #555555;">{pendaftaran.email}</td>
-        #                                 </tr>
-        #                                 <tr>
-        #                                     <td style="padding: 8px; font-weight: bold; color: #333333;">Kata Sandi :</td>
-        #                                     <td style="padding: 8px; color: #555555;">{masked_password}</td>
-        #                                 </tr>
-        #                             </table>
-
-        #                             <h3>Data Pendaftaran</h3>
-        #                             <table style="width: 100%; border-collapse: collapse;">
-        #                                 <tr>
-        #                                     <td style="padding: 8px; font-weight: bold; color: #333333;">Nama :</td>
-        #                                     <td style="padding: 8px; color: #555555;">{pendaftaran.partner_id.name}</td>
-        #                                 </tr>
-        #                                 <tr>
-        #                                     <td style="padding: 8px; font-weight: bold; color: #333333;">TTL :</td>
-        #                                     <td style="padding: 8px; color: #555555;">{pendaftaran.kota_lahir}, {pendaftaran.get_formatted_tanggal_lahir()}</td>
-        #                                 </tr>
-        #                                 <tr>
-        #                                     <td style="padding: 8px; font-weight: bold; color: #333333;">Alamat :</td>
-        #                                     <td style="padding: 8px; color: #555555;">{pendaftaran.alamat}</td>
-        #                                 </tr>
-        #                                 <tr>
-        #                                     <td style="padding: 8px; font-weight: bold; color: #333333;">NIK :</td>
-        #                                     <td style="padding: 8px; color: #555555;">{pendaftaran.nik}</td>
-        #                                 </tr>
-        #                             </table>
-
-        #                             <h3>Jenjang Pendidikan Yang Dipilih</h3>
-        #                             <table style="width: 100%; border-collapse: collapse;">
-        #                                 <tr>
-        #                                     <td style="padding: 8px; font-weight: bold; color: #333333;">Jenjang :</td>
-        #                                     <td style="padding: 8px; color: #555555;">{pendaftaran.jenjang_id.name}</td>
-        #                                 </tr>
-        #                             </table>
-
-        #                             <h3>Informasi Pembayaran</h3>
-        #                             <table style="width: 100%; border-collapse: collapse;">
-        #                                 <tr>
-        #                                     <td style="padding: 8px; font-weight: bold; color: #333333;">Bank :</td>
-        #                                     <td style="padding: 8px; color: #555555;">BSI</td>
-        #                                 </tr>
-        #                                 <tr>
-        #                                     <td style="padding: 8px; font-weight: bold; color: #333333;">Nomor Rekening :</td>
-        #                                     <td style="padding: 8px; color: #555555;">{no_rekening}</td>
-        #                                 </tr>
-        #                                 <tr>
-        #                                     <td style="padding: 8px; font-weight: bold; color: #333333;">Sejumlah :</td>
-        #                                     <td style="padding: 8px; color: #555555;">{biaya_formatted}</td>
-        #                                 </tr>
-        #                             </table>
-
-        #                         </div>
-        #                         <p style="text-align: center;">
-        #                             <a href="https://aplikasi.dqi.ac.id/login" style="background-color: #0066cc; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block;">
-        #                                 Masuk Ke Akun Anda
-        #                             </a>
-        #                         </p>
-        #                         <p style="margin: 20px 0;">
-        #                             Apabila terdapat kesulitan atau membutuhkan bantuan, silakan hubungi tim teknis kami melalui nomor:
-        #                         </p>
-        #                         <ul style="margin: 0; padding-left: 20px; color: #555555;">
-        #                             <li>0822 5207 9785</li>
-        #                             <li>0853 9051 1124</li>
-        #                         </ul>
-        #                         <p style="margin: 20px 0;">
-        #                             Kami berharap portal ini dapat membantu Bapak/Ibu memantau perkembangan putra/putri selama berada di pesantren.
-        #                         </p>
-        #                     </div>
-        #                     <!-- Footer -->
-        #                     <div style="background-color: #f1f1f1; text-align: center; padding: 10px;">
-        #                         <p style="font-size: 12px; color: #888888; margin: 0;">
-        #                             &copy; {thn_sekarang} Pesantren Tahfizh Daarul Qur'an Istiqomah. All rights reserved.
-        #                         </p>
-        #                     </div>
-        #                 </div>
-        #             </div>
-        #         ''',
-        #     }
-
-        #     mail = request.env['mail.mail'].sudo().create(email_values)
-        #     mail.send()
-    
-    # def get_formatted_tanggal_lahir(self):
-    #     if self.tgl_lahir:
-    #         # Langsung gunakan strftime untuk format DD-MM-YYYY
-    #         return self.tgl_lahir.strftime('%d-%m-%Y')
-    #     return 'Tanggal tidak tersedia'
+    @api.onchange('salary_range')
+    def _onchange_salary_range(self):
+        if self.salary_range:
+            # Validasi sederhana untuk memastikan format yang benar
+            if not self.salary_range.startswith('Rp'):
+                self.salary_range = f"Rp {self.salary_range}"
