@@ -1274,6 +1274,27 @@ class PesantrenPendaftaran(http.Controller):
 class PesantrenPekerjaanKaryawan(http.Controller):
     @http.route('/pekerjaan', auth='public')
     def index(self, **kw):
+
+        job_posts = request.env['hr.job'].search([])  # Ambil semua job posts
+        html = ''
+        for job in job_posts:
+             # Pastikan salary_range dan address_id.name memiliki nilai default jika None
+            salary_range = f'<i class="fas fa-coins me-1"></i>{job.salary_range}' if job.salary_range else ''
+            location = f'<a href="https://maps.app.goo.gl/LacL72R5as9ivzDC6" target="_blank"><i class="fas fa-map-marker-alt me-1"></i>{job.address_id.name}</a>' if job.address_id else 'Online'
+
+            html += f"""
+            <div class="job-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="row">
+                    <div class="col-11">
+                        <h2 class="job-title">{job.name}</h2>
+                        <p class="tag tag-recrutment">{job.no_of_recruitment} Kuota Daftar</p>
+                        <p class="tag tag-range">{salary_range}</p>
+                        <p class="job-location">{location}</p>
+                        <p class="job-description">{job.description}</p>
+                    </div>
+                </div>
+            </div>
+            """
         
         thn_sekarang = datetime.datetime.now().year
         
@@ -1301,6 +1322,13 @@ class PesantrenPekerjaanKaryawan(http.Controller):
                         background: linear-gradient(to right, #009688 80%, #ccff33 150%);
                         padding: clamp(0.5rem, 2vw, 1rem);
                         transition: all 0.3s ease;
+                    }}
+
+                    .tag.tag-recrutment{{
+                        background-color: #d354545c;
+                        padding: 2px 5px;
+                        width: max-content;
+                        border-radius: 5px;
                     }}
 
                     .navbar-text {{
@@ -1443,7 +1471,7 @@ class PesantrenPekerjaanKaryawan(http.Controller):
 
                 <nav class="navbar navbar-expand-lg sticky-top">
                     <div class="container">
-                        <a class="navbar-text" href="#" data-aos="fade-right">Pesantren DQI</a>
+                        <a class="navbar-text" href="#" data-aos="fade-right">Yayasan DQI</a>
                         <button class="navbar-toggler bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown">
                             <span class="navbar-toggler-icon border-white text-white"></span>
                         </button>
@@ -1473,81 +1501,7 @@ class PesantrenPekerjaanKaryawan(http.Controller):
                 </section>
 
                 <div class="container my-5 pb-5">
-                    <!-- Guru -->
-                    <div class="job-card" data-aos="fade-up" data-aos-delay="100">
-                        <div class="row">
-                            <div class="col-11">
-                                <h2 class="job-title">Guru</h2>
-                                <p class="job-location">Kalimantan, Indonesia</p>
-                                <p class="job-salary">Rp5.000.000 - Rp8.000.000 per bulan</p>
-                                <p class="job-description">
-                                    Mencari guru berpengalaman dengan minimal 3 tahun mengajar. Bertanggung jawab untuk mengembangkan kurikulum, 
-                                    memberikan pembelajaran yang efektif, dan membimbing siswa dalam pengembangan akademik dan karakter. 
-                                    Kualifikasi: S1 Pendidikan, mampu menggunakan teknologi pembelajaran modern, dan memiliki sertifikasi guru.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Kesehatan -->
-                    <div class="job-card" data-aos="fade-up" data-aos-delay="200">
-                        <div class="row">
-                            <div class="col-11">
-                                <h2 class="job-title">Petugas Kesehatan</h2>
-                                <p class="job-location">Kalimantan, Indonesia</p>
-                                <p class="job-description">
-                                    Dibutuhkan tenaga kesehatan untuk unit kesehatan sekolah. Bertanggung jawab atas pemeriksaan kesehatan rutin, 
-                                    penanganan pertolongan pertama, dan edukasi kesehatan kepada siswa. Kualifikasi: D3/S1 Keperawatan, 
-                                    memiliki STR aktif, dan pengalaman minimal 2 tahun di bidang kesehatan.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Keamanan -->
-                    <div class="job-card" data-aos="fade-up" data-aos-delay="300">
-                        <div class="row">
-                            <div class="col-11">
-                                <h2 class="job-title">Petugas Keamanan</h2>
-                                <p class="job-location">Kalimantan, Indonesia</p>
-                                <p class="job-description">
-                                    Mencari petugas keamanan profesional untuk menjaga keamanan lingkungan sekolah. Bertanggung jawab atas 
-                                    pengawasan CCTV, patroli rutin, dan penanganan situasi darurat. Kualifikasi: Minimal SMA/SMK, 
-                                    memiliki sertifikat Gada Pratama, dan pengalaman minimal 2 tahun sebagai security.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Musyrif -->
-                    <div class="job-card" data-aos="fade-up" data-aos-delay="400">
-                        <div class="row">
-                            <div class="col-11">
-                                <h2 class="job-title">Musyrif</h2>
-                                <p class="job-location">Kalimantan, Indonesia</p>
-                                <p class="job-description">
-                                    Dibutuhkan Musyrif untuk asrama santri. Bertanggung jawab membimbing dan mengawasi kegiatan santri, 
-                                    memastikan kedisiplinan, dan membina akhlak santri. Kualifikasi: Minimal S1 dari perguruan tinggi Islam, 
-                                    hafal minimal 5 juz Al-Quran, dan memiliki pengalaman sebagai pembimbing asrama.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Ustadz -->
-                    <div class="job-card" data-aos="fade-up" data-aos-delay="500">
-                        <div class="row">
-                            <div class="col-11">
-                                <h2 class="job-title">Ustadz</h2>
-                                <p class="job-location">Kalimantan, Indonesia</p>
-                                <p class="job-description">
-                                    Mencari Ustadz untuk mengajar ilmu agama Islam. Bertanggung jawab memberikan pengajaran Al-Quran, 
-                                    Hadist, Fiqih, dan materi keislaman lainnya. Kualifikasi: S1/S2 Syariah atau Ushuluddin, 
-                                    hafal minimal 10 juz Al-Quran, dan memiliki pengalaman mengajar minimal 3 tahun di pesantren.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+                { html }
                 </div>
 
     <!-- Footer -->
@@ -1905,7 +1859,7 @@ class PesantrenTentangKaryawan(http.Controller):
                 <!-- Rest of the HTML remains the same -->
                 <nav class="navbar navbar-expand-lg sticky-top">
                     <div class="container">
-                        <a class="navbar-text" href="#" data-aos="fade-right">Pesantren DQI</a>
+                        <a class="navbar-text" href="#" data-aos="fade-right">Yayasan DQI</a>
                         <button class="navbar-toggler bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown">
                             <span class="navbar-toggler-icon border-white text-white"></span>
                         </button>
@@ -2417,7 +2371,7 @@ class PesantrenBerandaKaryawan(http.Controller):
             <body>
                 <nav class="navbar navbar-expand-lg sticky-top">
                     <div class="container">
-                        <a class="navbar-text" href="#" data-aos="fade-right">Pesantren DQI</a>
+                        <a class="navbar-text" href="#" data-aos="fade-right">Yayasan DQI</a>
                         <button class="navbar-toggler bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown">
                             <span class="navbar-toggler-icon border-white text-white"></span>
                         </button>
@@ -2449,7 +2403,7 @@ class PesantrenBerandaKaryawan(http.Controller):
                                 <section class="recruitment-hero row">
                                     <div class="hero-text col-lg-6 mb-3 mb-lg-0 text-center text-lg-start" data-aos="fade-right">
                                         <h5 class="text-uppercase text-success fw-bold">Perekrutan</h5>
-                                        <h1>Lamar Bekerja Pada Pesantren DQI</h1>
+                                        <h1>Lamar Bekerja Pada Yayasan DQI</h1>
                                         <p>Bergabunglah bersama kami dan jadilah bagian dari keluarga besar Pesantren DQI. Kami mencari individu yang berdedikasi, berintegritas, dan siap berkontribusi untuk mencetak generasi yang unggul dan berakhlak mulia.</p>
                                     </div>
                                     <div class="hero-image col-lg-6" data-aos="fade-left">
@@ -2459,7 +2413,7 @@ class PesantrenBerandaKaryawan(http.Controller):
 
                     <section class="container">
                         <h5 class="text-uppercase text-center text-success fw-bold" data-aos="fade-up">Perekrutan</h5>
-                        <h2 class="text-center" data-aos="fade-up">Jenis Pekerjaan Yang Dibuka Untuk Bekerja Di Pesantren Da'arul Istiqomah</h2>
+                        <h2 class="text-center" data-aos="fade-up">Jenis Pekerjaan Yang Dibuka Untuk Bekerja Di Yayasan Da'arul Istiqomah</h2>
                         <div class="row mt-4 g-4 d-flex justify-content-center">
                             <div class="col-lg-4 col-md-6" data-aos="fade-up">
                                 <div class="recruitment-card">

@@ -22,9 +22,6 @@ class SiswaController(http.Controller):
         # Mencari record siswa berdasarkan ID yang diberikan
         records = request.env['cdn.siswa'].sudo().search([('id', 'in', record_ids)])
         
-        # Mencari record siswa berdasarkan ID yang diberikan
-        records = request.env['cdn.siswa'].sudo().search([('id', 'in', record_ids)])
-        
         # Jika tidak ditemukan record siswa, return 404
         if not records:
             return request.not_found()
