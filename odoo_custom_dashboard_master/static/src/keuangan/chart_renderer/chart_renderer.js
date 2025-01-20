@@ -31,6 +31,7 @@ export class KeuanganChartRenderer extends Component {
     this.countdownInterval = null;
     this.countdownTime = 10;
     this.isCountingDown = false;
+    this.isZoomed = false;
 
     if (this.props.startDate && this.props.endDate) {
       this.state.isFiltered = true;
@@ -1106,6 +1107,10 @@ export class KeuanganChartRenderer extends Component {
       return;
     }
 
+    if (this.isZoomed) {
+      this.toggleZoom();
+    }
+
     let actionConfig = {
       type: "ir.actions.act_window",
       name: `${this.props.title} - ${seriesName}`,
@@ -1233,6 +1238,134 @@ export class KeuanganChartRenderer extends Component {
       console.error("Action service not available");
     }
   }
+  toggleZoom = () => {
+    console.log("Tombol zoom ditekan");
+    const chartWrapper = this.chartRef.el.parentElement;
+    const zoomBtn = chartWrapper.querySelector(".zoom-btn i");
+
+    if (!this.isZoomed) {
+      // Buat container fullscreen jika belum ada
+      if (!this.fullscreenContainer) {
+        this.fullscreenContainer = document.createElement("div");
+        this.fullscreenContainer.className =
+          "position-fixed top-0 start-0 w-100 h-100 bg-white";
+        this.fullscreenContainer.style.zIndex = "9999";
+        this.fullscreenContainer.style.overflowX =
+          window.innerWidth < 768 ? "auto" : "hidden"; // Scroll horizontal untuk HP
+        this.fullscreenContainer.style.overflowY = "hidden"; // Cegah scroll vertikal
+        this.fullscreenContainer.style.webkitOverflowScrolling = "touch"; // Scroll halus di iOS
+
+        // Tambahkan tombol close
+        const closeBtn = document.createElement("button");
+        closeBtn.className =
+          "btn btn-sm btn-light position-absolute top-0 start-0 m-3"; // Posisikan di kiri atas
+        closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+        closeBtn.onclick = () => this.toggleZoom();
+        closeBtn.style.zIndex = "10000"; // Pastikan tombol berada di atas
+        this.fullscreenContainer.appendChild(closeBtn);
+
+        // Tambahkan container chart
+        this.zoomedChartContainer = document.createElement("div");
+        this.zoomedChartContainer.style.height = "100%";
+        this.zoomedChartContainer.style.display = "flex";
+        this.zoomedChartContainer.style.justifyContent = "center";
+        this.zoomedChartContainer.style.alignItems = "center";
+
+        if (window.innerWidth < 768) {
+          // Untuk layar HP
+          this.zoomedChartContainer.style.minWidth = "1024px";
+          this.zoomedChartContainer.style.paddingRight = "40px";
+        }
+
+        this.fullscreenContainer.appendChild(this.zoomedChartContainer);
+      }
+
+      // Simpan parent dan dimensi asli
+      this.originalParent = this.chartRef.el.parentElement;
+      this.originalHeight = this.chartRef.el.style.height;
+      this.originalWidth = this.chartRef.el.style.width;
+
+      // Tampilkan fullscreen
+      document.body.appendChild(this.fullscreenContainer);
+      this.chartRef.el.style.height = window.innerWidth < 768 ? "100%" : "90%";
+      this.chartRef.el.style.width = window.innerWidth < 768 ? "100%" : "90%";
+      this.zoomedChartContainer.appendChild(this.chartRef.el);
+
+      if (zoomBtn) {
+        zoomBtn.className = "fas fa-compress";
+      }
+
+      // Tambahkan indikator scroll pada layar HP
+      if (window.innerWidth < 768) {
+        const scrollIndicator = document.createElement("div");
+        scrollIndicator.className = "scroll-indicator";
+        scrollIndicator.innerHTML =
+          '<i class="fas fa-arrows-left-right"></i> Scroll untuk melihat lebih banyak';
+        scrollIndicator.style.cssText = `
+                position: absolute;
+                bottom: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0,0,0,0.7);
+                color: white;
+                padding: 8px 16px;
+                border-radius: 20px;
+                font-size: 12px;
+                opacity: 0.8;
+                z-index: 10000;
+            `;
+        this.fullscreenContainer.appendChild(scrollIndicator);
+
+        // Hilangkan indikator scroll setelah 3 detik
+        setTimeout(() => {
+          scrollIndicator.style.transition = "opacity 0.5s";
+          scrollIndicator.style.opacity = "0";
+          setTimeout(() => scrollIndicator.remove(), 500);
+        }, 3000);
+      }
+    } else {
+      // Kembali ke tampilan normal
+      const chartCanvas = this.chartRef.el;
+
+      // Hapus fullscreen container
+      if (this.fullscreenContainer && this.fullscreenContainer.parentNode) {
+        document.body.removeChild(this.fullscreenContainer);
+      }
+
+      // Kembalikan chart ke container asli
+      if (this.originalParent) {
+        chartCanvas.style.height = this.originalHeight || "450px";
+        chartCanvas.style.width = this.originalWidth || "100%";
+        this.originalParent.appendChild(chartCanvas);
+      }
+
+      if (zoomBtn) {
+        zoomBtn.className = "fas fa-expand";
+      }
+    }
+
+    this.isZoomed = !this.isZoomed;
+
+    // Perbarui ukuran chart menggunakan ApexCharts
+    if (this.chartInstance) {
+      setTimeout(() => {
+        const height = this.isZoomed ? window.innerHeight * 0.9 : 450;
+        const width = this.isZoomed
+          ? window.innerWidth < 768
+            ? "100%"
+            : "90%"
+          : "100%";
+        const options = {
+          chart: {
+            height: height,
+            width: width,
+          },
+        };
+
+        this.chartInstance.updateOptions(options, false, true);
+      }, 100);
+    }
+  };
 }
 
 KeuanganChartRenderer.template = "owl.KeuanganChartRenderer";

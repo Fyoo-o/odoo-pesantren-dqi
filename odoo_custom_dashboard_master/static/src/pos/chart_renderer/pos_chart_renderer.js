@@ -26,6 +26,7 @@ export class PosChartRenderer extends Component {
       endDate2: null,
       filter1: null,
       filter2: null,
+      periodSelection: "month",
     };
 
     // COUNTDOWN
@@ -454,15 +455,19 @@ export class PosChartRenderer extends Component {
         domainline2.push(["config_id", "=", selectedStoreId]);
       }
 
+      // Menambah price total untuk menghindari nilai negatif
+      domain1.push(["price_total", ">=", 0]);
+      domain2.push(["price_total", ">=", 0]);
+
       // Fetch data with updated domains
       pie1 = await this.orm.call("report.pos.order", "search_read", [
         domain1,
-        ["id", "date", "product_categ_id"],
+        ["id", "date", "product_categ_id", "price_total"],
       ]);
 
       pie2 = await this.orm.call("report.pos.order", "search_read", [
         domain2,
-        ["id", "date", "pos_categ_id"],
+        ["id", "date", "pos_categ_id", "price_total"],
       ]);
 
       line1 = await this.orm.call("pos.order", "search_read", [
@@ -1406,6 +1411,11 @@ export class PosChartRenderer extends Component {
   }
 
   toggleZoom() {
+    console.log("Zoom Ditekan");
+  }
+
+  toggleZoom() {
+    console.log("Tombol zoom ditekan");
     const chartWrapper = this.chartRef.el.parentElement;
     const zoomBtn = chartWrapper.querySelector(".zoom-btn i");
 

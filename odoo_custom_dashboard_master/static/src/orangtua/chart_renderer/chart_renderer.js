@@ -709,65 +709,110 @@ export class OrangtuaChartRenderer extends Component {
     }
   }
 
-  handleEscapeKey(event) {
-    if (event.key === "Escape" && this.isZoomed) {
-      this.toggleZoom();
-    }
-  }
+  // handleEscapeKey(event) {
+  //   if (event.key === "Escape" && this.isZoomed) {
+  //     this.toggleZoom();
+  //   }
+  // }
 
-  toggleZoom() {
+  toggleZoom = () => {
+    console.log("Tombol zoom ditekan");
     const chartWrapper = this.chartRef.el.parentElement;
     const zoomBtn = chartWrapper.querySelector(".zoom-btn i");
 
     if (!this.isZoomed) {
-      // Create fullscreen container if it doesn't exist
+      // Buat container fullscreen jika belum ada
       if (!this.fullscreenContainer) {
         this.fullscreenContainer = document.createElement("div");
         this.fullscreenContainer.className =
-          "position-fixed top-0 start-0 w-100 h-100 bg-white p-4";
+          "position-fixed top-0 start-0 w-100 h-100 bg-white";
         this.fullscreenContainer.style.zIndex = "9999";
+        this.fullscreenContainer.style.overflowX =
+          window.innerWidth < 768 ? "auto" : "hidden"; // Scroll horizontal untuk HP
+        this.fullscreenContainer.style.overflowY = "hidden"; // Cegah scroll vertikal
+        this.fullscreenContainer.style.webkitOverflowScrolling = "touch"; // Scroll halus di iOS
 
-        // Add close button
+        // Tambahkan tombol close
         const closeBtn = document.createElement("button");
         closeBtn.className =
-          "btn btn-sm btn-light position-absolute top-0 end-0 m-3";
+          "btn btn-sm btn-light position-absolute top-0 start-0 m-3"; // Posisikan di kiri atas
         closeBtn.innerHTML = '<i class="fas fa-times"></i>';
         closeBtn.onclick = () => this.toggleZoom();
+        closeBtn.style.zIndex = "10000"; // Pastikan tombol berada di atas
         this.fullscreenContainer.appendChild(closeBtn);
 
-        // Add chart container
+        // Tambahkan container chart
         this.zoomedChartContainer = document.createElement("div");
-        this.zoomedChartContainer.style.height = "95%";
+        this.zoomedChartContainer.style.height = "100%";
+        this.zoomedChartContainer.style.display = "flex";
+        this.zoomedChartContainer.style.justifyContent = "center";
+        this.zoomedChartContainer.style.alignItems = "center";
+
+        if (window.innerWidth < 768) {
+          // Untuk layar HP
+          this.zoomedChartContainer.style.minWidth = "1024px";
+          this.zoomedChartContainer.style.paddingRight = "40px";
+        }
+
         this.fullscreenContainer.appendChild(this.zoomedChartContainer);
       }
 
-      // Store original parent and dimensions
+      // Simpan parent dan dimensi asli
       this.originalParent = this.chartRef.el.parentElement;
       this.originalHeight = this.chartRef.el.style.height;
       this.originalWidth = this.chartRef.el.style.width;
 
-      // Show fullscreen
+      // Tampilkan fullscreen
       document.body.appendChild(this.fullscreenContainer);
-      this.chartRef.el.style.height = "100%";
+      this.chartRef.el.style.height = window.innerWidth < 768 ? "100%" : "90%";
+      this.chartRef.el.style.width = window.innerWidth < 768 ? "100%" : "90%";
       this.zoomedChartContainer.appendChild(this.chartRef.el);
 
       if (zoomBtn) {
         zoomBtn.className = "fas fa-compress";
       }
+
+      // Tambahkan indikator scroll pada layar HP
+      if (window.innerWidth < 768) {
+        const scrollIndicator = document.createElement("div");
+        scrollIndicator.className = "scroll-indicator";
+        scrollIndicator.innerHTML =
+          '<i class="fas fa-arrows-left-right"></i> Scroll untuk melihat lebih banyak';
+        scrollIndicator.style.cssText = `
+                position: absolute;
+                bottom: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0,0,0,0.7);
+                color: white;
+                padding: 8px 16px;
+                border-radius: 20px;
+                font-size: 12px;
+                opacity: 0.8;
+                z-index: 10000;
+            `;
+        this.fullscreenContainer.appendChild(scrollIndicator);
+
+        // Hilangkan indikator scroll setelah 3 detik
+        setTimeout(() => {
+          scrollIndicator.style.transition = "opacity 0.5s";
+          scrollIndicator.style.opacity = "0";
+          setTimeout(() => scrollIndicator.remove(), 500);
+        }, 3000);
+      }
     } else {
-      // Return to normal view
+      // Kembali ke tampilan normal
       const chartCanvas = this.chartRef.el;
 
-      // First, remove the fullscreen container
+      // Hapus fullscreen container
       if (this.fullscreenContainer && this.fullscreenContainer.parentNode) {
         document.body.removeChild(this.fullscreenContainer);
       }
 
-      // Then reattach the chart to its original container
+      // Kembalikan chart ke container asli
       if (this.originalParent) {
-        // Restore original dimensions
-        chartCanvas.style.height = this.originalHeight;
-        chartCanvas.style.width = this.originalWidth;
+        chartCanvas.style.height = this.originalHeight || "450px";
+        chartCanvas.style.width = this.originalWidth || "100%";
         this.originalParent.appendChild(chartCanvas);
       }
 
@@ -778,13 +823,26 @@ export class OrangtuaChartRenderer extends Component {
 
     this.isZoomed = !this.isZoomed;
 
-    // Resize chart to fit new container
+    // Perbarui ukuran chart menggunakan ApexCharts
     if (this.chartInstance) {
       setTimeout(() => {
-        this.chartInstance.resize();
-      }, 100); // Increased timeout to ensure DOM updates
+        const height = this.isZoomed ? window.innerHeight * 0.9 : 450;
+        const width = this.isZoomed
+          ? window.innerWidth < 768
+            ? "100%"
+            : "90%"
+          : "100%";
+        const options = {
+          chart: {
+            height: height,
+            width: width,
+          },
+        };
+
+        this.chartInstance.updateOptions(options, false, true);
+      }, 100);
     }
-  }
+  };
 }
 
 OrangtuaChartRenderer.template = "owl.OrangtuaChartRenderer";

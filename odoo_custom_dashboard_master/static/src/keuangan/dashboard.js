@@ -186,7 +186,7 @@ class OwlKeuanganDashboard extends Component {
         end = new Date(todayStart.getFullYear(), todayStart.getMonth() + 1, 0);
         break;
     }
-
+ 
     this.state.selectedPeriod = period;
     this.state.selectedDateRange = {
       start: this.getLocalDateString(start),
