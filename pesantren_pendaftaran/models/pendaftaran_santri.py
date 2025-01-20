@@ -406,7 +406,7 @@ class DataPendaftaran(models.Model):
                 # Membuat data orangtua otomatis saat pendaftaran diterima
                 partner_vals = {
                     'name': record.wali_nama,
-                    'email': record.email,  # Asumsi field email ada di model Pendaftaran
+                    'email': record.email or record.nomor_login,  # Asumsi field email ada di model Pendaftaran
                     'phone': record.wali_telp,  # Asumsi field phone ada di model Pendaftaran
                     'city': record.kota_id.name,
                 }

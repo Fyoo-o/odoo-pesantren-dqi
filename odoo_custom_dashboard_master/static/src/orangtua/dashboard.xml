@@ -75,7 +75,7 @@
                     >
                       <span t-esc="getPeriodLabel(state.selectedPeriod)" />
                     </button>
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu dropdownButton">
                       <li>
                         <a
                           class="dropdown-item d-flex justify-content-between align-items-center"

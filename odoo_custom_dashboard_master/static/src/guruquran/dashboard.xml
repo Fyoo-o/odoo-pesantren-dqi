@@ -274,7 +274,7 @@
       <div class="row mx-0 my-3">
         <div class="col-lg-6 col-md-12 col-sm-12 m-0 p-2">
           <div class="shadow-sm border p-4 bg-white h-100">
-            <h2 class="mb-5">Absen Tahfidz per Kehadiran</h2>
+            <h2 class="mb-5">Absen Tahfizh per Kehadiran</h2>
             <GuruquranChartRenderer
               type="'donutChart'"
               period="state.selectedPeriod"

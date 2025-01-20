@@ -333,6 +333,8 @@ export class PosKpiCard extends Component {
         0
       );
 
+      console.log("Total Produk Terjual", currentOrderLines);
+
       this.processData(
         currentPeriodOrders,
         previousPeriodOrders,
@@ -394,10 +396,8 @@ export class PosKpiCard extends Component {
       0
     );
 
-    const totalProductsCurrent = currentOrderLines.reduce(
-      (sum, line) => sum + line.qty,
-      0
-    );
+    const totalProductsCurrent = currentOrderLines.length;
+
     const totalProductsPrevious = previousOrderLines.reduce(
       (sum, line) => sum + line.qty,
       0
@@ -724,7 +724,7 @@ export class PosKpiCard extends Component {
                           <div class="h2 fw-bold text-primary" style="font-size: 35px;">
                               ${kpi.value}
                           </div>
-                          
+                                 
                           <!-- KPI Name -->
                           <div class="text-muted text-nowrap" style="font-size: 16px;">
                               ${kpi.name}
@@ -779,9 +779,15 @@ export class PosKpiCard extends Component {
       target: "current",
     };
 
+    let domainProduk = [
+      ["create_date", ">=", startDate],
+      ["create_date", "<=", endDate],
+      ["price_unit", ">=", 0],
+    ];
+
     // Sesuaikan konfigurasi aksi berdasarkan jenis kartu KPI
     switch (cardName) {
-      case "Total Pendapatan":
+      case "Pendapatan":
         actionConfig = {
           ...actionConfig,
           name: "Detail Pendapatan",
@@ -790,7 +796,7 @@ export class PosKpiCard extends Component {
         };
         break;
 
-      case "Total Order":
+      case "Order":
         actionConfig = {
           ...actionConfig,
           name: "Detail Order",
@@ -799,15 +805,12 @@ export class PosKpiCard extends Component {
         };
         break;
 
-      case "Total Produk Terjual":
+      case "Produk Terjual":
         actionConfig = {
           ...actionConfig,
           name: "Detail Produk Terjual",
           res_model: "pos.order.line",
-          domain: [
-            ...domain,
-            ["product_id.type", "=", "consu"], // Akses field `type` melalui relasi
-          ],
+          domain: domainProduk,
         };
         break;
 

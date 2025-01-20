@@ -289,11 +289,11 @@
                             <page string="Akun">
                                 <group string="Akun Login" class="o_group">
                                     <field name="email"
-                                        readonly="state in 'terdaftar,seleksi,diterima,ditolak,batal'" />
+                                        readonly="state in 'diterima,ditolak,batal'" />
                                     <field name="nomor_login"
-                                        readonly="state in 'terdaftar,seleksi,diterima,ditolak,batal'" />
+                                        readonly="state in 'diterima,ditolak,batal'" />
                                     <field name="password" password="True"
-                                        readonly="state in 'terdaftar,seleksi,diterima,ditolak,batal'" />
+                                        readonly="state in 'diterima,ditolak,batal'" />
                                 </group>
                             </page>
                             <page string="Pembayaran">

@@ -67,6 +67,18 @@ export class OrangtuaCardList1 extends Component {
   async fetchMutabaahData() {
     try {
       this.state.isLoading = true;
+
+      // const filterDomain = [];
+      //     ["state", "=", "Done"],
+      //     ["orangtua_id", "ilike", session.partner_display_name],
+      //   ];
+
+      // if (this.state.currentStartDate) {
+      //   filterDomain.push(["tgl", ">=", this.state.currentStartDate]);
+      // }
+      // if (this.state.currentEndDate) {
+      //   filterDomain.push(["tgl", "<=", this.state.currentEndDate]);
+      // }
       // const siswaDomain = [
       //   ["orangtua_id", "ilike", session.partner_display_name],
       // ];
@@ -84,36 +96,39 @@ export class OrangtuaCardList1 extends Component {
       // siswaIds = siswaData.map((siswa) => siswa.name);
       // console.log("Siswa Data Nama :", siswaIds);
 
-      // let combineMutabaahDomain = [
-      //   // ["name", "in", siswaIds],
-      //   ["tanggal", ">=", this.state.currentStartDate],
-      //   ["tanggal", "<=", this.state.currentEndDate],
-      // ];
+      // MENCARI SISWA BERDASARKAN ORANG TUA
+      const siswaDomain = [
+        ["orangtua_id", "ilike", session.partner_display_name],
+      ];
 
-      // const filterDomain = [];
-      //     ["state", "=", "Done"],
-      //     ["orangtua_id", "ilike", session.partner_display_name],
-      //   ];
+      let siswaIds = [];
 
+      const siswaData = await this.orm.call("cdn.siswa", "search_read", [
+        siswaDomain,
+        ["id"],
+      ]);
+      console.log("Siswa Data List : ", siswaData);
+      siswaIds = siswaData.map((siswa) => siswa.id);
+      console.log("Siswa ID Mutabaah", siswaIds);
+
+      let combineMutabaahDomain = [
+        ["siswa_id", "in", siswaIds],
+        ["tgl", ">=", this.state.currentStartDate],
+        ["tgl", "<=", this.state.currentEndDate],
+      ];
+
+      // const dateDomain = [];
       // if (this.state.currentStartDate) {
-      //   filterDomain.push(["tgl", ">=", this.state.currentStartDate]);
+      //   dateDomain.push(["tgl", ">=", this.state.currentStartDate]);
       // }
+
       // if (this.state.currentEndDate) {
-      //   filterDomain.push(["tgl", "<=", this.state.currentEndDate]);
+      //   dateDomain.push(["tgl", ">=", this.state.currentEndDate]);
       // }
-
-      const dateDomain = [];
-      if (this.state.currentStartDate) {
-        dateDomain.push(["tgl", ">=", this.state.currentStartDate]);
-      }
-
-      if (this.state.currentEndDate) {
-        dateDomain.push(["tgl", ">=", this.state.currentEndDate]);
-      }
 
       const mutabaahData = await this.orm.searchRead(
         "cdn.mutabaah_harian",
-        dateDomain,
+        combineMutabaahDomain,
         [
           "name",
           "tgl",
@@ -325,6 +340,7 @@ export class OrangtuaCardList2 extends Component {
             tanggal: record.tanggal,
             date: date,
             surah: record.surah_id ? record.surah_id[1] : "N/A",
+            // surah: record.surah_id,
             ayatAwal: parseInt(record.ayat_awal_name) || 0,
             ayatAkhir: parseInt(record.ayat_akhir?.[1]) || 0,
             nilai: record.nilai_id ? record.nilai_id[1] : "N/A",
