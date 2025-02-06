@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="action_owl_penagihan_dashboard" model="ir.actions.client">
+            <field name="name">Dashboard Penagihan</field>
+            <field name="tag">owl.penagihan_dashboard</field>
+        </record>
+        <menuitem name="Dashboard Penagihan" id="menu_penagihan_dashboard" parent="account.menu_finance" sequence="0" action="action_owl_penagihan_dashboard"/>
+    </data>
+</odoo>

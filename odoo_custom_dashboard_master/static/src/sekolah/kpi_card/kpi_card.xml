@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t t-name="owl.SekolahKpiCard" owl="1">
+        <div class="row px-0 pe-2 d-flex">
+            <t t-foreach="state.kpiData" t-as="kpi" t-key="kpi.name">
+                <div class="col-lg-3 px-1 my-2 my-lg-0" t-att-data-name="kpi.name" t-on-click="handleKpiCardClick">
+
+                    <!-- Kontainer untuk nilai, nama, dan ikon -->
+                    <div class="d-flex justify-content-between align-items-center kpi-card shadow-sm py-3 mx-1 px-4 w-100" style="background-color: #ffffff; border-radius: 2px; cursor: pointer;">
+
+                        <!-- Bagian Kiri: Nilai dan Nama KPI -->
+                        <div class="text-start">
+                            <!-- Nilai KPI -->
+                            <h5 t-esc="kpi.value" class="fw-bold" style="font-size: 25px; color: #16a34a;"/>
+
+                            <!-- Nama KPI -->
+                            <div class="text-muted" style="font-size: 13px;">
+                                <span t-esc="kpi.name"/>
+                            </div>
+                        </div>
+
+                        <!-- Bagian Kanan: Ikon -->
+                        <div class="text-end mb-4" style="font-size: 2em; color: #16a34a;">
+                            <i t-att-class="'fa ' + kpi.icon"/>
+                        </div>
+
+                    </div>
+
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>

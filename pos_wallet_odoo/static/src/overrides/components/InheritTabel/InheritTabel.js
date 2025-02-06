@@ -186,13 +186,26 @@ patch(InheritData.prototype, {
             // console.log(response);
             // Set wallet_balance dan lainnya ke props.partner
             if (response && !response.error) {
+                // Ambil wallet_balance dan nis dari response
                 this.props.partner.wallet_balance = response.wallet_balance || 0;
                 this.props.partner.nis = response.nis || '';
+            
+                // Format wallet_balance ke format rupiah tanpa desimal
+                const formattedBalance = new Intl.NumberFormat('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR',
+                    minimumFractionDigits: 0, // Tidak ada desimal
+                    maximumFractionDigits: 0, // Tidak ada desimal
+                }).format(this.props.partner.wallet_balance);
+            
+                // Simpan hasil format ke wallet_balance yang ditampilkan
+                this.props.partner.wallet_balance = formattedBalance;
+            
                 // Tambahkan properti lain sesuai kebutuhan
             } else {
                 console.error("Error fetching data:", response.error);
                 this.props.partner.wallet_balance = 0; // Atur ke 0 jika ada error
-            }
+            }            
         } catch (error) {
             // console.error("Error fetching wallet balance:", error);
             this.props.partner.wallet_balance = 0; // Atur ke 0 jika ada error

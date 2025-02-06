@@ -152,7 +152,7 @@
                                     <option value="thisweek">Minggu Ini</option>
                                     <option value="lastweek">Minggu Lalu</option>
                                     <option value="month">Bulan Ini</option>
-                                    <option value="lastMonth">Bulan Kemarin</option>
+                                    <option value="lastMonth">Bulan Lalu</option>
                                     <option value="thisyear">Tahun Ini</option>
                                     <option value="lastyear">Tahun Lalu</option>
                                 </select>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="owl.PerekrutanList" owl="1">
+        <div class="row w-100 h-100 m-0" style="font-size: 12px; line-height: 1.5;">
+            <div class="col-lg-12 p-0">
+                <div class="card shadow-sm border-0 rounded-0">
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">Daftar Pelamar</h3>
+                    </div>
+                    <div class="card-body pt-1">
+                        <t t-if="state.pelamarr.length > 0">
+                            <div style="overflow-x: auto;">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Nama Pelamar</th>
+                                            <th>Tanggal Melamar</th>
+                                            <th>Status Tahapan</th>
+                                            <th>Status Lamaran</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="overflow-x-scroll">
+                                        <t t-foreach="state.pelamarr" t-as="pelamar" t-key="pelamar.id">
+                                            <tr style="cursor: pointer;" t-att-id="'product-' + pelamar.id" t-on-click="() => this.onKaryawanClick(pelamar.id)">
+                                                <td>
+                                                    <t t-esc="pelamar.name"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="pelamar.tanggal"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="pelamar.tahapan"/>
+                                                </td>
+                                                <td>
+                                                    <span t-if="pelamar.status == 'hired'" class="badge rounded-pill bg-success">Diterima</span>
+                                                    <span t-if="pelamar.status == 'archived'" class="badge rounded-pill bg-warning text-dark">Diarsipkan</span>
+                                                    <span t-if="pelamar.status == 'ongoing'" class="badge rounded-pill bg-info text-dark mr-5">Berjalan</span>
+                                                </td>
+                                                <!-- <td>
+                                                    <t t-esc="lunas.state"/>
+                                                </td> -->
+                                                <!-- <td class="text-center">
+                                                    <span t-if="lunas.state == 'paid'" class="badge rounded-pill bg-success">Lunas</span>
+                                                    <span t-if="product.state == 'waiting'" class="badge rounded-pill bg-warning text-dark">Waiting</span>
+                                                    <span t-if="product.state == 'confirmed'" class="badge rounded-pill bg-info text-dark">Confirm</span>
+                                                    <span t-if="product.state == 'assigned'" class="badge rounded-pill bg-primary">Ready</span>
+                                                    <span t-if="product.state == 'done'" class="badge rounded-pill bg-success">Done</span>
+                                                    <span t-if="product.state == 'cancel'" class="badge rounded-pill bg-danger">Cancelled</span> 
+                                                </td> -->
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="text-center p-3">
+                                <span class="ms-2">Data tidak ditemukan</span>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

@@ -1,4 +1,4 @@
-            <odoo>
+<odoo>
 
   <template id="pendaftaran_form_template" name="Pendaftaran Form">
     <t t-call="web.html_container">
@@ -220,7 +220,7 @@
           flex-wrap: wrap;
           padding: 10px 20px;
           width: 100%;
-                  <!-- margin-top: 135px; -->
+                                          <!-- margin-top: 135px; -->
         }
 
         footer ul {
@@ -265,8 +265,7 @@
         <nav class="navbar navbar-expand-lg" style="height: 65px;">
           <div class="container-fluid">
             <a class="navbar-brand ms-5 fw-semibold" href="/psb" style="color: white !important;">
-              <img src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" width="50" alt="Logo Pesantren" style="filter: drop-shadow(4px 4px 10px rgba(255, 255, 255, 0.5)) !important;"/>
- Daarul Qur'an Istiqomah </a>
+              <img src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" width="50" alt="Logo Pesantren" style="filter: drop-shadow(4px 4px 10px rgba(255, 255, 255, 0.5)) !important;"/>Daarul Qur'an Istiqomah </a>
             <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
               <span class="navbar-toggler-icon"></span>
             </button>
@@ -554,7 +553,7 @@
                     <div class="mb-3">
                       <label for="tanggal_lahir" class="form-label">Tgl Lahir<span class="text-danger">*</span>
                       </label>
-                      <input type="text" name="tanggal_lahir" id="tanggal_lahir" placeholder="dd / mm / yyyy" required="true" autocomplete="off" class="form-control" style="cursor: disabled !important;" />
+                      <input type="text" name="tanggal_lahir" id="tanggal_lahir" placeholder="dd / mm / yyyy" required="true" autocomplete="off" class="form-control" onpaste="return false" onkeydown="return /[0-9\/]/.test(event.key) || event.key === 'ArrowLeft' || event.key === 'ArrowRight'" onkeypress="return /[0-9\/]/.test(event.key)" maxlength="10" oncontextmenu="return false" />
                       <div class="invalid-feedback">
                         Pilih Tgl Lahir.
                       </div>
@@ -749,7 +748,7 @@
                     <div class="mb-3">
                       <label for="tanggal_lahir_ayah" class="form-label">Tgl Lahir<span class="text-danger">*</span>
                       </label>
-                      <input type="text" name="tanggal_lahir_ayah" id="tanggal_lahir_ayah" placeholder="dd / mm / yyyy" required="true" autocomplete="off" class="form-control" />
+                      <input type="text" name="tanggal_lahir_ayah" id="tanggal_lahir_ayah" placeholder="dd / mm / yyyy" required="true" autocomplete="off" class="form-control" onpaste="return false" onkeydown="return /[0-9\/]/.test(event.key) || event.key === 'ArrowLeft' || event.key === 'ArrowRight'" onkeypress="return /[0-9\/]/.test(event.key)" maxlength="10" oncontextmenu="return false" />
                       <div class="invalid-feedback">
                         Pilih Tgl Lahir.
                       </div>
@@ -856,7 +855,7 @@
                     <div class="mb-3">
                       <label for="tanggal_lahir_ibu" class="form-label">Tgl Lahir<span class="text-danger">*</span>
                       </label>
-                      <input type="text" name="tanggal_lahir_ibu" id="tanggal_lahir_ibu" placeholder="dd / mm / yyyy" required="true" autocomplete="off" class="form-control" />
+                      <input type="text" name="tanggal_lahir_ibu" id="tanggal_lahir_ibu" placeholder="dd / mm / yyyy" required="true" autocomplete="off" class="form-control" onpaste="return false" onkeydown="return /[0-9\/]/.test(event.key) || event.key === 'ArrowLeft' || event.key === 'ArrowRight'" onkeypress="return /[0-9\/]/.test(event.key)" maxlength="10" oncontextmenu="return false" />
                       <div class="invalid-feedback">
                         Pilih Tgl Lahir.
                       </div>
@@ -979,7 +978,7 @@
                   <div class="col-md-4">
                     <div class="mb-3">
                       <label for="wali_tgl_lahir" class="form-label">Tgl Lahir</label>
-                      <input type="text" name="wali_tgl_lahir" id="wali_tgl_lahir" placeholder="dd / mm / yyyy" autocomplete="off" class="form-control" />
+                      <input type="text" name="wali_tgl_lahir" id="wali_tgl_lahir" placeholder="dd / mm / yyyy" required="true" autocomplete="off" class="form-control" onpaste="return false" onkeydown="return /[0-9\/]/.test(event.key) || event.key === 'ArrowLeft' || event.key === 'ArrowRight'" onkeypress="return /[0-9\/]/.test(event.key)" maxlength="10" oncontextmenu="return false" />
                       <div class="invalid-feedback">
                         Masukkan tanggal lahir wali.
                       </div>
@@ -1487,6 +1486,76 @@
         yearRange: "1900:" + new Date().getFullYear(),
         maxDate: new Date()
         });
+        });
+
+        document.getElementById('tanggal_lahir').addEventListener('keydown', function(e) {
+            // Prevent Backspace and Delete keys
+            if (e.key === 'Backspace' || e.key === 'Delete') {
+                e.preventDefault();
+                return false;
+            }
+        });
+        document.getElementById('tanggal_lahir_ayah').addEventListener('keydown', function(e) {
+            // Prevent Backspace and Delete keys
+            if (e.key === 'Backspace' || e.key === 'Delete') {
+                e.preventDefault();
+                return false;
+            }
+        });
+        document.getElementById('tanggal_lahir_ibu').addEventListener('keydown', function(e) {
+            // Prevent Backspace and Delete keys
+            if (e.key === 'Backspace' || e.key === 'Delete') {
+                e.preventDefault();
+                return false;
+            }
+        });
+        document.getElementById('wali_tgl_lahir').addEventListener('keydown', function(e) {
+            // Prevent Backspace and Delete keys
+            if (e.key === 'Backspace' || e.key === 'Delete') {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Prevent cut/copy/paste
+        document.getElementById('tanggal_lahir').addEventListener('cut', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        document.getElementById('tanggal_lahir').addEventListener('copy', function(e) {
+            e.preventDefault();
+            return false;
+        });
+        // Prevent cut/copy/paste
+        document.getElementById('tanggal_lahir_ayah').addEventListener('cut', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        document.getElementById('tanggal_lahir_ayah').addEventListener('copy', function(e) {
+            e.preventDefault();
+            return false;
+        });
+        // Prevent cut/copy/paste
+        document.getElementById('tanggal_lahir_ibu').addEventListener('cut', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        document.getElementById('tanggal_lahir_ibu').addEventListener('copy', function(e) {
+            e.preventDefault();
+            return false;
+        });
+        // Prevent cut/copy/paste
+        document.getElementById('wali_tgl_lahir').addEventListener('cut', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        document.getElementById('wali_tgl_lahir').addEventListener('copy', function(e) {
+            e.preventDefault();
+            return false;
         });
 
         const provinsiSelect = document.getElementById('provinsi_id');

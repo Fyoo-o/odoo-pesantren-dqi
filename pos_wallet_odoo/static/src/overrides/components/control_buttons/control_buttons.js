@@ -20,7 +20,7 @@ patch(BaypasPayment.prototype, {
         const data = order.payment_ids.map(paymentline => {
             // Pengecekan nama metode pembayaran dengan beberapa variasi penulisan
             const paymentMethodName = paymentline.payment_method_id.name.toLowerCase();
-            if (!['kas', 'cash'].includes(paymentMethodName)) {
+            if (['Dompet Santri', 'dompet santri'].includes(paymentMethodName)) {
                 return {
                     payment_method_id: paymentline.payment_method_id,
                     amount: paymentline.amount,

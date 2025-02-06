@@ -1104,7 +1104,7 @@ export class ChartRenderer extends Component {
     const actionConfig = {
       type: "ir.actions.act_window",
       target: "current",
-      name: `Absen Tahfidz - ${selectedStatus}`,
+      name: `Absen Tahfizh - ${selectedStatus}`,
       res_model: "cdn.absen_tahfidz_quran_line",
       view_mode: "list,form",
       views: [
@@ -1130,7 +1130,7 @@ export class ChartRenderer extends Component {
     const actionConfig = {
       type: "ir.actions.act_window",
       target: "current",
-      name: "Absen Tahfidz",
+      name: "Absen Tahfizh",
       res_model: "cdn.absen_tahfidz_quran_line",
       view_mode: "list,form",
       views: [
