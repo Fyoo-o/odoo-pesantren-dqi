@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="action_owl_absensi_dashboard" model="ir.actions.client">
+            <field name="name">Dashboard</field>
+            <field name="tag">owl.absensi_dashboard</field>
+        </record>
+        <menuitem name="Dashboard" id="menu_absensi_dashboard" parent="hr_attendance.menu_hr_attendance_root" sequence="0" action="action_owl_absensi_dashboard"/>
+    </data>
+</odoo>

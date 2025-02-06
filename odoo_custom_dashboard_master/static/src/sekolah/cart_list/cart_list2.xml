@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="owl.TagihanBelumLunasList" owl="1">
+        <div class="row w-100 h-100 m-0" style="font-size: 12px; line-height: 1.5;">
+            <div class="col-lg-12 p-0">
+                <div class="card shadow-sm border-0 rounded-0">
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">Tagihan Belum Lunas</h3>
+                    </div>
+                    <div class="card-body pt-1">
+                        <t t-if="state.lunass.length > 0">
+                            <div style="overflow-x: auto;">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Nomor</th>
+                                            <th>Siswa</th>
+                                            <th>Kelas</th>
+                                            <th>Total</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="">
+                                        <t t-foreach="state.lunass" t-as="lunas" t-key="lunas.id">
+                                            <tr style="cursor: pointer;" t-att-id="'product-' + lunas.id" t-on-click="() => this.onBelumLunasClick(lunas.id)">
+                                                <td>
+                                                    <t t-esc="lunas.name"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="lunas.siswa"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="lunas.kelas"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="lunas.total"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <!-- <span t-if="lunas.state == 'draft'" class="badge rounded-pill bg-secondary">Draft</span>
+                                                    <span t-if="lunas.state == 'waiting'" class="badge rounded-pill bg-warning text-dark">Waiting</span>
+                                                    <span t-if="lunas.state == 'confirmed'" class="badge rounded-pill bg-info text-dark">Confirm</span>
+                                                    <span t-if="lunas.state == 'assigned'" class="badge rounded-pill bg-primary">Ready</span>
+                                                    <span t-if="lunas.state == 'done'" class="badge rounded-pill bg-success">Done</span> -->
+                                                    <span t-if="lunas.state == 'not_paid'" class="badge rounded-pill bg-danger">Belum Lunas</span>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="text-center p-3">
+                                <span class="ms-2">Data tidak ditemukan</span>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

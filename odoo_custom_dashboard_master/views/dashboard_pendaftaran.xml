@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="action_owl_pendaftaran_dashboard" model="ir.actions.client">
+            <field name="name">Dashboard</field>
+            <field name="tag">owl.pendaftaran_dashboard</field>
+        </record>  
+        <menuitem name="Dashboard" id="menu_owl_pendaftaran" sequence="0" parent="pesantren_pendaftaran.pendaftaran_menu_root" action="action_owl_pendaftaran_dashboard" />
+    </data>
+</odoo>

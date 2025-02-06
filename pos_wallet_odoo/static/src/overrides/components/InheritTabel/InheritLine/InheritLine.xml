@@ -25,7 +25,7 @@
                     <!-- Wallet belance ini datanya tidak ada di modul utama maka dari utu daripada tidak ada isinya maka pakai rpc ke Js & berikan valuenya berdasarkan barcode api nya adalah /siswa/get_data -->
                     <div class="d-flex">
                         <i class="fa fa-fw fa-credit-card me-2"/>
-                        <span t-esc="'Rp.'+props.partner.wallet_balance"/>
+                        <span t-esc="props.partner.wallet_balance"/>
                     </div>
                     <div class="email-field">
                         <i class="fa fa-fw fa-user-o me-2"/>
