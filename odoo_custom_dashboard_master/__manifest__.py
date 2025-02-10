@@ -21,8 +21,12 @@
         'views/dashboard_penagihan.xml',
         'views/dashboard_pembelian.xml',
         'views/dashboard_pendaftaran.xml',
-        'views/dashboard_keamanan.xml'
-        
+        'views/dashboard_absensi.xml',
+        'views/dashboard_keamanan.xml',
+        'views/dashboard_cuti.xml',
+        'views/dashboard_crm.xml',
+        'views/dashboard_penjualan.xml',
+        'views/sales_dashboard.xml',
     ],
     'demo': [
     ],
@@ -76,7 +80,6 @@
             'odoo_custom_dashboard_master/static/src/karyawan/**/*.xml', 
             'odoo_custom_dashboard_master/static/src/karyawan/**/*.css', 
 
-
             #Perekrutan
             'odoo_custom_dashboard_master/static/src/perekrutan/**/*.js', 
             'odoo_custom_dashboard_master/static/src/perekrutan/**/*.xml', 
@@ -100,6 +103,34 @@
             'odoo_custom_dashboard_master/static/src/pendaftaran/**/*.js', 
             'odoo_custom_dashboard_master/static/src/pendaftaran/**/*.xml', 
             'odoo_custom_dashboard_master/static/src/pendaftaran/**/*.css', 
+            
+            #Absensi
+            'odoo_custom_dashboard_master/static/src/absensi/**/*.js', 
+            'odoo_custom_dashboard_master/static/src/absensi/**/*.xml', 
+            'odoo_custom_dashboard_master/static/src/absensi/**/*.css', 
+
+            #Cuti
+            'odoo_custom_dashboard_master/static/src/cuti/**/*.js', 
+            'odoo_custom_dashboard_master/static/src/cuti/**/*.xml', 
+            'odoo_custom_dashboard_master/static/src/cuti/**/*.css', 
+
+            #Crm
+            'odoo_custom_dashboard_master/static/src/crm/**/*.js', 
+            'odoo_custom_dashboard_master/static/src/crm/**/*.xml', 
+            'odoo_custom_dashboard_master/static/src/crm/**/*.css', 
+
+
+            #Penjualan
+            'odoo_custom_dashboard_master/static/src/penjualan/**/*.js', 
+            'odoo_custom_dashboard_master/static/src/penjualan/**/*.xml', 
+            'odoo_custom_dashboard_master/static/src/penjualan/**/*.css', 
+
+
+            # #Inventory
+            'odoo_custom_dashboard_master/static/src/inventory/**/*.js',
+            'odoo_custom_dashboard_master/static/src/inventory/**/*.xml',
+            'odoo_custom_dashboard_master/static/src/inventory/**/*.css', 
+            
 
 
             'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css',

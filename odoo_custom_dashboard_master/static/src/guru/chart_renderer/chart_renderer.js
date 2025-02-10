@@ -227,10 +227,7 @@ export class GuruChartRenderer extends Component {
         );
         endDate = lastDayOfMonth.toISOString().split("T")[0];
       }
-      // domain.push(["invoice_date", ">=", startDate]);
-      // domain.push(["invoice_date", "<=", endDate]);
-      // domain1.push(["department_id", "!=", false]);
-      // domain2.push(["job_id", "!=", false]);
+
       domain1.push(["tanggal", ">=", startDate]);
       domain1.push(["tanggal", "<=", endDate]);
       domain1.push(["guru_id", "=", session.partner_display_name]);
@@ -239,18 +236,6 @@ export class GuruChartRenderer extends Component {
       domain2.push(["tanggal", ">=", startDate]);
       domain2.push(["tanggal", "<=", endDate]);
 
-      // domain3.push(["create_date", ">=", startDate]);
-      // domain3.push(["create_date", "<=", endDate]);
-
-      // domain1.push(["payment_state", "=", "paid"]);
-      // domain2.push(["payment_state", "=", "not_paid"]);
-      // domain2.push(["state", "!=", "draft"]);
-
-      // Build domain untuk filter berdasarkan tanggal
-      // pie1 = await this.orm.call("hr.department", "search_read", [
-      //   domain1,
-      //   ["id", "name", "total_employee"],
-      // ]);
       pie1 = await this.orm.call("cdn.absensi_siswa", "search_read", [
         domain1,
         ["id", "kelas_id", "guru_id", "tanggal", "mapel_id"],
@@ -267,16 +252,6 @@ export class GuruChartRenderer extends Component {
         ["id", "kelas_id", "state"],
       ]);
 
-      // console.log("Dom 1 = ", domain1);
-      // console.log("Dom 2 = ", domain2);
-      // console.log("Dom 3 = ", domain3);
-      // console.log("DATA PIE 1 = ", pie1);
-      // console.log("DATA PIE 2 = ", pie2);
-      // console.log("DATA PIE 3 = ", pie3);
-
-      console.log("Data Job Id", pie2);
-
-      // await this.processData(moveData, moveLineData);
       await this.processData(pie1, pie2, pie3);
     } catch (error) {
       console.error("Error fetching data from Odoo:", error);
@@ -325,40 +300,12 @@ export class GuruChartRenderer extends Component {
 
     if (this.props.title === "pie1") {
       const stateCounts = aggregateDataByAbsensi(pie1);
-      // console.log("Data Departmen :", stateCounts);
-      // this.state.labels = Object.keys(stateCounts);
 
-      // this.state.labels = Object.keys(stateCounts).map((state) => {
-      //   const words = state.split(" ");
-      //   const firstWord = words[0];
-      //   const shortState = firstWord + (state.length > 15 ? `...` : "");
-      //   return shortState;
-      // });
       this.state.originalLabels = Object.keys(stateCounts).map((state) => {
-        return state.replace(/^\d+[, ]*/, ""); // Hapus angka dan koma di depan
+        return state.replace(/^\d+[, ]*/, "");
       });
 
-      // this.state.labels = this.state.originalLabels.map((state) => {
-      //   return state;
-      // });
-
       this.state.labels = this.state.originalLabels;
-      // Label tampilan (disingkat)
-      // this.state.labels = this.state.originalLabels.map((cleanedState) => {
-      //   const words = cleanedState.split(" ");
-      //   const firstWord = words[0];
-      //   const shortState = firstWord + (cleanedState.length > 15 ? `...` : "");
-      //   return shortState;
-      // });
-
-      // this.state.labels = Object.keys(stateCounts).map((state) => {
-      //   const cleanedState = state.replace(/^\d+[, ]*/, "");
-
-      //   const words = cleanedState.split(" ");
-      //   const firstWord = words[0];
-      //   const shortState = firstWord + (cleanedState.length > 15 ? `...` : "");
-      //   return shortState;
-      // });
 
       this.state.datasets = [
         {
@@ -379,21 +326,8 @@ export class GuruChartRenderer extends Component {
     } else if (this.props.title === "pie2") {
       const stateCounts = aggregateDataByPenugasan(pie2);
 
-      // this.state.originalLabels = Object.keys(stateCounts).map((state) => {
-      //   return state.replace(/^\d+[, ]*/, ""); // Hapus angka dan koma di depan
-      // });
-
-      // this.state.labels = this.state.originalLabels;
-
-      // this.state.originalLabels = Object.keys(stateCounts).map((state) => {
-      //   if (state === "ongoing") return "Berjalan";
-      //   if (state === "hired") return "Diterima";
-      //   if (state === "archived") return "Diarsipkan";
-      //   if (state === "refused") return "Ditolak";
-      // });
-
       this.state.originalLabels = Object.keys(stateCounts).map((state) => {
-        return state.replace(/^\d+[, ]*/, ""); // Hapus angka dan koma di depan
+        return state.replace(/^\d+[, ]*/, "");
       });
 
       this.state.labels = this.state.originalLabels;
@@ -405,7 +339,6 @@ export class GuruChartRenderer extends Component {
           backgroundColor: this.state.labels.map((_, index) =>
             this.getDiverseGradientColor(index, this.state.labels.length)
           ),
-          // backgroundColor: "#d9534f",
           borderColor: "#ffffff",
           borderWidth: 1,
           hoverOffset: 4,
@@ -686,9 +619,6 @@ export class GuruChartRenderer extends Component {
 
       let domainAction = [];
 
-      console.log("Label Yang di Klik", label);
-      // domainAction.push(["payment_state", "=", "paid"]);
-
       if (this.props.title === "pie1") {
         let mapel = originalLabel;
         domainAction.push(
@@ -712,7 +642,6 @@ export class GuruChartRenderer extends Component {
         );
       }
 
-      console.log("Label Yang di klik :", label);
       let nameHeader;
       if (this.props.title === "pie1") {
         nameHeader = "Absensi";

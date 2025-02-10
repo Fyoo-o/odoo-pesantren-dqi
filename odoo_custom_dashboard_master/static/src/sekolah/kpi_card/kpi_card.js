@@ -171,7 +171,7 @@ export class SekolahKpiCard extends Component {
   // FUNC COUNTDOWN END
 
   async updateKpiData() {
-    // this.showLoading();
+    this.showLoading();
     try {
       // Build domain filter based on date range from state
       // const domain = [["picking_type_code", "=", "internal"]];
@@ -316,7 +316,7 @@ export class SekolahKpiCard extends Component {
     let endDate;
     // Add change listener to period selection dropdown
     if (periodSelection) {
-      // this.showLoading();
+      this.showLoading();
       try {
         const handlePeriodChange = () => {
           switch (periodSelection.value) {

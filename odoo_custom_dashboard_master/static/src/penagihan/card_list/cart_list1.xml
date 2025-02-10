@@ -14,8 +14,8 @@
                                     <thead>
                                         <tr>
                                             <th>Nomor</th>
-                                            <th>Nama Siswa</th>
-                                            <th>Ruang Kelas</th>
+                                            <th>Nama</th>
+                                            <th>Periode Tanggal</th>
                                             <th>Total</th>
                                             <th>Status</th>
                                         </tr>
@@ -27,19 +27,16 @@
                                                     <t t-esc="lunas.name"/>
                                                 </td>
                                                 <td>
-                                                    <t t-esc="lunas.siswa"/>
+                                                    <t t-esc="lunas.pelanggan"/>
                                                 </td>
                                                 <td>
-                                                    <t t-esc="lunas.kelas"/>
+                                                    <t t-esc="lunas.tanggal"/>
                                                 </td>
                                                 <td>
                                                     <t t-esc="lunas.total"/>
                                                 </td>
-                                                <!-- <td>
-                                                    <t t-esc="lunas.state"/>
-                                                </td> -->
                                                 <td>
-                                                    <span t-if="lunas.state == 'paid'" class="badge rounded-pill bg-success">Lunas</span>
+                                                    <span t-if="lunas.state == 'paid'" class="badge rounded-pill bg-success text-light">Lunas</span>
                                                     <!-- <span t-if="product.state == 'waiting'" class="badge rounded-pill bg-warning text-dark">Waiting</span> -->
                                                     <!-- <span t-if="product.state == 'confirmed'" class="badge rounded-pill bg-info text-dark">Confirm</span>
                                                     <span t-if="product.state == 'assigned'" class="badge rounded-pill bg-primary">Ready</span>

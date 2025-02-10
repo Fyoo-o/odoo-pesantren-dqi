@@ -4,8 +4,6 @@ import { PenagihanChartRenderer } from "./chart_renderer/chart_renderer";
 import { TagihanLunasList } from "./card_list/cart_list";
 import { TagihanBelumLunasList } from "./card_list/cart_list";
 
-// GAREK KPI CARD
-
 const { Component } = owl;
 
 export class OwlPenagihanDashboard extends Component {

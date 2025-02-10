@@ -140,7 +140,6 @@ export class SekolahChartRenderer extends Component {
   }
 
   startCountdown() {
-    // Reset dan inisialisasi ulang
     this.countdownTime = 10;
     this.clearIntervals(); // Bersihkan interval yang mungkin masih berjalan
     this.updateCountdownDisplay();
@@ -199,10 +198,7 @@ export class SekolahChartRenderer extends Component {
       const domain = [];
       const domain1 = [];
       const domain2 = [];
-      // const domain1 = [["picking_type_code", "=", "internal"]];
-      // const domain2 = [["picking_type_code", "=", "incoming"]];
-      // const domain3 = [["picking_type_code", "=", "outgoing"]];
-      // Set default startDate dan endDate jika tidak diisi
+
       if (!startDate) {
         const today = new Date();
         const firstDayOfMonth = new Date(
@@ -232,23 +228,13 @@ export class SekolahChartRenderer extends Component {
       domain1.push(["invoice_date", "<=", endDate]);
       domain2.push(["invoice_date", ">=", startDate]);
       domain2.push(["invoice_date", "<=", endDate]);
-      // domain3.push(["create_date", ">=", startDate]);
-      // domain3.push(["create_date", "<=", endDate]);
 
-      domain1.push(["payment_state", "=", "paid"]);
-      domain1.push(["student", "=", true]);
-      domain2.push(["payment_state", "=", "not_paid"]);
-      domain2.push(["student", "=", true]);
-      domain2.push(["state", "!=", "draft"]);
+      domain1.push(["siswa_id", "!=", false]);
 
-      // Build domain untuk filter berdasarkan tanggal
+      domain.push(["siswa_id", "!=", false]);
+
       pie1 = await this.orm.call("account.move", "search_read", [
         domain1,
-        ["id", "invoice_date", "payment_state"],
-      ]);
-
-      pie2 = await this.orm.call("account.move", "search_read", [
-        domain2,
         ["id", "invoice_date", "payment_state"],
       ]);
 
@@ -257,15 +243,7 @@ export class SekolahChartRenderer extends Component {
         ["id", "invoice_date", "state"],
       ]);
 
-      // console.log("Dom 1 = ", domain1);
-      // console.log("Dom 2 = ", domain2);
-      // console.log("Dom 3 = ", domain3);
-      // console.log("DATA PIE 1 = ", pie1);
-      // console.log("DATA PIE 2 = ", pie2);
-      // console.log("DATA PIE 3 = ", pie3);
-
-      // await this.processData(moveData, moveLineData);
-      await this.processData(pie1, pie2, pie3);
+      await this.processData(pie1, pie3);
     } catch (error) {
       console.error("Error fetching data from Odoo:", error);
     } finally {
@@ -273,7 +251,7 @@ export class SekolahChartRenderer extends Component {
     }
   }
 
-  async processData(pie1, pie2, pie3) {
+  async processData(pie1, pie3) {
     const aggregateDataByPaymentState = (data) => {
       const stateCounts = {};
       data.forEach((record) => {
@@ -302,16 +280,21 @@ export class SekolahChartRenderer extends Component {
     if (this.props.title === "pie1") {
       const stateCounts = aggregateDataByPaymentState(pie1);
 
-      // this.state.labels = Object.keys(stateCounts);
-
       this.state.labels = Object.keys(stateCounts).map((state) => {
+        if (state === "not_paid") return "Belum Lunas";
         if (state === "paid") return "Lunas";
+        if (state === "partial") return "Terbayar Sebagian";
+        if (state === "reversed") return "Di Reverse";
+        if (state === "blocked") return "Diblokir";
+        if (state === "cancel") return "Dibatalkan";
+        if (state === "invoicing_legacy") return "Memfaktur Legacy App";
+        if (state === "in_payment") return "In Payment";
         return state;
       });
 
       this.state.datasets = [
         {
-          label: this.state.labels,
+          label: "Total Siswa",
           data: Object.values(stateCounts).map((item) => item.count),
           backgroundColor: this.state.labels.map((_, index) =>
             this.getDiverseGradientColor(index, this.state.labels.length)
@@ -324,31 +307,6 @@ export class SekolahChartRenderer extends Component {
       ];
 
       console.log("Processed Data for pie1:", this.state.datasets);
-    } else if (this.props.title === "pie2") {
-      const stateCounts = aggregateDataByPaymentState(pie2);
-
-      this.state.labels = Object.keys(stateCounts).map((state) => {
-        if (state === "not_paid") return "Belum Lunas";
-        // if (state === "draft") return "Draft";
-        return state;
-      });
-
-      this.state.datasets = [
-        {
-          label: this.state.labels,
-          data: Object.values(stateCounts).map((item) => item.count),
-          backgroundColor: this.state.labels.map((_, index) =>
-            this.getDiverseGradientColor(index, this.state.labels.length)
-          ),
-          // backgroundColor: "#d9534f",
-          borderColor: "#ffffff",
-          borderWidth: 1,
-          hoverOffset: 4,
-          associated_ids: Object.values(stateCounts).map((item) => item.ids),
-        },
-      ];
-
-      console.log("Processed Data for pie2:", this.state.datasets);
     } else if (this.props.title === "pie3") {
       const stateCounts = aggregateDataByState(pie3);
 
@@ -613,17 +571,64 @@ export class SekolahChartRenderer extends Component {
       // domainAction.push(["payment_state", "=", "paid"]);
 
       if (this.props.title === "pie1") {
-        domainAction.push(
-          ["id", "in", associatedIds],
-          ["payment_state", "=", "paid"],
-          ["student", "=", true]
-        );
-      } else if (this.props.title === "pie2") {
-        domainAction.push(
-          ["id", "in", associatedIds],
-          ["payment_state", "=", "not_paid"],
-          ["student", "=", true]
-        );
+        const actionId = "pesantren_base.action_tagihan_inherit_view";
+        let convertLabel;
+
+        if (label === "Belum Lunas") {
+          convertLabel = "not_paid";
+        } else if (label === "Lunas") {
+          convertLabel = "paid";
+        } else if (label === "Terbayar Sebagian") {
+          convertLabel = "partial";
+        } else if (label === "Di Reverse") {
+          convertLabel = "reversed";
+        } else if (label === "Diblokir") {
+          convertLabel = "blocked";
+        } else if (label === "Dibatalkan") {
+          convertLabel = "cancel";
+        } else if (label === "Memfaktur Legacy App") {
+          convertLabel = "invoicing_legacy";
+        } else {
+          convertLabel = "in_payment";
+        }
+
+        if (convertLabel) {
+          domainAction.push(
+            ["id", "in", associatedIds],
+            ["payment_state", "=", convertLabel],
+            ["siswa_id", "!=", false]
+          );
+
+          this.actionService
+            .loadAction(actionId)
+            .then((action) => {
+              const newAction = {
+                ...action,
+                domain: domainAction,
+                context: {
+                  default_move_type: "out_invoice", // Mempertahankan default move type
+                  search_default_filter_by_blm_lunas: 0, // Menonaktifkan filter default
+                },
+                view_mode: "kanban", // Menentukan view mode kanban
+                views: [
+                  [false, "kanban"],
+                  [false, "list"],
+                ], // Menentukan view yang akan ditampilkan
+              };
+
+              return this.actionService.doAction(newAction);
+            })
+            .then(() => {
+              console.log(
+                `Berpindah ke actionId: ${actionId} Dengan Domain:`,
+                domainAction
+              );
+            })
+            .catch((error) => {
+              console.error(`Terjadi Error di ${actionId}:`, error);
+            });
+          return;
+        }
       } else if (this.props.title === "pie3") {
         let convertLabel;
         if (label === "Terekam") {
@@ -635,11 +640,12 @@ export class SekolahChartRenderer extends Component {
         }
 
         if (convertLabel) {
+          console.log("Test Convert Label : ", convertLabel);
           const actionId = "pesantren_base.action_tagihan_inherit_view";
           domainAction.push(
             ["id", "in", associatedIds],
             ["state", "=", convertLabel],
-            ["student", "=", true]
+            ["siswa_id", "!=", false]
             // ["payment_state", "=", "paid"]
             // ["payment_state", "=", "not_paid"]
           );
@@ -688,11 +694,14 @@ export class SekolahChartRenderer extends Component {
                 ...action,
                 domain: domainAction,
                 context: {
-                  default_move_type: "out_invoice", // Mempertahankan default move type
-                  search_default_filter_by_blm_lunas: 0, // Menonaktifkan filter default
+                  default_move_type: "out_invoice",
+                  search_default_filter_by_blm_lunas: 0,
                 },
-                view_mode: "kanban", // Menentukan view mode kanban
-                views: [[false, "kanban"]], // Menentukan view yang akan ditampilkan
+                view_mode: "kanban",
+                views: [
+                  [false, "kanban"],
+                  [false, "list"],
+                ],
               };
 
               return this.actionService.doAction(newAction);
@@ -772,8 +781,7 @@ export class SekolahChartRenderer extends Component {
 
     if (datePickerButton && datePickerContainer) {
       datePickerButton.addEventListener("click", (event) => {
-        event.stopPropagation(); // Prevent event from bubbling up
-        // Toggle the display property
+        event.stopPropagation();
         datePickerContainer.style.display =
           datePickerContainer.style.display === "flex" ? "none" : "flex";
       });
@@ -781,7 +789,6 @@ export class SekolahChartRenderer extends Component {
       console.error("Date picker button or container element not found");
     }
 
-    // Close the date picker if clicking outside of it
     document.addEventListener("click", (event) => {
       if (
         datePickerContainer &&
@@ -819,12 +826,11 @@ export class SekolahChartRenderer extends Component {
     const endDateInput = document.getElementById("endDate");
     const periodSelection = document.getElementById("periodSelection");
 
-    // Langsung eksekusi logic tanpa mendaftarkan event listener baru
     const today = new Date();
     let startDate;
     let endDate;
-    const defaultPeriod = "thisMonth"; // Default ke Bulan Ini
-    periodSelection.value = defaultPeriod; // Pilih default period pada dropdown
+    const defaultPeriod = "thisMonth";
+    periodSelection.value = defaultPeriod;
 
     if (periodSelection) {
       periodSelection.addEventListener("change", () => {
@@ -882,8 +888,7 @@ export class SekolahChartRenderer extends Component {
               );
               break;
             case "thisWeek":
-              // Minggu Ini
-              const startOfWeek = today.getUTCDate() - today.getUTCDay(); // Set ke hari Minggu
+              const startOfWeek = today.getUTCDate() - today.getUTCDay();
               startDate = new Date(
                 Date.UTC(
                   today.getUTCFullYear(),

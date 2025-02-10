@@ -363,7 +363,7 @@ export class PendaftaranChartRenderer extends Component {
 
       this.state.datasets = [
         {
-          label: "Jumlah Karyawan",
+          label: "Total Siswa",
           data: Object.values(stateCounts).map((item) => item.count),
           backgroundColor: this.state.labels.map((_, index) =>
             this.getDiverseGradientColor(index, this.state.labels.length)
@@ -674,32 +674,20 @@ export class PendaftaranChartRenderer extends Component {
         let convertLabel;
         if (jenjang === "Smk") {
           convertLabel = "smk";
-        } else if (jenjang === "Sd/Mi") {
+        } else if (jenjang === "Sd/MI") {
           convertLabel = "sdmi";
         } else if (jenjang === "Smp/Mts") {
           convertLabel = "smpmts";
+        } else if (jenjang === "Sma/Ma") {
+          convertLabel = "smama";
         }
         if (convertLabel) {
+          console.log("Test ConvertLabel", convertLabel);
           domainAction.push(
             ["id", "in", associatedIds],
             ["jenjang", "=", convertLabel]
           );
         }
-        const actionId = "hr.open_view_employee_list_my";
-        this.actionService.loadAction(actionId).then((action) => {
-          const newAction = {
-            ...action,
-            domain: domainAction,
-            // context: {
-            //   default_move_type: "out_invoice", // Mempertahankan default move type
-            //   search_default_filter_by_blm_lunas: 0, // Menonaktifkan filter default
-            // },
-            view_mode: "kanban", // Menentukan view mode kanban
-            views: [[false, "kanban"]], // Menentukan view yang akan ditampilkan
-          };
-
-          return this.actionService.doAction(newAction);
-        });
       } else if (this.props.title === "pie3") {
         let convertLabel;
         if (label === "Terekam") {
@@ -787,39 +775,49 @@ export class PendaftaranChartRenderer extends Component {
       }
 
       console.log("Label Yang di klik :", label);
-      if (
-        this.actionService &&
-        typeof this.actionService.doAction === "function"
-      ) {
-        this.actionService
-          .doAction({
-            name: "Aktivitas Tagihan Siswa",
-            type: "ir.actions.act_window",
-            res_model: resModel,
-            view_mode: "list",
-            views: [[false, "list"]],
-            target: "current",
-            domain: domainAction,
-            // domain: [
-            //   ["id", "in", associatedIds],
-            //   ["payment_state", "=", "not_paid"],
-            // ],
-            // domain: [[associatedIds], [domainAction]],
-            // domain: [["payment_state", "=", "not_paid"]],
-          })
-          .then(() => {
-            console.log(
-              `Redirected to list view of ${resModel} for selected IDs.`
-            );
-          })
-          .catch((error) => {
-            console.error("Error in actionService.doAction redirect:", error);
-          });
+
+      let headerName;
+      if (this.props.title === "pie1") {
+        headerName = "Status Penerimaaan";
       } else {
-        console.error(
-          "actionService.doAction is not a function or actionService is undefined:",
+        headerName = "Jenjang Pendidikan";
+      }
+
+      if (headerName) {
+        if (
+          this.actionService &&
+          typeof this.actionService.doAction === "function"
+        ) {
           this.actionService
-        );
+            .doAction({
+              name: headerName,
+              type: "ir.actions.act_window",
+              res_model: resModel,
+              view_mode: "list",
+              views: [[false, "list"]],
+              target: "current",
+              domain: domainAction,
+              // domain: [
+              //   ["id", "in", associatedIds],
+              //   ["payment_state", "=", "not_paid"],
+              // ],
+              // domain: [[associatedIds], [domainAction]],
+              // domain: [["payment_state", "=", "not_paid"]],
+            })
+            .then(() => {
+              console.log(
+                `Redirected to list view of ${resModel} for selected IDs.`
+              );
+            })
+            .catch((error) => {
+              console.error("Error in actionService.doAction redirect:", error);
+            });
+        } else {
+          console.error(
+            "actionService.doAction is not a function or actionService is undefined:",
+            this.actionService
+          );
+        }
       }
     }
   }

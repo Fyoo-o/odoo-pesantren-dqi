@@ -13,7 +13,7 @@
                                 <table class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th>Nama</th>
+                                            <th>Nomor</th>
                                             <th>Nama Santri</th>
                                             <th>Tanggal Ijin</th>
                                             <th>Keperluan</th>
@@ -40,7 +40,7 @@
                                                     <t t-esc="ijin.lamaijin"/>
                                                 </td>
                                                 <td>
-                                                    <span t-if="ijin.state == 'Permission'" class="badge rounded-pill bg-danger">Ijin Keluar</span>
+                                                    <span t-if="ijin.state == 'Permission'" class="badge rounded-pill bg-danger text-light">Ijin Keluar</span>
                                                 </td>
                                             </tr>
                                         </t>

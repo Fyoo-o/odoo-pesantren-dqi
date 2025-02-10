@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="owl.OwlStockDashboard" owl="1">
+    <style>
+
+    @media (max-width: 768px) {
+        
+        .controls-wrapper {
+            flex-direction: column;
+            width: 100%;
+            <!-- gap: 0.5rem;  -->
+        }
+
+        .date-button {
+            width: 100%;
+        }
+
+        .period-and-timer {
+            display: flex;
+            justify-content: between;
+            margin-top: 0.5rem;
+            width: 100%;
+        }
+
+        .header-text {
+            font-size: 1.3rem;
+        }
+
+        .period-selection {
+            width: 100%;
+        }
+
+        .timer-button {
+            width: 30%;
+            margin: 0 0 0 0.4rem;
+        }
+    }
+
+    .timer-button {
+        margin: 0 0 0 0.4rem;
+    }
+
+    .period-and-timer {
+        display: flex;
+    }
+
+    </style>
+        <div class="container-fluid vh-100 bg-muted mb-5 pb-5">
+            <!-- Header Full Width -->
+            <div class="my-1">
+                <div class="col-12">
+                    <div class="pt-4 pb-2">
+                        <div class="d-flex flex-wrap align-items-center justify-content-between">
+                            <div class="d-flex">
+                                <h2 class="text-dark fw-bold header-text">Dashboard Stock</h2>
+                            </div>
+                            <div class="controls-wrapper d-flex align-items-center">
+                                <div class="button-popup-wrapper date-button">
+                                    <button id="datePickerButton" class="btn btn-outline-secondary me-2 date-button">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        <span id="dateRangeText" class="ms-2">Select Dates</span>
+                                    </button>
+                            
+                                    <!-- Pop-up kontainer untuk rentang tanggal, tersembunyi saat awal -->
+                                    <div id="datePickerContainer" class="popup-container" style="display: none;">
+                                        <div class="date-range d-flex flex-column me-2">
+                                            <label for="startDate" class="date-label text-center">Dari</label>
+                                            <input id="startDate" type="date" class="form-control date-input" />
+                                        </div>
+                                        <div class="date-range d-flex flex-column">
+                                            <label for="endDate" class="date-label text-center">Sampai</label>
+                                            <input id="endDate" type="date" class="form-control date-input" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                            <div class="period-and-timer">
+                                <select id="periodSelection" class="form-control period-selection">
+                                    <option value="today">Hari Ini</option>
+                                    <option value="yesterday">Kemarin</option>
+                                    <option value="thisWeek">Minggu Ini</option>
+                                    <option value="lastWeek">Minggu Lalu</option>
+                                    <option value="thisMonth">Bulan Ini</option>
+                                    <option value="lastMonth">Bulan Lalu</option>
+                                    <option value="thisYear">Tahun Ini</option>
+                                    <option value="lastYear">Tahun Lalu</option>
+                                </select>
+
+                                <!-- Tombol untuk memilih rentang tanggal -->
+
+                                <!-- Tombol Timer -->
+                                <button id="timerButton" class="btn btn-outline-secondary timer-button">
+                                    <i id="timerIcon" class="fas fa-clock"></i>
+                                    <span id="timerCountdown"></span>
+                                </button>
+                                <!-- <small>
+                                    <a href="https://youtu.be/viwr6v9HHmw" target="_blank" class="ms-2 fa-solid fa-question rounded-circle">
+                                        <i class="fa-solid fa-question"></i>
+                                    </a>
+                                </small> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- KPI Cards -->
+            <div class="mx-2 mt-1 mb-2">
+                <StockKpiCard/>
+            </div>
+
+            <!-- Pie, Donut, Bar Charts -->
+            <div class="row mx-0">
+                <!-- Top Products (Pie Chart) -->
+                <div class="col-lg-4 m-0 ps-0 py-0 pe-lg-1 pe-0">
+                    <div class="shadow-sm p-4 bg-white" style="width: 100%; height: 400px;">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h5 class="text-dark fw-bold">Transfer Internal</h5>
+                        </div>
+                        <StockChartRenderer type="'pie'" title="'pie1'"/>
+                    </div>
+                </div>
+
+                <!-- Top Sales Revenue (Donut Chart) -->
+                <div class="col-lg-4 m-0 py-0 px-lg-1 px-0 my-lg-0 my-2">
+                    <div class="shadow-sm p-4 bg-white" style="width: 100%; height: 400px;">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h5 class="text-dark fw-bold"> Status Penerimaan Barang</h5>
+                        </div>
+                        <StockChartRenderer type="'pie'" title="'pie2'"/>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 m-0 py-0 pe-0 ps-lg-1 ps-0">
+                    <div class="shadow-sm p-4 bg-white" style="width: 100%; height: 400px;">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h5 class="text-dark fw-bold">Delivery Order</h5>
+                        </div>
+                        <StockChartRenderer type="'pie'" title="'pie3'"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mx-0 my-2 pb-5">
+                <div class="col-lg-6 col-md-12 col-sm-12 m-0 ps-0 pe-lg-1 pe-0">
+                    <StockCardList />
+                </div>
+                <div class="col-lg-6 col-md-12 col-sm-12 m-0 ps-lg-1 ps-0 pe-0 mt-2 mt-lg-0">
+                    <StockCardList2 />
+                </div>
+            </div>
+
+            <!-- Full Width Line Chart -->
+            <!-- <div class="row mx-0 my-3">
+                <div class="col-lg-12 col-md-12 col-sm-12 m-0 p-2">
+                    <div class="shadow-sm p-4 pb-5 bg-white" style="width: 100%; height: 400px;">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h3 class="text-dark fw-bold">Tanggal Pemasokan</h3>
+                        </div>
+                        <StockChartRenderer type="'line'" class="w-100"/>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+    </t>
+</templates>

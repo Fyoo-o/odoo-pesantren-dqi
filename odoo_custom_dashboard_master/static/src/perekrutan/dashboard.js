@@ -3,8 +3,6 @@ import { PerekrutanChartRenderer } from "./chart_renderer/chart_renderer";
 import { PerekrutanList } from "./card_list/card_list";
 import { PerekrutanKpiCard } from "./kpi_card/kpi_card";
 
-// GAREK KPI CARD
-
 const { Component } = owl;
 
 export class OwlPerekrutanDashboard extends Component {

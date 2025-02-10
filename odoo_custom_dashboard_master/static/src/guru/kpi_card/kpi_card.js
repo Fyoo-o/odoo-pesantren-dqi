@@ -131,15 +131,8 @@ export class GuruKpiCard extends Component {
       if (this.countdownTime < 0) {
         this.countdownTime = 10;
         if (this.state.startDate2 && this.state.endDate2) {
-          console.log(
-            "dates state: ",
-            this.state.startDate2,
-            "& ",
-            this.state.endDate2
-          );
           const startDate = this.state.startDate2;
           const endDate = this.state.endDate2;
-          console.log("dates: ", startDate, "& ", endDate);
           this.refreshChart(startDate, endDate);
         } else {
           this.refreshChart();
@@ -169,36 +162,28 @@ export class GuruKpiCard extends Component {
     this.updateKpiData();
   }
 
-  // FUNC COUNTDOWN END
-
   async updateKpiData() {
-    // this.showLoading();
+    this.showLoading();
     try {
-      // Build domain filter based on date range from state
-      // const domain = [["picking_type_code", "=", "internal"]];
-      // const domain2 = [["picking_type_code", "=", "incoming"]];
-      // const domain3 = [["picking_type_code", "=", "outgoing"]];
-
       const domain1 = [];
       const domain2 = [];
       const domain3 = [];
       const domain = [];
       if (this.state.startDate) {
+        domain.push(["tgl_disetujui", ">=", this.state.startDate]);
         domain1.push(["tanggal", ">=", this.state.startDate]);
         domain2.push(["tanggal", ">=", this.state.startDate]);
       }
       if (this.state.endDate) {
+        domain.push(["tgl_disetujui", "<=", this.state.endDate]);
         domain1.push(["tanggal", "<=", this.state.endDate]);
         domain2.push(["tanggal", "<=", this.state.endDate]);
       }
 
+      domain.push(["walikelas_id", "=", session.partner_display_name]);
+      domain.push(["state", "=", "approved"]);
       domain1.push(["guru_id", "=", session.partner_display_name]);
       domain2.push(["guru_id", "=", session.partner_display_name]);
-
-      console.log("Sesion", session);
-      console.log("Guru Yang Login", session.partner_display_name);
-
-      console.log("Tanggal", this.state.startDate, this.state.endDate);
 
       let penugasnTugasData = await this.orm.call(
         "cdn.penugasan",
@@ -213,31 +198,21 @@ export class GuruKpiCard extends Component {
       );
 
       let jumlahRpp = await this.orm.call("cdn.master_rpp", "search_read", [
-        // [["jns_pegawai", "=", "guru"]],
         domain3,
         ["id", "name"],
       ]);
-      // console.log("Stock3 Data:", stock3);
 
-      // const kelasData = await this.orm.call("cdn.master_kelas", "search_read", [
-      //   domain,
-      //   ["id", "name"],
-      // ]);
-      // console.log("Stock4 Data:", stock4);
+      let penilaianData = await this.orm.call(
+        "cdn.penilaian_akhir",
+        "search_read",
+        [domain, ["id", "name"]]
+      );
 
-      // Calculate KPI values
-      // const Stock1 = stock.length;
-      // const Stock2 = stock2.length;
-      // const Stock3 = stock3.length;
       let penugasan = penugasnTugasData.length;
       let absensi = absensiData.length;
       let jumlahrpp = jumlahRpp.length;
-      // let kelas = kelasData.length;
-      // const Stock4 = Stock1 + Stock2 + Stock3;
+      let penilaian = penilaianData.length;
 
-      // console.log("DATA = ", Stock1, Stock2, Stock3, Stock4);s
-
-      // Update KPI data state with animations
       this.state.kpiData = [
         {
           name: "Penugasan",
@@ -245,32 +220,30 @@ export class GuruKpiCard extends Component {
           icon: "fa-tasks",
           res_model: "cdn.penugasan",
           domain: domain1,
-        }, // Ikon transfer untuk menggambarkan pergerakan barang internal
+        },
         {
-          name: "Jumlah Absensi",
+          name: "Absensi Kelas",
           value: absensi,
           icon: "fa-calendar-check",
           res_model: "cdn.absensi_siswa",
           domain: domain2,
-        }, // Ikon truk untuk penerimaan barang
+        },
         {
-          //<i class="fa-solid "></i>
-          name: "Jumlah Rpp Dibuat",
+          name: "Rpp Dibuat",
           value: jumlahrpp,
           icon: "fa-book-open",
           res_model: "cdn.master_rpp",
           domain: domain3,
-        }, // Ikon pengiriman cepat untuk DO
-        // {
-        //   name: "Kelas",
-        //   value: kelas,
-        //   icon: "hr.job",
-        //   res_model: "cdn.master_kelas",
-        //   domain: domain,
-        // }, // Ikon gudang untuk menggambarkan mutasi barang
+        },
+        {
+          name: "Penilaian Akhir Wali Kelas",
+          value: penilaian,
+          icon: "fa-chalkboard-teacher",
+          res_model: "cdn.penilaian_akhir",
+          domain: domain,
+        },
       ];
 
-      // Apply the animation to each KPI element
       this.state.kpiData.forEach((kpi, index) => {
         const kpiElement = document.querySelector(`.kpi-value-${index}`);
         if (kpiElement) {
@@ -319,7 +292,7 @@ export class GuruKpiCard extends Component {
     let endDate;
     // Add change listener to period selection dropdown
     if (periodSelection) {
-      // this.showLoading();
+      this.showLoading();
       try {
         const handlePeriodChange = () => {
           switch (periodSelection.value) {
@@ -525,13 +498,7 @@ export class GuruKpiCard extends Component {
             this.state.endDate = endDate.toISOString().split("T")[0];
             startDateInput.value = this.state.startDate;
             endDateInput.value = this.state.endDate;
-            console.log("dates down kpi: ", startDate, "& ", endDate);
-            console.log(
-              "dates down state kpi: ",
-              this.state.startDate,
-              "& ",
-              this.state.endDate
-            );
+
             this.updateKpiData();
           }
         };
@@ -560,8 +527,6 @@ export class GuruKpiCard extends Component {
     this.updateCountdownDisplay();
     const cardName = evt.currentTarget.dataset.name;
     const cardData = this.state.kpiData.find((kpi) => kpi.name === cardName);
-    console.log("Kpicard yang di klik", cardData);
-
     if (cardData) {
       const { res_model, domain } = cardData;
       await this.actionService.doAction({

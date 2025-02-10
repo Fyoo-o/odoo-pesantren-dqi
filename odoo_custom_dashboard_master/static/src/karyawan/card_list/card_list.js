@@ -163,55 +163,17 @@ export class KaryawanList extends Component {
     }
   }
 
-  //   getLunasData(tagihanLunasData) {
-  //     // Urutkan data berdasarkan `create_date` secara descending (terbaru dulu)
-  //     // const sortedData = tagihanLunasData.sort(
-  //     //   (a, b) => new Date(b.create_date) - new Date(a.create_date)
-  //     // );
-
-  //     // Gunakan reduce untuk mendapatkan data unik berdasarkan ID produk atau nama (misalnya `name`)
-  //     const uniqueLunas = tagihanLunasData.reduce((acc, lunas) => {
-  //       // Gunakan `name` atau `id` sebagai kunci untuk mengeliminasi duplikasi
-  //       if (!acc[lunas.name]) {
-  //         acc[lunas.name] = {
-  //           name: lunas.name,
-  //           siswa: lunas.siswa_id,
-  //           kelas: lunas.ruang_kelas_id,
-  //           total: lunas.amount_total_signed,
-  //           state: lunas.payment_state,
-  //           //   create_date: product.create_date,
-  //           id: lunas.id,
-  //         };
-  //       }
-  //       return acc;
-  //     }, {});
-
-  //     // Kembalikan hanya produk terbaru berdasarkan tanggal (sortedData sudah diurutkan)
-  //     return Object.values(uniqueLunas)
-  //       .slice(0, 5)
-  //       .map((lunas, index) => ({
-  //         number: index + 1, // Nomor urutan
-  //         id: lunas.id,
-  //         name: lunas.name,
-  //         siswa: lunas.siswa[1],
-  //         kelas: lunas.kelas[1],
-  //         total: lunas.total[1],
-  //         state: lunas.state,
-  //         // create_date: product.create_date,
-  //       }));
-  //   }
-
   getKaryawanData(karyawanData) {
     const uniqueKaryawan = karyawanData.reduce((acc, data) => {
       if (!acc[data.name]) {
         acc[data.name] = {
           name: data.name,
           email: data.work_email,
-          // Extract name from department_id array [id, name]
+
           departmen: Array.isArray(data.department_id)
             ? data.department_id[1]
             : data.department_id,
-          // Extract name from job_id array [id, name]
+
           jabatan: Array.isArray(data.job_id) ? data.job_id[1] : data.job_id,
           id: data.id,
         };
@@ -219,14 +181,16 @@ export class KaryawanList extends Component {
       return acc;
     }, {});
 
-    return Object.values(uniqueKaryawan).map((data, index) => ({
-      number: index + 1,
-      id: data.id,
-      name: data.name || "N/A",
-      email: data.email,
-      departmen: data.departmen || "N/A",
-      jabatan: data.jabatan || "N/A",
-    }));
+    return Object.values(uniqueKaryawan)
+      .slice(0, 10)
+      .map((data, index) => ({
+        number: index + 1,
+        id: data.id,
+        name: data.name || "N/A",
+        email: data.email,
+        departmen: data.departmen || "N/A",
+        jabatan: data.jabatan || "N/A",
+      }));
   }
 
   // attachEventListeners() {

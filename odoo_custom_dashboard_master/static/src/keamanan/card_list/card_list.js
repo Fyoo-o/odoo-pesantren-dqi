@@ -52,7 +52,6 @@ export class KeamananCardList extends Component {
 
   toggleCountdown() {
     if (this.isCountingDown) {
-      // Jika sedang countdown, hentikan
       this.clearIntervals();
       document.getElementById("timerCountdown").textContent = "";
       const clockElement = document.getElementById("timerIcon");
@@ -60,8 +59,7 @@ export class KeamananCardList extends Component {
         clockElement.classList.add("fas", "fa-clock");
       }
     } else {
-      // Jika tidak sedang countdown, mulai baru
-      this.isCountingDown = true; // Set flag sebelum memulai countdown
+      this.isCountingDown = true;
       this.startCountdown();
       const clockElement = document.getElementById("timerIcon");
       if (clockElement) {
@@ -79,17 +77,15 @@ export class KeamananCardList extends Component {
       clearInterval(this.refreshInterval);
       this.refreshInterval = null;
     }
-    this.countdownTime = 10; // Reset countdown time
-    this.isCountingDown = false; // Reset flag
+    this.countdownTime = 10;
+    this.isCountingDown = false;
   }
 
   startCountdown() {
-    // Reset dan inisialisasi ulang
     this.countdownTime = 10;
-    this.clearIntervals(); // Bersihkan interval yang mungkin masih berjalan
+    this.clearIntervals();
     this.updateCountdownDisplay();
 
-    // Mulai interval baru
     this.countdownInterval = setInterval(() => {
       this.countdownTime--;
 
@@ -722,7 +718,7 @@ export class KeamananCardList extends Component {
       return this.action.doAction({
         type: "ir.actions.act_window",
         name: "Product",
-        res_model: "stock.picking",
+        res_model: "cdn.perijinan",
         res_id: productId,
         views: [[false, "form"]],
         target: "current",
@@ -1456,7 +1452,7 @@ export class KeamananCardList2 extends Component {
       return this.action.doAction({
         type: "ir.actions.act_window",
         name: "Product",
-        res_model: "stock.picking",
+        res_model: "cdn.perijinan",
         res_id: productId,
         views: [[false, "form"]],
         target: "current",

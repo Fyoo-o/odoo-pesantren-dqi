@@ -171,37 +171,28 @@ export class PerekrutanKpiCard extends Component {
   // FUNC COUNTDOWN END
 
   async updateKpiData() {
-    // this.showLoading();
+    this.showLoading();
     try {
-      // Build domain filter based on date range from state
-      // const domain = [["picking_type_code", "=", "internal"]];
-      // const domain2 = [["picking_type_code", "=", "incoming"]];
-      // const domain3 = [["picking_type_code", "=", "outgoing"]];
-
-      const domain1 = [];
-      const domain2 = [];
-      const domain3 = [];
-      const domain = [];
+      let domain1 = [];
+      let domain2 = [];
+      let domain3 = [];
+      let domain = [];
       if (this.state.startDate) {
         domain1.push(["create_date", ">=", this.state.startDate]);
         domain2.push(["create_date", ">=", this.state.startDate]);
         domain3.push(["create_date", ">=", this.state.startDate]);
-        // domain4.push(["create_date", ">=", this.state.startDate]);
+        domain.push(["create_date", ">=", this.state.startDate]);
       }
       if (this.state.endDate) {
         domain1.push(["create_date", "<=", this.state.endDate]);
         domain2.push(["create_date", "<=", this.state.endDate]);
         domain3.push(["create_date", "<=", this.state.endDate]);
-        // domain4.push(["create_date", "<=", this.state.endDate]);
+        domain.push(["create_date", "<=", this.state.endDate]);
       }
 
       domain1.push(["stage_id", "in", [1]]);
       domain2.push(["date_closed", "!=", false]);
-      // domain3.push([
-      //   "&",
-      //   ("active", "=", false),
-      //   ("refuse_reason_id", "!=", false),
-      // ]);
+      domain.push(["stage_id", "in", [3, 4]]);
       domain3.push(["active", "=", false]);
       domain3.push(["refuse_reason_id", "!=", false]);
 
@@ -216,26 +207,19 @@ export class PerekrutanKpiCard extends Component {
       ]);
 
       let ditolakData = await this.orm.call("hr.applicant", "search_read", [
-        // [["jns_pegawai", "=", "guru"]],
         domain3,
         ["id", "partner_name", "create_date"],
       ]);
-      // console.log("Stock3 Data:", stock3);
 
-      // const kelasData = await this.orm.call("cdn.master_kelas", "search_read", [
-      //   domain,
-      //   ["id", "name"],
-      // ]);
-      // console.log("Stock4 Data:", stock4);
+      const wawancaraData = await this.orm.call("hr.applicant", "search_read", [
+        domain,
+        ["id", "partner_name"],
+      ]);
 
-      // Calculate KPI values
-      // const Stock1 = stock.length;
-      // const Stock2 = stock2.length;
-      // const Stock3 = stock3.length;
       let lamaran = lamaranData.length;
       let departement = diterimaData.length;
       let jabatanKerja = ditolakData.length;
-      // let kelas = kelasData.length;
+      let wawancara = wawancaraData.length;
       // const Stock4 = Stock1 + Stock2 + Stock3;
 
       // console.log("DATA = ", Stock1, Stock2, Stock3, Stock4);s
@@ -257,20 +241,19 @@ export class PerekrutanKpiCard extends Component {
           domain: domain2,
         }, // Ikon truk untuk penerimaan barang
         {
-          //<i class="fa-solid "></i>
           name: "Lamaran Ditolak",
           value: jabatanKerja,
           icon: "fa-circle-xmark",
           res_model: "hr.applicant",
           domain: domain3,
         }, // Ikon pengiriman cepat untuk DO
-        // {
-        //   name: "Kelas",
-        //   value: kelas,
-        //   icon: "hr.job",
-        //   res_model: "cdn.master_kelas",
-        //   domain: domain,
-        // }, // Ikon gudang untuk menggambarkan mutasi barang
+        {
+          name: "Diwawancarai",
+          value: wawancara,
+          icon: "fa-newspaper",
+          res_model: "hr.applicant",
+          domain: domain,
+        },
       ];
 
       // Apply the animation to each KPI element
@@ -322,7 +305,7 @@ export class PerekrutanKpiCard extends Component {
     let endDate;
     // Add change listener to period selection dropdown
     if (periodSelection) {
-      // this.showLoading();
+      this.showLoading();
       try {
         const handlePeriodChange = () => {
           switch (periodSelection.value) {

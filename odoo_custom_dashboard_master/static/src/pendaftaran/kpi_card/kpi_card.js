@@ -22,7 +22,6 @@ export class PendaftaranKpiCard extends Component {
     this.countdownTime = 10;
     this.isCountingDown = false;
 
-    // Setup for component lifecycle events
     onWillStart(async () => {
       try {
         await this.updateKpiData();
@@ -31,16 +30,14 @@ export class PendaftaranKpiCard extends Component {
       }
     });
 
-    // Attach event listeners after mounting
     onMounted(() => {
       this.attachEventListeners();
       const periodSelection = document.getElementById("periodSelection");
       if (periodSelection) {
-        periodSelection.value = "thisMonth"; // Pilih default "Bulan Ini"
+        periodSelection.value = "thisMonth";
       }
     });
 
-    // Cleanup interval on component unmount
     onWillUnmount(() => {
       if (this.countdownInterval) {
         clearInterval(this.countdownInterval);
@@ -162,15 +159,13 @@ export class PendaftaranKpiCard extends Component {
   }
 
   refreshChart() {
-    // Logika refresh chart
     console.log("Refreshing Card...");
-    // Contoh penggunaan data fetching ulang
+
     this.updateKpiData();
   }
 
-  // FUNC COUNTDOWN END
-
   async updateKpiData() {
+    this.showLoading();
     try {
       let domain1 = [];
       let domain2 = [];
@@ -178,12 +173,8 @@ export class PendaftaranKpiCard extends Component {
       let domain4 = [];
 
       domain2.push(["state", "=", "diterima"]);
-      domain3.push(["state", "=", "ditolak"]);
-      domain4.push(["state", "=", "seleksi"]);
-      // let domain1 = [];
-      // let domain2 = [];
-      // let domain3 = [];
-      // let domain4 = [];
+      domain3.push(["state", "=", "seleksi"]);
+      domain4.push(["state", "=", "ditolak"]);
 
       if (this.state.startDate) {
         domain1.push(["tanggal_daftar", ">=", this.state.startDate]);
@@ -251,14 +242,14 @@ export class PendaftaranKpiCard extends Component {
           value: diseleksi,
           icon: "fa-clipboard-list",
           res_model: "ubig.pendaftaran",
-          domain: domain4,
+          domain: domain3,
         },
         {
           name: "Santri Ditolak",
           value: ditolak,
           icon: "fa-circle-xmark",
           res_model: "ubig.pendaftaran",
-          domain: domain3,
+          domain: domain4,
         },
       ];
 
@@ -310,7 +301,7 @@ export class PendaftaranKpiCard extends Component {
     let endDate;
     // Add change listener to period selection dropdown
     if (periodSelection) {
-      // this.showLoading();
+      this.showLoading();
       try {
         const handlePeriodChange = () => {
           switch (periodSelection.value) {

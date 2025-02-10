@@ -761,7 +761,7 @@ class inheritRecruitment(models.Model):
             'lang'                  : address_sudo.lang,
             'address_id'            : self.company_id.partner_id.id,
             'phone'                 : self.partner_phone,
-            'candidate_id'          : self.ids,
+            'candidate_id'          : self.candidate_id,
             'work_email'            : self.email_from,
             'lembaga'               : self.lembaga,
             'no_ktp'                : self.no_ktp,
