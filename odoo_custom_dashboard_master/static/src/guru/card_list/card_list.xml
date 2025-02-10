@@ -44,7 +44,7 @@
                                                     <t t-esc="guru.tahunajaran"/>
                                                 </td>
                                                 <td>
-                                                    <span t-if="guru.status == 'confirm'" class="badge rounded-pill bg-success">Confirm</span>
+                                                    <span t-if="guru.status == 'confirm'" class="badge rounded-pill bg-success text-light">Confirm</span>
                                                     <span t-if="guru.status == 'draft'" class="badge rounded-pill bg-secondary text-dark">Draft</span>
                                                 </td>
                                                 <!-- <td>

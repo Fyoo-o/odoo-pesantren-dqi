@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="owl.CardListPenjualan" owl="1">
+        <div class="row w-100 h-100 m-0" style="font-size: 12px; line-height: 1.5;">
+            <div class="col-lg-12 p-0">
+                <div class="card shadow-sm border-0 rounded-0">
+                    <div class="card-header d-flex justify-content-between">
+                        <h3 class="card-title mb-0">Siap Difakturkan</h3>
+                    </div>
+                    <div class="card-body pt-1">
+                        <t t-if="state.permintaann.length > 0">
+                            <div style="overflow-x: auto;">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Nomor</th>
+                                            <th>Pelanggan</th>
+                                            <th>Penjual</th>
+                                            <th>Total</th>
+                                            <th>Status</th>     
+                                        </tr>
+                                    </thead>
+                                    <tbody class="overflow-x-scroll">
+                                        <t t-foreach="state.permintaann" t-as="permintaan" t-key="permintaan.id">
+                                            <tr style="cursor: pointer;" t-att-id="'product-' + permintaan.id" t-on-click="() => this.onGuruClick(permintaan.id)">
+                                                <td>
+                                                    <t t-esc="permintaan.refrensi"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="permintaan.pemasok"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="permintaan.pembeli"/>
+                                                </td>
+                                                <td>
+                                                   Rp.<t t-esc="permintaan.total"/>
+                                                </td>
+                                                <td>
+                                                    <span t-if="permintaan.status == 'to invoice'" class="badge rounded-pill bg-success text-light">Siap Difakturkan</span>
+                                                </td>
+                                                <!-- <td>
+                                                    <t t-esc="permintaan.state"/>
+                                                </td> -->
+                                                <!-- <td class="text-center">
+                                                   
+                                                </td> -->
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="text-center p-3">
+                                <span class="ms-2">Data tidak ditemukan</span>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

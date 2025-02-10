@@ -23,7 +23,7 @@
                                     </thead>
                                     <tbody class="overflow-x-scroll">
                                         <t t-foreach="state.permintaann" t-as="permintaan" t-key="permintaan.id">
-                                            <tr style="cursor: pointer;" t-att-id="'product-' + permintaan.id" t-on-click="() => this.onGuruClick(permintaann.id)">
+                                            <tr style="cursor: pointer;" t-att-id="'product-' + permintaan.id" t-on-click="() => this.onGuruClick(permintaan.id)">
                                                 <td>
                                                     <t t-esc="permintaan.refrensi"/>
                                                 </td>

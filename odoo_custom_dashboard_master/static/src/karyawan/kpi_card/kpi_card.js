@@ -248,7 +248,7 @@ export class KaryawanKpiCard extends Component {
           name: "Jabatan Kerja",
           value: jabatanKerja,
           icon: "fa-clipboard-list",
-          res_model: "hr.employee",
+          res_model: "hr.job",
           domain: domain,
         }, // Ikon pengiriman cepat untuk DO
         // {

@@ -150,7 +150,6 @@ export class PerekrutanList extends Component {
       // domainLunas.push(["payment_state", "=", "paid"]);
 
       const dataPelamar = await this.orm.call("hr.applicant", "search_read", [
-        // dateDomain,
         domainPelamar,
         ["id", "partner_name", "create_date", "stage_id", "application_status"],
       ]);
@@ -202,32 +201,18 @@ export class PerekrutanList extends Component {
   //   }
 
   getPelamarData(pelamarData) {
-    const uniqueKaryawan = pelamarData.reduce((acc, data) => {
-      if (!acc[data.name]) {
-        acc[data.name] = {
-          name: data.partner_name,
-          tanggal: data.create_date,
-          // Extract name from department_id array [id, name]
-          tahapan: Array.isArray(data.stage_id)
-            ? data.stage_id[1]
-            : data.stage_id,
-          // Extract name from job_id array [id, name]
-          // jabatan: Array.isArray(data.job_id) ? data.job_id[1] : data.job_id,
-          status: data.application_status,
-          id: data.id,
-        };
-      }
-      return acc;
-    }, {});
-
-    return Object.values(uniqueKaryawan).map((data, index) => ({
-      number: index + 1,
-      id: data.id,
-      name: data.name,
-      tanggal: data.tanggal,
-      tahapan: data.tahapan || "N/A",
-      status: data.status || "N/A",
-    }));
+    return pelamarData
+      .sort((a, b) => new Date(b.create_date) - new Date(a.create_date))
+      .map((data, index) => ({
+        number: index + 1,
+        id: data.id,
+        name: data.partner_name,
+        tanggal: data.create_date,
+        tahapan: Array.isArray(data.stage_id)
+          ? data.stage_id[1]
+          : data.stage_id,
+        status: data.application_status || "N/A",
+      }));
   }
 
   attachEventListeners() {

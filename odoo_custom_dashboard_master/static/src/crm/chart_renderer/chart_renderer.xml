@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="owl.CrmChartRenderer" owl="1">
+        <!-- Conditional rendering for the chart or the "Data tidak ditemukan" message -->
+        <t t-if="hasData === true" class="p-5">
+            <!-- The canvas element for the chart -->
+            <canvas t-ref="chart" style="display: block; margin: 0 auto;" />
+        </t>
+        <t t-elif="hasData === false">
+            <!-- The message displayed when there's no data -->
+            <div style="text-align: center; font-size: 18px; color: red;">
+                Data tidak ditemukan
+            </div>
+        </t>
+    </t>
+</templates>

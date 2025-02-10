@@ -181,7 +181,7 @@ export class PembelianKpiCard extends Component {
   }
 
   async updateKpiData() {
-    // this.showLoading();
+    this.showLoading();
     try {
       const domain1 = [];
       const domain2 = [];
@@ -246,34 +246,33 @@ export class PembelianKpiCard extends Component {
 
       this.state.kpiData = [
         {
-          name: "Total Order",
+          name: "Order",
           value: orderTotal,
           icon: "fa-box",
           res_model: "purchase.order",
           domain: domain1,
-        }, // Ikon transfer untuk menggambarkan pergerakan barang internal
+        },
         {
-          name: "Total Nilai Order",
+          name: "Nilai Order",
           value: this.formatLargeNumber(order),
           icon: "fa-dollar-sign",
           res_model: "purchase.order",
           domain: domain2,
-        }, // Ikon truk untuk penerimaan barang
+        },
         {
-          //<i class="fa-solid "></i>
-          name: "Total Permintaan",
+          name: "Permintaan",
           value: penawaran,
           icon: "fa-list",
           res_model: "purchase.order",
           domain: domain3,
-        }, // Ikon pengiriman cepat untuk DO
+        },
         {
           name: "Belum Dibayar",
           value: this.formatLargeNumber(belumBayar),
           icon: "fa-exclamation-triangle",
           res_model: "purchase.order",
           domain: domain,
-        }, // Ikon gudang untuk menggambarkan mutasi barang
+        },
       ];
 
       // Apply the animation to each KPI element
@@ -325,7 +324,7 @@ export class PembelianKpiCard extends Component {
     let endDate;
     // Add change listener to period selection dropdown
     if (periodSelection) {
-      // this.showLoading();
+      this.showLoading();
       try {
         const handlePeriodChange = () => {
           switch (periodSelection.value) {

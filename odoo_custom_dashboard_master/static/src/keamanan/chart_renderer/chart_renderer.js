@@ -52,7 +52,7 @@ export class KeamananChartRenderer extends Component {
         this.attachEventListeners();
         this.filterDataByPeriod();
       }
-      if (this.props.title === "bar1") {
+      if (this.props.title === "pie2") {
         this.attachEventListeners();
         this.filterDataByPeriod();
       }

@@ -333,7 +333,7 @@ export class PerekrutanChartRenderer extends Component {
       //   return shortState;
       // });
       this.state.originalLabels = Object.keys(stateCounts).map((state) => {
-        return state.replace(/^\d+[, ]*/, ""); // Hapus angka dan koma di depan
+        return state.replace(/^\d+[, ]*/, "");
       });
 
       // this.state.labels = this.state.originalLabels.map((state) => {

@@ -134,57 +134,74 @@ export class PendaftaranList extends Component {
     this.fetchAllProducts();
   }
 
+  // async fetchAllProducts() {
+  //   try {
+  //     let domainSantri = [];
+  //     domainSantri.push(["total_nilai", ">=", 90]);
+
+  //     if (this.state.startDate && this.state.endDate) {
+  //       domainSantri.push(["tanggal_daftar", ">=", this.state.startDate]);
+  //       domainSantri.push(["tanggal_daftar", "<=", this.state.endDate]);
+  //     }
+
+  //     let santriData = await this.orm.call("ubig.pendaftaran", "search_read", [
+  //       domainSantri,
+  //       [
+  //         "id",
+  //         "nomor_pendaftaran",
+  //         "name",
+  //         "jenjang",
+  //         "total_nilai",
+  //         //   "create_date",
+  //       ],
+  //     ]);
+
+  //     console.log("Fetched Data Santri:", santriData);
+  //     this.state.santrii = this.getNilaiTeratas(santriData);
+  //     await this.render();
+  //   } catch (error) {
+  //     console.error("Error fetching Karyawan Data:", error);
+  //   }
+  // }
+
+  // getNilaiTeratas(santriData) {
+  //   const uniqueNilai = santriData.reduce((acc, data) => {
+  //     if (!acc[data.nomor_pendaftaran]) {
+  //       acc[data.nomor_pendaftaran] = {
+  //         namaSantri: data.name,
+  //         nomor: data.nomor_pendaftaran,
+  //         jenjang: data.jenjang,
+  //         nilai: data.total_nilai,
+  //         id: data.id,
+  //       };
+  //     }
+  //     return acc;
+  //   }, {});
+
+  //   return Object.values(uniqueNilai).map((data, index) => ({
+  //     number: index + 1,
+  //     id: data.id,
+  //     no: data.nomor || "N/A",
+  //     nama: data.namaSantri,
+  //     jenjang: data.jenjang || "N/A",
+  //     nilai: data.nilai || "N/A",
+  //   }));
+  // }
+
   async fetchAllProducts() {
     try {
-      // Base domain untuk outgoing shipments
-      //   let dateDomain = [["picking_type_code", "=", "outgoing"]];
       let domainSantri = [];
-      domainSantri.push(["total_nilai", ">=", 90]);
+      domainSantri.push(["total_nilai", "!=", false]);
 
       if (this.state.startDate && this.state.endDate) {
         domainSantri.push(["tanggal_daftar", ">=", this.state.startDate]);
         domainSantri.push(["tanggal_daftar", "<=", this.state.endDate]);
       }
 
-      //   console.log("Date Domain:", dateDomain);
-      // domainLunas.push(["payment_state", "=", "paid"]);
-
-      // const santriData = await this.orm.call(
-      //   "ubig.pendaftaran",
-      //   "search_read",
-      //   [domainSantri, ["id", "no_pendaftaran", "name", "total_nilai"]]
-      // );
-
       let santriData = await this.orm.call("ubig.pendaftaran", "search_read", [
         domainSantri,
-        [
-          "id",
-          "nomor_pendaftaran",
-          "name",
-          "jenjang",
-          "total_nilai",
-          //   "create_date",
-        ],
+        ["id", "nomor_pendaftaran", "name", "jenjang", "total_nilai"],
       ]);
-
-      // const tagihanLunasData = await this.orm.call(
-      //   "account.move",
-      //   "search_read",
-      //   [
-      //     // dateDomain,
-      //     [],
-      //     [
-      //       "id",
-      //       "name",
-      //       "siswa_id",
-      //       "ruang_kelas_id",
-      //       "amount_total_signed",
-      //       "payment_state",
-      //       "invoice_date",
-      //       //   "create_date",
-      //     ],
-      //   ]
-      // );
 
       console.log("Fetched Data Santri:", santriData);
       this.state.santrii = this.getNilaiTeratas(santriData);
@@ -194,56 +211,17 @@ export class PendaftaranList extends Component {
     }
   }
 
-  //   getLunasData(tagihanLunasData) {
-  //     // Urutkan data berdasarkan `create_date` secara descending (terbaru dulu)
-  //     // const sortedData = tagihanLunasData.sort(
-  //     //   (a, b) => new Date(b.create_date) - new Date(a.create_date)
-  //     // );
-
-  //     // Gunakan reduce untuk mendapatkan data unik berdasarkan ID produk atau nama (misalnya `name`)
-  //     const uniqueLunas = tagihanLunasData.reduce((acc, lunas) => {
-  //       // Gunakan `name` atau `id` sebagai kunci untuk mengeliminasi duplikasi
-  //       if (!acc[lunas.name]) {
-  //         acc[lunas.name] = {
-  //           name: lunas.name,
-  //           siswa: lunas.siswa_id,
-  //           kelas: lunas.ruang_kelas_id,
-  //           total: lunas.amount_total_signed,
-  //           state: lunas.payment_state,
-  //           //   create_date: product.create_date,
-  //           id: lunas.id,
-  //         };
-  //       }
-  //       return acc;
-  //     }, {});
-
-  //     // Kembalikan hanya produk terbaru berdasarkan tanggal (sortedData sudah diurutkan)
-  //     return Object.values(uniqueLunas)
-  //       .slice(0, 5)
-  //       .map((lunas, index) => ({
-  //         number: index + 1, // Nomor urutan
-  //         id: lunas.id,
-  //         name: lunas.name,
-  //         siswa: lunas.siswa[1],
-  //         kelas: lunas.kelas[1],
-  //         total: lunas.total[1],
-  //         state: lunas.state,
-  //         // create_date: product.create_date,
-  //       }));
-  //   }
-
   getNilaiTeratas(santriData) {
     const uniqueNilai = santriData.reduce((acc, data) => {
-      if (!acc[data.nomor_pendaftaran]) {
+      if (
+        !acc[data.nomor_pendaftaran] ||
+        acc[data.nomor_pendaftaran].nilai < data.total_nilai
+      ) {
         acc[data.nomor_pendaftaran] = {
+          namaSantri: data.name || "N/A",
           nomor: data.nomor_pendaftaran,
-          namaSantri: data.name,
-          // Extract name from department_id array [id, name]
-          // jenjang: Array.isArray(data.department_id)
-          //   ? data.department_id[1]
-          //   : data.department_id,
-          jenjang: data.jenjang,
-          nilai: data.total_nilai,
+          jenjang: data.jenjang || "N/A",
+          nilai: data.total_nilai || 0,
           id: data.id,
         };
       }
@@ -251,14 +229,15 @@ export class PendaftaranList extends Component {
     }, {});
 
     return Object.values(uniqueNilai)
+      .sort((a, b) => b.nilai - a.nilai)
       .slice(0, 10)
       .map((data, index) => ({
         number: index + 1,
         id: data.id,
         no: data.nomor || "N/A",
         nama: data.namaSantri,
-        jenjang: data.jenjang || "N/A",
-        nilai: data.nilai || "N/A",
+        jenjang: data.jenjang,
+        nilai: data.nilai,
       }));
   }
 
@@ -339,7 +318,6 @@ export class PendaftaranList extends Component {
             );
             break;
           case "month":
-            // Set startDate to the 1st of the current month at 00:00:01 UTC
             startDate = new Date(
               Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1, 0, 0, 1)
             );

@@ -319,27 +319,12 @@ export class KaryawanChartRenderer extends Component {
 
     if (this.props.title === "pie1") {
       const stateCounts = aggregateDataByEmployee(pie1);
-      // console.log("Data Departmen :", stateCounts);
-      this.state.labels = Object.keys(stateCounts);
 
-      // this.state.labels = Object.keys(stateCounts).map((state) => {
-      //   if (state === "Kepala Sekolah / Kepala Sekolah / Guru") return "";
-      //   return state;
-      // });
-      // this.state.labels = Object.keys(stateCounts).map((state) => {
-      //   const words = state.split(" ");
-      //   const firstWord = words[0];
-      //   const shortState = firstWord + (state.length > 15 ? `...` : "");
-      //   return shortState;
-      // });
-      // this.state.labels = Object.keys(stateCounts).map((state) => {
-      //   return state.replace(/^\d+[, ]*/, "");
-      // });
+      this.state.labels = Object.keys(stateCounts);
       this.state.originalLabels = Object.keys(stateCounts).map((state) => {
-        return state.replace(/^\d+[, ]*/, ""); // Hapus angka dan koma di depan
+        return state.replace(/^\d+[, ]*/, "");
       });
 
-      // Label tampilan (disingkat)
       this.state.labels = this.state.originalLabels.map((cleanedState) => {
         const words = cleanedState.split(" ");
         const firstWord = words[0];
@@ -614,7 +599,33 @@ export class KaryawanChartRenderer extends Component {
           plugins: {
             legend: {
               position: "top",
-              display: this.props.type !== "line" && this.props.type !== "bar",
+              labels: {
+                generateLabels: function (chart) {
+                  return chart.data.labels.map((label, i) => {
+                    return {
+                      text:
+                        label.length > 15
+                          ? label.substring(0, 10) + "..."
+                          : label, // Memotong label panjang
+                      fillStyle: chart.data.datasets[0].backgroundColor[i],
+                      strokeStyle: "#fff",
+                      lineWidth: 1,
+                      hidden: chart.getDatasetMeta(0).data[i].hidden,
+                      index: i,
+                    };
+                  });
+                },
+              },
+            },
+            tooltip: {
+              callbacks: {
+                title: function (tooltipItems) {
+                  return tooltipItems[0].label; // Menampilkan label lengkap saat hover
+                },
+                label: function (tooltipItem) {
+                  return `Jumlah Karyawan: ${tooltipItem.raw}`;
+                },
+              },
             },
             title: {
               display: false,
@@ -663,7 +674,6 @@ export class KaryawanChartRenderer extends Component {
       let domainAction = [];
 
       console.log("Label Yang di Klik", label);
-      // domainAction.push(["payment_state", "=", "paid"]);
 
       if (this.props.title === "pie1") {
         let departementName = originalLabel;
@@ -686,8 +696,8 @@ export class KaryawanChartRenderer extends Component {
             //   default_move_type: "out_invoice", // Mempertahankan default move type
             //   search_default_filter_by_blm_lunas: 0, // Menonaktifkan filter default
             // },
-            view_mode: "kanban", // Menentukan view mode kanban
-            views: [[false, "kanban"]], // Menentukan view yang akan ditampilkan
+            view_mode: "kanban",
+            views: [[false, "kanban"]],
           };
 
           return this.actionService.doAction(newAction);
@@ -707,46 +717,7 @@ export class KaryawanChartRenderer extends Component {
           domainAction.push(
             ["id", "in", associatedIds],
             ["state", "=", convertLabel]
-            // ["payment_state", "=", "paid"]
-            // ["payment_state", "=", "not_paid"]
           );
-
-          // this.actionService
-          //   .doAction({
-          //     // name: "Aktivitas Tagihan Siswa",
-          //     // type: "ir.actions.act_window",
-          //     // res_model: "account.move",
-          //     // view_mode: "list",
-          //     // views: [[false, "list"]],
-          //     // target: "current",
-          //     // domain: domainAction,
-          //     id: actionId,
-          //   })
-
-          //   .then(() => {
-          //     console.log(
-          //       `Redirected to action: ${actionId} for state: ${convertLabel}`
-          //     );
-          //   })
-          //   .catch((error) => {
-          //     console.error(
-          //       `Error in actionService.doAction for ${actionId}:`,
-          //       error
-          //     );
-          //   });
-
-          // this.actionService
-          //   .loadAction(actionId)
-          //   .then((action) => {
-          //     // Create a new action object with the original action's properties
-          //     const newAction = {
-          //       ...action,
-          //       domain: domainAction, // Add your custom domain
-          //     };
-
-          //     // Execute the modified action
-          //     return this.actionService.doAction(newAction);
-          //   })
 
           this.actionService
             .loadAction(actionId)
@@ -754,14 +725,13 @@ export class KaryawanChartRenderer extends Component {
               const newAction = {
                 ...action,
                 domain: domainAction,
-                context: {
-                  default_move_type: "out_invoice", // Mempertahankan default move type
-                  search_default_filter_by_blm_lunas: 0, // Menonaktifkan filter default
-                },
-                view_mode: "kanban", // Menentukan view mode kanban
-                views: [[false, "kanban"]], // Menentukan view yang akan ditampilkan
+                // context: {
+                //   default_move_type: "out_invoice",
+                //   search_default_filter_by_blm_lunas: 0,
+                // },
+                view_mode: "kanban",
+                views: [[false, "kanban"]],
               };
-
               return this.actionService.doAction(newAction);
             })
             .then(() => {
@@ -773,11 +743,9 @@ export class KaryawanChartRenderer extends Component {
             .catch((error) => {
               console.error(`Terjadi Error di ${actionId}:`, error);
             });
-
           return;
         }
       }
-
       console.log("Label Yang di klik :", label);
       if (
         this.actionService &&

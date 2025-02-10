@@ -138,8 +138,6 @@ export class GuruList extends Component {
 
   async fetchAllProducts() {
     try {
-      // Base domain untuk outgoing shipments
-      //   let dateDomain = [["picking_type_code", "=", "outgoing"]];
       let domainGuru = [];
 
       if (this.state.viewMode === "current") {
@@ -149,11 +147,6 @@ export class GuruList extends Component {
       }
 
       console.log("View Mode :", this.state.viewMode);
-      // domainPelamar.push(["department_id", "!=", false]);
-      // domainPelamar.push(["job_id", "!=", false]);
-
-      //   console.log("Date Domain:", dateDomain);
-      // domainLunas.push(["payment_state", "=", "paid"]);
 
       const dataGuru = await this.orm.call(
         "cdn.penilaian_akhir_guru",
@@ -186,48 +179,11 @@ export class GuruList extends Component {
     await this.fetchAllProducts();
   }
 
-  //   getLunasData(tagihanLunasData) {
-  //     // Urutkan data berdasarkan `create_date` secara descending (terbaru dulu)
-  //     // const sortedData = tagihanLunasData.sort(
-  //     //   (a, b) => new Date(b.create_date) - new Date(a.create_date)
-  //     // );
-
-  //     // Gunakan reduce untuk mendapatkan data unik berdasarkan ID produk atau nama (misalnya `name`)
-  //     const uniqueLunas = tagihanLunasData.reduce((acc, lunas) => {
-  //       // Gunakan `name` atau `id` sebagai kunci untuk mengeliminasi duplikasi
-  //       if (!acc[lunas.name]) {
-  //         acc[lunas.name] = {
-  //           name: lunas.name,
-  //           siswa: lunas.siswa_id,
-  //           kelas: lunas.ruang_kelas_id,
-  //           total: lunas.amount_total_signed,
-  //           state: lunas.payment_state,
-  //           //   create_date: product.create_date,
-  //           id: lunas.id,
-  //         };
-  //       }
-  //       return acc;
-  //     }, {});
-
-  //     // Kembalikan hanya produk terbaru berdasarkan tanggal (sortedData sudah diurutkan)
-  //     return Object.values(uniqueLunas)
-  //       .slice(0, 5)
-  //       .map((lunas, index) => ({
-  //         number: index + 1, // Nomor urutan
-  //         id: lunas.id,
-  //         name: lunas.name,
-  //         siswa: lunas.siswa[1],
-  //         kelas: lunas.kelas[1],
-  //         total: lunas.total[1],
-  //         state: lunas.state,
-  //         // create_date: product.create_date,
-  //       }));
-  //   }
-
   getGuruData(guruData) {
     const uniqueGuru = guruData.reduce((acc, data) => {
-      if (!acc[data.guru_id]) {
-        acc[data.guru_id] = {
+      const key = data.id;
+      if (!acc[key]) {
+        acc[key] = {
           name: Array.isArray(data.guru_id) ? data.guru_id[1] : data.guru_id,
           kelas: Array.isArray(data.kelas_id)
             ? data.kelas_id[1]

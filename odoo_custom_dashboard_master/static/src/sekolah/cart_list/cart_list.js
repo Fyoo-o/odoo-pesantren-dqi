@@ -146,7 +146,7 @@ export class TagihanLunasList extends Component {
 
       //   console.log("Date Domain:", dateDomain);
       domainLunas.push(["payment_state", "=", "paid"]);
-      domainLunas.push(["student", "=", true]);
+      domainLunas.push(["student", "!=", false]);
 
       const tagihanLunasData = await this.orm.call(
         "account.move",
@@ -860,7 +860,7 @@ export class TagihanBelumLunasList extends Component {
       }
 
       domainLunas.push(["payment_state", "=", "not_paid"]);
-      domainLunas.push(["student", "=", true]);
+      domainLunas.push(["student", "!=", false]);
 
       const tagihanLunasData = await this.orm.call(
         "account.move",

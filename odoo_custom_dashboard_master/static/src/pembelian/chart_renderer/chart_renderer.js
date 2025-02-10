@@ -318,6 +318,7 @@ export class PembelianChartRenderer extends Component {
         if (state === "to approve") return "Akan Disetujui";
         if (state === "purchase") return "Order Pembelian";
         if (state === "cancel") return "Dibatalkan";
+        if (state === "done") return "Dikunci";
       });
       this.state.labels = this.state.originalLabels;
 
@@ -634,6 +635,8 @@ export class PembelianChartRenderer extends Component {
           convertLabel = "purchase";
         } else if (pembayaran === "Dibatalkan") {
           convertLabel = "cancel";
+        } else if (pembayaran === "Dikunci") {
+          convertLabel = "done";
         }
         if (convertLabel) {
           domainAction.push(

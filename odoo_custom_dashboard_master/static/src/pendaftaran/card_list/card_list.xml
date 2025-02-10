@@ -5,7 +5,7 @@
             <div class="col-lg-12 p-0">
                 <div class="card shadow-sm border-0 rounded-0">
                     <div class="card-header">
-                        <h3 class="card-title mb-0">10 Santri Dengan Nilai Terbaik</h3>
+                        <h3 class="card-title mb-0">Santri Dengan Nilai Terbaik</h3>
                     </div>
                     <div class="card-body pt-1">
                         <t t-if="state.santrii.length > 0">
@@ -30,10 +30,10 @@
                                                 </td>
                                                 <td>
                                                     <!-- <t t-esc="santri.jenjang"/> -->
-                                                    <span t-if="santri.jenjang == 'sdmi'" class="badge rounded-pill bg-success">Sd/Mi</span>
-                                                    <span t-if="santri.jenjang == 'smpmts'" class="badge rounded-pill bg-info text-dark">Smp/Mts</span>
+                                                    <span t-if="santri.jenjang == 'sdmi'" class="badge rounded-pill bg-success text-light">Sd/Mi</span>
+                                                    <span t-if="santri.jenjang == 'smpmts'" class="badge rounded-pill bg-info text-light">Smp/Mts</span>
                                                     <span t-if="santri.jenjang == 'smama'" class="badge rounded-pill bg-warning text-dark">Sma/Ma</span>
-                                                    <span t-if="santri.jenjang == 'smk'" class="badge rounded-pill bg-danger">Smk</span>
+                                                    <span t-if="santri.jenjang == 'smk'" class="badge rounded-pill bg-danger text-light">Smk</span>
                                                 </td>
                                                 <td>
                                                     <t t-esc="santri.nilai"/>

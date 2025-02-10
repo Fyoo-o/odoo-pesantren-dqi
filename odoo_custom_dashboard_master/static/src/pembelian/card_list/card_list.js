@@ -185,33 +185,23 @@ export class PembelianList extends Component {
   }
 
   getPermintaanTerbaru(permintaanData) {
-    const uniquePermintaan = permintaanData.reduce((acc, data) => {
-      if (!acc[data.guru_id]) {
-        acc[data.guru_id] = {
-          name: data.name,
-          pemasok: Array.isArray(data.partner_id)
-            ? data.partner_id[1]
-            : data.partner_id,
-          dateOrder: data.date_order,
-          pembeli: Array.isArray(data.user_id) ? data.user_id[1] : data.user_id,
-          total: data.amount_total,
-          status: data.state,
-          id: data.id,
-        };
-      }
-      return acc;
-    }, {});
-
-    return Object.values(uniquePermintaan).map((data, index) => ({
-      number: index + 1,
-      id: data.id,
-      refrensi: data.name,
-      pemasok: data.pemasok,
-      pembeli: data.pembeli || "N/A",
-      deadline: data.dateOrder || "N/A",
-      total: data.total,
-      status: data.status,
-    }));
+    return permintaanData
+      .sort((a, b) => new Date(b.date_order) - new Date(a.date_order))
+      .slice(0, 10)
+      .map((data, index) => ({
+        number: index + 1,
+        id: data.id,
+        refrensi: data.name,
+        pemasok: Array.isArray(data.partner_id)
+          ? data.partner_id[1]
+          : data.partner_id,
+        pembeli: Array.isArray(data.user_id)
+          ? data.user_id[1]
+          : data.user_id || "N/A",
+        deadline: data.date_order || "N/A",
+        total: data.amount_total,
+        status: data.state,
+      }));
   }
 
   attachEventListeners() {
@@ -670,7 +660,7 @@ export class PembelianList extends Component {
       return this.action.doAction({
         type: "ir.actions.act_window",
         name: "Penilaian Akhir Guru",
-        res_model: "cdn.penilaian_akhir_guru",
+        res_model: "purchase.order",
         res_id: guruId,
         views: [[false, "form"]],
         target: "current",

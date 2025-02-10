@@ -280,6 +280,7 @@ export class PenagihanKpiCard extends Component {
   }
 
   async updateKpiData() {
+    this.showLoading();
     try {
       const domain1 = [];
       const domain2 = [];
@@ -290,18 +291,22 @@ export class PenagihanKpiCard extends Component {
         domain1.push(["invoice_date", ">=", this.state.startDate]);
         domain2.push(["invoice_date", ">=", this.state.startDate]);
         domain3.push(["invoice_date", ">=", this.state.startDate]);
+        domain.push(["invoice_date", ">=", this.state.startDate]);
       }
       if (this.state.endDate) {
         domain1.push(["invoice_date", "<=", this.state.endDate]);
         domain2.push(["invoice_date", "<=", this.state.endDate]);
         domain3.push(["invoice_date", "<=", this.state.endDate]);
+        domain.push(["invoice_date", "<=", this.state.endDate]);
       }
 
+      domain.push(["state", "=", "cancel"]);
       domain1.push(["payment_state", "=", "paid"]);
       domain1.push(["move_type", "=", "out_invoice"]);
       domain2.push(["move_type", "=", "out_invoice"]);
       domain2.push(["payment_state", "=", "not_paid"]);
       domain2.push(["state", "!=", "draft"]);
+      domain2.push(["state", "!=", "cancel"]);
       domain3.push(["payment_state", "=", "partial"]);
       domain3.push(["state", "!=", "draft"]);
 
@@ -321,6 +326,12 @@ export class PenagihanKpiCard extends Component {
         [domain3, ["id", "amount_untaxed_in_currency_signed"]]
       );
 
+      let pembayaranDibatalkan = await this.orm.call(
+        "account.move",
+        "search_read",
+        [domain, ["id", "amount_untaxed_in_currency_signed"]]
+      );
+
       // Safer sum calculation with null check
       let lunas = lunasData.reduce((total, record) => {
         const amount = record.amount_untaxed_in_currency_signed || 0;
@@ -333,6 +344,11 @@ export class PenagihanKpiCard extends Component {
       }, 0);
 
       let sebagian = terbayarSebagian.reduce((total, record) => {
+        const amount = record.amount_untaxed_in_currency_signed || 0;
+        return total + amount;
+      }, 0);
+
+      let dibatalkan = pembayaranDibatalkan.reduce((total, record) => {
         const amount = record.amount_untaxed_in_currency_signed || 0;
         return total + amount;
       }, 0);
@@ -361,13 +377,13 @@ export class PenagihanKpiCard extends Component {
           res_model: resModel,
           domain: domain3,
         },
-        // {
-        //   name: "Presentase Tagihan",
-        //   value: kelasData.length,
-        //   icon: "fa-wallet",
-        //   res_model: "cdn.master_kelas",
-        //   domain: domain,
-        // },
+        {
+          name: "Dibatalkan",
+          value: this.formatLargeNumber(dibatalkan),
+          icon: "fa-times-circle",
+          res_model: resModel,
+          domain: domain,
+        },
       ];
 
       // Only try to animate if the function exists
@@ -382,6 +398,8 @@ export class PenagihanKpiCard extends Component {
     } catch (error) {
       console.error("Error fetching KPI data:", error);
       throw error; // Re-throw the error so it can be handled by the caller
+    } finally {
+      this.hideLoading();
     }
   }
 
@@ -420,7 +438,7 @@ export class PenagihanKpiCard extends Component {
     let endDate;
     // Add change listener to period selection dropdown
     if (periodSelection) {
-      // this.showLoading();
+      this.showLoading();
       try {
         const handlePeriodChange = () => {
           switch (periodSelection.value) {

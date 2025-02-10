@@ -157,12 +157,10 @@ export class TagihanLunasList extends Component {
           [
             "id",
             "name",
-            "siswa_id",
-            "ruang_kelas_id",
+            "invoice_partner_display_name",
             "amount_total_signed",
             "payment_state",
             "invoice_date",
-            //   "create_date",
           ],
         ]
       );
@@ -175,55 +173,15 @@ export class TagihanLunasList extends Component {
     }
   }
 
-  //   getLunasData(tagihanLunasData) {
-  //     // Urutkan data berdasarkan `create_date` secara descending (terbaru dulu)
-  //     // const sortedData = tagihanLunasData.sort(
-  //     //   (a, b) => new Date(b.create_date) - new Date(a.create_date)
-  //     // );
-
-  //     // Gunakan reduce untuk mendapatkan data unik berdasarkan ID produk atau nama (misalnya `name`)
-  //     const uniqueLunas = tagihanLunasData.reduce((acc, lunas) => {
-  //       // Gunakan `name` atau `id` sebagai kunci untuk mengeliminasi duplikasi
-  //       if (!acc[lunas.name]) {
-  //         acc[lunas.name] = {
-  //           name: lunas.name,
-  //           siswa: lunas.siswa_id,
-  //           kelas: lunas.ruang_kelas_id,
-  //           total: lunas.amount_total_signed,
-  //           state: lunas.payment_state,
-  //           //   create_date: product.create_date,
-  //           id: lunas.id,
-  //         };
-  //       }
-  //       return acc;
-  //     }, {});
-
-  //     // Kembalikan hanya produk terbaru berdasarkan tanggal (sortedData sudah diurutkan)
-  //     return Object.values(uniqueLunas)
-  //       .slice(0, 5)
-  //       .map((lunas, index) => ({
-  //         number: index + 1, // Nomor urutan
-  //         id: lunas.id,
-  //         name: lunas.name,
-  //         siswa: lunas.siswa[1],
-  //         kelas: lunas.kelas[1],
-  //         total: lunas.total[1],
-  //         state: lunas.state,
-  //         // create_date: product.create_date,
-  //       }));
-  //   }
-
   getLunasData(tagihanLunasData) {
     const uniqueLunas = tagihanLunasData.reduce((acc, lunas) => {
       if (!acc[lunas.name]) {
         acc[lunas.name] = {
           name: lunas.name,
-          siswa: lunas.siswa_id ? lunas.siswa_id[1] || "N/A" : "N/A",
-          kelas: lunas.ruang_kelas_id
-            ? lunas.ruang_kelas_id[1] || "N/A"
-            : "N/A",
+          pelanggan: lunas.invoice_partner_display_name,
           total: lunas.amount_total_signed,
           state: lunas.payment_state,
+          tanggal: lunas.invoice_date,
           id: lunas.id,
         };
       }
@@ -234,8 +192,8 @@ export class TagihanLunasList extends Component {
       number: index + 1,
       id: lunas.id,
       name: lunas.name || "N/A",
-      siswa: lunas.siswa,
-      kelas: lunas.kelas,
+      pelanggan: lunas.pelanggan,
+      tanggal: lunas.tanggal,
       total: lunas.total,
       state: lunas.state,
     }));
@@ -853,12 +811,6 @@ export class TagihanBelumLunasList extends Component {
     try {
       // Base domain untuk outgoing shipments
       //   let dateDomain = [["picking_type_code", "=", "outgoing"]];
-
-      // Tambahkan filter date jika ada
-      //   if (this.state.startDate && this.state.endDate) {
-      //     dateDomain.push(["create_date", ">=", this.state.startDate]);
-      //     dateDomain.push(["create_date", "<=", this.state.endDate]);
-      //   }
       let domainLunas = [];
       if (this.state.startDate && this.state.endDate) {
         domainLunas.push(["invoice_date", ">=", this.state.startDate]);
@@ -866,9 +818,9 @@ export class TagihanBelumLunasList extends Component {
       }
 
       //   console.log("Date Domain:", dateDomain);
-
       domainLunas.push(["payment_state", "=", "not_paid"]);
       domainLunas.push(["move_type", "=", "out_invoice"]);
+      domainLunas.push(["state", "!=", "cancel"]);
 
       const tagihanLunasData = await this.orm.call(
         "account.move",
@@ -879,12 +831,10 @@ export class TagihanBelumLunasList extends Component {
           [
             "id",
             "name",
-            "siswa_id",
-            "ruang_kelas_id",
+            "invoice_partner_display_name",
             "amount_total_signed",
             "payment_state",
             "invoice_date",
-            //   "create_date",
           ],
         ]
       );
@@ -902,27 +852,27 @@ export class TagihanBelumLunasList extends Component {
       if (!acc[lunas.name]) {
         acc[lunas.name] = {
           name: lunas.name,
-          siswa: lunas.siswa_id ? lunas.siswa_id[1] || "N/A" : "N/A",
-          kelas: lunas.ruang_kelas_id
-            ? lunas.ruang_kelas_id[1] || "N/A"
-            : "N/A",
+          pelanggan: lunas.invoice_partner_display_name,
           total: lunas.amount_total_signed,
           state: lunas.payment_state,
+          tanggal: lunas.invoice_date,
           id: lunas.id,
         };
       }
       return acc;
     }, {});
 
-    return Object.values(uniqueLunas).map((lunas, index) => ({
-      number: index + 1,
-      id: lunas.id,
-      name: lunas.name || "N/A",
-      siswa: lunas.siswa,
-      kelas: lunas.kelas,
-      total: lunas.total,
-      state: lunas.state,
-    }));
+    return Object.values(uniqueLunas)
+      .slice(0, 10)
+      .map((lunas, index) => ({
+        number: index + 1,
+        id: lunas.id,
+        name: lunas.name || "N/A",
+        pelanggan: lunas.pelanggan,
+        tanggal: lunas.tanggal,
+        total: lunas.total,
+        state: lunas.state,
+      }));
   }
 
   attachEventListeners() {

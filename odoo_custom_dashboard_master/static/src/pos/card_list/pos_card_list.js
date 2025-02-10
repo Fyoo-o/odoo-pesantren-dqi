@@ -690,6 +690,7 @@ export class PosCardList1 extends Component {
             ["state", "!=", "cancel"],
             ["date_order", ">=", startDate],
             ["date_order", "<=", endDate],
+            ["partner_id", "!=", false],
           ],
           ["partner_id", "amount_total"],
         ],

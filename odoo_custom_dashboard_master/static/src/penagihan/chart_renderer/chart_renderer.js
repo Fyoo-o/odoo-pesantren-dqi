@@ -201,10 +201,7 @@ export class PenagihanChartRenderer extends Component {
       const domain1 = [];
       const domain2 = [];
       const domain4 = [];
-      // const domain1 = [["picking_type_code", "=", "internal"]];
-      // const domain2 = [["picking_type_code", "=", "incoming"]];
-      // const domain3 = [["picking_type_code", "=", "outgoing"]];
-      // Set default startDate dan endDate jika tidak diisi
+
       if (!startDate) {
         const today = new Date();
         const firstDayOfMonth = new Date(
@@ -228,10 +225,7 @@ export class PenagihanChartRenderer extends Component {
         );
         endDate = lastDayOfMonth.toISOString().split("T")[0];
       }
-      // domain.push(["invoice_date", ">=", startDate]);
-      // domain.push(["invoice_date", "<=", endDate]);
-      // domain1.push(["department_id", "!=", false]);
-      // domain2.push(["job_id", "!=", false]);
+
       domain1.push(["invoice_date", ">=", startDate]);
       domain1.push(["invoice_date", "<=", endDate]);
       domain1.push(["move_type", "=", "out_invoice"]);
@@ -242,18 +236,9 @@ export class PenagihanChartRenderer extends Component {
       domain4.push(["invoice_date", "<=", endDate]);
       domain4.push(["move_type", "=", "out_invoice"]);
 
-      // domain3.push(["create_date", ">=", startDate]);
-      // domain3.push(["create_date", "<=", endDate]);
+      domain2.push(["date", ">=", startDate]);
+      domain2.push(["date", "<=", endDate]);
 
-      // domain1.push(["payment_state", "=", "paid"]);
-      // domain2.push(["payment_state", "=", "not_paid"]);
-      // domain2.push(["state", "!=", "draft"]);
-
-      // Build domain untuk filter berdasarkan tanggal
-      // pie1 = await this.orm.call("hr.department", "search_read", [
-      //   domain1,
-      //   ["id", "name", "total_employee"],
-      // ]);
       pie1 = await this.orm.call("account.move", "search_read", [
         domain1,
         ["id", "amount_untaxed_in_currency_signed", "payment_state"],
@@ -261,7 +246,7 @@ export class PenagihanChartRenderer extends Component {
 
       pie2 = await this.orm.call("account.payment", "search_read", [
         domain2,
-        // ["id", "partner_name", "application_status"],
+
         ["id", "state", "amount_company_currency_signed"],
       ]);
 
@@ -270,16 +255,8 @@ export class PenagihanChartRenderer extends Component {
         ["id", "kelas_id", "state"],
       ]);
 
-      // console.log("Dom 1 = ", domain1);
-      // console.log("Dom 2 = ", domain2);
-      // console.log("Dom 3 = ", domain3);
-      // console.log("DATA PIE 1 = ", pie1);
-      // console.log("DATA PIE 2 = ", pie2);
-      // console.log("DATA PIE 3 = ", pie3);
-
       console.log("Data Job Id", pie2);
 
-      // await this.processData(moveData, moveLineData);
       await this.processData(pie1, pie2, pie3);
     } catch (error) {
       console.error("Error fetching data from Odoo:", error);
@@ -345,6 +322,11 @@ export class PenagihanChartRenderer extends Component {
         if (state === "not_paid") return "Belum Lunas";
         if (state === "paid") return "Lunas";
         if (state === "partial") return "Terbayar Sebagian";
+        if (state === "reversed") return "Di Reverse";
+        if (state === "blocked") return "Diblokir";
+        if (state === "cancel") return "Dibatalkan";
+        if (state === "invoicing_legacy") return "Memfaktur Legacy App";
+        if (state === "in_payment") return "In Payment";
       });
       this.state.labels = this.state.originalLabels;
       this.state.datasets = [
@@ -676,14 +658,22 @@ export class PenagihanChartRenderer extends Component {
           convertLabel = "paid";
         } else if (statusLunas === "Terbayar Sebagian") {
           convertLabel = "partial";
+        } else if (statusLunas === "Di Reverse") {
+          convertLabel = "reversed";
+        } else if (statusLunas === "Diblokir") {
+          convertLabel = "blocked";
+        } else if (statusLunas === "Dibatalkan") {
+          convertLabel = "cancel";
+        } else if (convertLabel === "Memfaktur Legacy App") {
+          convertLabel = "invoicing_legacy";
+        } else {
+          convertLabel = "in_payment";
         }
         domainAction.push(
           ["id", "in", associatedIds],
           ["payment_state", "=", convertLabel],
           ["invoice_date", ">=", this.state.startDate2],
           ["invoice_date", "<=", this.state.endDate2]
-          // ["invoice_date", ">=", startDate],
-          // ["invoice_date", "<=", endDate]
         );
       } else if (this.props.title === "pie2") {
         let convertLabel;
@@ -695,12 +685,13 @@ export class PenagihanChartRenderer extends Component {
           convertLabel = "partial";
         } else if (label === "Draft") {
           convertLabel = "draft";
-        } else if (convertLabel === "Dibatalkan") {
-          convertLabel = "canceled";
-        } else if (convertLabel === "Ditolak") {
+        } else if (label === "Ditolak") {
           convertLabel = "rejected";
+        } else {
+          convertLabel = "canceled";
         }
         if (convertLabel) {
+          console.log("Label Convert Yang di Klik", convertLabel);
           domainAction.push(
             ["id", "in", associatedIds],
             ["state", "=", convertLabel]
@@ -831,12 +822,11 @@ export class PenagihanChartRenderer extends Component {
     const endDateInput = document.getElementById("endDate");
     const periodSelection = document.getElementById("periodSelection");
 
-    // Langsung eksekusi logic tanpa mendaftarkan event listener baru
     const today = new Date();
     let startDate;
     let endDate;
-    const defaultPeriod = "thisMonth"; // Default ke Bulan Ini
-    periodSelection.value = defaultPeriod; // Pilih default period pada dropdown
+    const defaultPeriod = "thisMonth";
+    periodSelection.value = defaultPeriod;
 
     if (periodSelection) {
       periodSelection.addEventListener("change", () => {
@@ -844,7 +834,6 @@ export class PenagihanChartRenderer extends Component {
         try {
           switch (periodSelection.value) {
             case "today":
-              // Hari Ini
               startDate = new Date(
                 Date.UTC(
                   today.getUTCFullYear(),
