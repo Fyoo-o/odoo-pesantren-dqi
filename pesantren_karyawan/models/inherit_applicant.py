@@ -7,6 +7,7 @@ import pytz
 import random
 import string
 import logging
+from datetime import date
 
 _logger = logging.getLogger(__name__)
 
@@ -23,6 +24,9 @@ class inheritRecruitment(models.Model):
     # kanan
     lembaga             = fields.Selection(related="candidate_id.lembaga")
     job_id              = fields.Many2one(related="candidate_id.job_id")
+    nip                 = fields.Char(string='Nip')
+    tgl_masuk           = fields.Date(string= "Tanggal Masuk", default=fields.Date.context_today)
+    no_masuk            = fields.Integer(string= "No Masuk")
 
     # Data Diri
     no_ktp              = fields.Char(related="candidate_id.no_ktp")
@@ -718,7 +722,128 @@ class inheritRecruitment(models.Model):
             # Kirim email
             mail = self.env['mail.mail'].sudo().create(email_values)
             mail.send()
+            
+    
+    # @api.model
+    # def _generate_nomor_masuk(self):
+    #     """Membuat nomor masuk otomatis dengan format YYYY0001"""
+  
+    #     last_record = self.search([], order="no_masuk desc", limit=1)
 
+    #     if last_record and last_record.no_masuk and last_record.no_masuk.isdigit():
+    #         last_number = int(last_record.no_masuk[-3:]) + 1
+    #     else:
+    #         last_number = 1  # Jika tidak ada data, mulai dari 0001
+            
+    #     no_masuk = f'{str(last_number).zfill(3)}'
+        
+    #     _logger.info(f"Nomor Masuk yang dibuat: {no_masuk}")
+    #     return no_masuk
+    
+    # def _generate_tgl(self):
+    #     if not self.tgl_masuk:
+    #             self.tgl_masuk = fields.Date.today(self)
+    
+    # def _generate_nip(self):
+    #     """Fungsi untuk membuat NIP otomatis"""
+    #     if not self.tgl_lahir:
+    #         _logger.warning("NIP tidak bisa dibuat: Tanggal Lahir kosong.")
+    #         return False
+
+    #     nomor = self.no_masuk and self.no_masuk.isdigit()
+
+    #     try:
+    #         tahun_daftar = self.tgl_masuk.strftime('%m%y')
+    #     except AttributeError:
+    #         _logger.warning("NIP tidak bisa dibuat: Tanggal Masuk kosong atau format salah.")
+
+    #     # Format tanggal lahir
+    #     tgl_lahir_str = self.tgl_lahir.strftime('%d%m')
+    #     tgl_pok = self.tgl_lahir.strftime('%Y')[-2:]
+        
+    #     top = f"{tgl_lahir_str}{tgl_pok}"
+
+    #     nip = f"{nomor}.{tahun_daftar}.{top}"
+    #     _logger.info(f"NIP yang dihasilkan: {nip}")  
+    #     return nip
+
+
+    # def create_employee_from_applicant(self):
+    #     """Membuat karyawan dari kandidat yang diterima"""
+    #     self.ensure_one()
+    #     self._check_interviewer_access()
+
+    #     if not self.partner_id:
+    #         if not self.partner_name:
+    #             raise UserError(('Please provide a candidate name.'))
+
+    #         self.partner_id = self.env['res.partner'].create({
+    #             'is_company': False,
+    #             'name': self.partner_name,
+    #             'email': self.email_from,
+    #         })
+
+    #     action = self.env['ir.actions.act_window']._for_xml_id('hr.open_view_employee_list')
+            
+    #     nip = self._generate_nip()
+    #     if nip:
+    #         self.nip = nip  # Simpan di recruitment
+        
+    #     # **Membuat Employee dengan NIP**
+    #     employee_vals = self._get_employee_create_vals()
+        
+    #     # Pastikan NIP juga masuk ke employee
+    #     employee_vals['nip'] = self.nip
+
+    #     employee = self.env['hr.employee'].create(employee_vals)
+
+    #     employee.user_id.write({
+    #         'phone': self.partner_phone,
+    #         'mobile': self.partner_phone,
+    #     })
+        
+    #     action['res_id'] = employee.id
+    #     return action
+
+    # @api.model
+    # def create(self, vals):
+    #     if 'no_masuk' not in vals or vals['no_masuk'] == 0:
+    #         last_entry = self.search([], order='no_masuk desc', limit=1)
+
+    #         if last_entry:
+    #             vals['no_masuk'] = last_entry.no_masuk + 1
+    #         else:
+    #             vals['no_masuk'] = random.randint(1, 20)  # Random antara 1-20 jika belum ada data
+
+    #         vals['no_masuk'] = int(str(vals['no_masuk']).zfill(3))  # Format menjadi 3 digit (001, 002, ...)
+
+    #     return super(inheritRecruitment, self).create(vals)
+
+    @api.model
+    def create(self, vals):
+        if 'no_masuk' not in vals or vals['no_masuk'] == 0:
+            last_entry = self.search([], order='id desc', limit=1)
+            vals['no_masuk'] = (last_entry.no_masuk or 0) + 1
+        return super(inheritRecruitment, self).create(vals)
+
+
+    def _generate_nip(self):
+        if not self.tgl_lahir:
+            _logger.warning("NIP tidak bisa dibuat: Tanggal Lahir kosong.")
+            return False
+
+        try:
+            tahun_daftar = self.tgl_masuk.strftime('%m') if self.tgl_masuk else fields.Date.today().strftime('%m')
+            tahun = self.tgl_masuk.strftime('%y') if self.tgl_masuk else fields.Date.today().strftime('%y')
+            tgl_lahir_str = self.tgl_lahir.strftime('%d%m')
+            tgl_pok = self.tgl_lahir.strftime('%Y')[-2:]
+            nomor = str(self.no_masuk).zfill(3)
+            nip = f"{nomor}.{tahun_daftar}.{tahun}.{tgl_lahir_str}{tgl_pok}"
+            _logger.info(f"NIP yang dihasilkan: {nip}")
+            return nip
+        except Exception as e:
+            _logger.error(f"Gagal membuat NIP: {e}")
+            return False
 
     def create_employee_from_applicant(self):
         self.ensure_one()
@@ -726,7 +851,7 @@ class inheritRecruitment(models.Model):
 
         if not self.partner_id:
             if not self.partner_name:
-                raise UserError(_('Please provide an candidate name.'))
+                raise UserError(_('Please provide a candidate name.'))
 
             self.partner_id = self.env['res.partner'].create({
                 'is_company': False,
@@ -734,14 +859,27 @@ class inheritRecruitment(models.Model):
                 'email': self.email_from,
             })
 
+        nip = self._generate_nip()
+        if not nip:
+            raise UserError(_('Gagal membuat NIP. Periksa kembali tanggal lahir dan tanggal masuk.'))
+
+        self.nip = nip
+
+        employee_vals = self._get_employee_create_vals()
+        employee_vals['nip'] = self.nip
+
+        employee = self.env['hr.employee'].create(employee_vals)
+
+        if employee.user_id:
+            employee.user_id.write({
+                'phone': self.partner_phone,
+                'mobile': self.partner_phone,
+            })
+
         action = self.env['ir.actions.act_window']._for_xml_id('hr.open_view_employee_list')
-        employee = self.env['hr.employee'].create(self._get_employee_create_vals())
-        employee.user_id.write({
-            'phone': self.partner_phone,
-            'mobile': self.partner_phone,
-        })
         action['res_id'] = employee.id
         return action
+
 
     def _get_employee_create_vals(self):
         self.ensure_one()
@@ -749,6 +887,7 @@ class inheritRecruitment(models.Model):
         address_sudo = self.env['res.partner'].sudo().browse(address_id)
         return {
             'name'                  : self.partner_name or self.partner_id.display_name,
+            'nip'                   : self.nip,
             'work_contact_id'       : self.partner_id.id,
             'private_street'        : address_sudo.street,
             'private_street2'       : address_sudo.street2,
@@ -777,7 +916,7 @@ class inheritRecruitment(models.Model):
             'sertifikat'            : self.sertifikat,
             'surat_pengalaman'      : self.surat_pengalaman,
             'surat_kesehatan'       : self.surat_kesehatan,
-            'npwp'                  : self.npwp
+            'npwp'                  : self.npwp,
         }
 
     def _check_interviewer_access(self):

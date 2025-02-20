@@ -8,7 +8,7 @@ class UangSaku(models.Model):
 
     name            = fields.Char(string='Name', readonly=True)
     tgl_transaksi   = fields.Datetime(string='Tgl Transaksi', required=True, default=fields.Datetime.now, widget="date")
-    siswa_id        = fields.Many2one(comodel_name='res.partner', string='Siswa Partner', required=True)
+    siswa_id        = fields.Many2one(comodel_name='res.partner', string='Siswa Partner', required=True, domain=[('siswa_id', '!=', False)])
     siswa           = fields.Many2one(comodel_name='cdn.siswa',compute='_compute_siswa',string='Siswa',store=True)
     va_saku         = fields.Char(string='No. VA Saku', related='siswa_id.va_saku', readonly=True, store=True)
     saldo_awal      = fields.Float(string='Saldo Awal', readonly=True, store=True, compute='_compute_saldo_awal')

@@ -9,6 +9,13 @@
             <header>
                 <button name="konfigurasi_akses_keuangan" string="Akses Keuangan" type="object" class="btn-primary"/>
             </header>
+            
+            <!-- Menghilangkan tombol Buat karyawan -->
+            <xpath expr="//button[@name='action_create_employee']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            
+            <!-- Menambah field work_email -->
             <xpath expr="//field[@name='email']" position="before">
                 <field name="work_email"/>
             </xpath>

@@ -11,7 +11,7 @@ class Bank(models.Model):
     petunjuk_pembayaran = fields.Text(string='Petunjuk Pembayaran')
     keterangan      = fields.Text(string="Keterangan")
 
-
+ 
 
     def action_open_route(self):
         return {

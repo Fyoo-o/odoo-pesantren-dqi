@@ -19,13 +19,21 @@ class ResPartner(models.Model):
         """Generate Virtual Account untuk Partner."""
         kode_va_bank = "88810"
         account_type = "01"  # Tipe untuk akun utama
-        return f"{kode_va_bank}{account_type}{nis}"
+        nis2 = nis.replace(".", "")
+        
+        virtual_account = f"{kode_va_bank}{account_type}{nis2}"
+        
+        return virtual_account
 
     def _generate_va_uangsaku(self, nis):
         """Generate Virtual Account untuk Uang Saku."""
         kode_va_bank = "88810"
         account_type = "02"  # Tipe untuk VA Uang Saku
-        return f"{kode_va_bank}{account_type}{nis}"
+        nis2 = nis.replace(".", "")
+        
+        va_saku = f"{kode_va_bank}{account_type}{nis2}"
+        
+        return va_saku
 
     def create_data_account(self):
         """

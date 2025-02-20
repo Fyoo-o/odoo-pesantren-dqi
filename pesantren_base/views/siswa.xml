@@ -84,7 +84,7 @@
                                     <group>
                                         <field name="nis"/>
                                         <field name="tahunajaran_id"/>
-                                        <field name="jenjang"/>
+                                        <field name="jenjang" readonly="1"/>
                                         <field name="jurusan_sma"/>
                                         <!-- <field name="qr_code" widget="image" style="width: 120px; height: 120px;"/> -->
                                     </group>

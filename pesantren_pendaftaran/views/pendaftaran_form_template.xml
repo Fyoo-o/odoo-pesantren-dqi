@@ -724,7 +724,7 @@
               <div class="mb-3">
                 <h5 class="fw-semibold mb-3">Data Ayah</h5>
                 <div class="row">
-                  <div class="col-md-4">
+                  <div class="col-md-3">
                     <div class="mb-3">
                       <label for="nama_ayah" class="form-label">Nama Ayah<span class="text-danger">*</span>
                       </label>
@@ -734,7 +734,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-md-4">
+                  <div class="col-md-3">
                     <div class="mb-3">
                       <label for="ktp_ayah" class="form-label">Ktp Ayah<span class="text-danger">*</span>
                       </label>
@@ -744,7 +744,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-md-4">
+                  <div class="col-md-3">
                     <div class="mb-3">
                       <label for="tanggal_lahir_ayah" class="form-label">Tgl Lahir<span class="text-danger">*</span>
                       </label>
@@ -753,6 +753,16 @@
                         Pilih Tgl Lahir.
                       </div>
                     </div>
+                  </div>
+                    <div class="col-md-3">
+                      <div class="mb-3">
+                      <label for="email_ayah" class="form-label">Email Ayah<span class="text-danger">*</span>
+                        </label>
+                          <input type="text" name="email_ayah" class="form-control" id="email_ayah" placeholder="Email Ayah" required="true" autocomplete="off" />
+                            <div class="invalid-feedback">
+                              Masukkan Email Ayah
+                          </div>
+                      </div>
                   </div>
                 </div>
                 <div class="row">
@@ -831,7 +841,7 @@
               <div class="mb-3">
                 <h5 class="fw-semibold mb-3">Data Ibu</h5>
                 <div class="row">
-                  <div class="col-md-4">
+                  <div class="col-md-3">
                     <div class="mb-3">
                       <label for="nama_ibu" class="form-label">Nama Ibu<span class="text-danger">*</span>
                       </label>
@@ -841,7 +851,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-md-4">
+                  <div class="col-md-3">
                     <div class="mb-3">
                       <label for="ktp_ibu" class="form-label">Ktp Ibu<span class="text-danger">*</span>
                       </label>
@@ -851,13 +861,23 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-md-4">
+                  <div class="col-md-3">
                     <div class="mb-3">
                       <label for="tanggal_lahir_ibu" class="form-label">Tgl Lahir<span class="text-danger">*</span>
                       </label>
                       <input type="text" name="tanggal_lahir_ibu" id="tanggal_lahir_ibu" placeholder="dd / mm / yyyy" required="true" autocomplete="off" class="form-control" onpaste="return false" onkeydown="return /[0-9\/]/.test(event.key) || event.key === 'ArrowLeft' || event.key === 'ArrowRight'" onkeypress="return /[0-9\/]/.test(event.key)" maxlength="10" oncontextmenu="return false" />
                       <div class="invalid-feedback">
                         Pilih Tgl Lahir.
+                      </div>
+                    </div>
+                  </div>
+                   <div class="col-md-3">
+                    <div class="mb-3">
+                      <label for="email_ibu" class="form-label">Email Ibu<span class="text-danger">*</span>
+                      </label>
+                      <input type="email" name="email_ibu" class="form-control" id="email_ibu" placeholder="Email Ibu" required="true" autocomplete="off" />
+                      <div class="invalid-feedback">
+                        Masukkan Email Ibu.
                       </div>
                     </div>
                   </div>

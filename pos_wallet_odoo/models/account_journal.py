@@ -20,6 +20,8 @@
 #
 #############################################################################
 from odoo import fields, models, api
+from datetime import date
+
 
 
 class AccountJournal(models.Model):
@@ -55,7 +57,7 @@ class Donation(models.Model):
     is_active = fields.Boolean(
         string='Masih Aktif', 
         compute='_compute_is_active', 
-        store=True, 
+        store=False, 
         help='Status apakah penggalangan donasi masih aktif'
     )
     qr_image = fields.Binary(
@@ -89,6 +91,18 @@ class Donation(models.Model):
         today = fields.Date.today()
         for record in self:
             record.is_active = bool(record.start_date and record.end_date and record.start_date <= today <= record.end_date)
+            
+    # @api.model
+    # def update_is_active(self):
+    #     """Dijalankan secara otomatis setiap hari untuk memperbarui status is_active."""
+    #     today = date.today()
+    #     records = self.search([])
+        
+    #     for record in records:
+    #         is_active = bool(record.start_date and record.end_date and record.start_date <= today <= record.end_date)
+    #         if record.is_active != is_active:
+    #             record.write({'is_active': is_active})
+
 
 
 class DonationDetail(models.Model):
@@ -99,11 +113,12 @@ class DonationDetail(models.Model):
     amount = fields.Float(string='Jumlah Donasi', required=True, help="Jumlah donasi yang diberikan")
     date = fields.Date(string='Tgl Donasi', default=fields.Date.today, required=True)
     donation_id = fields.Many2one(
-        'cdn.donation', 
-        string='Terkait Sumbangan', 
-        help='Penggalangan donasi yang terkait dengan detail donasi ini',
-        domain=[('is_active', '=', True)]
+    'cdn.donation',
+    string='Terkait Sumbangan',
+    help='Penggalangan donasi yang terkait dengan detail donasi ini',
+    domain=[('start_date', '<=', fields.Date.today()), ('end_date', '>=', fields.Date.today())]
     )
+
     state = fields.Selection(
         string='Status',
         selection=[('draft', 'Draft'), ('terverifikasi', 'Terverifikasi')],
@@ -143,3 +158,10 @@ class DonationDetail(models.Model):
         """Ubah status menjadi 'Draft'"""
         for record in self:
             record.state = 'draft'
+            
+    @api.constrains('donation_id')
+    def _check_donation_active(self):
+        """Cek apakah donasi masih aktif sebelum menambahkan donasi baru."""
+        for record in self:
+            if record.donation_id and not record.donation_id.is_active:
+                raise ValidationError("Donasi ini sudah tidak aktif. Anda tidak dapat menambahkan donasi baru.")
