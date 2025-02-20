@@ -73,7 +73,7 @@ class siswa(models.Model):
     ayah_pekerjaan_id   = fields.Many2one(comodel_name="cdn.ref_pekerjaan",  string="Pekerjaan (Ayah)",  help="")
     ayah_pendidikan_id  = fields.Many2one(comodel_name="cdn.ref_pendidikan",  string="Pendidikan (Ayah)",  help="")
     ayah_kantor         = fields.Char( string="Kantor (Ayah)",  help="")
-    ayah_penghasilan    = fields.Integer( string="Penghasilan (Ayah)",  help="")
+    ayah_penghasilan    = fields.Char( string="Penghasilan (Ayah)",  help="")
     ayah_agama          = fields.Selection(selection=[('islam', 'Islam'), ('katolik', 'Katolik'), ('protestan', 'Protestan'), ('hindu', 'Hindu'), ('budha', 'Budha')],  string="Agama (Ayah)",  help="")
     
     ibu_nama            = fields.Char( string="Nama Ibu",  help="")
@@ -85,7 +85,7 @@ class siswa(models.Model):
     ibu_pekerjaan_id    = fields.Many2one(comodel_name="cdn.ref_pekerjaan",  string="Pekerjaan (Ibu)",  help="")
     ibu_pendidikan_id   = fields.Many2one(comodel_name="cdn.ref_pendidikan",  string="Pendidikan (Ibu)",  help="")
     ibu_kantor          = fields.Char( string="Kantor (Ibu)",  help="")
-    ibu_penghasilan     = fields.Integer( string="Penghasilan (Ibu)",  help="")
+    ibu_penghasilan     = fields.Char( string="Penghasilan (Ibu)",  help="")
     ibu_agama           = fields.Selection(selection=[('islam', 'Islam'), ('katolik', 'Katolik'), ('protestan', 'Protestan'), ('hindu', 'Hindu'), ('budha', 'Budha')],  string="Agama (Ibu)",  help="")
     
     wali_nama           = fields.Char( string="Nama Wali",  help="")
@@ -100,7 +100,7 @@ class siswa(models.Model):
     tahunajaran_id      = fields.Many2one(comodel_name="cdn.ref_tahunajaran",  string="Thn Ajaran",  help="")
     ruang_kelas_id      = fields.Many2one(comodel_name="cdn.ruang_kelas",  string="Ruang Kelas",  help="")
     ekstrakulikuler_ids = fields.Many2many("cdn.ekstrakulikuler",string="Ekstrakulikuler")
-    jenjang             = fields.Selection(selection=[('paud','PAUD'),('tk','TK/RA'),('sd','SD/MI'),('smp','SMP/MTS'),('sma','SMA/MA/SMK')],  string="Jenjang", related="ruang_kelas_id.name.jenjang", readonly=True, store=True, help="")
+    jenjang             = fields.Selection(selection=[('paud','PAUD'),('tk','TK/RA'),('sd','SD/MI'),('smp','SMP/MTS'),('sma','SMA/MA/SMK')],  string="Jenjang", related="ruang_kelas_id.name.jenjang", readonly=False, store=True, help="")
     tingkat             = fields.Many2one(comodel_name="cdn.tingkat",  string="Tingkat", related="ruang_kelas_id.name.tingkat", readonly=True, store=True, help="")
 
     # Data Pendaftaran

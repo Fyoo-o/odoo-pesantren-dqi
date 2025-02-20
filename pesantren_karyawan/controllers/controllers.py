@@ -720,556 +720,556 @@ function animateCount(elementId, targetValue) {{
         """
         return request.make_response(html_content, headers=[('Content-Type', 'text/html')])
 
-class PesantrenPendaftaran(http.Controller):
-    @http.route('/psb', auth='public')
-    def index(self, **kw):
+# class PesantrenPendaftaran(http.Controller):
+#     @http.route('/psb', auth='public')
+#     def index(self, **kw):
 
-        # Ambil nilai dari field konfigurasi
-        config_obj = http.request.env['ir.config_parameter'].sudo()
+#         # Ambil nilai dari field konfigurasi
+#         config_obj = http.request.env['ir.config_parameter'].sudo()
 
-        tgl_mulai_pendaftaran = config_obj.get_param('pesantren_pendaftaran.tgl_mulai_pendaftaran')
-        tgl_akhir_pendaftaran = config_obj.get_param('pesantren_pendaftaran.tgl_akhir_pendaftaran')
-        tgl_mulai_seleksi = config_obj.get_param('pesantren_pendaftaran.tgl_mulai_seleksi')
-        tgl_akhir_seleksi = config_obj.get_param('pesantren_pendaftaran.tgl_akhir_seleksi')
-        tgl_pengumuman_hasil_seleksi = config_obj.get_param('pesantren_pendaftaran.tgl_pengumuman_hasil_seleksi')
-        is_halaman_pendaftaran = config_obj.get_param('pesantren_pendaftaran.is_halaman_pendaftaran')
-        is_halaman_pengumuman = config_obj.get_param('pesantren_pendaftaran.is_halaman_pengumuman')
+#         tgl_mulai_pendaftaran = config_obj.get_param('pesantren_pendaftaran.tgl_mulai_pendaftaran')
+#         tgl_akhir_pendaftaran = config_obj.get_param('pesantren_pendaftaran.tgl_akhir_pendaftaran')
+#         tgl_mulai_seleksi = config_obj.get_param('pesantren_pendaftaran.tgl_mulai_seleksi')
+#         tgl_akhir_seleksi = config_obj.get_param('pesantren_pendaftaran.tgl_akhir_seleksi')
+#         tgl_pengumuman_hasil_seleksi = config_obj.get_param('pesantren_pendaftaran.tgl_pengumuman_hasil_seleksi')
+#         is_halaman_pendaftaran = config_obj.get_param('pesantren_pendaftaran.is_halaman_pendaftaran')
+#         is_halaman_pengumuman = config_obj.get_param('pesantren_pendaftaran.is_halaman_pengumuman')
 
-        # Set nilai default dinamis jika parameter kosong
-        if not tgl_mulai_pendaftaran:
-            tgl_mulai_pendaftaran_dt = datetime.datetime.now() + datetime.timedelta(days=1)
-            tgl_mulai_pendaftaran = tgl_mulai_pendaftaran_dt.strftime('%Y-%m-%d %H:%M:%S')
-        else:
-            tgl_mulai_pendaftaran_dt = datetime.datetime.strptime(tgl_mulai_pendaftaran, '%Y-%m-%d %H:%M:%S')
+#         # Set nilai default dinamis jika parameter kosong
+#         if not tgl_mulai_pendaftaran:
+#             tgl_mulai_pendaftaran_dt = datetime.datetime.now() + datetime.timedelta(days=1)
+#             tgl_mulai_pendaftaran = tgl_mulai_pendaftaran_dt.strftime('%Y-%m-%d %H:%M:%S')
+#         else:
+#             tgl_mulai_pendaftaran_dt = datetime.datetime.strptime(tgl_mulai_pendaftaran, '%Y-%m-%d %H:%M:%S')
 
-        if not tgl_akhir_pendaftaran:
-            tgl_akhir_pendaftaran_dt = tgl_mulai_pendaftaran_dt + datetime.timedelta(days=3)
-            tgl_akhir_pendaftaran = tgl_akhir_pendaftaran_dt.strftime('%Y-%m-%d %H:%M:%S')
-        else:
-            tgl_akhir_pendaftaran_dt = datetime.datetime.strptime(tgl_akhir_pendaftaran, '%Y-%m-%d %H:%M:%S')
+#         if not tgl_akhir_pendaftaran:
+#             tgl_akhir_pendaftaran_dt = tgl_mulai_pendaftaran_dt + datetime.timedelta(days=3)
+#             tgl_akhir_pendaftaran = tgl_akhir_pendaftaran_dt.strftime('%Y-%m-%d %H:%M:%S')
+#         else:
+#             tgl_akhir_pendaftaran_dt = datetime.datetime.strptime(tgl_akhir_pendaftaran, '%Y-%m-%d %H:%M:%S')
 
-        if not tgl_mulai_seleksi:
-            tgl_mulai_seleksi_dt = tgl_akhir_pendaftaran_dt
-            tgl_mulai_seleksi = tgl_mulai_seleksi_dt.strftime('%Y-%m-%d %H:%M:%S')
-        else:
-            tgl_mulai_seleksi_dt = datetime.datetime.strptime(tgl_mulai_seleksi, '%Y-%m-%d %H:%M:%S')
+#         if not tgl_mulai_seleksi:
+#             tgl_mulai_seleksi_dt = tgl_akhir_pendaftaran_dt
+#             tgl_mulai_seleksi = tgl_mulai_seleksi_dt.strftime('%Y-%m-%d %H:%M:%S')
+#         else:
+#             tgl_mulai_seleksi_dt = datetime.datetime.strptime(tgl_mulai_seleksi, '%Y-%m-%d %H:%M:%S')
 
-        if not tgl_akhir_seleksi:
-            tgl_akhir_seleksi_dt = tgl_mulai_seleksi_dt + datetime.timedelta(days=3)
-            tgl_akhir_seleksi = tgl_akhir_seleksi_dt.strftime('%Y-%m-%d %H:%M:%S')
-        else:
-            tgl_akhir_seleksi_dt = datetime.datetime.strptime(tgl_akhir_seleksi, '%Y-%m-%d %H:%M:%S')
+#         if not tgl_akhir_seleksi:
+#             tgl_akhir_seleksi_dt = tgl_mulai_seleksi_dt + datetime.timedelta(days=3)
+#             tgl_akhir_seleksi = tgl_akhir_seleksi_dt.strftime('%Y-%m-%d %H:%M:%S')
+#         else:
+#             tgl_akhir_seleksi_dt = datetime.datetime.strptime(tgl_akhir_seleksi, '%Y-%m-%d %H:%M:%S')
 
-        if not tgl_pengumuman_hasil_seleksi:
-            tgl_pengumuman_hasil_seleksi_dt = tgl_akhir_seleksi_dt + datetime.timedelta(days=2)
-            tgl_pengumuman_hasil_seleksi = tgl_pengumuman_hasil_seleksi_dt.strftime('%Y-%m-%d %H:%M:%S')
-        else:
-            tgl_pengumuman_hasil_seleksi_dt = datetime.datetime.strptime(tgl_pengumuman_hasil_seleksi, '%Y-%m-%d %H:%M:%S')
+#         if not tgl_pengumuman_hasil_seleksi:
+#             tgl_pengumuman_hasil_seleksi_dt = tgl_akhir_seleksi_dt + datetime.timedelta(days=2)
+#             tgl_pengumuman_hasil_seleksi = tgl_pengumuman_hasil_seleksi_dt.strftime('%Y-%m-%d %H:%M:%S')
+#         else:
+#             tgl_pengumuman_hasil_seleksi_dt = datetime.datetime.strptime(tgl_pengumuman_hasil_seleksi, '%Y-%m-%d %H:%M:%S')
 
-        # Format tanggal manual dalam bahasa Indonesia
-        def format_tanggal_manual(dt):
-            bulan_indonesia = [
-                "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-                "Juli", "Agustus", "September", "Oktober", "November", "Desember"
-            ]
-            return f"{dt.day} {bulan_indonesia[dt.month - 1]} {dt.year}"
+#         # Format tanggal manual dalam bahasa Indonesia
+#         def format_tanggal_manual(dt):
+#             bulan_indonesia = [
+#                 "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+#                 "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+#             ]
+#             return f"{dt.day} {bulan_indonesia[dt.month - 1]} {dt.year}"
 
-        # Format tanggal untuk ditampilkan di halaman
-        tgl_mulai_pendaftaran_formatted = format_tanggal_manual(tgl_mulai_pendaftaran_dt)
-        tgl_akhir_pendaftaran_formatted = format_tanggal_manual(tgl_akhir_pendaftaran_dt)
-        tgl_mulai_seleksi_formatted = format_tanggal_manual(tgl_mulai_seleksi_dt)
-        tgl_akhir_seleksi_formatted = format_tanggal_manual(tgl_akhir_seleksi_dt)
-        tgl_pengumuman_hasil_seleksi_formatted = format_tanggal_manual(tgl_pengumuman_hasil_seleksi_dt)
+#         # Format tanggal untuk ditampilkan di halaman
+#         tgl_mulai_pendaftaran_formatted = format_tanggal_manual(tgl_mulai_pendaftaran_dt)
+#         tgl_akhir_pendaftaran_formatted = format_tanggal_manual(tgl_akhir_pendaftaran_dt)
+#         tgl_mulai_seleksi_formatted = format_tanggal_manual(tgl_mulai_seleksi_dt)
+#         tgl_akhir_seleksi_formatted = format_tanggal_manual(tgl_akhir_seleksi_dt)
+#         tgl_pengumuman_hasil_seleksi_formatted = format_tanggal_manual(tgl_pengumuman_hasil_seleksi_dt)
 
 
-        html_response = f"""
-            <!DOCTYPE html>
-<html lang="en">
-            <head>
-            <!-- Primary Meta Tags --> 
-            <title>PSB Daarul Qur`an Istiqomah</title> 
-            <meta name="title" content="PSB Daarul Qur`an Istiqomah" /> 
-            <meta name="description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
+#         html_response = f"""
+#             <!DOCTYPE html>
+# <html lang="en">
+#             <head>
+#             <!-- Primary Meta Tags --> 
+#             <title>PSB Daarul Qur`an Istiqomah</title> 
+#             <meta name="title" content="PSB Daarul Qur`an Istiqomah" /> 
+#             <meta name="description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
  
-            <!-- Open Graph / Facebook --> 
-            <meta property="og:type" content="website" /> 
-            <meta property="og:url" content="https://aplikasi.dqi.ac.id/pendaftaran" /> 
-            <meta property="og:title" content="PSB Daarul Qur`an Istiqomah" /> 
-            <meta property="og:description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
-            <meta property="og:image" content="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" /> 
+#             <!-- Open Graph / Facebook --> 
+#             <meta property="og:type" content="website" /> 
+#             <meta property="og:url" content="https://aplikasi.dqi.ac.id/pendaftaran" /> 
+#             <meta property="og:title" content="PSB Daarul Qur`an Istiqomah" /> 
+#             <meta property="og:description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
+#             <meta property="og:image" content="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" /> 
  
-            <!-- Twitter --> 
-            <meta property="twitter:card" content="summary_large_image" /> 
-            <meta property="twitter:url" content="https://aplikasi.dqi.ac.id/pendaftaran" /> 
-            <meta property="twitter:title" content="PSB Daarul Qur`an Istiqomah" /> 
-            <meta property="twitter:description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
-            <meta property="twitter:image" content="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" />
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>PSB - Daarul Qur'an Istiqomah</title>
-                <link rel="icon" type="image/x-icon" href="/pesantren_pendaftaran/static/img/favicon.ico?v=1">
-                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-                <link href=" https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css " rel="stylesheet">
-                <style>
+#             <!-- Twitter --> 
+#             <meta property="twitter:card" content="summary_large_image" /> 
+#             <meta property="twitter:url" content="https://aplikasi.dqi.ac.id/pendaftaran" /> 
+#             <meta property="twitter:title" content="PSB Daarul Qur`an Istiqomah" /> 
+#             <meta property="twitter:description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
+#             <meta property="twitter:image" content="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" />
+#                 <meta charset="UTF-8">
+#                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+#                 <title>PSB - Daarul Qur'an Istiqomah</title>
+#                 <link rel="icon" type="image/x-icon" href="/pesantren_pendaftaran/static/img/favicon.ico?v=1">
+#                 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+#                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+#                 <link href=" https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css " rel="stylesheet">
+#                 <style>
 
-                    body {{
-                        background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
-                    }}
+#                     body {{
+#                         background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+#                     }}
 
-                    .offcanvas.offcanvas-end {{
+#                     .offcanvas.offcanvas-end {{
                         
-                        width: 250px; /* Lebar kustom untuk offcanvas */
-                    }}
+#                         width: 250px; /* Lebar kustom untuk offcanvas */
+#                     }}
                     
-                    .offcanvas .nav-link {{
-                        color: #ffffff; /* teks warna putih */
-                    }}
+#                     .offcanvas .nav-link {{
+#                         color: #ffffff; /* teks warna putih */
+#                     }}
                     
-                    .offcanvas .btn-close {{
-                        position: absolute;
-                        top: 10px;
-                        right: 10px;
-                        filter: invert(1);
-                    }}
+#                     .offcanvas .btn-close {{
+#                         position: absolute;
+#                         top: 10px;
+#                         right: 10px;
+#                         filter: invert(1);
+#                     }}
 
-                    .judul {{
-                        height: 81px;
-                        display: flex;
-                        align-items: end;
-                    }}
+#                     .judul {{
+#                         height: 81px;
+#                         display: flex;
+#                         align-items: end;
+#                     }}
 
-                    .teks-judul {{
-                        height: 72px;
-                    }}
+#                     .teks-judul {{
+#                         height: 72px;
+#                     }}
 
-                    .background {{
-					    background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
-					}}
+#                     .background {{
+# 					    background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+# 					}}
 
-					a.effect {{
-						transition: .1s !important;
-					}}
+# 					a.effect {{
+# 						transition: .1s !important;
+# 					}}
 
-					a.effect:hover {{
-						box-shadow: 0 3px 10px rgba(0,0,0,0.2) !important;
-					}}
+# 					a.effect:hover {{
+# 						box-shadow: 0 3px 10px rgba(0,0,0,0.2) !important;
+# 					}}
 
-                    /* Desain Dropdown */
-                    .dropdown {{
-                        position: relative;
-                    }}
+#                     /* Desain Dropdown */
+#                     .dropdown {{
+#                         position: relative;
+#                     }}
 
-                    .dropdown-link {{
-                        cursor: pointer;
-                    }}
+#                     .dropdown-link {{
+#                         cursor: pointer;
+#                     }}
 
-                    .dropdown-content {{
-                        display: none;
-                        position: absolute;
-                        top: 100%;
-                        right: 0;
-                        background-color: #ffffff;
-                        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-                        border-radius: 5px;
-                        min-width: 150px;
-                        z-index: 1;
-                        overflow: hidden;
-                    }}
+#                     .dropdown-content {{
+#                         display: none;
+#                         position: absolute;
+#                         top: 100%;
+#                         right: 0;
+#                         background-color: #ffffff;
+#                         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+#                         border-radius: 5px;
+#                         min-width: 150px;
+#                         z-index: 1;
+#                         overflow: hidden;
+#                     }}
 
-                    .dropdown-content a {{
-                        color: #333;
-                        padding: 10px 15px;
-                        display: block;
-                        text-decoration: none;
-                        transition: background-color 0.2s;
-                    }}
+#                     .dropdown-content a {{
+#                         color: #333;
+#                         padding: 10px 15px;
+#                         display: block;
+#                         text-decoration: none;
+#                         transition: background-color 0.2s;
+#                     }}
 
-                    .dropdown-content a:hover {{
-                        background-color: #f1f1f1;
-                    }}
+#                     .dropdown-content a:hover {{
+#                         background-color: #f1f1f1;
+#                     }}
 
-                    /* Menampilkan dropdown saat hover */
-                    .dropdown:hover .dropdown-content {{
-                        display: block;
-                        animation: fadeIn 0.3s;
-                    }}
+#                     /* Menampilkan dropdown saat hover */
+#                     .dropdown:hover .dropdown-content {{
+#                         display: block;
+#                         animation: fadeIn 0.3s;
+#                     }}
 
-                    #daftar {{
-                        transition: .3s;
-                    }}
+#                     #daftar {{
+#                         transition: .3s;
+#                     }}
 
-                    #daftar:hover {{ 
-                        background-color: #f5407d !important;
-                    }}
+#                     #daftar:hover {{ 
+#                         background-color: #f5407d !important;
+#                     }}
 
-                    /* Animasi fade-in */
-                    @keyframes fadeIn {{
-                        from {{
-                        opacity: 0;
-                        transform: translateY(-10px);
-                        }}
-                        to {{
-                        opacity: 1;
-                        transform: translateY(0);
-                        }}
-                    }}
+#                     /* Animasi fade-in */
+#                     @keyframes fadeIn {{
+#                         from {{
+#                         opacity: 0;
+#                         transform: translateY(-10px);
+#                         }}
+#                         to {{
+#                         opacity: 1;
+#                         transform: translateY(0);
+#                         }}
+#                     }}
 
-                </style>
-            </head>
-            <body>
+#                 </style>
+#             </head>
+#             <body>
 
-            <nav class="navbar navbar-expand-lg" style="height: 65px;">
-                <div class="container-fluid">
-                    <a class="navbar-brand ms-5 text-white fw-semibold" href="/psb">
-                    	<img src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" alt="1731466812700" width="50" alt="Logo Pesantren">       Daarul Qur'an Istiqomah
-                	</a>
-                    <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav ms-auto">
-                            <li class="nav-item me-3">
-                                <a class="nav-link text-white" href="/psb"><i class="fa-solid fa-house me-2"></i>Beranda</a>
-                            </li>
-                            {f'<li class="nav-item me-3">'
-                            f'<a class="nav-link text-white" href="/pendaftaran" {"data-bs-toggle='modal' data-bs-target='#modalPendaftaranTutup'" if not is_halaman_pendaftaran else ""}>'
-                            f'<i class="fa-solid fa-note-sticky me-2"></i>Pendaftaran</a>'
-                            f'</li>'}
-                            <li class="nav-item dropdown">
-                                <a href="#" class="dropdown-link nav-link"
-                                    style="color: white !important;">
-                                    <i class="fa-solid fa-fingerprint me-2"></i>Login</a>
-                                <div class="dropdown-content">
-                                    <a href="/login">Login PSB</a>
-                                    <a href="/web/login">Login Orang Tua</a>
-                                </div>
-                            </li>
-                            <li class="nav-item me-3">
-                                <a class="nav-link text-white" href="/bantuan"><i class="fa-solid fa-lock me-2"></i>Bantuan</a>
-                            </li>
-                            {f'<li class="nav-item dropdown">'
-                            f'<a href="#" class="dropdown-link nav-link text-white"><i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>'
-                            f'<div class="dropdown-content">'
-                            f'<a href="/pengumuman/sd-mi">SD / MI</a>'
-                            f'<a href="/pengumuman/smp-mts">SMP / MTS</a>'
-                            f'<a href="/pengumuman/sma-ma">SMA / MA</a>'
-                            f'</div>'
-                            f'</li>' if is_halaman_pengumuman else ''}
-                        </ul>
-                    </div>
-                </div>
-            </nav>
+#             <nav class="navbar navbar-expand-lg" style="height: 65px;">
+#                 <div class="container-fluid">
+#                     <a class="navbar-brand ms-5 text-white fw-semibold" href="/psb">
+#                     	<img src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" alt="1731466812700" width="50" alt="Logo Pesantren">       Daarul Qur'an Istiqomah
+#                 	</a>
+#                     <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+#                         <span class="navbar-toggler-icon"></span>
+#                     </button>
+#                     <div class="collapse navbar-collapse" id="navbarNav">
+#                         <ul class="navbar-nav ms-auto">
+#                             <li class="nav-item me-3">
+#                                 <a class="nav-link text-white" href="/psb"><i class="fa-solid fa-house me-2"></i>Beranda</a>
+#                             </li>
+#                             {f'<li class="nav-item me-3">'
+#                             f'<a class="nav-link text-white" href="/pendaftaran" {"data-bs-toggle='modal' data-bs-target='#modalPendaftaranTutup'" if not is_halaman_pendaftaran else ""}>'
+#                             f'<i class="fa-solid fa-note-sticky me-2"></i>Pendaftaran</a>'
+#                             f'</li>'}
+#                             <li class="nav-item dropdown">
+#                                 <a href="#" class="dropdown-link nav-link"
+#                                     style="color: white !important;">
+#                                     <i class="fa-solid fa-fingerprint me-2"></i>Login</a>
+#                                 <div class="dropdown-content">
+#                                     <a href="/login">Login PSB</a>
+#                                     <a href="/web/login">Login Orang Tua</a>
+#                                 </div>
+#                             </li>
+#                             <li class="nav-item me-3">
+#                                 <a class="nav-link text-white" href="/bantuan"><i class="fa-solid fa-lock me-2"></i>Bantuan</a>
+#                             </li>
+#                             {f'<li class="nav-item dropdown">'
+#                             f'<a href="#" class="dropdown-link nav-link text-white"><i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>'
+#                             f'<div class="dropdown-content">'
+#                             f'<a href="/pengumuman/sd-mi">SD / MI</a>'
+#                             f'<a href="/pengumuman/smp-mts">SMP / MTS</a>'
+#                             f'<a href="/pengumuman/sma-ma">SMA / MA</a>'
+#                             f'</div>'
+#                             f'</li>' if is_halaman_pengumuman else ''}
+#                         </ul>
+#                     </div>
+#                 </div>
+#             </nav>
 
-            <div class="offcanvas offcanvas-end background" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                <a class="navbar-brand mt-1 text-white fw-semibold" href="/psb" style="display: flex; flex-direction: column; align-items: center;">
-                    <img src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" alt="1731466812700" width="50" alt="Logo Pesantren">
-                    Daarul Qur'an Istiqomah
-                </a>
-                <div class="offcanvas-body">
-                    <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                        <li class="nav-item me-3">
-                            <a class="nav-link text-white" href="/psb"><i class="fa-solid fa-house me-2"></i>Beranda</a>
-                        </li>
-                        {f'<li class="nav-item me-3">'
-                        f'<a class="nav-link text-white" href="/pendaftaran" {"data-bs-toggle='modal' data-bs-target='#modalPendaftaranTutup'" if not is_halaman_pendaftaran else ""}>'
-                        f'<i class="fa-solid fa-note-sticky me-2"></i>Pendaftaran</a>'
-                        f'</li>'}
-                        <li class="nav-item dropdown">
-                            <a href="#" class="dropdown-link nav-link"
-                                style="color: white !important;">
-                                <i class="fa-solid fa-fingerprint me-2"></i>Login</a>
-                            <div class="dropdown-content">
-                                <a href="/login">Login PSB</a>
-                                <a href="/web/login">Login Orang Tua</a>
-                            </div>
-                        </li>
-                        <li class="nav-item me-3">
-                            <a class="nav-link text-white" href="/bantuan"><i class="fa-solid fa-lock me-2"></i>Bantuan</a>
-                        </li>
-                        {f'<li class="nav-item dropdown">'
-                        f'<a href="#" class="dropdown-link nav-link text-white"><i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>'
-                        f'<div class="dropdown-content">'
-                        f'<a href="/pengumuman/sd-mi">SD / MI</a>'
-                        f'<a href="/pengumuman/smp-mts">SMP / MTS</a>'
-                        f'<a href="/pengumuman/sma-ma">SMA / MA</a>'
-                        f'</div>'
-                        f'</li>' if is_halaman_pengumuman else ''}
-                    </ul>
-                </div>
-            </div>
+#             <div class="offcanvas offcanvas-end background" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+#                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+#                 <a class="navbar-brand mt-1 text-white fw-semibold" href="/psb" style="display: flex; flex-direction: column; align-items: center;">
+#                     <img src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" alt="1731466812700" width="50" alt="Logo Pesantren">
+#                     Daarul Qur'an Istiqomah
+#                 </a>
+#                 <div class="offcanvas-body">
+#                     <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+#                         <li class="nav-item me-3">
+#                             <a class="nav-link text-white" href="/psb"><i class="fa-solid fa-house me-2"></i>Beranda</a>
+#                         </li>
+#                         {f'<li class="nav-item me-3">'
+#                         f'<a class="nav-link text-white" href="/pendaftaran" {"data-bs-toggle='modal' data-bs-target='#modalPendaftaranTutup'" if not is_halaman_pendaftaran else ""}>'
+#                         f'<i class="fa-solid fa-note-sticky me-2"></i>Pendaftaran</a>'
+#                         f'</li>'}
+#                         <li class="nav-item dropdown">
+#                             <a href="#" class="dropdown-link nav-link"
+#                                 style="color: white !important;">
+#                                 <i class="fa-solid fa-fingerprint me-2"></i>Login</a>
+#                             <div class="dropdown-content">
+#                                 <a href="/login">Login PSB</a>
+#                                 <a href="/web/login">Login Orang Tua</a>
+#                             </div>
+#                         </li>
+#                         <li class="nav-item me-3">
+#                             <a class="nav-link text-white" href="/bantuan"><i class="fa-solid fa-lock me-2"></i>Bantuan</a>
+#                         </li>
+#                         {f'<li class="nav-item dropdown">'
+#                         f'<a href="#" class="dropdown-link nav-link text-white"><i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>'
+#                         f'<div class="dropdown-content">'
+#                         f'<a href="/pengumuman/sd-mi">SD / MI</a>'
+#                         f'<a href="/pengumuman/smp-mts">SMP / MTS</a>'
+#                         f'<a href="/pengumuman/sma-ma">SMA / MA</a>'
+#                         f'</div>'
+#                         f'</li>' if is_halaman_pengumuman else ''}
+#                     </ul>
+#                 </div>
+#             </div>
 
-            <div style="display: flex; justify-content: center;" class="mt-5">
-                <div class="text-center text-white">
-                    <h4 class="fs-2 fw-semibold mb-2">Aplikasi penerimaan santri baru</h4>
-                    <span>Daarul Qur'an Istiqomah Tanah Laut Kalimantan Selatan</span> <br><br>
-                    <a href="/pendaftaran" style="background-color: #e91e63; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px;" class=" id="daftar">Daftar Sekarang</a>
-                </div>
-            </div>
+#             <div style="display: flex; justify-content: center;" class="mt-5">
+#                 <div class="text-center text-white">
+#                     <h4 class="fs-2 fw-semibold mb-2">Aplikasi penerimaan santri baru</h4>
+#                     <span>Daarul Qur'an Istiqomah Tanah Laut Kalimantan Selatan</span> <br><br>
+#                     <a href="/pendaftaran" style="background-color: #e91e63; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px;" class=" id="daftar">Daftar Sekarang</a>
+#                 </div>
+#             </div>
 
-            <div class="container mt-5 mb-5">
-                <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
-                    <div class="bg-white shadow-lg rounded p-3" style="width: 270px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;">
-                        <span class="text-uppercase text-secondary mb-3">Program Pendidikan</span>
-                        <div>
-                            <i class="fa-solid fa-graduation-cap fs-1 border rounded-circle p-5" style="color: #e91e63 !important;"></i>
-                        </div>
-                        <span class="text-uppercase text-center fs-3 judul">Jenjang Pendidikan</span>
-                        <div class="text-center mb-4 teks-judul">
-                            <span class="text-secondary" style="font-size: 14px;">1. Paud baby Qu (KB dan TK)</span>
-                            <span class="text-secondary" style="font-size: 14px;">2. SD Tahfizh bilingual</span>
-                            <span class="text-secondary" style="font-size: 14px;">3. SMP Tahfizh bilingual</span>
-                            <span class="text-secondary" style="font-size: 14px;">4. MA Tahfizh bilingual</span>
-                        </div>
-                        <div class="text-uppercase">
-                            <a href="" data-bs-toggle="modal" data-bs-target="#detailProgramPendidikan" class="effect" style="background-color: #9F1FB2 !important; padding: 10px 20px; border-radius: 20px; text-decoration: none; color: white;">Detail</a>
-                        </div>
-                    </div>
-                    <div class="bg-white shadow-lg rounded p-3" style="width: 270px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;">
-                        <span class="text-uppercase text-secondary mb-3">Jadwal Kegiatan</span>
-                        <div>
-                            <i class="fa-regular fa-calendar fs-1 border rounded-circle p-5" style="color: #e91e63 !important;"></i>
-                        </div>
-                        <span class="text-uppercase fs-3 judul">Jadwal Kegiatan</span>
-                        <div class="text-center mb-4 teks-judul">
-                            <span class="text-secondary" style="font-size: 14px;">Jadwal kegiatan PSB dan Kuota Test </span>
-                        </div>
-                        <div class="text-uppercase">
-                            <a href="" data-bs-toggle="modal" data-bs-target="#detailJadwalKegiatan" class="effect" style="background-color: #9F1FB2 !important; padding: 10px 20px; border-radius: 20px; text-decoration: none; color: white;">Detail</a>
-                        </div>
-                    </div>
-                    <div class="bg-white shadow-lg rounded p-3" style="width: 270px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;">
-                        <span class="text-uppercase text-secondary mb-3">Persyaratan</span>
-                        <div>
-                            <i class="fa-solid fa-clipboard-list fs-1 border rounded-circle p-5" style="color: #e91e63 !important;"></i>
-                        </div>
-                        <span class="text-uppercase fs-3 text-center judul">Syarat pendaftaran</span>
-                        <div class="text-center mb-4 teks-judul">
-                            <span class="text-secondary" style="font-size: 14px;">Persyaratan Pendaftaran dapat dilihat disini</span>
-                        </div>
-                        <div class="text-uppercase">
-                            <a href="" data-bs-toggle="modal" data-bs-target="#detailPersyaratan" class="effect" style="background-color: #9F1FB2 !important; padding: 10px 20px; border-radius: 20px; text-decoration: none; color: white;">Detail</a>
-                        </div>
-                    </div>
-                    <div class="bg-white shadow-lg rounded p-3" style="width: 270px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;">
-                        <span class="text-uppercase text-secondary mb-3">Bantuan</span>
-                        <div>
-                            <i class="fa-solid fa-lock fs-1 border rounded-circle p-5" style="color: #e91e63 !important;"></i>
-                        </div>
-                        <span class="text-uppercase fs-3 judul">Hubungi Kami</span>
-                        <div class="text-center mb-4 teks-judul">
-                            <span class="text-secondary" style="font-size: 14px;">Jika memerlukan bantuan : Telp / WA : 0853-9051-1124 </span>
-                        </div>
-                        <div class="text-uppercase">
-                            <a href="/bantuan" class="effect" style="background-color: #9F1FB2 !important; padding: 10px 20px; border-radius: 20px; text-decoration: none; color: white;">Detail</a>
-                        </div>
-                    </div>
-                </div>
+#             <div class="container mt-5 mb-5">
+#                 <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
+#                     <div class="bg-white shadow-lg rounded p-3" style="width: 270px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;">
+#                         <span class="text-uppercase text-secondary mb-3">Program Pendidikan</span>
+#                         <div>
+#                             <i class="fa-solid fa-graduation-cap fs-1 border rounded-circle p-5" style="color: #e91e63 !important;"></i>
+#                         </div>
+#                         <span class="text-uppercase text-center fs-3 judul">Jenjang Pendidikan</span>
+#                         <div class="text-center mb-4 teks-judul">
+#                             <span class="text-secondary" style="font-size: 14px;">1. Paud baby Qu (KB dan TK)</span>
+#                             <span class="text-secondary" style="font-size: 14px;">2. SD Tahfizh bilingual</span>
+#                             <span class="text-secondary" style="font-size: 14px;">3. SMP Tahfizh bilingual</span>
+#                             <span class="text-secondary" style="font-size: 14px;">4. MA Tahfizh bilingual</span>
+#                         </div>
+#                         <div class="text-uppercase">
+#                             <a href="" data-bs-toggle="modal" data-bs-target="#detailProgramPendidikan" class="effect" style="background-color: #9F1FB2 !important; padding: 10px 20px; border-radius: 20px; text-decoration: none; color: white;">Detail</a>
+#                         </div>
+#                     </div>
+#                     <div class="bg-white shadow-lg rounded p-3" style="width: 270px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;">
+#                         <span class="text-uppercase text-secondary mb-3">Jadwal Kegiatan</span>
+#                         <div>
+#                             <i class="fa-regular fa-calendar fs-1 border rounded-circle p-5" style="color: #e91e63 !important;"></i>
+#                         </div>
+#                         <span class="text-uppercase fs-3 judul">Jadwal Kegiatan</span>
+#                         <div class="text-center mb-4 teks-judul">
+#                             <span class="text-secondary" style="font-size: 14px;">Jadwal kegiatan PSB dan Kuota Test </span>
+#                         </div>
+#                         <div class="text-uppercase">
+#                             <a href="" data-bs-toggle="modal" data-bs-target="#detailJadwalKegiatan" class="effect" style="background-color: #9F1FB2 !important; padding: 10px 20px; border-radius: 20px; text-decoration: none; color: white;">Detail</a>
+#                         </div>
+#                     </div>
+#                     <div class="bg-white shadow-lg rounded p-3" style="width: 270px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;">
+#                         <span class="text-uppercase text-secondary mb-3">Persyaratan</span>
+#                         <div>
+#                             <i class="fa-solid fa-clipboard-list fs-1 border rounded-circle p-5" style="color: #e91e63 !important;"></i>
+#                         </div>
+#                         <span class="text-uppercase fs-3 text-center judul">Syarat pendaftaran</span>
+#                         <div class="text-center mb-4 teks-judul">
+#                             <span class="text-secondary" style="font-size: 14px;">Persyaratan Pendaftaran dapat dilihat disini</span>
+#                         </div>
+#                         <div class="text-uppercase">
+#                             <a href="" data-bs-toggle="modal" data-bs-target="#detailPersyaratan" class="effect" style="background-color: #9F1FB2 !important; padding: 10px 20px; border-radius: 20px; text-decoration: none; color: white;">Detail</a>
+#                         </div>
+#                     </div>
+#                     <div class="bg-white shadow-lg rounded p-3" style="width: 270px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;">
+#                         <span class="text-uppercase text-secondary mb-3">Bantuan</span>
+#                         <div>
+#                             <i class="fa-solid fa-lock fs-1 border rounded-circle p-5" style="color: #e91e63 !important;"></i>
+#                         </div>
+#                         <span class="text-uppercase fs-3 judul">Hubungi Kami</span>
+#                         <div class="text-center mb-4 teks-judul">
+#                             <span class="text-secondary" style="font-size: 14px;">Jika memerlukan bantuan : Telp / WA : 0853-9051-1124 </span>
+#                         </div>
+#                         <div class="text-uppercase">
+#                             <a href="/bantuan" class="effect" style="background-color: #9F1FB2 !important; padding: 10px 20px; border-radius: 20px; text-decoration: none; color: white;">Detail</a>
+#                         </div>
+#                     </div>
+#                 </div>
                 
-            </div>
+#             </div>
 
-            <footer class="text-white p-2" style="display: flex; justify-content: space-between; flex-wrap: wrap;">
-            	<div class="ms-5">
-            		<ul style="list-style-type: none; display: flex; text-transform: uppercase; font-size: 13px;" class="fw-semibold">
-            			<li><a href="/psb" class="me-4" style="text-decoration: none; color: white;">Home</a></li>
-            			<li><a href="/beranda" class="me-4" style="text-decoration: none; color: white;" target="_blank">Info Pondok</a></li>
-            			<li><a href="https://drive.google.com/drive/mobile/folders/1EYat5411joyoOmH_DkJ3g2DeJKgyyuBQ?usp=share_link&fbclid=IwY2xjawGflGlleHRuA2FlbQIxMQABHTusVv9hD3VRDSLW9-671QhOL86e3KMv30smsAYW0DHkkWf7zwPlcBlbeA_aem_XXofAY-ay0syx043L5BLvw" class="me-4" style="text-decoration: none; color: white;" target="_blank">Brosur</a></li>
-            			<li><a href="" class="me-4" style="text-decoration: none; color: white;">Panduan</a></li>
-            		</ul>
-            	</div>
-            	<div class="me-5">
-            		<p class="text-center mt-1">© 2024 TIM IT PPIB</p>
-            	</div>
-            </footer>
-
-
-            <div class="modal fade" id="detailProgramPendidikan" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5 text-secondary" id="exampleModalLabel">Pendaftaran Santri Baru</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-<div class="modal-body">
-                    <div class="row mb-3">
-                        <div class="col-md-8">
-                            <div>
-                                <span class="fw-semibold">PEMBUKAAN PROGRAM PENDIDIKAN (Putra dan Putri)</span>
-                                <ul class="text-secondary">                                   
-                                    <li>KB (2 - 3tahun)</li>
-                                    <li>TK ( 4 - 5tahun)</li>
-                                    <li>SD Tahfizh Bilinglual</li>
-                                    <li>SMP Tahfizh bilingual</li>
-                                    <li>MA Tahfizh bilingual</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <img src="https://i.ibb.co.com/wRNC9B0/img1.jpg" alt="Gambar Pondok" width="150"
-                                class="rounded">
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-8">
-                            <div>
-                                <span class="fw-semibold">PELAKSANAAN TEST MASUK</span>
-                                <p class="text-secondary">Seluruh test dilaksanakan dalam 2 Gelombang <br>
-                                    Test
-                                    dilaksanakan secara OFFLINE</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <img src="https://i.ibb.co.com/hW8F8Qs/img2.jpg" alt="Gambar Pondok" width="150"
-                                class="rounded">
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-8">
-                            <div>
-                                <span class="fw-semibold">MATERI UJIAN SELEKSI</span>
-                                <ul>
-                                    <li>Membaca Al Qur’an dan Tulis Arab</li>
-                                    <li>Tes wawancara anak dan wawancara orangtua</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <img src="https://i.ibb.co.com/jZznN6Q/img3.jpg" alt="Gambar Pondok" width="150"
-                                class="rounded">
-                        </div>
-                    </div>
-                </div>
-                </div>
-            </div>
-            </div>
-
-<div class="modal fade" id="detailJadwalKegiatan" tabindex="-1" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5 text-secondary" id="exampleModalLabel">Jadwal Pelaksanaan PSB</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row mb-3">
-                        <div class="col-md-8">
-                            <div>
-                                <span class="fw-semibold">1. Pendaftaran Online</span>
-                                <p class="text-secondary">Pendaftaran dilaksanakan pada: <br>
-                                        Gel 1: {tgl_mulai_pendaftaran_formatted} - {tgl_akhir_pendaftaran_formatted} <br>
-                                        Gel 2: {tgl_mulai_pendaftaran_formatted} - {tgl_akhir_pendaftaran_formatted} <br> melalui website <a href="/pendaftaran"
-                                    class="text-decoration-none text-primary">https://aplikasi.dqi.ac.id/psb</a></p>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <img src="https://i.ibb.co.com/KKKwWG1/img4.jpg" alt="Gambar Pondok" width="150"
-                                class="rounded">
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-8">
-                            <div>
-                                <span class="fw-semibold">2. Pelaksanaan Test Masuk</span>
-                                <p class="text-secondary">Gel 1: {tgl_mulai_seleksi_formatted} - {tgl_akhir_seleksi_formatted} <br> Gel 2: {tgl_mulai_seleksi_formatted} - {tgl_akhir_seleksi_formatted}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <img src="https://i.ibb.co.com/s9g5nM2/img5.jpg" alt="Gambar Pondok" width="150"
-                                class="rounded">
-                        </div>
-                    </div>
-                    <div>
-                        <span class="fw-semibold">4. Pengumuman Hasil Seleksi</span>
-                        <p class="text-secondary">Gel 1: {tgl_pengumuman_hasil_seleksi_formatted} <br>
-                                                Gel 2: {tgl_pengumuman_hasil_seleksi_formatted}
-                        </p>
-                    </div>
-                    <div>
-                        <p class="text-secondary">Catatan : Seluruh kegiatan akan mengikuti protokol kesehatan sesuai
-                            ketentuan dari pemerintah.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="detailPersyaratan" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5 text-secondary" id="exampleModalLabel">Persyaratan Test Masuk</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <div>
-                                <span class="fw-semibold">SYARAT UTAMA PENDAFTARAN :</span>
-                                <ol class="text-secondary">
-                                    <li>Mengisi formulir online secara lengkap dan benar melalui laman https://dqi.ac.id/psb</li>
-                                    <li>Membayar biaya pendaftran untuk program Paud baby Qu KB A & B(usia 2 - 3th) sebesar Rp.350.000</li>
-                                    <li>Membayar biaya pendaftran untuk program TK sebesar Rp.300.000</li>
-                                    <li>Membayar biaya pendaftran untuk program SD Tahfizh bilingual sebesar Rp.300.000</li>
-                                    <li>Membayar biaya pendaftran untuk program SMP Tahfizh bilingual sebesar Rp.300.000</li>
-                                    <li>Membayar biaya pendaftran untuk program MA Tahfizh bilingual sebesar Rp.300.000</li>
-                                    <li>
-                                        Syarat Pendaftaran :
-                                        <ul type="disc" class="text-secondary">
-                                            <li>Fotocopy Akta Kelahiran 2 lembar</li>
-                                            <li>Fotocopy KK 1 lembar</li>
-                                            <li>Fotocopy KTP Orangtua (Masing-masing 1 lembar)</li>
-                                            <li>Fotocopy Raport Semester akhir (menyusul)</li>
-                                            <li>Pas Foto berwarna ukuran 3x4 4lembar</li>
-                                            <li>Pas Foto Orangtua masing-masing 1lembar (Khusus Pendaftar KB dan TK)</li>
-                                            <li>Berkas dimasukkan dalam Map warna hijau dan diberi nama serta lembaga pendidikan</li>
-                                        </ul>
-                                    </li>
-                                </ol>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <p class="text-secondary">Seluruh persyaratan yang harus di upload / diunggah ke website
-                            pendaftaran
-                            harus sesuai format yang ditentukan</p>
-                    </div>
-                </div>
-                </div>
-            </div>
-            </div>
+#             <footer class="text-white p-2" style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+#             	<div class="ms-5">
+#             		<ul style="list-style-type: none; display: flex; text-transform: uppercase; font-size: 13px;" class="fw-semibold">
+#             			<li><a href="/psb" class="me-4" style="text-decoration: none; color: white;">Home</a></li>
+#             			<li><a href="/beranda" class="me-4" style="text-decoration: none; color: white;" target="_blank">Info Pondok</a></li>
+#             			<li><a href="https://drive.google.com/drive/mobile/folders/1EYat5411joyoOmH_DkJ3g2DeJKgyyuBQ?usp=share_link&fbclid=IwY2xjawGflGlleHRuA2FlbQIxMQABHTusVv9hD3VRDSLW9-671QhOL86e3KMv30smsAYW0DHkkWf7zwPlcBlbeA_aem_XXofAY-ay0syx043L5BLvw" class="me-4" style="text-decoration: none; color: white;" target="_blank">Brosur</a></li>
+#             			<li><a href="" class="me-4" style="text-decoration: none; color: white;">Panduan</a></li>
+#             		</ul>
+#             	</div>
+#             	<div class="me-5">
+#             		<p class="text-center mt-1">© 2024 TIM IT PPIB</p>
+#             	</div>
+#             </footer>
 
 
-                        <!-- Modal -->
-            <div class="modal fade" id="modalPendaftaranTutup" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Pendaftaran ditutup!</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Mohon maaf, pendaftaran telah ditutup.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                </div>
-                </div>
-            </div>
-            </div>
+#             <div class="modal fade" id="detailProgramPendidikan" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+#             <div class="modal-dialog">
+#                 <div class="modal-content">
+#                 <div class="modal-header">
+#                     <h1 class="modal-title fs-5 text-secondary" id="exampleModalLabel">Pendaftaran Santri Baru</h1>
+#                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+#                 </div>
+# <div class="modal-body">
+#                     <div class="row mb-3">
+#                         <div class="col-md-8">
+#                             <div>
+#                                 <span class="fw-semibold">PEMBUKAAN PROGRAM PENDIDIKAN (Putra dan Putri)</span>
+#                                 <ul class="text-secondary">                                   
+#                                     <li>KB (2 - 3tahun)</li>
+#                                     <li>TK ( 4 - 5tahun)</li>
+#                                     <li>SD Tahfizh Bilinglual</li>
+#                                     <li>SMP Tahfizh bilingual</li>
+#                                     <li>MA Tahfizh bilingual</li>
+#                                 </ul>
+#                             </div>
+#                         </div>
+#                         <div class="col-md-4">
+#                             <img src="https://i.ibb.co.com/wRNC9B0/img1.jpg" alt="Gambar Pondok" width="150"
+#                                 class="rounded">
+#                         </div>
+#                     </div>
+#                     <div class="row mb-3">
+#                         <div class="col-md-8">
+#                             <div>
+#                                 <span class="fw-semibold">PELAKSANAAN TEST MASUK</span>
+#                                 <p class="text-secondary">Seluruh test dilaksanakan dalam 2 Gelombang <br>
+#                                     Test
+#                                     dilaksanakan secara OFFLINE</p>
+#                             </div>
+#                         </div>
+#                         <div class="col-md-4">
+#                             <img src="https://i.ibb.co.com/hW8F8Qs/img2.jpg" alt="Gambar Pondok" width="150"
+#                                 class="rounded">
+#                         </div>
+#                     </div>
+#                     <div class="row mb-3">
+#                         <div class="col-md-8">
+#                             <div>
+#                                 <span class="fw-semibold">MATERI UJIAN SELEKSI</span>
+#                                 <ul>
+#                                     <li>Membaca Al Qur’an dan Tulis Arab</li>
+#                                     <li>Tes wawancara anak dan wawancara orangtua</li>
+#                                 </ul>
+#                             </div>
+#                         </div>
+#                         <div class="col-md-4">
+#                             <img src="https://i.ibb.co.com/jZznN6Q/img3.jpg" alt="Gambar Pondok" width="150"
+#                                 class="rounded">
+#                         </div>
+#                     </div>
+#                 </div>
+#                 </div>
+#             </div>
+#             </div>
+
+# <div class="modal fade" id="detailJadwalKegiatan" tabindex="-1" aria-labelledby="exampleModalLabel"
+#         aria-hidden="true">
+#         <div class="modal-dialog">
+#             <div class="modal-content">
+#                 <div class="modal-header">
+#                     <h1 class="modal-title fs-5 text-secondary" id="exampleModalLabel">Jadwal Pelaksanaan PSB</h1>
+#                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+#                 </div>
+#                 <div class="modal-body">
+#                     <div class="row mb-3">
+#                         <div class="col-md-8">
+#                             <div>
+#                                 <span class="fw-semibold">1. Pendaftaran Online</span>
+#                                 <p class="text-secondary">Pendaftaran dilaksanakan pada: <br>
+#                                         Gel 1: {tgl_mulai_pendaftaran_formatted} - {tgl_akhir_pendaftaran_formatted} <br>
+#                                         Gel 2: {tgl_mulai_pendaftaran_formatted} - {tgl_akhir_pendaftaran_formatted} <br> melalui website <a href="/pendaftaran"
+#                                     class="text-decoration-none text-primary">https://aplikasi.dqi.ac.id/psb</a></p>
+#                             </div>
+#                         </div>
+#                         <div class="col-md-4">
+#                             <img src="https://i.ibb.co.com/KKKwWG1/img4.jpg" alt="Gambar Pondok" width="150"
+#                                 class="rounded">
+#                         </div>
+#                     </div>
+#                     <div class="row mb-3">
+#                         <div class="col-md-8">
+#                             <div>
+#                                 <span class="fw-semibold">2. Pelaksanaan Test Masuk</span>
+#                                 <p class="text-secondary">Gel 1: {tgl_mulai_seleksi_formatted} - {tgl_akhir_seleksi_formatted} <br> Gel 2: {tgl_mulai_seleksi_formatted} - {tgl_akhir_seleksi_formatted}</p>
+#                             </div>
+#                         </div>
+#                         <div class="col-md-4">
+#                             <img src="https://i.ibb.co.com/s9g5nM2/img5.jpg" alt="Gambar Pondok" width="150"
+#                                 class="rounded">
+#                         </div>
+#                     </div>
+#                     <div>
+#                         <span class="fw-semibold">4. Pengumuman Hasil Seleksi</span>
+#                         <p class="text-secondary">Gel 1: {tgl_pengumuman_hasil_seleksi_formatted} <br>
+#                                                 Gel 2: {tgl_pengumuman_hasil_seleksi_formatted}
+#                         </p>
+#                     </div>
+#                     <div>
+#                         <p class="text-secondary">Catatan : Seluruh kegiatan akan mengikuti protokol kesehatan sesuai
+#                             ketentuan dari pemerintah.</p>
+#                     </div>
+#                 </div>
+#             </div>
+#         </div>
+#     </div>
+
+#     <div class="modal fade" id="detailPersyaratan" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+#         <div class="modal-dialog">
+#             <div class="modal-content">
+#                 <div class="modal-header">
+#                     <h1 class="modal-title fs-5 text-secondary" id="exampleModalLabel">Persyaratan Test Masuk</h1>
+#                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+#                 </div>
+#                 <div class="modal-body">
+#                     <div class="row mb-3">
+#                         <div class="col-md-12">
+#                             <div>
+#                                 <span class="fw-semibold">SYARAT UTAMA PENDAFTARAN :</span>
+#                                 <ol class="text-secondary">
+#                                     <li>Mengisi formulir online secara lengkap dan benar melalui laman https://dqi.ac.id/psb</li>
+#                                     <li>Membayar biaya pendaftran untuk program Paud baby Qu KB A & B(usia 2 - 3th) sebesar Rp.350.000</li>
+#                                     <li>Membayar biaya pendaftran untuk program TK sebesar Rp.300.000</li>
+#                                     <li>Membayar biaya pendaftran untuk program SD Tahfizh bilingual sebesar Rp.300.000</li>
+#                                     <li>Membayar biaya pendaftran untuk program SMP Tahfizh bilingual sebesar Rp.300.000</li>
+#                                     <li>Membayar biaya pendaftran untuk program MA Tahfizh bilingual sebesar Rp.300.000</li>
+#                                     <li>
+#                                         Syarat Pendaftaran :
+#                                         <ul type="disc" class="text-secondary">
+#                                             <li>Fotocopy Akta Kelahiran 2 lembar</li>
+#                                             <li>Fotocopy KK 1 lembar</li>
+#                                             <li>Fotocopy KTP Orangtua (Masing-masing 1 lembar)</li>
+#                                             <li>Fotocopy Raport Semester akhir (menyusul)</li>
+#                                             <li>Pas Foto berwarna ukuran 3x4 4lembar</li>
+#                                             <li>Pas Foto Orangtua masing-masing 1lembar (Khusus Pendaftar KB dan TK)</li>
+#                                             <li>Berkas dimasukkan dalam Map warna hijau dan diberi nama serta lembaga pendidikan</li>
+#                                         </ul>
+#                                     </li>
+#                                 </ol>
+#                             </div>
+#                         </div>
+#                     </div>
+#                     <div>
+#                         <p class="text-secondary">Seluruh persyaratan yang harus di upload / diunggah ke website
+#                             pendaftaran
+#                             harus sesuai format yang ditentukan</p>
+#                     </div>
+#                 </div>
+#                 </div>
+#             </div>
+#             </div>
+
+
+#                         <!-- Modal -->
+#             <div class="modal fade" id="modalPendaftaranTutup" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+#             <div class="modal-dialog">
+#                 <div class="modal-content">
+#                 <div class="modal-header">
+#                     <h1 class="modal-title fs-5" id="exampleModalLabel">Pendaftaran ditutup!</h1>
+#                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+#                 </div>
+#                 <div class="modal-body">
+#                     <p>Mohon maaf, pendaftaran telah ditutup.</p>
+#                 </div>
+#                 <div class="modal-footer">
+#                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+#                 </div>
+#                 </div>
+#             </div>
+#             </div>
 
 
 
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-            <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-            <script src=" https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js "></script>
+#             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+#             <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+#             <script src=" https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js "></script>
 
 
-            </body>
-            </html>
-        """
-        return request.make_response(html_response)
+#             </body>
+#             </html>
+#         """
+#         return request.make_response(html_response)
 
 class PesantrenPekerjaanKaryawan(http.Controller):
     @http.route('/pekerjaan', auth='public')

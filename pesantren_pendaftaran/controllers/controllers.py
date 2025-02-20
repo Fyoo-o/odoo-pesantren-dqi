@@ -1043,7 +1043,10 @@ class PesantrenPendaftaran(http.Controller):
                 <div class="text-center text-white">
                     <h4 class="fs-2 fw-semibold mb-2">Aplikasi penerimaan santri baru</h4>
                     <span>Daarul Qur'an Istiqomah Tanah Laut Kalimantan Selatan</span> <br><br>
-                    <a href="/pendaftaran" style="background-color: #e91e63; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px;" class=" id="daftar">Daftar Sekarang</a>
+                    {f'<div class="nav-item d-flex justify-content-center align-items-center">'
+                            f'<a class="nav-link text-white" style="background-color: #e91e63; color: white; text-decoration: none; padding: 8px 16px; border-radius: 5px; font-size: 14px; width: 50%;" class=" id="daftar" href="/pendaftaran" {"data-bs-toggle='modal' data-bs-target='#modalPendaftaranTutup'" if not is_halaman_pendaftaran else ""}>'
+                            f'<i class="fa-solid fa-note-sticky d-none"></i>Daftar Sekarang !</a>'
+                    f'</div>'}
                 </div>
             </div>
 
@@ -1309,21 +1312,240 @@ class PesantrenPendaftaran(http.Controller):
             </html>
         """
 
+
         return request.make_response(html_response)
     
 class UbigPendaftaranController(http.Controller):
     @http.route('/pendaftaran', type='http', auth='public')
     def pendaftaran_form(self, **kwargs):
-
-        # Mengambil nilai kuota pendaftaran dari ir.config_parameter
         config_param = request.env['ir.config_parameter'].sudo()
-        is_halaman_pengumuman = config_param.get_param('pesantren_pendaftaran.is_halaman_pengumuman')
+        is_halaman_pendaftaran = config_param.get_param('pesantren_pendaftaran.is_halaman_pendaftaran')
+
+        if not is_halaman_pendaftaran or is_halaman_pendaftaran == 'False':
+            html_response = f"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PSB - Daarul Qur'an Istiqomah - Pendaftaran Ditutup</title>
+    <meta property="og:image" content="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" /> 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        body {{
+            background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }}
+
+        .offcanvas.offcanvas-end {{
+            width: 250px;
+        }}
+        
+        .offcanvas .nav-link {{
+            color: #ffffff;
+        }}
+        
+        .offcanvas .btn-close {{
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            filter: invert(1);
+        }}
+
+        .background {{
+            background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+        }}
+
+        .dropdown {{
+            position: relative;
+        }}
+
+        .dropdown-link {{
+            cursor: pointer;
+        }}
+
+        .dropdown-content {{
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: #ffffff;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            min-width: 150px;
+            z-index: 1;
+            overflow: hidden;
+        }}
+
+        .dropdown-content a {{
+            color: #333;
+            padding: 10px 15px;
+            display: block;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }}
+
+        .dropdown-content a:hover {{
+            background-color: #f1f1f1;
+        }}
+
+        .dropdown:hover .dropdown-content {{
+            display: block;
+            animation: fadeIn 0.3s;
+        }}
+
+        @keyframes fadeIn {{
+            from {{
+                opacity: 0;
+                transform: translateY(-10px);
+            }}
+            to {{
+                opacity: 1;
+                transform: translateY(0);
+            }}
+        }}
+
+        .closed-message {{
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 600px;
+            text-align: center;
+        }}
+
+        .back-button {{
+            background-color: #e91e63;
+            color: white;
+            padding: 10px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            display: inline-block;
+            margin-top: 1rem;
+        }}
+
+        .back-button:hover {{
+            background-color: #c2185b;
+            color: white;
+        }}
+
+        .content-wrapper {{
+            flex: 1;
+        }}
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg" style="height: 65px;">
+        <div class="container-fluid">
+            <a class="navbar-brand ms-5 text-white fw-semibold" href="/psb">
+                <img src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" width="50" alt="Logo Pesantren">
+                Daarul Qur'an Istiqomah
+            </a>
+            <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item me-3">
+                        <a class="nav-link text-white" href="/psb"><i class="fa-solid fa-house me-2"></i>Beranda</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="dropdown-link nav-link" style="color: white !important;">
+                            <i class="fa-solid fa-fingerprint me-2"></i>Login</a>
+                        <div class="dropdown-content">
+                            <a href="/login">Login PSB</a>
+                            <a href="/web/login">Login Orang Tua</a>
+                        </div>
+                    </li>
+                    <li class="nav-item me-3">
+                        <a class="nav-link text-white" href="/bantuan"><i class="fa-solid fa-lock me-2"></i>Bantuan</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Offcanvas Menu -->
+    <div class="offcanvas offcanvas-end background" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        <a class="navbar-brand mt-1 text-white fw-semibold" href="/psb" style="display: flex; flex-direction: column; align-items: center;">
+            <img src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" width="50" alt="Logo Pesantren">
+            Daarul Qur'an Istiqomah
+        </a>
+        <div class="offcanvas-body">
+            <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                <li class="nav-item me-3">
+                    <a class="nav-link text-white" href="/psb"><i class="fa-solid fa-house me-2"></i>Beranda</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a href="#" class="dropdown-link nav-link" style="color: white !important;">
+                        <i class="fa-solid fa-fingerprint me-2"></i>Login</a>
+                    <div class="dropdown-content">
+                        <a href="/login">Login PSB</a>
+                        <a href="/web/login">Login Orang Tua</a>
+                    </div>
+                </li>
+                <li class="nav-item me-3">
+                    <a class="nav-link text-white" href="/bantuan"><i class="fa-solid fa-lock me-2"></i>Bantuan</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content-wrapper">
+        <div class="closed-message">
+            <i class="fa-solid fa-clock-rotate-left fs-1 mb-3" style="color: #e91e63;"></i>
+            <h2 class="mb-4">Pendaftaran Ditutup</h2>
+            <p class="mb-4">Pendaftaran saat ini sudah ditutup. Silakan kembali lagi nanti.</p>
+            <a href="/psb" class="back-button">
+                <i class="fa-solid fa-house me-2"></i>Kembali ke Beranda
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-white p-2" style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+        <div class="ms-5">
+            <ul style="list-style-type: none; display: flex; text-transform: uppercase; font-size: 13px;" class="fw-semibold">
+                <li><a href="/psb" class="me-4" style="text-decoration: none; color: white;">Home</a></li>
+                <li><a href="/beranda" class="me-4" style="text-decoration: none; color: white;" target="_blank">Info Pondok</a></li>
+                <li><a href="https://drive.google.com/drive/mobile/folders/1EYat5411joyoOmH_DkJ3g2DeJKgyyuBQ?usp=share_link" class="me-4" style="text-decoration: none; color: white;" target="_blank">Brosur</a></li>
+                <li><a href="" class="me-4" style="text-decoration: none; color: white;">Panduan</a></li>
+            </ul>
+        </div>
+        <div class="me-5">
+            <p class="text-center mt-1">© 2024 TIM IT PPIB</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+"""
+            return request.make_response(html_response)
 
         pendidikan_list = request.env['ubig.pendidikan'].sudo().search([])
         return request.render('pesantren_pendaftaran.pendaftaran_form_template', {
             'pendidikan_list': pendidikan_list,
-            'is_halaman_pengumuman': is_halaman_pengumuman,
         })
+
+    # def pendaftaran_form(self, **kwargs):
+
+    #     # Mengambil nilai kuota pendaftaran dari ir.config_parameter
+    #     config_param = request.env['ir.config_parameter'].sudo()
+    #     is_halaman_pengumuman = config_param.get_param('pesantren_pendaftaran.is_halaman_pengumuman')
+
+    #     pendidikan_list = request.env['ubig.pendidikan'].sudo().search([])
+    #     return request.render('pesantren_pendaftaran.pendaftaran_form_template', {
+    #         'pendidikan_list': pendidikan_list,
+    #         'is_halaman_pengumuman': is_halaman_pengumuman,
+    #     })
 
     @http.route('/pendaftaran/submit', type='http', auth='public', methods=['POST'], csrf=True)
     def pendaftaran_submit(self, **post):
@@ -1385,6 +1607,7 @@ class UbigPendaftaranController(http.Controller):
         tanggal_lahir_ayah_str = request.params.get('tanggal_lahir_ayah')
         # Mengonversi format tanggal dd/mm/yyyy menjadi date
         tanggal_lahir_ayah     = datetime.datetime.strptime(tanggal_lahir_ayah_str, '%d/%m/%Y').date()
+        email_ayah             = post.get('email_ayah')
         telepon_ayah           = post.get('telepon_ayah')
         pekerjaan_ayah         = request.params.get('pekerjaan_ayah')
         penghasilan_ayah       = request.params.get('penghasilan_ayah')
@@ -1396,6 +1619,7 @@ class UbigPendaftaranController(http.Controller):
         nama_ibu               = post.get('nama_ibu')
         ktp_ibu                = post.get('ktp_ibu')
         tanggal_lahir_ibu_str  = request.params.get('tanggal_lahir_ibu')
+        email_ibu              = post.get('email_ibu')
         # Mengonversi format tanggal dd/mm/yyyy menjadi date
         tanggal_lahir_ibu      = datetime.datetime.strptime(tanggal_lahir_ibu_str, '%d/%m/%Y').date()
         telepon_ibu            = post.get('telepon_ibu')
@@ -1518,6 +1742,7 @@ class UbigPendaftaranController(http.Controller):
             'tanggal_lahir_ayah'     : tanggal_lahir_ayah,
             'telepon_ayah'           : telepon_ayah,
             'pekerjaan_ayah'         : pekerjaan_ayah,
+            'email_ayah'             : email_ayah,
             'penghasilan_ayah'       : penghasilan_ayah,
             # 'email_ayah'             : email_ayah,
             'kewarganegaraan_ayah'   : kewarganegaraan_ayah,
@@ -1529,6 +1754,7 @@ class UbigPendaftaranController(http.Controller):
             'tanggal_lahir_ibu'      : tanggal_lahir_ibu,
             'telepon_ibu'            : telepon_ibu,
             'pekerjaan_ibu'          : pekerjaan_ibu,
+            'email_ibu'              : email_ibu,
             'penghasilan_ibu'        : penghasilan_ibu,
             # 'email_ibu'              : email_ibu,
             'kewarganegaraan_ibu'    : kewarganegaraan_ibu,
@@ -1566,7 +1792,7 @@ class UbigPendaftaranController(http.Controller):
         # Redirect ke halaman sukses atau halaman lain yang diinginkan
         return request.redirect(f'/pendaftaran/success?token={token}')
 
-    @http.route('/pendaftaran/success', type='http', auth='public')
+    @http.route('/pendaftaran/success', type='http', auth='public')   
     def pendaftaran_success(self, token=None, **kwargs):
 
         Pendaftaran = request.env['ubig.pendaftaran']
@@ -1585,6 +1811,11 @@ class UbigPendaftaranController(http.Controller):
         pendaftaran = Pendaftaran.sudo().search([('token', '=', token)], limit=1)
         if not pendaftaran:
             return request.not_found()
+        
+        if pendaftaran.is_notified:
+            return request.render('pesantren_pendaftaran.pendaftaran_success_template', {
+            'pendaftaran': pendaftaran,
+        })
 
         # Kirim whatsapp
         if pendaftaran.nomor_login:
@@ -1771,12 +2002,16 @@ Terima kasih!
 
             mail = request.env['mail.mail'].sudo().create(email_values)
             mail.send()
+            
+        pendaftaran.sudo().write({'is_notified': True})
 
         return request.render('pesantren_pendaftaran.pendaftaran_success_template', {
             'pendaftaran': pendaftaran,
             'is_halaman_pengumuman': is_halaman_pengumuman,
             'no_rekening': no_rekening,
         })  
+        
+
 
 class PesantrenCetakPembayaran(http.Controller):
     @http.route('/pendaftaran/cetak', type='http', auth='public')
