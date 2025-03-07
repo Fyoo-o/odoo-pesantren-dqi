@@ -38,35 +38,39 @@ class SiswaController(http.Controller):
     def deduct_wallet(self, partner_id, amount):
         """
         Mengurangi wallet_balance pada partner yang diberikan dengan amount tertentu.
-        
+            
         :param partner_id: ID dari partner (siswa) yang wallet_balance-nya akan dikurangi.
         :param amount: Jumlah yang akan dikurangi dari wallet_balance.
         :return: Status sukses atau error.
         """
         try:
-            # Validasi amount harus positif
             if amount <= 0:
                 raise ValidationError("Jumlah yang dikurangi harus lebih besar dari nol.")
-            
-            # Cari partner berdasarkan ID
             partner = request.env['res.partner'].sudo().browse(partner_id)
-            
-            # Validasi jika partner ditemukan
+
             if not partner.exists():
                 raise ValidationError("Siswa dengan ID tersebut tidak ditemukan.")
-            
-            # Validasi jika saldo mencukupi
+
             if partner.wallet_balance < amount:
                 raise ValidationError("Saldo tidak mencukupi untuk melakukan pengurangan.")
 
-            # Kurangi saldo
+            transaksi_terbaru = request.env['pos.wallet.transaction'].search([
+                ('partner_id', '=', partner_id)  
+            ], order="create_date desc", limit=1)
+            
             partner.sudo().write({'wallet_balance': partner.wallet_balance - amount})
-
+            
+            if transaksi_terbaru:
+                transaksi_terbaru.sudo().write({
+                    'amount': transaksi_terbaru.amount - amount
+            })
+            
             return {'success': True, 'new_balance': partner.wallet_balance}
         except ValidationError as e:
             return {'error': str(e)}
         except Exception as e:
             return {'error': 'Terjadi kesalahan: ' + str(e)}
+        
 
     @http.route('/siswa/get_data/bar', type='json', auth='user')
     def get_data_bar(self, barcode=None):
