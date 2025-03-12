@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="saldo_santri_form" model="ir.ui.view">
+            <field name="name">wizard.recharge.wallet.scan.form</field>
+            <field name="model">recharge.wallet.scan</field>
+            <field name="arch" type="xml">
+                <form string="Isi Saldo Santri">
+                    <group>
+                        <group string="Data Siswa">
+                            <field name="barcode"/>
+                            <field name="siswa_id"/>
+                            <field name="tgl_transaksi"/>
+                        </group>    
+                    </group>
+                    
+                    <group>
+                        <group string="Saldo Dompet">
+                            <field name="recharge_amount" widget="integer"/>
+                            <field name="recharge_type" widget="radio"/>
+                            <field name="saldo_uang_saku" widget="integer"/>
+                            <field name="wallet_balance" widget="integer"/>
+                            <field name="journal_id"/>
+                        </group>
+                    </group>
+                      <footer>
+                        <button name="action_recharge" string="Isi Saldo" type="object" class="btn-primary"/>
+                        <button string="Batal" class="btn-secondary" special="cancel"/>
+                    </footer> 
+                </form>
+            </field>
+        </record>
+
+        <record id="action_wizard_recharge_wallet" model="ir.actions.act_window">
+            <field name="name">Isi Saldo Santri</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">recharge.wallet.scan</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="saldo_santri_form"/>
+            <field name="target">new</field>
+        </record>      
+
+        <menuitem id="wizard_isi_saldo_menu_categ" name="Isi Saldo Santri" parent="musyrif_menu_root" action="action_wizard_recharge_wallet" sequence="60"/>
+    </data>
+</odoo>
+
+
+
+
+
+

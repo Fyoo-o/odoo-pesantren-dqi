@@ -47,7 +47,7 @@
     'license': 'LGPL-3',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','pesantren_base','base_accounting_kit', 'account', 'point_of_sale','pos_wallet_odoo','hr_holidays'],
+    'depends': ['base','pesantren_base','base_accounting_kit', 'account', 'point_of_sale','pos_wallet_odoo','hr_holidays', 'mail'],
 
     # always loaded
     'data': [
@@ -65,6 +65,7 @@
         'views/siswa_inherit.xml',
         'views/res_company_inherit.xml',
         'views/wallet_recharge_inherit.xml',
+        'views/wallet_recharge_mass_inherit.xml',
         'views/biaya_skolah.xml',
         'views/account_payment_inherit.xml',
         'views/invoice.xml',

@@ -1,5 +1,9 @@
 from odoo import api, fields, models
 from odoo.exceptions import UserError
+import logging
+
+_logger = logging.getLogger(__name__)
+
 
 class PerijinanCheckIn(models.TransientModel):
     _name           = 'cdn.perijinan.checkin'
@@ -17,11 +21,26 @@ class PerijinanCheckIn(models.TransientModel):
     tgl_kembali = fields.Date(string='Tgl Kembali', related='perijinan_id.tgl_kembali', readonly=True)
     penjemput   = fields.Char(string='Penjemput', related='perijinan_id.penjemput', readonly=True)
 
+    barcode = fields.Char(string='Barcode Santri',readonly=False)
+ 
+    @api.onchange('barcode')
+    def _onchange_barcode(self):
+        """Mengisi siswa_id berdasarkan barcode yang diinput"""
+        _logger.info(f"Cek Barcode: {self.barcode}")
+        if self.barcode:
+            siswa = self.env['cdn.siswa'].search([('barcode', '=', self.barcode)], limit=1)
+            _logger.exception(f"Data Santri: {siswa}")
+
+            if siswa:
+                self.siswa_id = siswa.id
+            else:
+                self.siswa_id = False 
+
     @api.onchange('siswa_id')
     def _onchange_siswa_id(self):
         if self.siswa_id:
             Perijinan = self.env['cdn.perijinan'].search([('siswa_id', '=', self.siswa_id.id), ('state', '=', 'Permission')], limit=1)
-            # Jika tidak ada perijinan yang sudah di approve maka akan muncul pesan error
+           
             if not Perijinan:
                 raise UserError('Tidak ada perijinan keluar untuk santri ini, Silakan di cek kembali!')
             

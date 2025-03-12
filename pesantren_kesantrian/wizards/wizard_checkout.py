@@ -1,6 +1,10 @@
 from odoo import api, fields, models
 from odoo.exceptions import UserError
+import logging
 
+
+
+_logger = logging.getLogger(__name__)
 
 class PerijinanCheckOut(models.TransientModel):
     _name           = 'cdn.perijinan.checkout'
@@ -19,26 +23,38 @@ class PerijinanCheckOut(models.TransientModel):
     penjemput   = fields.Char(string='Penjemput', related='perijinan_id.penjemput', readonly=True)
 
 
-    barcode = fields.Char(string='Barcode', compute='_source_siswa_id')
+    barcode = fields.Char(string='Barcode Santri',readonly=False)
 
-    @api.depends('barcode')
-    def _source_siswa_id(self):
-        for record in self:
-            if record.barcode:
-                # Cari siswa berdasarkan barcode
-                siswa = self.env['cdn.siswa'].search([('barcode', '=', record.barcode)], limit=1)
-                if siswa:
-                    record.siswa_id = siswa.id  # Set siswa_id dengan ID siswa yang ditemukan
+    @api.onchange('barcode')
+    def _onchange_barcode(self):
+        """Mengisi siswa_id berdasarkan barcode yang diinput"""
+        _logger.info(f"Cek Barcode: {self.barcode}")
+        if self.barcode:
+            siswa = self.env['cdn.siswa'].search([('barcode', '=', self.barcode)], limit=1)
+            _logger.exception(f"Data Santri: {siswa}")
+
+            if siswa:
+                self.siswa_id = siswa.id
+            else:
+                self.siswa_id = False 
+
     
     @api.onchange('siswa_id')
     def _onchange_siswa_id(self):
+        """Cek apakah santri memiliki perijinan yang sudah disetujui"""
         if self.siswa_id:
-            Perijinan = self.env['cdn.perijinan'].search([('siswa_id', '=', self.siswa_id.id), ('state', '=', 'Approved')], limit=1)
-            # Jika tidak ada perijinan yang sudah di approve maka akan muncul pesan error
+            Perijinan = self.env['cdn.perijinan'].search([
+                ('siswa_id', '=', self.siswa_id.id), 
+                ('state', '=', 'Approved')
+            ], limit=1)
+
             if not Perijinan:
                 raise UserError('Tidak ada perijinan yang sudah disetujui untuk santri ini, Silakan di cek kembali!')
             
             self.perijinan_id = Perijinan.id
+        else:
+            self.perijinan_id = False  
+            
 
     def action_checkout(self):
         self.perijinan_id.write({

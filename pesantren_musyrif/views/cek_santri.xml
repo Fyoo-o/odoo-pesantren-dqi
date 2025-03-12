@@ -7,13 +7,16 @@
             <field name="model">cdn.siswa</field>
             <field name="arch" type="xml">
                 <list>
-                    <field name="nis"/>
-                    <field name="name"/>
-                    <field name="ruang_kelas_id"/>
-                    <field name="halaqoh_id"/>
-                    <field name="virtual_account"/>
-                    <field name="va_saku"/>
-                    <field name="saldo_uang_saku"/>
+                    <header>
+                        <button name="action_recharge_wallet_mass" string="Isi Dompet" type="object" class="btn btn-primary" groups="pesantren_musyrif.group_musyrif_staff"/>
+                    </header>
+                        <field name="nis"/>
+                        <field name="name"/>
+                        <field name="ruang_kelas_id"/>
+                        <field name="halaqoh_id"/>
+                        <!-- <field name="virtual_account"/> -->
+                        <field name="va_saku"/>
+                        <field name="saldo_uang_saku"/>
                 </list>
             </field>
         </record>
@@ -56,7 +59,7 @@
                                 <field name="kecamatan_id" domain="[('kota_id','=',kota_id)]" />
                                 <field name="jns_partner" readonly="1" string="Jenis Partner"/>
                                 <field name="barcode_santri" />
-                                <field name="barcode"/>
+                                <!-- <field name="barcode"/> -->
                             </group>
                             <group>
                                 <field name="street2" string="RT / RW"/>
@@ -112,7 +115,7 @@
                                 
                                 <group string="Uang Saku dan Dompet"> 
                                 <group>
-                                    <field name="virtual_account"/>
+                                    <!-- <field name="virtual_account"/> -->
                                     <field name="va_saku"/>
                                     <field name="saldo_uang_saku" readonly="1"/>
                                     <field name="wallet_balance" readonly="1"/>

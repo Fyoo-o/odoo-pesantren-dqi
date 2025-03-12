@@ -17,7 +17,6 @@
             </field>
         </record>
 
-        <!-- Vendor Invoice Form View -->
         <record id="vendor_invoice_view_form" model="ir.ui.view">
             <field name="name">account.move.vendor.view.form</field>
             <field name="model">account.move</field>
@@ -25,14 +24,12 @@
             <field name="arch" type="xml">
                 <field name="partner_id" position="attributes">
                     <attribute name="readonly">True</attribute>
-                    <!-- Gunakan domain yang sesuai dengan field jns_partner -->
                     <attribute name="domain">[('email', '!=', '')]</attribute>
                     <attribute name="force_save">True</attribute>
                 </field>
-            </field>
+            </field>    
         </record>
 
-        <!-- Vendor Invoice Action Window -->
         <record id="vendor_invoice_action" model="ir.actions.act_window">
             <field name="name">Tagihan Vendor</field>
             <field name="type">ir.actions.act_window</field>
@@ -42,7 +39,6 @@
             <field name="domain">[('move_type', '=', 'in_invoice')]</field>
         </record>
 
-        <!-- Vendor Invoice Action Window Views -->
         <record id="list_vendor_invoice_action" model="ir.actions.act_window.view">
             <field name="sequence" eval="1"/>
             <field name="view_mode">list</field>
@@ -62,7 +58,6 @@
             <field name="act_window_id" ref="vendor_invoice_action"/>
         </record>
 
-        <!-- Vendor Invoice Menu Item -->
         <menuitem id="vendor_invoice_menu_act" name="Tagihan Vendor" parent="aktivitas_menu_categ" action="vendor_invoice_action" sequence="40"/>
     </data>
 </odoo>

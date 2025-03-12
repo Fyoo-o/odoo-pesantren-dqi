@@ -66,6 +66,7 @@
         'report/cetak_kartu_santri.xml',
         # views
         'views/siswa.xml',
+        'views/cutigroup.xml',
         'views/orangtua.xml',
         'views/ref_pekerjaan.xml',
         'views/ref_pendidikan.xml',

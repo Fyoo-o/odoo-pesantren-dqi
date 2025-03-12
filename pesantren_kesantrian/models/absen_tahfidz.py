@@ -111,6 +111,8 @@ class AbsenTahfidzQuranLine(models.Model):
     halaqoh_id      = fields.Many2one('cdn.halaqoh', string='Halaqoh', related='absen_id.halaqoh_id', readonly=True, store=True)
     siswa_id        = fields.Many2one('cdn.siswa', string='Siswa', required=True)
     nis             = fields.Char(string='NIS', related='siswa_id.nis', readonly=True, store=True)
+    panggilan       = fields.Char(string='Nama Panggilan', related='siswa_id.namapanggilan', readonly=True, store=True)
+    keterangan_izin = fields.Char(string='Keterangan Izin', store=True)
     kehadiran       = fields.Selection([
         ('Hadir', 'Hadir'),
         ('Izin', 'Izin'),

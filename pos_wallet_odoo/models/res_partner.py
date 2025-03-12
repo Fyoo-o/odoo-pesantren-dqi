@@ -20,6 +20,9 @@
 #
 #############################################################################
 from odoo import api, fields, models
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class ResPartner(models.Model):
@@ -35,6 +38,10 @@ class ResPartner(models.Model):
 
     def action_recharge(self):
         """Open wizard for wallet recharge"""
+
+        context = dict(self.env.context)
+        active_ids = context.get('active_ids', [])
+
         return {
             'name': 'Wallet Recharge',
             'type': 'ir.actions.act_window',
@@ -42,6 +49,86 @@ class ResPartner(models.Model):
             'view_mode': 'form',
             'view_type': 'form',
             'target': 'new',
+            'context': {'default_partner_ids': active_ids}
+        }
+
+    def action_recharge_mass(self):
+        """Open wizard for wallet recharge"""
+
+        context = dict(self.env.context)
+        active_ids = context.get('active_ids', [])
+
+        return {
+            'name': 'Wallet Recharge',
+            'type': 'ir.actions.act_window',
+            'res_model': 'recharge.wallet.mass',
+            'view_mode': 'form',
+            'view_type': 'form',
+            'target': 'new',
+            'context': {'default_partner_ids': active_ids}
+        }
+
+    # def action_recharge_mass(self):
+    #     "Membuka Modul Wallet Recharge"
+    #     active_ids  = self.ids
+    #     return {
+    #         'name': 'Isi Ulang Dompet',
+    #         'type': 'ir.actions.act_window',
+    #         'res_model': 'recharge.wallet.mass',
+    #         'view_mode': 'form',
+    #         'target': 'new',
+    #         'context': {'default_partner_ids': active_ids}
+    #     }
+
+    # def action_recharge_mass(self):
+    #     """Opens the Wallet Recharge Wizard"""
+    #     # Get the actual IDs of the selected records, not just the selection order
+    #     active_ids = self.env.context.get('active_ids', [])
+    #     selected_records = self.browse(active_ids)
+    #     actual_ids = selected_records.ids
+        
+    #     return {
+    #         'name': 'Isi Ulang Dompet',
+    #         'type': 'ir.actions.act_window',
+    #         'res_model': 'recharge.wallet.mass',
+    #         'view_mode': 'form',
+    #         'target': 'new',
+    #         'context': {
+    #             'active_ids': actual_ids,
+    #             'active_model': self._name,
+    #             'default_siswa_ids': [(6, 0, actual_ids)],
+    #         }
+    # }
+
+
+    # def action_recharge(self):
+    #     """Open wizard for wallet recharge"""
+    #     context = dict(self.env.context)
+    #     active_ids = context.get('active_ids', [])
+    
+    #     return {
+    #         'name': 'Wallet Recharge',
+    #         'type': 'ir.actions.act_window',
+    #         'res_model': 'recharge.wallet',
+    #         'view_mode': 'form',
+    #         'view_id': self.env.ref('pos_wallet_odoo.recharge_wallet_view_form').id,
+    #         'target': 'new',
+    #         'context': {'default_partner_ids': active_ids}
+    #     }
+
+    def action_limit_wallet(self):
+        """Open wizard for wallet limit"""
+        context = dict(self.env.context)
+        active_ids = context.get('active_ids', [])
+        
+        return {
+            'name': 'Limit Saldo Dompet',
+            'type': 'ir.actions.act_window',
+            'res_model': 'recharge.wallet',
+            'view_mode': 'form',
+            'view_id': self.env.ref('pos_wallet_odoo.limit_wallet_view_form').id,
+            'target': 'new',
+            'context': {'default_partner_ids': active_ids}
         }
 
     def action_number_of_wallet(self):
