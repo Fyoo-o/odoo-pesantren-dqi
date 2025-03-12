@@ -33,7 +33,7 @@
                                     <field name="uang_saku_count" widget="integer"  string="Uang Saku" />
                                 </span>
                             </button>
-                            <button type="object" name="action_saldo_tagihan" class="oe_stat_button" context="{'default_siswa_id': active_id}" groups="pesantren_keuangan.group_keuangan_manager">
+                            <button type="object" name="action_saldo_tagihan" class="oe_stat_button" context="{'default_siswa_id': id}" groups="pesantren_keuangan.group_keuangan_manager">
                                 <div class="o_field_widget o_stat_info mr4">
                                     <span class="o_stat_text">Tag:</span>
                                     <span class="o_stat_text">Sisa:</span>

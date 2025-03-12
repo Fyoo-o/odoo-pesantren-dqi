@@ -49,6 +49,7 @@
                                 <field name="siswa_id"
                                     options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"
                                     readonly=" state not in ('draft')"/>
+                                <field name="orangtua_id"/> 
                                 <field name="va_saku"/>
                                 <field name="saldo_awal" widget="integer"/>
                             </group>

@@ -11,7 +11,7 @@
                     </header>
                     <group string="Data Ijin Santri">
                         <group>
-                            <field name="barcode" autofocus="true" />
+                            <field name="barcode"/>
                             <field name="tgl_ijin" />
                             <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" context="{'default_partner_id': id}" />
                             <field name="kelas_id" />
@@ -38,7 +38,7 @@
 
                     <footer>
                         <button name="action_checkout" string="Ijin Keluar" type="object" class="btn-primary" confirm="Apakah yakin Santri tersebut akan melakukan IJIN KELUAR ?" />
-                        <button string="Cancel" class="btn-secondary" special="cancel" />
+                        <button string="Batal" class="btn-secondary" special="cancel" />
                     </footer>
                 </form>
             </field>
@@ -56,7 +56,6 @@
         </record>
         <!-- This Menu Item must have a parent and an action -->
         <menuitem id="wizard_checkout_menu_act" name="Santri Keluar" parent="satpam_menu_root" action="action_wizard_perijinan_checkout" sequence="20" />
-
 
     </data>
 

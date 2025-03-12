@@ -1,5 +1,10 @@
 from odoo import api, fields, models
+import datetime
 import random
+import logging
+
+_logger = logging.getLogger(__name__)
+
 
 class ResPartner(models.Model):
     _inherit        = 'res.partner'
@@ -65,10 +70,14 @@ class ResPartner(models.Model):
             else:
                 total_amount = total_amount + float(transaction.amount)
         return total_amount
+    
     def calculate_saku(self,timestamp=None):
         UangSaku = self.env['cdn.uang_saku'].search([('siswa_id', '=', self.id)])
+
         if timestamp:
-            UangSaku = UangSaku.filtered(lambda x: x.validasi_time < timestamp)
+            # UangSaku = UangSaku.filtered(lambda x: x.validasi_time < timestamp)
+            UangSaku = UangSaku.filtered(lambda x: isinstance(x.validasi_time, datetime.datetime) and x.validasi_time < timestamp)
+            _logger.info(f"Id Uang Saku Saat button select {UangSaku}")
         total_amount = 0
         for uang_saku in UangSaku:
             if uang_saku.state == 'confirm':

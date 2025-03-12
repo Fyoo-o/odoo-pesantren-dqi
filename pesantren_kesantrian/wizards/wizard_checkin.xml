@@ -9,6 +9,7 @@
                 <form string="Santri Ijin Masuk">
                     <group string="Data Ijin Santri">
                         <group>
+                            <field name="barcode"/>
                             <field name="tgl_ijin" />
                             <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" />
                             <field name="kelas_id" />

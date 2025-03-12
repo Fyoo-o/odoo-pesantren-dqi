@@ -48,8 +48,10 @@
                                 <field colspan="4" name="absen_ids" nolabel="1" widget="one2many_list">
                                     <list string="" editable="top">
                                         <field name="siswa_id" />
+                                        <field name="panggilan" />
                                         <field name="nis" />
                                         <field name="kehadiran" />
+                                        <field name="keterangan_izin" />
                                     </list>
                                 </field>
                             </page>

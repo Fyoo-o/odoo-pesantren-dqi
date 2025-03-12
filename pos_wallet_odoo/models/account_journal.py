@@ -22,8 +22,6 @@
 from odoo import fields, models, api
 from datetime import date
 
-
-
 class AccountJournal(models.Model):
     """Adding fields to account journal"""
     _inherit = "account.journal"

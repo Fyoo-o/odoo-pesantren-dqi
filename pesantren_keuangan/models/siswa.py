@@ -2,8 +2,7 @@ from odoo import api, fields, models
 
 class SiswaInherit(models.Model):
     _inherit        = 'cdn.siswa'
-
-
+    
     def create_data_account(self):
         # Panggil method dari res.partner yang didelegasikan
         self.partner_id.create_data_account()

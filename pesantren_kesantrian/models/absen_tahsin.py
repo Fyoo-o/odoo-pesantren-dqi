@@ -94,6 +94,8 @@ class AbsenTahsinQuranLine(models.Model):
     siswa_id = fields.Many2one('cdn.siswa', string='Siswa')
     name = fields.Char(string='Nama', related='siswa_id.name', readonly=True, store=True)
     nis = fields.Char(string='NIS', related='siswa_id.nis', readonly=True, store=True)
+    panggilan = fields.Char(string='Nama Panggilan', related='siswa_id.namapanggilan', readonly=True, store=True)
+    keterangan_izin = fields.Char(string='Keterangan Izin', store=True)
     kehadiran = fields.Selection([
         ('Hadir', 'Hadir'),
         ('Izin', 'Izin'),

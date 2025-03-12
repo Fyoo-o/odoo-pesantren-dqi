@@ -60,6 +60,8 @@
         
         # wizard
         'wizard/res_partner_change_pin.xml',
+        'wizard/saldo.xml',
+        
         # views
         'views/cek_santri.xml',
         'views/perijinan.xml',
@@ -68,7 +70,9 @@
         'views/kesehatan.xml',
         'views/prestasi_siswa.xml',
         'views/uang_saku.xml',
-        'views/pos_wallet_transaction.xml'
+        'views/pos_wallet_transaction.xml',
+        
+        
         
         
     ],

@@ -20,3 +20,4 @@
 #
 #############################################################################
 from . import recharge_wallet
+from . import recharge_wallet_mass

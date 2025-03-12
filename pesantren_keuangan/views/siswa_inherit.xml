@@ -10,8 +10,8 @@
                 <xpath expr="//page[@name='info_siswa']" position="inside">
                     <group string="Uang Saku dan Dompet">
                         <group>
-                            <field name="virtual_account"/>
-                            <field name="va_saku"/>
+                            <!-- <field name="virtual_account"/> -->
+                            <field name="va_saku" string="Virtual Account"/>
                             <field name="saldo_uang_saku" readonly="1" widget="integer"/>
                             <field name="wallet_balance" readonly="1" widget="integer"/>
                         </group>

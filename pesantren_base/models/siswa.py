@@ -25,6 +25,7 @@ class siswa(models.Model):
     partner_id          = fields.Many2one('res.partner', 'Partner', ondelete="cascade")
     active_id           = fields.Many2one('res.partner', string='Customer Active', compute="_compute_partner_id")
     nis                 = fields.Char( string="NIS",  help="")
+    namapanggilan       = fields.Char(string="Nama Panggilan")
     nisn                = fields.Char( string="NISN",  help="")
     tmp_lahir           = fields.Char( string="Tempat Lahir",  help="")
     tgl_lahir           = fields.Date( string="Tgl Lahir",  help="")
@@ -207,8 +208,17 @@ class siswa(models.Model):
         return self.env.ref("pesantren_base.action_report_sertifikat_santri").report_action(self)
 
     def action_cetak_kts(self):
+        ids = "&".join(f"id={rec.id}" for rec in self)
         return {
             'type': 'ir.actions.act_url',
-            'url': f'/cetak_kts?id={self.id}',
-            'target': 'new',  # atau 'new' untuk membuka di tab baru
+            'url': f'/cetak_kts?{ids}',  
+            'target': 'new',
         }
+
+    def action_recharge(self):
+        partner_model = self.env['res.partner']
+        return partner_model.action_recharge()
+
+    def action_recharge_wallet_mass(self):
+        partner_model = self.env['res.partner']
+        return partner_model.action_recharge_mass()

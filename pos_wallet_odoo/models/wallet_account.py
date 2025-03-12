@@ -12,4 +12,3 @@ class POSWalletAccount(models.Model):
     def action_recharge_wallet(self):
         # Isi dengan logic recharge sesuai kebutuhan Anda
         pass
-

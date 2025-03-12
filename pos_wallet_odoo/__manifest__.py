@@ -38,6 +38,7 @@
         'views/account_journal_views.xml',
         'views/pos_payment_method_views.xml',
         'wizard/recharge_wallet_views.xml',
+        'wizard/recharge_wallet_mass_views.xml',
         'views/res_users_views.xml',
         'views/beforeload.xml',
     ],

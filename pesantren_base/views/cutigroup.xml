@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Restrict buttons in form view -->
+    <record id="view_hr_leave_form_buttons_admin_only" model="ir.ui.view">
+        <field name="name">hr.leave.form.buttons.admin.only</field>
+        <field name="model">hr.leave</field>
+        <field name="inherit_id" ref="hr_holidays.hr_leave_view_form"/>
+        <field name="arch" type="xml">
+            <!-- Tombol Setuju hanya untuk administrator -->
+            <xpath expr="//button[@name='action_approve']" position="attributes">
+                <attribute name="groups">base.group_system</attribute>
+            </xpath>
+            
+            <!-- Tombol Tolak hanya untuk administrator -->
+            <xpath expr="//button[@name='action_refuse']" position="attributes">
+                <attribute name="groups">base.group_system</attribute>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- Restrict buttons in list view -->
+   <record id="view_hr_leave_list_buttons_admin_only" model="ir.ui.view">
+    <field name="name">hr.leave.list.buttons.admin.only</field>
+    <field name="model">hr.leave</field>
+    <field name="inherit_id" ref="hr_holidays.hr_leave_view_tree"/>
+    <field name="arch" type="xml">
+        <xpath expr="//button[@name='action_approve']" position="attributes">
+            <attribute name="groups">base.group_system</attribute>
+        </xpath>
+
+        <xpath expr="//button[@name='action_refuse']" position="attributes">
+            <attribute name="groups">base.group_system</attribute>
+        </xpath>
+    </field>
+</record>
+
+</odoo>
