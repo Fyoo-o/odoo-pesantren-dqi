@@ -513,8 +513,9 @@ class DataPendaftaran(models.Model):
         for record in self:
             """Fungsi untuk membuat akun orang tua di cdn.orangtua"""
 
-            # Cek apakah email orang tua sudah ada di res.partner
-            existing_partner = self.env['res.partner'].search([('email', '=', record.wali_email)], limit=1)
+            # Cek apakah email ayah sudah ada di res.partner
+            existing_partner = self.env['res.partner'].search([('email', '=', record.email_ayah)], limit=1)
+            existing_user = self.env['res.users'].search([('login', '=', record.email_ayah)], limit=1)
 
             if existing_partner:
                 # Jika partner sudah ada, cek apakah data orang tua sudah ada
@@ -526,36 +527,45 @@ class DataPendaftaran(models.Model):
                     # Jika partner ada tapi data orang tua belum ada, buat data orang tua
                     orangtua_vals = {
                         'partner_id': existing_partner.id,
-                        'hubungan': 'wali',
-                        'email': record.email,
+                        'hubungan': 'ayah',
+                        'email': record.email_ayah,
                     }
                     orangtua = self.env['cdn.orangtua'].sudo().create(orangtua_vals)
                     return orangtua
             else:
                 # Jika partner belum ada, buat data partner baru
-                # Membuat data orangtua otomatis saat pendaftaran diterima
                 partner_vals = {
-                    'name': record.wali_nama,
-                    'email': record.email or record.nomor_login,  # Asumsi field email ada di model Pendaftaran
-                    'phone': record.wali_telp,  # Asumsi field phone ada di model Pendaftaran
+                    'name': record.nama_ayah,
+                    'email': record.email_ayah,
+                    'phone': record.telepon_ayah,
                     'city': record.kota_id.name,
                 }
                 
-                # Membuat data partner untuk orang tua
+                # Membuat data partner untuk ayah
                 partner = self.env['res.partner'].create(partner_vals)
 
                 orangtua_vals = {
                     'partner_id': partner.id,
-                    'hubungan': 'wali',
-                    'email': record.email,
+                    'hubungan': 'ayah',
+                    'email': record.email_ayah,
                 }
                 orangtua = self.env['cdn.orangtua'].sudo().create(orangtua_vals)
 
-                # Mengatur password untuk user_id yang sudah dibuat otomatis
-                if partner.user_id:  # Pastikan user_id sudah ada
-                    password = record.password
-                    partner.user_id.write({'password': password,})
+                # Hanya buat user baru jika belum ada user dengan email yang sama
+                if not existing_user:
+                    # Generate password jika tidak ada
+                    generated_password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+                    
+                    # Membuat user baru untuk ayah
+                    user_vals = {
+                        'login': record.email_ayah,
+                        'partner_id': partner.id,
+                        'password': generated_password,
+                    }
+                    new_user = self.env['res.users'].sudo().create(user_vals)
+                    partner.user_id = new_user.id
 
+                    # Kirim email informasi login
                 email_values = {
                     'subject': "Informasi Login Orang Tua Santri Baru Pesantren Daarul Qur'an Istiqomah",
                     'email_to': record.email,
@@ -607,14 +617,11 @@ class DataPendaftaran(models.Model):
                         </div>
                     ''',
                 }
-
-
-
-                # Membuat dan mengirim email
                 mail = self.env['mail.mail'].sudo().create(email_values)
                 mail.send()
 
                 return orangtua
+
 
     def create_siswa(self):
         for record in self:
