@@ -960,7 +960,7 @@ class PesantrenPendaftaran(http.Controller):
 
             <nav class="navbar navbar-expand-lg" style="height: 65px;">
                 <div class="container-fluid">
-                    <a class="navbar-brand ms-5 text-white fw-semibold" href="/psb">
+                     <a class="navbar-brand ms-5 text-white fw-semibold" href="/psb">
                     	<img src="https://i.ibb.co.com/1MFsvMq/1731466812700.png" alt="1731466812700" width="50" alt="Logo Pesantren">       Daarul Qur'an Istiqomah
                 	</a>
                     <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
@@ -1003,7 +1003,7 @@ class PesantrenPendaftaran(http.Controller):
             <div class="offcanvas offcanvas-end background" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 <a class="navbar-brand mt-1 text-white fw-semibold" href="/psb" style="display: flex; flex-direction: column; align-items: center;">
-                    <img src="https://i.ibb.co.com/1MFsvMq/1731466812700.png" alt="Logo Pesantren">
+                    <img src="https://i.ibb.co.com/1MFsvMq/1731466812700.png" alt="Icon Daarul Qur’an Istiqomah" class="me-2 d-md-block d-none" width="40" height="40">
                     Daarul Qur'an Istiqomah
                 </a>
                 <div class="offcanvas-body">
