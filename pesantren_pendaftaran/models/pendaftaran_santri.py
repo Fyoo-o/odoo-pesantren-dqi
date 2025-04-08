@@ -509,13 +509,125 @@ class DataPendaftaran(models.Model):
             })
             move.action_post()
     
+    # def create_orangtua(self):
+    #     for record in self:
+    #         """Fungsi untuk membuat akun orang tua di cdn.orangtua"""
+
+    #         # Cek apakah email ayah sudah ada di res.partner
+    #         existing_partner = self.env['res.partner'].search([('email', '=', record.email_ayah)], limit=1)
+    #         existing_user = self.env['res.users'].search([('login', '=', record.email_ayah)], limit=1)
+
+    #         if existing_partner:
+    #             # Jika partner sudah ada, cek apakah data orang tua sudah ada
+    #             existing_orangtua = self.env['cdn.orangtua'].sudo().search([('partner_id', '=', existing_partner.id)], limit=1)
+    #             if existing_orangtua:
+    #                 # Jika data orang tua sudah ada, gunakan data tersebut
+    #                 return existing_orangtua
+    #             else:
+    #                 # Jika partner ada tapi data orang tua belum ada, buat data orang tua
+    #                 orangtua_vals = {
+    #                     'partner_id': existing_partner.id,
+    #                     'hubungan': 'ayah',
+    #                     'email': record.email_ayah,
+    #                 }
+    #                 orangtua = self.env['cdn.orangtua'].sudo().create(orangtua_vals)
+    #                 return orangtua
+    #         else:
+    #             # Jika partner belum ada, buat data partner baru
+    #             partner_vals = {
+    #                 'name': record.nama_ayah,
+    #                 'email': record.email_ayah,
+    #                 'phone': record.telepon_ayah,
+    #                 'city': record.kota_id.name,
+    #             }
+                
+    #             # Membuat data partner untuk ayah
+    #             partner = self.env['res.partner'].create(partner_vals)
+
+    #             orangtua_vals = {
+    #                 'partner_id': partner.id,
+    #                 'hubungan': 'ayah',
+    #                 'email': record.email_ayah,
+    #             }
+    #             orangtua = self.env['cdn.orangtua'].sudo().create(orangtua_vals)
+
+    #             # Hanya buat user baru jika belum ada user dengan email yang sama
+    #             if not existing_user:
+    #                 # Generate password jika tidak ada
+    #                 generated_password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+                    
+    #                 # Membuat user baru untuk ayah
+    #                 user_vals = {
+    #                     'login': record.email_ayah,
+    #                     'partner_id': partner.id,
+    #                     'password': generated_password,
+    #                 }
+    #                 new_user = self.env['res.users'].sudo().create(user_vals)
+    #                 partner.user_id = new_user.id
+
+    #                 # Kirim email informasi login
+    #             email_values = {
+    #                 'subject': "Informasi Login Orang Tua Santri Baru Pesantren Daarul Qur'an Istiqomah",
+    #                 'email_to': record.email,
+    #                 'body_html': f'''
+    #                     <div style="background-color: #d9eaf7; padding: 20px; font-family: Arial, sans-serif;">
+    #                         <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden;">
+    #                             <!-- Header -->
+    #                             <div style="background-color: #0066cc; color: #ffffff; text-align: center; padding: 20px;">
+    #                                 <h1 style="margin: 0; font-size: 24px;">Pesantren Daarul Qur'an Istiqomah</h1>
+    #                             </div>
+    #                             <!-- Body -->
+    #                             <div style="padding: 20px; color: #555555;">
+    #                                 <p style="margin: 0 0 10px;">Assalamualaikum Wr. Wb,</p>
+    #                                 <p style="margin: 0 0 20px;">
+    #                                     Bapak/Ibu <strong>{record.wali_nama or record.nama_ayah or record.nama_ibu}</strong>,<br>
+    #                                     Akun Orang Tua telah dibuat di sistem pesantren kami. Berikut adalah informasi login Anda:
+    #                                 </p>
+    #                                 <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0;">
+    #                                     <table style="width: 100%; border-collapse: collapse;">
+    #                                         <tr>
+    #                                             <td style="padding: 8px; font-weight: bold; color: #333333;">Email</td>
+    #                                             <td style="padding: 8px; color: #555555;">{record.email}</td>
+    #                                         </tr>
+    #                                     </table>
+    #                                 </div>
+    #                                 <p style="text-align: center;">
+    #                                     <a href="/odoo" style="background-color: #0066cc; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block;">
+    #                                         Masuk Ke Akun Anda
+    #                                     </a>
+    #                                 </p>
+    #                                 <p style="margin: 20px 0;">
+    #                                     Apabila terdapat kesulitan atau membutuhkan bantuan, silakan hubungi tim teknis kami melalui nomor:
+    #                                 </p>
+    #                                 <ul style="margin: 0; padding-left: 20px; color: #555555;">
+    #                                     <li>0822 5207 9785</li>
+    #                                     <li>0853 9051 1124</li>
+    #                                 </ul>
+    #                                 <p style="margin: 20px 0;">
+    #                                     Kami berharap portal ini dapat membantu Bapak/Ibu memantau perkembangan putra/putri selama berada di pesantren.
+    #                                 </p>
+    #                             </div>
+    #                             <!-- Footer -->
+    #                             <div style="background-color: #f1f1f1; text-align: center; padding: 10px;">
+    #                                 <p style="font-size: 12px; color: #888888; margin: 0;">
+    #                                     &copy; 2024 Pesantren Tahfizh Daarul Qur'an Istiqomah. All rights reserved.
+    #                                 </p>
+    #                             </div>
+    #                         </div>
+    #                     </div>
+    #                 ''',
+    #             }
+    #             mail = self.env['mail.mail'].sudo().create(email_values)
+    #             mail.send()
+
+    #             return orangtua
+
     def create_orangtua(self):
         for record in self:
             """Fungsi untuk membuat akun orang tua di cdn.orangtua"""
 
-            # Cek apakah email ayah sudah ada di res.partner
+            # Cek apakah email orang tua sudah ada di res.partner
             existing_partner = self.env['res.partner'].search([('email', '=', record.email_ayah)], limit=1)
-            existing_user = self.env['res.users'].search([('login', '=', record.email_ayah)], limit=1)
 
             if existing_partner:
                 # Jika partner sudah ada, cek apakah data orang tua sudah ada
@@ -528,44 +640,33 @@ class DataPendaftaran(models.Model):
                     orangtua_vals = {
                         'partner_id': existing_partner.id,
                         'hubungan': 'ayah',
-                        'email': record.email_ayah,
+                        'email': record.email,
                     }
                     orangtua = self.env['cdn.orangtua'].sudo().create(orangtua_vals)
                     return orangtua
             else:
-                # Jika partner belum ada, buat data partner baru
                 partner_vals = {
                     'name': record.nama_ayah,
-                    'email': record.email_ayah,
+                    'email': record.email or record.nomor_login, 
                     'phone': record.telepon_ayah,
                     'city': record.kota_id.name,
                 }
                 
-                # Membuat data partner untuk ayah
+                # Membuat data partner untuk orang tua
                 partner = self.env['res.partner'].create(partner_vals)
 
                 orangtua_vals = {
                     'partner_id': partner.id,
                     'hubungan': 'ayah',
-                    'email': record.email_ayah,
+                    'email': record.email,
                 }
                 orangtua = self.env['cdn.orangtua'].sudo().create(orangtua_vals)
 
-                # Hanya buat user baru jika belum ada user dengan email yang sama
-                if not existing_user:
-                    # Generate password jika tidak ada
-                    generated_password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
-                    
-                    # Membuat user baru untuk ayah
-                    user_vals = {
-                        'login': record.email_ayah,
-                        'partner_id': partner.id,
-                        'password': generated_password,
-                    }
-                    new_user = self.env['res.users'].sudo().create(user_vals)
-                    partner.user_id = new_user.id
+                # Mengatur password untuk user_id yang sudah dibuat otomatis
+                if partner.user_id:  # Pastikan user_id sudah ada
+                    password = record.password
+                    partner.user_id.write({'password': password,})
 
-                    # Kirim email informasi login
                 email_values = {
                     'subject': "Informasi Login Orang Tua Santri Baru Pesantren Daarul Qur'an Istiqomah",
                     'email_to': record.email,
@@ -617,10 +718,15 @@ class DataPendaftaran(models.Model):
                         </div>
                     ''',
                 }
+
+
+
+                # Membuat dan mengirim email
                 mail = self.env['mail.mail'].sudo().create(email_values)
                 mail.send()
 
                 return orangtua
+
 
 
     def create_siswa(self):
