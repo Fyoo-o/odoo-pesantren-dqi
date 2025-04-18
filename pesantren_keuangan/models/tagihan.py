@@ -256,6 +256,48 @@ class Tagihan(models.Model):
     )
 
 
+
+    siswa_id         = fields.Many2one(comodel_name='cdn.siswa', string='Santri', required=True)
+
+    barcode          = fields.Char(string="Kartu Santri",readonly=False)
+
+    kelas_id         = fields.Many2one('cdn.ruang_kelas', string='Kelas', related='siswa_id.ruang_kelas_id', readonly=True, store=True)
+    kamar_id         = fields.Many2one('cdn.kamar_santri', string='Kamar', related='siswa_id.kamar_id', readonly=True)
+    halaqoh_id       = fields.Many2one('cdn.halaqoh', string='Halaqoh', related='siswa_id.halaqoh_id', readonly=True)
+    musyrif_id       = fields.Many2one('hr.employee', string='Musyrif', related='siswa_id.musyrif_id', readonly=True)
+
+
+    @api.onchange('siswa_id')
+    def _onchange_siswa_id(self):
+        if self.siswa_id:
+            self.barcode = self.siswa_id.barcode_santri
+            self.partner_id = self.siswa_id.partner_id
+        else:
+            self.barcode = False
+
+    @api.onchange('barcode')
+    def _onchange_barcode(self):
+        if self.barcode:
+            siswa = self.env['cdn.siswa'].search([('barcode_santri', '=', self.barcode)], limit=1)
+            if siswa:
+                self.siswa_id = siswa.id
+                self.partner_id = self.siswa_id.partner_id
+            else:
+                self.siswa_id = False
+                barcode_sementara = self.barcode
+                self.barcode = False
+                return {
+                    'warning': {
+                        'title': "Perhatian !",
+                        'message': f"Data Santri dengan Kartu Santri {barcode_sementara} tidak ditemukan."
+                    }
+                }
+        else:
+            self.barcode = False
+            self.siswa_id = False
+
+    barcode = fields.Char(string="Barcode")
+
     def kirimemail_saldodipotong(self):
         ortu_email = self.orangtua_id.partner_id.email
 

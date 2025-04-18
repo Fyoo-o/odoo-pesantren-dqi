@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+    <record id="recharge_wallet_saku_confirm_view_form" model="ir.ui.view">
+        <field name="name">recharge.wallet.saku.confirm.view.form</field>
+        <field name="model">recharge.wallet</field>
+        <field name="priority">20</field> 
+        <field name="arch" type="xml">
+            <form string="Konfirmasi Pengisian Berdasarkan Saldo">
+                <div class="alert alert-warning" role="alert">
+                    <strong>⚠️ Perhatian!</strong> Anda akan menggunakan seluruh saldo uang saku untuk mengisi dompet.
+                    <br/>Pastikan nominal dan saldo uang saku sudah sesuai!
+                </div>
+                <group>
+                    <group>
+                        <field name="siswa_id" readonly="1"/>
+                        <field name="saldo_uang_saku" readonly="1" widget="integer"/>
+                        <field name="recharge_amount" readonly="1" widget="integer" string="Nominal yang akan diisi"/>
+                        <field name="wallet_balance" readonly="1" widget="integer"/>
+                        <field name="journal_id" readonly="1"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="post" string="Konfirmasi" type="object" class="btn-primary" context="{'confirm_saku_based': True}"/>
+                    <button name="action_back_to_main_wizard" string="Batal" type="object" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</data>
+</odoo>
+
+
