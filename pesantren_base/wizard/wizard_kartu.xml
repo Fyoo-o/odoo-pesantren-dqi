@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="wizard_register_kartu_view_form" model="ir.ui.view">
+            <field name="name">wizard.register.kartu.view.form</field>
+            <field name="model">wizard.register.kartu</field>
+            <field name="arch" type="xml">
+                <form string="Ubah Wallet PIN">
+                    <group>
+                        <field name="kartu_santri"/>
+                        <field name="pin" password="True" />
+                    </group>
+                    <footer>
+                        <button name="action_register" string="Simpan" type="object" class="btn-primary"/>
+		                <button string="Batal" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <record id="register_kartusantri_action" model="ir.actions.act_window">
+            <field name="name">Register Kartu Santri</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.register.kartu</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="wizard_register_kartu_view_form"/>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo>

@@ -310,7 +310,7 @@ class isiSaldo(models.Model):
     _name = "recharge.wallet.scan"
     _description = "Isi Saldo Dompet dengan Scan Barcode"
 
-    barcode = fields.Char(string="Barcode Santri")
+    barcode = fields.Char(string="Kartu Santri")
     siswa_id = fields.Many2one('cdn.siswa', string='Siswa', readonly=False)
     journal_id = fields.Many2one("account.journal", string="Jurnal Pembayaran", help="Pilih jenis jurnal")
     recharge_amount = fields.Float(string="Nominal Saldo", required=True, readonly=False, 
@@ -327,6 +327,12 @@ class isiSaldo(models.Model):
     wallet_balance = fields.Float(string='Saldo Dompet', related='siswa_id.wallet_balance', readonly=True, digits=(16, 0))
     saldo_uang_saku = fields.Float(string='Saldo Uang Saku', related='siswa_id.saldo_uang_saku', readonly=True, digits=(16, 0))
     tgl_transaksi = fields.Date(string='Tanggal Transaksi', required=True, default=fields.Date.context_today)
+
+    kelas_id    = fields.Many2one('cdn.ruang_kelas', string='Kelas', related='siswa_id.ruang_kelas_id', readonly=True, store=True)
+    kamar_id    = fields.Many2one('cdn.kamar_santri', string='Kamar', related='siswa_id.kamar_id', readonly=True)
+    halaqoh_id  = fields.Many2one('cdn.halaqoh', string='Halaqoh', related='siswa_id.halaqoh_id', readonly=True)
+    musyrif_id  = fields.Many2one('hr.employee', string='Musyrif', related='siswa_id.musyrif_id', readonly=True)
+
 
     # Batas maksimal saldo yang bisa diisi ulang (sama dengan model WalletRecharge)
     LIMITS = {
@@ -345,6 +351,29 @@ class isiSaldo(models.Model):
                 self.siswa_id = False  # Kosongkan jika tidak ditemukan
                 return {'warning': {'title': "Perhatian!", 'message': f"Tidak ada santri dengan barcode {self.barcode}"}}
     
+    @api.onchange('siswa_id')
+    def _onchange_santri(self):
+        if self.siswa_id and self.siswa_id.barcode:
+            self.barcode = self.siswa_id.barcode
+        elif self.siswa_id:
+            santri = self.siswa_id.name
+            self.siswa_id = False
+            return {
+                'warning': {
+                    'title' : 'Perhatian !',
+                    'message' : f"Santri bernama {santri}, belum memiliki Kartu Santri"
+                }
+            }
+        elif self.siswa_id and not self.siswa_id.va_saku:
+            siswa = self.siswa_id.name
+            self.siswa_id = False
+            return {
+                'warning' : {
+                    'title' : 'Perhatian !',
+                    'message': f"Santri bernama {siswa} belum memiliki Virtual Account"
+                }
+            }
+
 
     def _get_reset_time(self, last_recharge_time):
         """ Menentukan kapan reset saldo terjadi berdasarkan jenis recharge """

@@ -32,6 +32,6 @@
             </field>
         </record>
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="penilaian_lines_menu_act" name="Nilai Siswa" parent="akademik_menu_categ" action="cdn_penilaian_siswa_action" sequence="20"/>
+        <menuitem id="penilaian_lines_menu_act" name="Nilai Santri" parent="akademik_menu_categ" action="cdn_penilaian_siswa_action" sequence="20"/>
     </data>
 </odoo>

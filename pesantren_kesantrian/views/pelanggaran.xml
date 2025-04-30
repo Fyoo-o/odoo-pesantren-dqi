@@ -38,37 +38,52 @@
                             invisible="state not in ('confirmed' , 'approved')"/>
                         <field name="state" widget="statusbar" />
                     </header>
+
                     <sheet>
-                        <div class="oe_title">
-                            <label for="name" class="oe_edit_only" string="No Referensi (Auto)" />
-                            <h1>
-                                <field name="name" />
-                            </h1>
-                        </div>
-                        <group string="Data Santri">
-                            <field name="tgl_pelanggaran" readonly="state == 'approved'" />
-                            <field name="siswa_id" readonly="state == 'approved'"/>
-                            <field name="kelas_id" readonly="state == 'approved'" />
+
+                        <group string="Santri">
+                            <group>
+                                <field name="barcode" readonly="state == 'approved'"/>
+                                <field name="siswa_id" string="Santri" readonly="state == 'approved'"/>
+                                <field name="kelas_id" readonly="state == 'approved'" />
+                            </group>
+                            <group>
+                                <field name="kamar_id" />
+                                <field name="halaqoh_id" />
+                                <field name="musyrif_id" />
+                            </group>
                         </group>
+
                         <group string="Data Pelanggaran">
-                            <field name="pelanggaran_id" readonly="state == 'approved'"/>
-                            <field name="kategori" readonly="1" force_save="1" />
-                            <field name="poin" readonly="1" force_save="1" />
-                            <field name="deskripsi" readonly="state == 'approved'" />
+                            <group>
+                                <field name="tgl_pelanggaran" readonly="state in ['confirmed', 'approved']" />
+                                <field name="pelanggaran_id" readonly="state in ['confirmed', 'approved']" />
+                            </group>
+                            <group>
+                                <field name="poin" readonly="state in ['confirmed', 'approved']" force_save="1" />
+                                <field name="deskripsi" readonly="state in ['confirmed', 'approved']" />
+                            </group>
                         </group>
-                        <group string="Tindakan / Hukuman">
-                            <field name="tindakan_id" readonly="state == 'approved'"
-                                domain="[('level_pelanggaran','=',kategori)]" />
-                            <field name="deskripsi_tindakan" readonly="state == 'approved'" />
+
+                        <group>
+                            <group string="Tindakan / Hukuman">
+                                <field name="tindakan_id" 
+                                    readonly="state in ['confirmed', 'approved']"
+                                    domain="[('level_pelanggaran','=',kategori)]" 
+                                    options="{'no_create': True}" />
+                                <field name="deskripsi_tindakan" readonly="state in ['confirmed', 'approved']" />
+                            </group>
+
+                            <group string="Mengetahui / Disetujui" >
+                                <field name="tgl_disetujui" />
+                                <field name="user_disetujui" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
+                                <field name="catatan_ka_asrama" readonly="state == 'approved'"/>
+                            </group>
                         </group>
+
                         <group string="Dicatat dan Diperiksa">
                             <field name="diperiksa_oleh"
                                 readonly="state == 'approved'" />
-                        </group>
-                        <group string="Mengetahui / Disetujui" >
-                            <field name="catatan_ka_asrama" readonly="state == 'approved'"/>
-                            <field name="tgl_disetujui" />
-                            <field name="user_disetujui" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
                         </group>
                         
                     </sheet>
@@ -82,10 +97,22 @@
             <field name="model">cdn.pelanggaran</field>
             <field name="arch" type="xml">
                 <search>
-                    
-                    <field name="name" />
-                    <field name="tgl_pelanggaran" />
-                    <field name="siswa_id" />
+                    <field name="name" string="Data"
+                        filter_domain="[
+                            '|', ('name', 'ilike', self),
+                            '|', ('tgl_pelanggaran', 'ilike', self),
+                            '|', ('siswa_id', 'ilike', self),
+                            '|', ('siswa_id.barcode_santri', 'ilike', self),
+                            '|', ('kelas_id', 'ilike', self),
+                            '|', ('kategori', 'ilike', self),
+                            '|', ('poin', 'ilike', self),
+                            '|', ('tindakan_id', 'ilike', self),
+                            ('state', 'ilike', self),
+                        ]"
+                    />
+
+                    <separator/>
+
                     <group string="Group by ..">
                         <filter string="Nama" domain="[]" name="group_by_siswa_id" context="{'group_by':'siswa_id'}"/>
                         <filter string="Tgl Pelanggaran" domain="[]" name="group_by_tgl_pelanggaran" context="{'group_by':'tgl_pelanggaran'}"/>
@@ -96,16 +123,16 @@
         </record>
 
         <!-- cdn.pelanggaran graph view -->
-        <record id="cdn_pelanggaran_view_graph" model="ir.ui.view">
+        <!-- <record id="cdn_pelanggaran_view_graph" model="ir.ui.view">
             <field name="name">cdn.pelanggaran.view.graph</field>
             <field name="model">cdn.pelanggaran</field>
             <field name="arch" type="xml">
                 <graph string="Graph Description">
-                    <!-- Add your fields here -->
+                    Add your fields here
                     <field name="pelanggaran_id" />
                 </graph>
             </field>
-        </record>
+        </record> -->
 
         <!-- cdn.pelanggaran action window -->
         <record id="pelanggaran_action" model="ir.actions.act_window">

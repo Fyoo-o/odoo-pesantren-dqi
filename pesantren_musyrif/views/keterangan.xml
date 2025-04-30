@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data>
+
+        
+        <record id="musyrif_keterangan_tree_view" model="ir.ui.view">
+            <field name="name">master.keterangan.tree</field>
+            <field name="model">master.keterangan</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="name"/>
+                </list>
+            </field>
+        </record>
+
+         <record id="musyrif_keterangan_form_view" model="ir.ui.view">
+            <field name="name">master.keterangan.form</field>
+            <field name="model">master.keterangan</field>
+            <field name="arch" type="xml">
+                <form string="Tambah Keterangan Izin">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="musyrif_keterangan_action" model="ir.actions.act_window">
+            <field name="name">Keterangan Izin</field>
+            <field name="res_model">master.keterangan</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+
+        <menuitem id="musyrif_keterangan_menu_act"
+                  name="Atur Keterangan Izin"
+                  parent="musyrif_keterangan_ijin_menu"
+                  action="musyrif_keterangan_action"
+                  sequence="20"/>
+                  
+    </data>
+</odoo>

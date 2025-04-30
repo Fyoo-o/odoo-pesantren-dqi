@@ -55,6 +55,61 @@
             <!-- <field name="act_window_id" ref="account_payment_action"/> -->
         </record>
 
+        <record id="account_payment_register_inherit_change_payment_date_string" model="ir.ui.view">
+            <field name="name">account.payment.register.inherit.change.payment_date.string</field>
+            <field name="model">account.payment.register</field>
+            <field name="inherit_id" ref="account.view_account_payment_register_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='payment_date']" position="attributes">
+                    <attribute name="string">Tgl Bayar</attribute>      
+                </xpath>
+            </field>
+        </record>
+
+         <record id="account_payment_register_inherit_change_efective_date_string" model="ir.ui.view">
+            <field name="name">account.payment.register.inherit.change.efective.date.string</field>
+            <field name="model">account.payment.register</field>
+            <field name="inherit_id" ref="account.view_account_payment_register_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='effective_date']" position="attributes">
+                    <attribute name="string">Tgl Efektif</attribute>      
+                </xpath>
+            </field>
+        </record>
+
+         <record id="account_payment_register_inherit_change_check_refrensi_string" model="ir.ui.view">
+            <field name="name">account.payment.register.inherit.change.refrensi.check.string</field>
+            <field name="model">account.payment.register</field>
+            <field name="inherit_id" ref="account.view_account_payment_register_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='cheque_reference']" position="attributes">
+                    <attribute name="string">Referensi Cek</attribute>      
+                </xpath>
+            </field>
+        </record>      
+
+        <record id="view_account_payment_register_form_inherit" model="ir.ui.view">
+            <field name="name">account.payment.register.form.inherit</field>
+            <field name="model">account.payment.register</field>
+            <field name="inherit_id" ref="account.view_account_payment_register_form"/>
+            <field name="arch" type="xml">
+                <!-- Ganti tombol action_create_payments dengan tombol kustom -->
+                <xpath expr="//button[@name='action_create_payments' and @invisible='total_payments_amount == 1']" position="attributes">
+                    <attribute name="string">Simpan</attribute>
+                    <attribute name="name">action_create_payments_and_preview</attribute>
+                </xpath>
+                
+                <xpath expr="//button[@name='action_create_payments' and @invisible='total_payments_amount != 1']" position="attributes">
+                    <attribute name="string">Simpan</attribute>
+                    <attribute name="name">action_create_payments_and_preview</attribute>
+                </xpath>
+
+                <xpath expr="//button[@special='cancel']" position="attributes">
+                    <attribute name="string">Batal</attribute>
+                </xpath>
+            </field>
+        </record>
+
         <menuitem id="account_payment_menu_act" name="Pembayaran" parent="keu_pembayaran_menu_categ" action="account_payment_action" sequence="10"/>
     </data>
 </odoo>

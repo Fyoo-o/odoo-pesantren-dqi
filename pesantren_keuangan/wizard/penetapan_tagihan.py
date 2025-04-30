@@ -77,45 +77,6 @@ class PenetapanTagihan(models.TransientModel):
                         disc_amount = disc.disc_amount
                         disc_persen = disc.disc_persen
 
-                # comment by Imam Ms
-                # sale_journals       = self.env['account.journal'].search([('type','=','sale')])
-
-                # zid = obj_invoice.create({
-                #         'name': '/',
-                #         'move_type': 'out_invoice',
-                #         'invoice_origin': x.name,
-                #         # 'account_id': x.partner_id.property_account_receivable_id.id,
-                #         'student': True,
-                #         'invoice_payment_term_id': False,
-                #         # 'cicil': self.komponen_id.cicil,
-                #         'komponen_id': self.komponen_id.id,
-                #         'tahunajaran_id': self.tahunajaran_id.id,
-                #         'orangtua_id': x.orangtua_id.id,
-                #         'ruang_kelas_id': x.ruang_kelas_id.id,
-                #         'siswa_id' : x.id,
-                #         'partner_id': x.partner_id.id,
-                #         'partner_shipping_id': x.partner_id.id,
-                #         #'journal_id': 1,
-                #         'currency_id': self.env.user.company_id.currency_id.id,
-                #         'fiscal_position_id': x.partner_id.property_account_position_id.id,
-                #         'invoice_date': period.start_date,
-                #         'company_id': self.env.user.company_id.id,
-                #         'periode_id': period.id,
-                #         'user_id': self.env.uid or False
-                #     })
-
-                # obj_invoice_line.create({
-                #         'name': produk.partner_ref,
-                #         'product_id': produk.id or False,
-                #         'discount': disc_persen,
-                #         'discount_amount': disc_amount,
-                #         'move_id': zid.id,
-                #         'account_id': produk.property_account_income_id.id or produk.categ_id.property_account_income_categ_id.id,
-                #         'price_unit': self.name - disc_amount,
-                #         'quantity': qty,
-                #         'product_uom_id': produk.uom_id.id,
-                # })
-
                 invoice_vals = {
                     'name': '/',
                     'move_type': 'out_invoice',

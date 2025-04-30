@@ -6,23 +6,32 @@
             <field name="model">recharge.wallet.scan</field>
             <field name="arch" type="xml">
                 <form string="Isi Saldo Santri">
-                    <group>
-                        <group string="Data Siswa">
+                    <group string="Data Santri">
+                        <group>
                             <field name="barcode"/>
-                            <field name="siswa_id"/>
-                            <field name="tgl_transaksi"/>
-                        </group>    
+                            <field name="siswa_id" string="Santri"/>
+                            <field name="kelas_id" />
+                        </group>
+                        <group>
+                            <field name="kamar_id" />
+                            <field name="halaqoh_id" />
+                            <field name="musyrif_id" />
+                        </group>
                     </group>
                     
-                    <group>
-                        <group string="Saldo Dompet">
+                    <group string="Saldo Dompet">
+                        <group>
+                            <field name="tgl_transaksi"/>
                             <field name="recharge_amount" widget="integer"/>
-                            <field name="recharge_type" widget="radio"/>
+                            <field name="recharge_type" widget="radio"/>     
+                        </group>
+                        <group>
                             <field name="saldo_uang_saku" widget="integer"/>
                             <field name="wallet_balance" widget="integer"/>
                             <field name="journal_id"/>
-                        </group>
+                        </group>         
                     </group>
+
                       <footer>
                         <button name="action_recharge" string="Isi Saldo" type="object" class="btn-primary"/>
                         <button string="Batal" class="btn-secondary" special="cancel"/>

@@ -5,7 +5,7 @@
             <div class="col-lg-12 p-0">
                 <div class="card shadow-sm border-0 rounded-0">
                     <div class="card-header">
-                        <h3 class="card-title mb-0">10 Data Santri Kembali Terbaru</h3>
+                        <h3 class="card-title mb-0">Terakhir Masuk</h3>
                     </div>
                     <div class="card-body pt-1">
                         <t t-if="state.keluarIjin.length > 0">
@@ -15,7 +15,7 @@
                                         <tr>
                                             <th>Nomor</th>
                                             <th>Nama Santri</th>
-                                            <th>Tanggal Ijin</th>
+                                            <th>Tgl Masuk</th>
                                             <th>Keperluan</th>
                                             <th>Lama Ijin</th>
                                             <th>Status</th>
@@ -40,7 +40,7 @@
                                                     <t t-esc="ijin.lamaijin"/>
                                                 </td>
                                                 <td>
-                                                    <span t-if="ijin.state == 'Return'" class="badge rounded-pill bg-success text-light">Kembali</span>
+                                                    <span t-if="ijin.state == 'Return'" class="badge rounded-pill bg-success text-light">Masuk</span>
                                                 </td>
                                             </tr>
                                         </t>

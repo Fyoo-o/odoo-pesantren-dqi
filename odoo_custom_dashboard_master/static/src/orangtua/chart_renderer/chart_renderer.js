@@ -99,7 +99,7 @@ export class OrangtuaChartRenderer extends Component {
       : null;
     const formattedEndDate = endDate ? this.formatDateToOdoo(endDate) : null;
 
-    if (this.props.title === "Tagihan Siswa") {
+    if (this.props.title === "Tagihan Santri") {
       await this.fetchTagihanData(formattedStartDate, formattedEndDate);
     }
 
@@ -221,7 +221,6 @@ export class OrangtuaChartRenderer extends Component {
 
     try {
       await Promise.all([await this.fetchData(startDate, endDate)]);
-      console.log("Mencoba fetch data");
       if (this.chartInstance) {
         this.chartInstance.updateOptions(
           {
@@ -332,59 +331,18 @@ export class OrangtuaChartRenderer extends Component {
       if (startDate) domain.push(["invoice_date", ">=", startDate]);
       if (endDate) domain.push(["invoice_date", "<=", endDate]);
 
-      const invoices = await this.orm.searchRead("account.move", domain, [
+      const invoiceData = await this.orm.searchRead("account.move", domain, [
+        "name",
+        "payment_state",
         "partner_id",
-        "state",
-        "invoice_line_ids",
         "orangtua_id",
         "invoice_date",
+        "invoice_line_ids",
       ]);
 
-      if (!invoices || invoices.length === 0) {
-        this.state.chartData = { series: [], labels: [] };
-        return;
-      }
+      console.log("Data Invoice", invoiceData);
 
-      const allInvoiceLineIds = invoices.flatMap((inv) => inv.invoice_line_ids);
-
-      const invoiceLines = await this.orm.searchRead(
-        "account.move.line",
-        [
-          ["id", "in", allInvoiceLineIds],
-          ["display_type", "in", ["product"]],
-          ["product_id", "!=", false],
-        ],
-        ["move_id", "product_id", "quantity", "parent_state", "price_unit"]
-      );
-
-      // Create a map of invoice IDs to their states
-      const invoiceStateMap = new Map(
-        invoices.map((inv) => [
-          inv.id,
-          {
-            state: inv.state,
-            partner_id: inv.partner_id,
-            invoice_date: inv.invoice_date,
-          },
-        ])
-      );
-
-      // Process invoice lines with complete context
-      const enrichedData = invoiceLines
-        .map((line) => {
-          const invoiceInfo = invoiceStateMap.get(line.move_id[0]);
-          if (!invoiceInfo) return null;
-
-          return {
-            ...line,
-            invoice_state: invoiceInfo.state,
-            partner_id: invoiceInfo.partner_id,
-            invoice_date: invoiceInfo.invoice_date,
-          };
-        })
-        .filter((line) => line !== null);
-
-      this.processTagihanData(enrichedData);
+      this.processTagihanData(invoiceData);
     } catch (error) {
       console.error("Error fetching tagihan data:", error);
       this.state.chartData = { series: [], labels: [] };
@@ -413,14 +371,10 @@ export class OrangtuaChartRenderer extends Component {
 
       const lineInfo = {
         line_id: record.id,
-        move_id: record.move_id[0],
-        product_id: record.product_id,
-        quantity: record.quantity || 0,
-        price_unit: record.price_unit,
         invoice_date: record.invoice_date,
       };
 
-      if (record.parent_state === "posted") {
+      if (record.payment_state === "paid") {
         acc[partnerId].lunas.push(lineInfo);
       } else {
         acc[partnerId].belumLunas.push(lineInfo);
@@ -430,7 +384,6 @@ export class OrangtuaChartRenderer extends Component {
       return acc;
     }, {});
 
-    // Convert to array and sort
     const processedData = Object.entries(studentStats)
       .map(([id, stats]) => ({
         id,
@@ -442,7 +395,9 @@ export class OrangtuaChartRenderer extends Component {
         total: stats.total,
       }))
       .sort((a, b) => b.total - a.total)
-      .slice(0, 6); // Take top 6 students
+      .slice(0, 6);
+
+    console.log("Data Diproses", processedData);
 
     this.state.chartData = {
       labels: processedData.map((student) => student.name),
@@ -642,72 +597,71 @@ export class OrangtuaChartRenderer extends Component {
     }
   }
 
-  async onChartClick(event, chartContext, config) {
-    const dataPointIndex = config.dataPointIndex;
-    const seriesIndex = config.seriesIndex;
+  // async onChartClick(event, chartContext, config) {
+  //   const dataPointIndex = config.dataPointIndex;
+  //   const seriesIndex = config.seriesIndex;
 
-    if (dataPointIndex === -1) return;
+  //   if (dataPointIndex === -1) return;
 
-    let actionConfig = {
-      type: "ir.actions.act_window",
-      view_mode: "list,form",
-      target: "current",
-      views: [
-        [false, "list"],
-        [false, "form"],
-      ],
-      context: {},
-    };
+  //   let actionConfig = {
+  //     type: "ir.actions.act_window",
+  //     view_mode: "list,form",
+  //     target: "current",
+  //     views: [
+  //       [false, "list"],
+  //       [false, "form"],
+  //     ],
+  //     context: {},
+  //   };
 
-    // Only handle Tagihan Siswa case
-    if (this.props.title === "Tagihan Siswa") {
-      const studentData = this.state.chartData.fullData[dataPointIndex];
-      const seriesName = this.state.chartData.series[seriesIndex].name;
+  //   if (this.props.title === "Tagihan Santri") {
+  //     const studentData = this.state.chartData.fullData[dataPointIndex];
+  //     const seriesName = this.state.chartData.series[seriesIndex].name;
 
-      actionConfig.res_model = "account.move.line";
-      actionConfig.name = `${this.props.title} - ${studentData.name} - ${seriesName}`;
+  //     actionConfig.res_model = "account.move";
+  //     actionConfig.name = `${this.props.title} - ${studentData.name} - ${seriesName}`;
 
-      const relevantLines =
-        seriesName === "Lunas" ? studentData.lunas : studentData.belumLunas;
+  //     const relevantLines =
+  //       seriesName === "Lunas" ? studentData.lunas : studentData.belumLunas;
 
-      const moveIds = [...new Set(relevantLines.map((line) => line.move_id))];
-      const lineIds = relevantLines.map((line) => line.line_id);
+  //     const moveIds = [...new Set(relevantLines.map((line) => line.move_id))];
+  //     const lineIds = relevantLines.map((line) => line.line_id);
 
-      const domain = [
-        ["id", "in", lineIds],
-        ["move_id", "in", moveIds],
-        ["display_type", "in", ["product"]],
-        ["product_id", "!=", false],
-        ["move_id.partner_id", "=", parseInt(studentData.id)],
-      ];
+  //     const domain = [
+  //       ["id", "in", lineIds],
+  //       // ["move_id", "in", moveIds],
+  //       // ["display_type", "in", ["product"]],
+  //       // ["product_id", "!=", false],
+  //       // ["move_id.partner_id", "=", parseInt(studentData.id)],
+  //     ];
 
-      if (this.state.isFiltered) {
-        if (this.state.currentStartDate) {
-          domain.push([
-            "move_id.invoice_date",
-            ">=",
-            this.state.currentStartDate,
-          ]);
-        }
-        if (this.state.currentEndDate) {
-          domain.push([
-            "move_id.invoice_date",
-            "<=",
-            this.state.currentEndDate,
-          ]);
-        }
-      }
+  //     // if (this.state.isFiltered) {
+  //     //   if (this.state.currentStartDate) {
+  //     //     domain.push([
+  //     //       "move_id.invoice_date",
+  //     //       ">=",
+  //     //       this.state.currentStartDate,
+  //     //     ]);
+  //     //   }
+  //     //   if (this.state.currentEndDate) {
+  //     //     domain.push([
+  //     //       "move_id.invoice_date",
+  //     //       "<=",
+  //     //       this.state.currentEndDate,
+  //     //     ]);
+  //     //   }
+  //     // }
 
-      if (seriesName === "Lunas") {
-        domain.push(["parent_state", "=", "posted"]);
-      } else {
-        domain.push(["parent_state", "!=", "posted"]);
-      }
+  //     if (seriesName === "Lunas") {
+  //       domain.push(["payment_state", "=", "paid"]);
+  //     } else {
+  //       domain.push(["payment_state", "!=", "paid"]);
+  //     }
 
-      actionConfig.domain = domain;
-      await this.actionService.doAction(actionConfig);
-    }
-  }
+  //     actionConfig.domain = domain;
+  //     await this.actionService.doAction(actionConfig);
+  //   }
+  // }
 
   // handleEscapeKey(event) {
   //   if (event.key === "Escape" && this.isZoomed) {
@@ -715,8 +669,155 @@ export class OrangtuaChartRenderer extends Component {
   //   }
   // }
 
+  // async onChartClick(event, chartContext, config) {
+  //   const dataPointIndex = config.dataPointIndex;
+  //   const seriesIndex = config.seriesIndex;
+
+  //   if (dataPointIndex === -1) return;
+
+  //   // Define the action ID from your module
+  //   const actionId = "pesantren_keuangan.tagihan_keuangan_action";
+
+  //   // Get student data
+  //   const studentData = this.state.chartData.fullData[dataPointIndex];
+  //   const seriesName = this.state.chartData.series[seriesIndex].name;
+
+  //   // Build domain based on the clicked segment
+  //   let domainAction = [
+  //     ["partner_id", "=", parseInt(studentData.id)],
+  //     ["move_type", "=", "out_invoice"],
+  //   ];
+
+  //   if (seriesName === "Lunas") {
+  //     domainAction.push(["payment_state", "=", "paid"]);
+  //   } else {
+  //     domainAction.push(["payment_state", "!=", "paid"]);
+  //   }
+
+  //   // Load the existing action and modify it
+  //   this.actionService
+  //     .loadAction(actionId)
+  //     .then((action) => {
+  //       const newAction = {
+  //         ...action,
+  //         domain: domainAction,
+  //         context: {
+  //           ...action.context,
+  //           default_move_type: "out_invoice",
+  //           search_default_filter_by_blm_lunas: seriesName !== "Lunas" ? 1 : 0,
+  //         },
+  //         name: `${this.props.title} - ${studentData.name} - ${seriesName}`,
+  //         // Keep the original views configuration from the action
+  //       };
+
+  //       return this.actionService.doAction(newAction);
+  //     })
+  //     .catch((error) => {
+  //       console.error(`Error loading action ${actionId}:`, error);
+  //     });
+  // }
+  // async onChartClick(event, chartContext, config) {
+  //   const dataPointIndex = config.dataPointIndex;
+  //   const seriesIndex = config.seriesIndex;
+
+  //   if (dataPointIndex === -1) return;
+
+  //   // Get student data
+  //   const studentData = this.state.chartData.fullData[dataPointIndex];
+  //   const seriesName = this.state.chartData.series[seriesIndex].name;
+
+  //   // Build domain based on the clicked segment
+  //   let domainAction = [
+  //     ["partner_id", "=", parseInt(studentData.id)],
+  //     ["move_type", "=", "out_invoice"],
+  //   ];
+
+  //   if (seriesName === "Lunas") {
+  //     domainAction.push(["payment_state", "=", "paid"]);
+  //   } else {
+  //     domainAction.push(["payment_state", "!=", "paid"]);
+  //   }
+
+  //   // Instead of loading and modifying the action, use direct action parameters
+  //   try {
+  //     await this.actionService.doAction({
+  //       type: "ir.actions.act_window",
+  //       name: `${this.props.title} - ${studentData.name} - ${seriesName}`,
+  //       res_model: "account.move", // Make sure this is the correct model for tagihan_keuangan
+  //       view_mode: "list,form",
+  //       views: [
+  //         [false, "list"],
+  //         [false, "form"],
+  //       ], // Use false to let Odoo use default views
+  //       domain: domainAction,
+  //       context: {
+  //         default_move_type: "out_invoice",
+  //         search_default_filter_by_blm_lunas: seriesName !== "Lunas" ? 1 : 0,
+  //       },
+  //       target: "current",
+  //     });
+  //   } catch (error) {
+  //     console.error(`Error executing action:`, error);
+  //   }
+  // }
+  async onChartClick(event, chartContext, config) {
+    const dataPointIndex = config.dataPointIndex;
+    const seriesIndex = config.seriesIndex;
+
+    if (dataPointIndex === -1) return;
+
+    // Define the action XML ID from your module
+    // Make sure this exactly matches what's in the External ID field from your screenshot
+    const actionId = "pesantren_keuangan.pesantren_tagihan_keuangan_action";
+
+    // Get student data
+    const studentData = this.state.chartData.fullData[dataPointIndex];
+    const seriesName = this.state.chartData.series[seriesIndex].name;
+
+    // Build domain based on the clicked segment
+    let domainAction = [
+      ["partner_id", "=", parseInt(studentData.id)],
+      ["move_type", "=", "out_invoice"],
+    ];
+
+    if (seriesName === "Lunas") {
+      domainAction.push(["payment_state", "=", "paid"]);
+    } else {
+      domainAction.push(["payment_state", "!=", "paid"]);
+    }
+
+    try {
+      // Load the action using the correct XML ID
+      const action = await this.env.services.action.loadAction(actionId);
+
+      // Create a modified copy of the action
+      const newAction = {
+        ...action,
+        domain: domainAction,
+        context: {
+          ...action.context,
+          default_move_type: "out_invoice",
+          search_default_filter_by_blm_lunas: seriesName !== "Lunas" ? 1 : 0,
+        },
+        name: `${this.props.title} - ${studentData.name} - ${seriesName}`,
+      };
+
+      // Execute the modified action
+      await this.env.services.action.doAction(newAction);
+    } catch (error) {
+      console.error(`Error loading action ${actionId}:`, error);
+      // Show user-friendly error message
+      this.env.services.notification.notify({
+        title: this.env._t("Error"),
+        message: this.env._t(
+          "Could not load the requested view. Please contact your administrator."
+        ),
+        type: "danger",
+      });
+    }
+  }
+
   toggleZoom = () => {
-    console.log("Tombol zoom ditekan");
     const chartWrapper = this.chartRef.el.parentElement;
     const zoomBtn = chartWrapper.querySelector(".zoom-btn i");
 

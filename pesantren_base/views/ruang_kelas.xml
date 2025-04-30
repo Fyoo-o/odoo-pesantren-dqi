@@ -69,6 +69,7 @@
                                         <field name="nis"/>
                                         <field name="name"/>
                                         <field name="nisn"/>
+                                        <field name="namapanggilan" string="Panggilan"/>
                                         <field name="jns_kelamin"/>
                                         <field name="tgl_lahir"/>
                                     </list>

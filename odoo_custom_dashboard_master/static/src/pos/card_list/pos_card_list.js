@@ -72,7 +72,6 @@ export class PosCardList extends Component {
     let startDate, endDate;
 
     if (period === "today") {
-      // Set startDate to beginning of today (00:00:00)
       startDate = new Date(
         today.getFullYear(),
         today.getMonth(),
@@ -81,7 +80,6 @@ export class PosCardList extends Component {
         0,
         0
       );
-      // Set endDate to end of today (23:59:59)
       endDate = new Date(
         today.getFullYear(),
         today.getMonth(),

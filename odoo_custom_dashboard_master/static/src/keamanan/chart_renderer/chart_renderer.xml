@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-    <t t-name="owl.KeamananChartRenderer" owl="1">
-        <!-- Conditional rendering for the chart or the "Data tidak ditemukan" message -->
-        <t t-if="hasData === true" class="p-5">
-            <!-- The canvas element for the chart -->
-            <canvas t-ref="chart" style="display: block; margin: 0 auto;" />
-        </t>
-        <t t-elif="hasData === false">
-            <!-- The message displayed when there's no data -->
-            <div style="text-align: center; font-size: 18px; color: red;">
-                Data tidak ditemukan
-            </div>
-        </t>
-    </t>
+	<t t-name="owl.KeamananChartRenderer" owl="1">
+		<div class="chart-wrapper position-relative" style="width: 100%; height: 100%; cursor:pointer;">
+        	<button class="btn btn-sm btn-light position-absolute top-0 end-0 m-2 zoom-btn" t-on-click="toggleZoom">
+				<i class="fas fa-expand">
+				</i>
+			</button>
+			<canvas t-ref="chart" />
+		</div>
+	</t>
 </templates>

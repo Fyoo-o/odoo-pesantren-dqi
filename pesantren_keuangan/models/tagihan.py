@@ -261,7 +261,7 @@ class Tagihan(models.Model):
 
     barcode          = fields.Char(string="Kartu Santri",readonly=False)
 
-    kelas_id         = fields.Many2one('cdn.ruang_kelas', string='Kelas', related='siswa_id.ruang_kelas_id', readonly=True, store=True)
+    ruang_kelas_id   = fields.Many2one('cdn.ruang_kelas', string='Kelas', related='siswa_id.ruang_kelas_id', store=True)
     kamar_id         = fields.Many2one('cdn.kamar_santri', string='Kamar', related='siswa_id.kamar_id', readonly=True)
     halaqoh_id       = fields.Many2one('cdn.halaqoh', string='Halaqoh', related='siswa_id.halaqoh_id', readonly=True)
     musyrif_id       = fields.Many2one('hr.employee', string='Musyrif', related='siswa_id.musyrif_id', readonly=True)
@@ -274,6 +274,14 @@ class Tagihan(models.Model):
             self.partner_id = self.siswa_id.partner_id
         else:
             self.barcode = False
+
+    @api.depends('siswa_id', 'siswa_id.ruang_kelas_id')
+    def _compute_kelas_id(self):
+        for record in self:
+            if record.siswa_id:
+                record.ruang_kelas_id = record.siswa_id.ruang_kelas_id
+            else:
+                record.ruang_kelas_id = False
 
     @api.onchange('barcode')
     def _onchange_barcode(self):

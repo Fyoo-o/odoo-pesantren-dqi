@@ -1,21 +1,26 @@
 <?xml version='1.0' encoding='utf-8'?>
 <odoo>
     <data>
-        <!-- Wizard Form Checkout -->
         <record id="wizard_perijinan_checkout_form" model="ir.ui.view">
             <field name="name">wizard.cdn.perijinan.checkout.form</field>
             <field name="model">cdn.perijinan.checkout</field>
             <field name="arch" type="xml">
-                <form string="Santri Ijin Keluar">
-                    <header>
-                    </header>
-                    <group string="Data Ijin Santri">
-                        <group>
-                            <field name="barcode"/>
-                            <field name="tgl_ijin" />
-                            <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" context="{'default_partner_id': id}" />
+                <form string="Santri Keluar/Masuk">
+                <div invisible="has_permission == 'Tidak Ada'">
+                    <div class="alert alert-warning w-100" role="alert" style="margin-bottom: 0;"
+                        invisible="not siswa_id or has_permission == 'Benar'">
+                        <strong>⚠️ Perhatian!</strong> Santri tidak memiliki izin.
+                    </div>
+                    <div class="alert alert-primary w-100" role="alert" style="margin-bottom: 0;"
+                        invisible="not siswa_id or has_permission == 'Salah'">
+                        <strong>✅</strong> Santri memiliki izin
+                    </div>     
+                </div>  
+                    <group string="Santri">
+                        <group>         
+                            <field name="barcode" />
+                            <field name="siswa_id" string="Santri" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" context="{'default_partner_id': id}" />
                             <field name="kelas_id" />
-                            <field name="perijinan_id" readonly="1" force_save="1" />
                         </group>
                         <group>
                             <field name="kamar_id" />
@@ -23,40 +28,40 @@
                             <field name="musyrif_id" />
                         </group>
                     </group>
-
-                    <group string="Pengajuan Ijin Santri">
-                        <group>
-                            <field name="tgl_kembali" />
-                            <field name="penjemput" />
-
-                        </group>
-                        <group>
-                            <field name="lama_ijin" />
-                            <field name="keperluan" />
-                        </group>
+                    <group string="Keluar/Masuk">
+                        <field name="keluar_masuk" string="Santri Keluar/Masuk" widget="radio" options="{'horizontal': true}"/>
                     </group>
-
+                    <group>
+                        <group>
+                            <field name="tgl_ijin" />
+                            <field name="tgl_kembali" />
+                            <field name="lama_ijin" />
+                        </group>
+                        <group>
+                            <field name="keperluan"/>
+                            <label for="penjemput" string="Penjemput"/>
+                            <div class="o_row">
+                                <field name="penjemput" nolabel="1"/>
+                                <button string="-" name="action_button" type="object" class="oe_highlight"/>
+                            </div>
+                            <field name="catatan_keamanan"/>
+                        </group>    
+                    </group>
                     <footer>
-                        <button name="action_checkout" string="Ijin Keluar" type="object" class="btn-primary" confirm="Apakah yakin Santri tersebut akan melakukan IJIN KELUAR ?" />
+                        <button name="action_checkout" string="Simpan" type="object" class="btn-primary"    />
                         <button string="Batal" class="btn-secondary" special="cancel" />
                     </footer>
                 </form>
             </field>
-
         </record>
-
-        <!-- Wizard Action Checkout -->
         <record id="action_wizard_perijinan_checkout" model="ir.actions.act_window">
-            <field name="name">Santri Ijin Keluar</field>
+            <field name="name">Santri Keluar/Masuk</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.perijinan.checkout</field>
             <field name="view_mode">form</field>
             <field name="view_id" ref="pesantren_kesantrian.wizard_perijinan_checkout_form" />
             <field name="target">new</field>
         </record>
-        <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="wizard_checkout_menu_act" name="Santri Keluar" parent="satpam_menu_root" action="action_wizard_perijinan_checkout" sequence="20" />
-
+        <menuitem id="wizard_checkout_menu_act" name="Santri Keluar/Masuk" parent="satpam_menu_root" action="action_wizard_perijinan_checkout" sequence="20" />
     </data>
-
 </odoo>

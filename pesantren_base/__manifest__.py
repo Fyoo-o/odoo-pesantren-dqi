@@ -97,6 +97,7 @@
         # wizard
         'wizard/wizard_invoice.xml',
         'wizard/wizard_siswa.xml',
+        'wizard/wizard_kartu.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
@@ -105,6 +106,7 @@
     'assets': {
         'web.assets_backend': [
             '/pesantren_base/static/src/js/limit_location.js',
+            'pesantren_base/static/src/js/nontifikasi.js'
         ],
     },
     "installable": True,

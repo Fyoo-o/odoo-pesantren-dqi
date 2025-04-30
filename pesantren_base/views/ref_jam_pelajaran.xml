@@ -29,7 +29,7 @@
                         </group>
                     </sheet>
                 </form>
-            </field>
+            </field> 
         </record>
         <!-- cdn.ref_jam_pelajaran action window -->
         <record id="cdn_ref_jam_pelajaran_action" model="ir.actions.act_window">
@@ -40,6 +40,6 @@
         </record>
         <!-- This Menu Item must have a parent and an action -->
         <menuitem id="cdn_ref_jam_pelajaran_menu_act" name="Jam Pelajaran" 
-            parent="pengaturan_ref_menu_categ" action="cdn_ref_jam_pelajaran_action" sequence="60"/>
+            parent="pengaturan_akademik_menu_categ" action="cdn_ref_jam_pelajaran_action" sequence="60"/>
     </data>
 </odoo>

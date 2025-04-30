@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data> 
+        <record id="cdn_siswa_inherit_list_view" model="ir.ui.view">
+            <field name="name">cdn.siswa.inherit.view.list</field>
+            <field name="model">cdn.siswa</field>
+            <field name="inherit_id" ref="pesantren_base.view_cdn_siswa_tree" />
+            <field name="priority" eval="17" />
+            <field name="arch" type="xml">
+                <!-- <xpath expr="//field[@name='ruang_kelas_id']" position="after">
+                    <field name="kamar_id" />
+                </xpath> -->
+                <xpath expr="//field[@name='kamar_id']" position="replace">
+            <!-- Kosongin / ganti -->
+                </xpath>
+            </field>
+        </record>
+        <!-- <record id="action_wizard_get_santri" model="ir.actions.act_window">
+            <field name="name">Cari Santri</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">cdn.siswa</field>
+            <field name="view_mode">list,form</field>
+            <field name="view_id" ref="cdn_siswa_inherit_list_view"/>
+            <field name="target">current</field>
+        </record>  -->
+        <record id="action_wizard_get_santri" model="ir.actions.act_window">
+            <field name="name">Santri</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">cdn.siswa</field>
+            <field name="view_mode">list,form</field>
+        </record>  
+        <menuitem id="wizard_cari_santri" name="Santri" action="action_wizard_get_santri" web_icon="pesantren_base,static/description/santri.png" sequence="5"/>
+    </data>  
+</odoo>

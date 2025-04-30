@@ -10,6 +10,7 @@
                 <xpath expr="//field[@name='ruang_kelas_id']" position="after">
                     <field name="kamar_id" />
                 </xpath>
+                
             </field>
         </record>
 
@@ -20,35 +21,40 @@
             <field name="inherit_id" ref="pesantren_base.view_cdn_siswa_form" />
             <field name="arch" type="xml">
                 <xpath expr="//div[@class='oe_button_box']" position="inside">
-                    <button name="action_kesehatan" type="object" class="oe_stat_button" icon="fa-heartbeat">
-                        <field name="kesehatan_count" widget="statinfo" string="Kesehatan" />
+                    <button name="action_saldo_tagihan" type="object" class="oe_stat_button" icon="fa-money">
+                        <field name="saldo_tagihan_formatted" widget="statinfo" string="Sisa Tagihan" />
                     </button>
-                    <button name="action_pelanggaran" type="object" class="oe_stat_button" icon="fa-exclamation-triangle">
-                        <field name="pelanggaran_count" widget="statinfo" string="Pelanggaran" />
-                    </button>
-                    <button name="action_prestasi_siswa" type="object" class="oe_stat_button" icon="fa-trophy">
-                        <field name="prestasi_siswa_count" widget="statinfo" string="Prestasi" />
+                    <button name="action_uang_saku" type="object" class="oe_stat_button" icon="fa-credit-card">
+                        <field name="uang_saku_formatted" widget="statinfo" string="Uang Saku" />
                     </button>
                     <button name="action_tahfidz_quran" type="object" class="oe_stat_button" icon="fa-book">
                         <field name="tahfidz_quran_count" widget="statinfo" string="Tahfidz Al Qur'an" />
                     </button>
-                    <button name="action_saldo_tagihan" type="object" class="oe_stat_button" icon="fa-money">
-                        <field name="saldo_tagihan_count" widget="statinfo" string="Saldo Tagihan" />
+                    <button name="action_pelanggaran" type="object" class="oe_stat_button" icon="fa-exclamation-triangle">
+                        <field name="pelanggaran_count" widget="statinfo" string="Pelanggaran" />
+                    </button>
+                    <button name="action_kesehatan" type="object" class="oe_stat_button" icon="fa-heartbeat">
+                        <field name="kesehatan_count" widget="statinfo" string="Kesehatan" />
+                    </button>
+                    <button name="action_prestasi_siswa" type="object" class="oe_stat_button" icon="fa-trophy">
+                        <field name="prestasi_siswa_count" widget="statinfo" string="Prestasi" />
                     </button>
 
-                    <button name="action_uang_saku" type="object" class="oe_stat_button" icon="fa-money">
-                        <field name="uang_saku_count" widget="integer" string="Uang Saku" />
-                    </button>
-                    <button type="object" name="action_saldo_tagihan" class="oe_stat_button" context="{'default_siswa_id': True}" groups="pesantren_keuangan.group_keuangan_manager">
+                    <!-- <button name="action_saldo_tagihan" type="object" class="oe_stat_button" icon="fa-money">
+                        <field name="saldo_tagihan_count" widget="statinfo" string="Saldo Tagihan" />
+                    </button> -->
+
+                    <!-- <button type="object" name="action_saldo_tagihan" class="oe_stat_button" context="{'default_siswa_id': True}" groups="pesantren_keuangan.group_keuangan_manager">
                         <div class="o_field_widget o_stat_info mr4">
-                            <span class="o_stat_text">Tag:</span>
-                            <span class="o_stat_text">Sisa:</span>
+                            <span class="o_stat_text">Total Tagihan:</span>
+                            <span class="o_stat_text">Sisa Tagihan:</span>
                         </div>
                         <div class="o_field_widget o_stat_info">
                             <span class="o_stat_value"><field name="total_invoiced" widget="integer" options="{'currency_field': 'currency_id'}"/></span>
-                            <!-- <span class="o_stat_value"><field name="total_due" widget="monetary" options="{'currency_field': 'currency_id'}"/></span> -->
+                            <span class="o_stat_value"><field name="total_due" widget="monetary" options="{'currency_field': 'currency_id'}"/></span>
                         </div>
-                    </button>
+                    </button> -->
+                    
                 </xpath>
                 <xpath expr="//field[@name='zip']" position="after">
                     <field name="last_tahfidz" />

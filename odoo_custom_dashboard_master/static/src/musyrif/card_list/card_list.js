@@ -141,7 +141,12 @@ export class MusyrifPerijinanCardList extends Component {
         tgl_ijin: this.formatDate(p.tgl_ijin),
         tgl_kembali: this.formatDate(p.tgl_kembali),
         penjemput: p.penjemput,
-        keperluan: p.keperluan,
+        keperluan:
+          typeof p.keperluan === "string" && p.keperluan.includes(",")
+            ? p.keperluan.split(",")[1].trim()
+            : Array.isArray(p.keperluan) && p.keperluan[1]
+            ? p.keperluan[1]
+            : p.keperluan,
         state: p.state,
         kelas: p.kelas_id ? p.kelas_id[1] : "N/A",
         kamar: p.kamar_id ? p.kamar_id[1] : "N/A",

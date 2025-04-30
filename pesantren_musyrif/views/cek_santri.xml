@@ -12,6 +12,7 @@
                     </header>
                         <field name="nis"/>
                         <field name="name"/>
+                        <field name="namapanggilan" string="Panggilan"/>
                         <field name="ruang_kelas_id"/>
                         <field name="halaqoh_id"/>
                         <!-- <field name="virtual_account"/> -->
@@ -28,7 +29,9 @@
                 <form string="" edit="false" create="false" delete="false">
                     <header>
                         <button name="action_recharge" string="Isi Saldo" type="object" class="btn btn-primary" context="{'search_default_partner_id': id}" groups="pesantren_musyrif.group_musyrif_staff"/>
-                        <button name="%(pesantren_musyrif.res_partner_change_pin_action)d"  type="action" class="btn btn-primary"
+                        <!-- <button name="%(pesantren_musyrif.res_partner_change_pin_action)d"  type="action" class="btn btn-primary"
+                            string="Ubah PIN"/> -->
+                         <button name="action_open_custom_wizard"  type="object" class="btn btn-primary"
                             string="Ubah PIN"/>
                     </header>
                     <sheet>
@@ -94,9 +97,9 @@
                                         <field name="pengganti_ids" widget="many2many_tags"/>
                                     </group>
                                 </group>
-                                <group string="Data Siswa">
+                                <group string="Data Santri">
                                     <group>
-                                        <field name="panggilan" />
+                                        <field name="panggilan" string="Panggilan"/>
                                         <field name="tgl_lahir"/>
                                         <field name="jns_kelamin" />
                                         <field name="nik" />
@@ -168,7 +171,7 @@
                                         <field name="wali_nama" />
                                         <field name="wali_tgl_lahir" string="Tgl Lahir"/>
                                         <field name="wali_email" string="Email" widget="email"/>
-                                        <field name="wali_hubungan" string="Hubungan dg Siswa" />
+                                        <field name="wali_hubungan" string="Hubungan dg Santri" />
                                     </group>
                                     <group>
                                         <field name="wali_tmp_lahir" string="Tempat Lahir"/>
