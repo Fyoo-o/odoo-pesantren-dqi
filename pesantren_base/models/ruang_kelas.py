@@ -21,7 +21,7 @@ class ruang_kelas(models.Model):
     # ruang_kelas_lines   = fields.One2many(comodel_name='cdn.ruang_kelas_lines', inverse_name='ruang_kelas_id', string='')
     
     
-    
+     
 
     keterangan          = fields.Char( string="Keterangan",  help="")
 

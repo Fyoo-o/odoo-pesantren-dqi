@@ -235,9 +235,9 @@ export class OrangtuaKpiCard extends Component {
       ];
 
       paymentData = await this.orm.call(
-        "account.payment",
+        "pos.order",
         "search_read",
-        [paymentDomain, ["date", "name", "partner_id", "amount"]],
+        [paymentDomain, ["name", "session_id"]],
         { context: this.env.context }
       );
 
@@ -252,12 +252,8 @@ export class OrangtuaKpiCard extends Component {
           siswaDomain,
           ["id"],
         ]);
-        console.log("Siswa Data : ", siswaData);
         siswaIds = siswaData.map((siswa) => siswa.id);
-        console.log("Siswa ID", siswaIds);
         const siswaFilterDomain = [["siswa_id", "in", siswaIds]];
-
-        console.log(siswaFilterDomain);
 
         combinedPelanggaranDomain = [
           ["siswa_id", "in", siswaIds],
@@ -310,7 +306,7 @@ export class OrangtuaKpiCard extends Component {
           value: totalPayments,
           icon: "fa-file-invoice-dollar",
           color: "#00e396",
-          res_model: "account.payment",
+          res_model: "pos.order",
           domain: paymentDomain,
         },
         {

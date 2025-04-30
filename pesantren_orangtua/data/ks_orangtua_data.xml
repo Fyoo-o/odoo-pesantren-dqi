@@ -18,7 +18,7 @@
 
         <!-- items -->
         <record id="ks_absensi_item" model="ks_dashboard_ninja.item">
-            <field name="name">Absensi Siswa</field>
+            <field name="name">Absensi Santri</field>
             <field name="ks_chart_data_count_type">count</field>
             <field name="ks_chart_groupby_type">relational_type</field>
             <field name="ks_model_id" eval="ref('pesantren_guru.model_cdn_absensi_siswa_lines')"/>

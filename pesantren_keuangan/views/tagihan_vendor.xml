@@ -7,7 +7,7 @@
             <field name="arch" type="xml">
                 <list default_order="invoice_date desc">
                     <field name="name"/>
-                    <field name="invoice_date" string="Tgl Faktur"/>
+                    <field name="invoice_date" string="Tgl Tagihan"/>
                     <field name="vendor_id"/>
                     <field name="amount_total_signed" string="Total Tagihan" widget="integer"/>
                     <field name="amount_residual_signed" string="Sisa Tagihan" widget="integer"/>

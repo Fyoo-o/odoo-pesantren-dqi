@@ -130,15 +130,15 @@ export class KeamananKpiCard extends Component {
       if (this.countdownTime < 0) {
         this.countdownTime = 10;
         if (this.state.startDate2 && this.state.endDate2) {
-          console.log(
-            "dates state: ",
-            this.state.startDate2,
-            "& ",
-            this.state.endDate2
-          );
+          // console.log(
+          //   "dates state: ",
+          //   this.state.startDate2,
+          //   "& ",
+          //   this.state.endDate2
+          // );
           const startDate = this.state.startDate2;
           const endDate = this.state.endDate2;
-          console.log("dates: ", startDate, "& ", endDate);
+          // console.log("dates: ", startDate, "& ", endDate);
           this.refreshChart(startDate, endDate);
         } else {
           this.refreshChart();
@@ -162,9 +162,6 @@ export class KeamananKpiCard extends Component {
   }
 
   refreshChart() {
-    // Logika refresh chart
-    console.log("Refreshing Card...");
-    // Contoh penggunaan data fetching ulang
     this.updateKpiData();
   }
 
@@ -173,11 +170,20 @@ export class KeamananKpiCard extends Component {
   async updateKpiData() {
     this.showLoading();
     try {
-      // Build domain filter based on date range from state
-      const domain = [];
-      const domain2 = [["state", "=", "Approved"]];
-      const domain3 = [["state", "=", "Rejected"]];
-      const domain4 = [["state", "=", "Permission"]];
+      const domain = [["state", "=", "Permission"]];
+      const domain2 = [["state", "=", "Return"]];
+      const domain3 = [
+        "|",
+        ["state", "=", "Permission"],
+        ["state", "=", "Return"],
+      ];
+
+      const domain4 = [
+        "|",
+        ["state", "=", "Permission"],
+        ["state", "=", "Return"],
+      ];
+
       if (this.state.startDate) {
         domain.push(["tgl_ijin", ">=", this.state.startDate]);
         domain2.push(["tgl_ijin", ">=", this.state.startDate]);
@@ -190,78 +196,59 @@ export class KeamananKpiCard extends Component {
         domain3.push(["tgl_ijin", "<=", this.state.endDate]);
         domain4.push(["tgl_ijin", "<=", this.state.endDate]);
       }
-      // domain1.push(["create_date", ">=", startDate]);
-      // domain1.push(["create_date", "<=", endDate]);
-      // Fetch data from models
-      const totalIzin = await this.orm.call("cdn.perijinan", "search_read", [
-            domain,
-            ["id", "tgl_ijin", "state"],
-        ]);
-      console.log("Total izin:", totalIzin);
 
-      const izinApproved = await this.orm.call("cdn.perijinan", "search_read", [
+      const santriKeluar = await this.orm.call("cdn.perijinan", "search_read", [
+        domain,
+        ["id", "tgl_ijin", "state"],
+      ]);
+
+      const santriMasuk = await this.orm.call("cdn.perijinan", "search_read", [
         domain2,
         ["id", "tgl_ijin", "state"],
       ]);
-      console.log("Data izin Disetujui:", izinApproved);
 
-      const izinRejected = await this.orm.call("cdn.perijinan", "search_read", [
-        domain3,
-        ["id", "tgl_ijin", "state"],
-      ]);
-      console.log("Data Izin Ditolak:", izinRejected);
+      let Selisih = Math.abs(santriKeluar.length - santriMasuk.length);
 
-      const izinPermission = await this.orm.call("cdn.perijinan", "search_read", [
+      const total = await this.orm.call("cdn.perijinan", "search_read", [
         domain4,
         ["id", "tgl_ijin", "state"],
       ]);
-      console.log("Data Santri Keluar:", izinPermission);
 
-      // Calculate KPI values
-      // const Stock1 = stock.length;
-      // const Stock2 = stock2.length;
-      // const Stock3 = stock3.length;
-      // const Stock4 = Stock1 + Stock2 + Stock3;
-
-      // console.log("DATA = ", Stock1, Stock2, Stock3, Stock4);
-
-      // Update KPI data state with animations
       this.state.kpiData = [
         {
-          name: "Total Izin",
-          value: totalIzin.length,
-          icon: "fa-edit",
-          res_model: "cdn.perijinan",
-          domain: domain,
-        }, // Ikon transfer untuk menggambarkan pergerakan barang internal
-        {
-          name: "Izin Disetujui",
-          value: izinApproved.length,
-          icon: "fa-check-circle",
-          res_model: "cdn.perijinan",
-          domain: domain2,
-        }, // Ikon truk untuk penerimaan barang
-        {
-          name: "Izin Ditolak",
-          value: izinRejected.length,
+          name: "Keluar",
+          value: santriKeluar.length,
           icon: "fa-door-open",
           res_model: "cdn.perijinan",
-          domain: domain3,
-        }, // Ikon pengiriman cepat untuk DO
+          domain: domain,
+        },
         {
-          name: "Santri Keluar",
-          value: izinPermission.length,
-          icon: "fa-chart-bar",
+          name: "Masuk",
+          value: santriMasuk.length,
+          icon: "fa-door-closed",
+          res_model: "cdn.perijinan",
+          domain: domain2,
+        },
+        {
+          name: "Selisih",
+          value: Selisih,
+          icon: "fa-sliders-h",
+          res_model: "cdn.perijinan",
+          domain: domain3,
+        },
+        {
+          name: "Total",
+          value: total.length,
+          icon: "fa-list-ol",
           res_model: "cdn.perijinan",
           domain: domain4,
-        }, // Ikon gudang untuk menggambarkan mutasi barang
+        },
       ];
 
-      // Apply the animation to each KPI element
       this.state.kpiData.forEach((kpi, index) => {
         const kpiElement = document.querySelector(`.kpi-value-${index}`);
         if (kpiElement) {
-          animateValue(kpiElement, 0, kpi.value, 1000); // Animate from 0 to target value over 1 second
+          animateValue(kpiElement, 0, kpi.value, 1000);
         }
       });
     } catch (error) {
@@ -512,13 +499,13 @@ export class KeamananKpiCard extends Component {
             this.state.endDate = endDate.toISOString().split("T")[0];
             startDateInput.value = this.state.startDate;
             endDateInput.value = this.state.endDate;
-            console.log("dates down kpi: ", startDate, "& ", endDate);
-            console.log(
-              "dates down state kpi: ",
-              this.state.startDate,
-              "& ",
-              this.state.endDate
-            );
+            // console.log("dates down kpi: ", startDate, "& ", endDate);
+            // console.log(
+            //   "dates down state kpi: ",
+            //   this.state.startDate,
+            //   "& ",
+            //   this.state.endDate
+            // );
             this.updateKpiData();
           }
         };

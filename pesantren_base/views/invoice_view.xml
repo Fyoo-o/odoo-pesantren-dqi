@@ -9,7 +9,7 @@
                 <list>
                     <!-- Add your fields here -->
                     <field name="name"/>
-                    <field name="invoice_date"/>
+                    <field name="invoice_date" string="Tgl Tagihan"/>
                     <field name="partner_id" optional="hide"/>
                     <field name="siswa_id"/>
                     <field name="orangtua_id"/>
@@ -36,13 +36,28 @@
                     <filter string="SPP" name="filter_by_spp" domain="[('komponen_id.name','like','SPP')]" />
                     <filter string="Tagihan Belum Lunas" name="filter_by_blm_lunas" domain="[('payment_state','!=','paid')]" />
                     <filter string="Tagihan Sudah Lunas" name="filter_by_sdh_lunas" domain="[('payment_state','=','paid')]" />
-                    <field name="name" select="True"/>
-                    <field name="siswa_id" select="True"/>
+                    <field name="name" string="Data" 
+                        filter_domain="[
+                            '|', ('name', 'ilike', self), 
+                            '|', ('siswa_id.name', 'ilike', self), 
+                            '|', ('komponen_id.name', 'ilike', self), 
+                            '|', ('orangtua_id.name', 'ilike', self), 
+                            '|', ('invoice_date', 'ilike', self), 
+                            '|', ('partner_id.name', 'ilike', self), 
+                            '|', ('periode_id.name', 'ilike', self), 
+                            '|', ('kelas_id.name', 'ilike', self), 
+                            '|', ('state', 'ilike', self), 
+                            '|', ('payment_state', 'ilike', self), 
+                            '|', ('vendor_id', 'ilike', self), 
+                            ('siswa_id.barcode_santri', 'ilike', self)
+                        ]"
+                    />
+
                     <group string="Group by ..">
-                        <filter string="Siswa" domain="[]" name="group_by_siswa_id" context="{'group_by':'siswa_id'}"/>
+                        <filter string="Santri" domain="[]" name="group_by_siswa_id" context="{'group_by':'siswa_id'}"/>
                         <filter string="Komponen" domain="[]" name="group_by_komponen_id" context="{'group_by':'komponen_id'}"/>
                         <filter string="Periode Tagihan" domain="[]" name="group_by_periode_id" context="{'group_by':'periode_id'}"/>
-                        <filter string="Ruang Kelas" domain="[]" name="group_by_ruang_kelas_id" context="{'group_by':'ruang_kelas_id'}"/>
+                        <filter string="Ruang Kelas" domain="[]" name="group_by_ruang_kelas" context="{'group_by':'ruang_kelas_id'}"/>                    
                     </group>
                 </search>
             </field>

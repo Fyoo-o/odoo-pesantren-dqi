@@ -17,7 +17,7 @@
 
         <!-- items -->
         <record id="ks_tagihan_siswa_item" model="ks_dashboard_ninja.item">
-            <field name="name">Tagihan Siswa</field>
+            <field name="name">Tagihan Santri</field>
             <field name="ks_chart_data_count_type">count</field>
             <field name="ks_chart_groupby_type">relational_type</field>
             <field name="ks_model_id" eval="ref('account.model_account_move')"/>

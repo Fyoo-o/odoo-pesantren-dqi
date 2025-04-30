@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_invoice_download_wizard_form" model="ir.ui.view">
+        <field name="name">invoice.download.wizard.form</field>
+        <field name="model">invoice.download.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Konfirmasi Unduh Faktur">
+                <div>
+                    <h2>Faktur <field name="invoice_name" readonly="1" class="oe_inline"/> berhasil dibuat.</h2>
+                    <p>Apakah Anda ingin unduh bukti transaksi ini sekarang?</p>
+                </div>
+                <footer>
+                    <button name="action_download" string="Iya" type="object" class="btn-primary"/>
+                    <!-- <button name="action_preview" string="Lihat Pratinjau" type="object" class="btn-secondary"/> -->
+                    <button string="Tidak" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

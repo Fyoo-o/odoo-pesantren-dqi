@@ -900,7 +900,7 @@ export class MusyrifChartRenderer extends Component {
                   const date = processedData.dates[config.dataPointIndex];
                   const records = processedData.rawData[date];
 
-                  // Handle the click event with all records for that date
+                  
                   this.handleChartPointClick(records);
                 },
               },
@@ -1011,7 +1011,6 @@ export class MusyrifChartRenderer extends Component {
   renderChart() {
     if (!this.chartRef.el) return;
 
-    // Hapus instance chart jika ada
     if (this.chartInstance) {
       this.chartInstance.destroy();
       this.chartInstance = null;

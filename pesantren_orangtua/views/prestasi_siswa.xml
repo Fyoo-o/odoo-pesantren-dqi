@@ -3,7 +3,7 @@
     <data>
         <!-- cdn.prestasi_siswa action window -->
         <record id="cdn_prestasi_siswa_action" model="ir.actions.act_window">
-            <field name="name">Prestasi Siswa</field>
+            <field name="name">Prestasi Santri</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.prestasi_siswa</field>
             <field name="view_mode">list,form</field>
@@ -27,6 +27,6 @@
             <field name="act_window_id" ref="cdn_prestasi_siswa_action" />
         </record>
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="cdn_prestasi_siswa_menu_act" name="Prestasi Siswa" parent="aktivitas_menu_categ" action="cdn_prestasi_siswa_action" sequence="30"/>
+        <menuitem id="cdn_prestasi_siswa_menu_act" name="Prestasi Santri" parent="aktivitas_menu_categ" action="cdn_prestasi_siswa_action" sequence="30"/>
     </data>
 </odoo>

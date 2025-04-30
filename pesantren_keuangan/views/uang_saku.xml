@@ -13,7 +13,7 @@
                     rec.action_confirm()
             </field>
         </record>
-
+ 
         <!-- cdn.uang_saku tree view -->
         <record id="cdn_uang_saku_view_tree" model="ir.ui.view">
             <field name="name">cdn.uang_saku.view.tree</field>
@@ -29,7 +29,7 @@
                     <field name="state"/>
                 </list>
             </field>
-        </record>
+        </record> 
         <!-- cdn.uang_saku form view -->
         <record id="cdn_uang_saku_view_form" model="ir.ui.view">
             <field name="name">cdn.uang_saku.view.form</field>
@@ -41,59 +41,126 @@
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
+
+                        <!-- <group>
+                            <group>
+                                <field name="name" string="No.referensi"/>
+                            </group>
+                        </group> -->
+
+                        <group string="Santri">
+                            <group>
+                                <field name="barcode_santri"/>
+                                <field name="siswa_id" string="Santri" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" readonly=" state not in ('draft')"/>
+                                <field name="kelas_id"/>
+                            </group>
+                            <group>
+                                <field name="kamar_id"/>
+                                <field name="halaqoh_id"/>
+                                <field name="musyrif_id"/>
+                            </group>
+                        </group>
+
+                        <group string="Saldo">
+                            <group>
+                                <field name="tgl_transaksi" readonly=" state not in ('draft')"/>
+                                <field name="va_saku"/>
+                                <field name="saldo_awal" widget="integer"/>
+                                <field name="orangtua_id"/>
+                            </group>
+                            <group>
+                                <field name="validasi_time" readonly='1'/>
+                                <field name="jns_transaksi" readonly="state not in ('draft')"/>
+                                <field name="amount_in" widget="integer" invisible=" jns_transaksi != 'masuk'" readonly="state not in ('draft')"/>
+                                <field name="amount_out" widget="integer" invisible=" jns_transaksi != 'keluar'" readonly="state not in ('draft')"/>
+                                <field name="validasi_id"/>
+                            </group>
+                        </group>
+
                         <group>
                             <group>
-                                <field name="name"/>
-                                <field name="tgl_transaksi"
-                                    readonly=" state not in ('draft')"/>
-                                <field name="siswa_id"
-                                    options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"
-                                    readonly=" state not in ('draft')"/>
+                                <field name="keterangan"/>
+                            </group>
+                        </group>
+
+                        <!-- <group>
+                            <group>
+                                <field name="name" string="No. referensi"/>
+                                <field name="tgl_transaksi" readonly=" state not in ('draft')"/>
+                                <field name="siswa_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" readonly=" state not in ('draft')"/>
                                 <field name="orangtua_id"/> 
                                 <field name="va_saku"/>
                                 <field name="saldo_awal" widget="integer"/>
                             </group>
                             <group>
-                                <field name="jns_transaksi"
-                                    readonly="state not in ('draft')"/>
-                                <field name="amount_in" widget="integer" 
-                                    invisible=" jns_transaksi != 'masuk'" readonly="state not in ('draft')"/>
-                                <field name="amount_out" widget="integer" 
-                                    invisible=" jns_transaksi != 'keluar'" readonly="state not in ('draft')"/>
+                                <field name="jns_transaksi" readonly="state not in ('draft')"/>
+                                <field name="amount_in" widget="integer" invisible=" jns_transaksi != 'masuk'" readonly="state not in ('draft')"/>
+                                <field name="amount_out" widget="integer" invisible=" jns_transaksi != 'keluar'" readonly="state not in ('draft')"/>
                             </group>
                         </group>
                         <group>
                             <field name="validasi_id"/>
                             <field name="validasi_time" readonly='1'/>
                             <field name="keterangan"/>
-                        </group>
+                        </group> -->
+
                     </sheet>
                 </form>
             </field>
         </record>
 
-        <record id="view_saku_transaction_search_musyrif" model="ir.ui.view">
-            <field name="name">view.saku.transaction.search.musyrif</field>
-            <field name="model">cdn.uang_saku</field>
-            <field name="arch" type="xml">
-                <search string="Uang Saku">
-                    <field name="siswa_id"/>
-                    <field name="name"/>
-                    <filter name="draft" string="Status Draft" domain="[('state', '=', 'draft')]"  />
-                    <filter name="confirm" string="Sudah Validasi" domain="[('state', '=', 'confirm')]"  />
+    <!-- Perbaikan pada view_saku_transaction_search_musyrif -->
+    <record id="view_saku_transaction_search_musyrif" model="ir.ui.view">
+        <field name="name">view.saku.transaction.search.musyrif</field>
+        <field name="model">cdn.uang_saku</field>
+        <field name="arch" type="xml">
+            <search string="Uang Saku">
+                <field name="name" string="Data"
+                    filter_domain="[ 
+                        '|', ('name', 'ilike', self),
+                        '|', ('siswa_id', 'ilike', self),
+                        '|', ('validasi_time', 'ilike', self),
+                        '|', ('va_saku', 'ilike', self),
+                        '|', ('orangtua_id', 'ilike', self),
+                        '|', ('musyrif_id', 'ilike', self),
+                        '|', ('jns_transaksi', 'ilike', self),
+                        '|', ('state', 'ilike', self),
+                        '|', ('barcode_santri', 'ilike', self),
+                        ('tgl_transaksi', 'ilike', self),
+                    ]"/>
+                <separator/>
+
+                <!-- Filter berdasarkan status -->
+                <filter name="draft" string="Status Draft" domain="[('state', '=', 'draft')]" />
+                <filter name="confirm" string="Sudah Validasi" domain="[('state', '=', 'confirm')]" />
+
+                <filter string="Transaksi Pekan" name="filter_this_week" domain="[('tgl_transaksi', '&gt;=', (context_today() + relativedelta(weekday=0)).strftime('%Y-%m-%d')), ('tgl_transaksi', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d'))]"/>
+                <filter string="Bulan Ini" name="filter_this_month" domain="[('tgl_transaksi', '&gt;=', context_today().replace(day=1)),('tgl_transaksi', '&lt;=', (context_today().replace(day=1) + relativedelta(months=1, days=-1)))]"/>                
+
+                <group expand="0" string="Kelompokkan Berdasar">
+                    <filter string="Tanggal Transaksi" name="group_by_date" context="{'group_by':'tgl_transaksi:day'}"/>
+                    <filter string="Minggu" name="group_by_week" context="{'group_by':'tgl_transaksi:week', 'display_format': 'Minggu %W %B %Y'}"/>
+                    <filter string="Bulan" name="group_by_month" context="{'group_by':'tgl_transaksi:month'}"/>
                     <filter string="Jenis Transaksi" name="group_by_jns_transaksi" context="{'group_by':'jns_transaksi'}"/>
                     <filter string="Santri" name="group_by_santri" context="{'group_by':'siswa_id'}"/>
-                </search>
-            </field>
-        </record>
+                </group>
+            </search>
+        </field>
+    </record>
 
-        <record id="cdn_uang_saku_action" model="ir.actions.act_window">
-            <field name="name">Uang Saku</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">cdn.uang_saku</field>
-            <field name="view_mode">list,form</field>
-        </record>
+    <!-- Tidak perlu mengubah record action, hanya perlu mengubah format tampilan grup -->
+    <record id="cdn_uang_saku_action" model="ir.actions.act_window">
+        <field name="name">Uang Saku</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cdn.uang_saku</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_saku_transaction_search_musyrif"/>
+        <field name="context">{'search_default_group_by_week': 1}</field>
+    </record>
+   
         <!-- This Menu Item must have a parent and an action -->
         <menuitem id="cdn_uang_saku_menu_act" name="Uang Saku" parent="keu_saku_wallet_menu_categ" action="cdn_uang_saku_action" sequence="50"/>
+
+        <!-- <menuitem id="munu_mutasi_saldo" name="Mutasi Saldo" parent="musyrif_menu_root" action="cdn_uang_saku_action" sequence="90" /> -->
     </data>
 </odoo>

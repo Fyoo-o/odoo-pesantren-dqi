@@ -107,10 +107,7 @@ export class OrangtuaCardList1 extends Component {
         siswaDomain,
         ["id"],
       ]);
-      console.log("Siswa Data List : ", siswaData);
       siswaIds = siswaData.map((siswa) => siswa.id);
-      console.log("Siswa ID Mutabaah", siswaIds);
-
       let combineMutabaahDomain = [
         ["siswa_id", "in", siswaIds],
         ["tgl", ">=", this.state.currentStartDate],
@@ -269,9 +266,9 @@ export class OrangtuaCardList2 extends Component {
         siswaDomain,
         ["id"],
       ]);
-      console.log("Siswa Data List : ", siswaData);
+
       siswaIds = siswaData.map((siswa) => siswa.id);
-      console.log("Siswa ID", siswaIds);
+
       const siswaFilterDomain = [["siswa_id", "in", siswaIds]];
 
       const filterDomain = [];

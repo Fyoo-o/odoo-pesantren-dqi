@@ -36,7 +36,6 @@
         'security/groups.xml',
         'security/ir.model.access.csv',
         
-
          #data
         'views/menu.xml',
         'views/menu_satpam.xml',
@@ -81,13 +80,21 @@
         'views/mutabaah_kategori.xml',
         'views/mutabaah_sesi.xml',
         'views/satpam_perijinan.xml',
+        'views/keterangan.xml',
         # 'views/scan_kts.xml',
         'wizards/wizard_checkout.xml',
+        'wizards/wizard_santridata.xml',
         'wizards/wizard_checkin.xml',
+        'wizards/register.xml',
 
        
 
     ],
+    'assets': {
+        'web.assets_backend': [
+            # 'pesantren_kesantrian/static/src/js/perijinan_autofocus.js',
+        ],
+    },
     # only loaded in demonstration mode
     'demo': [
         'demo/demo.xml',

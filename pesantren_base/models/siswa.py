@@ -10,6 +10,9 @@ import qrcode
 from odoo.exceptions import ValidationError
 import random
 
+import logging
+_logger = logging.getLogger(__name__)
+
 class res_partner(models.Model):
     _inherit = 'res.partner'
 
@@ -24,6 +27,9 @@ class siswa(models.Model):
 
     partner_id          = fields.Many2one('res.partner', 'Partner', ondelete="cascade")
     active_id           = fields.Many2one('res.partner', string='Customer Active', compute="_compute_partner_id")
+
+    
+
     nis                 = fields.Char( string="NIS",  help="")
     namapanggilan       = fields.Char(string="Nama Panggilan")
     nisn                = fields.Char( string="NISN",  help="")
@@ -99,7 +105,7 @@ class siswa(models.Model):
 
     orangtua_id         = fields.Many2one(comodel_name="cdn.orangtua",  string="Orangtua",  help="")
     tahunajaran_id      = fields.Many2one(comodel_name="cdn.ref_tahunajaran",  string="Thn Ajaran",  help="")
-    ruang_kelas_id      = fields.Many2one(comodel_name="cdn.ruang_kelas",  string="Ruang Kelas",  help="")
+    ruang_kelas_id      = fields.Many2one(comodel_name="cdn.ruang_kelas",  string="Ruang Kelas", help="")
     ekstrakulikuler_ids = fields.Many2many("cdn.ekstrakulikuler",string="Ekstrakulikuler")
     jenjang             = fields.Selection(selection=[('paud','PAUD'),('tk','TK/RA'),('sd','SD/MI'),('smp','SMP/MTS'),('sma','SMA/MA/SMK')],  string="Jenjang", related="ruang_kelas_id.name.jenjang", readonly=False, store=True, help="")
     tingkat             = fields.Many2one(comodel_name="cdn.tingkat",  string="Tingkat", related="ruang_kelas_id.name.tingkat", readonly=True, store=True, help="")
@@ -125,32 +131,29 @@ class siswa(models.Model):
     raport_6sd_1 = fields.Float(string='Raport 4 SD Smt 1')
     baca_quran   = fields.Selection(string="Baca Qur'an", selection=[('belumbisa', 'Belum Bisa'), ('kuranglancar', 'Kurang Lancar'),('lancar','Lancar'),('tartil','Tartil')])
     
-    
 
-    # Potongan Biaya / Bebas Biaya 
     bebasbiaya          = fields.Boolean(string='Bebas Biaya', default=False)
     harga_komponen      = fields.One2many(comodel_name='cdn.harga_khusus', inverse_name='siswa_id', string='Harga Khusus')
     penetapan_tagihan_id = fields.Many2one('cdn.penetapan_tagihan', string='penetapan_tagihan_id')
-
-    barcode_santri      = fields.Char(string='Barcode Santri')    
+    nomor_pendaftaran   = fields.Char(string="Nomor Pendfataran")
+    tanggal_daftar      = fields.Date(string="Tanggal Daftar")
+    barcode_santri      = fields.Char(string='Kartu Santri')    
     
-    @api.model
-    def create(self, vals):
-        # Generate unique barcode_santri if not provided
-        if not vals.get('barcode_santri'):
-            vals['barcode_santri'] = self._generate_unique_barcode()
+    # @api.model
+    # def create(self, vals):
+    #     if not vals.get('barcode_santri'):
+    #         vals['barcode_santri'] = self._generate_unique_barcode()
         
-        record = super(siswa, self).create(vals)
+    #     record = super(siswa, self).create(vals)
         
-        # Setelah pembuatan, set barcode sama dengan barcode_santri
-        if record.barcode_santri:
-            record.partner_id.barcode = record.barcode_santri
+    #     if record.barcode_santri:
+    #         record.partner_id.barcode = record.barcode_santri
         
-        return record
+    #     return record
     
-    def _generate_unique_barcode(self):
-        """Generate a random numeric barcode (10 digits)."""
-        return f"{random.randint(1000000000000000, 9999999999999999)}"
+    # def _generate_unique_barcode(self):
+    #     """Generate a random numeric barcode (10 digits)."""
+    #     return f"{random.randint(1000000000000000, 9999999999999999)}"
 
     # _sql_constraints = [('nis_uniq', 'unique(nis)', 'Data NIS tersebut sudah pernah terdaftar, pastikan NIS harus unik !'),
     #                     ('nisn_uniq', 'unique(nisn)', 'Data NISN tersebut sudah pernah terdaftar, pastikan NISN harus unik !'),
@@ -219,6 +222,88 @@ class siswa(models.Model):
         partner_model = self.env['res.partner']
         return partner_model.action_recharge()
 
+    def action_generate_nis(self):
+        if not self.nomor_pendaftaran or not self.tanggal_daftar:
+            _logger.warning("NIS tidak bisa dibuat: Tanggal pendaftaran atau jenjang kosong.")
+            return False
+
+        # Mapping Kode Lembaga
+        lembaga = {
+            'paud': '01', 'tk': '02', 'sdmi': '03',
+            'smpmts': '04', 'smama': '05', 'smk': '06'
+        }.get(self.jenjang, '00')  # Default '00' jika tidak cocok
+
+        # Konversi Tahun Daftar
+        try:
+            tahun_daftar = self.tanggal_daftar.strftime('%Y')[-2:]
+        except AttributeError:
+            tahun_daftar = '00'
+ 
+        # Gunakan nomor_pendaftaran sebagai bagian dari NIS
+        nomor = self.nomor_pendaftaran if self.nomor_pendaftaran and self.nomor_pendaftaran.isdigit() else "000"
+
+        # Format NIS
+        nis = f"{lembaga}.{tahun_daftar}.{nomor}"
+        _logger.info(f"NIS yang dihasilkan: {nis}")  
+        self.nis = nis
+        # return nis
+
     def action_recharge_wallet_mass(self):
         partner_model = self.env['res.partner']
         return partner_model.action_recharge_mass()
+
+    def action_register(self):
+        context = dict(self.env.context)
+        active_ids = context.get('active_ids', [])
+
+        return {
+            'name': 'Register Kartu Santri',
+            'type': 'ir.actions.act_window',
+            'res_model': 'wizard.register.kartu',
+            'view_mode': 'form',
+            'view_type': 'form',
+            'target': 'new',
+            'context': {'default_partner_ids': active_ids}
+            # 'context': {'default_id': self.id}
+        }
+        # wizard_model = self.env['wizard.register.kartu']
+        # return wizard_model.action_register()
+
+
+
+    # def name_get(self):
+    #     """
+    #     Kustomisasi tampilan nama untuk menampilkan nama dan NIS
+    #     """
+    #     result = []
+    #     for record in self:
+    #         # Gabungkan nama dan NIS dalam satu tampilan
+    #         name = f"{record.name} - {record.nis}"
+    #         result.append((record.id, name))
+    #     return result
+
+    def name_get(self):
+        result = []
+        for siswa in self:
+            name = f"{siswa.name} - {siswa.nis}" if siswa.nis else siswa.name
+            result.append((siswa.id, name))
+        return result
+
+
+    @api.model
+    def name_search(self, name='', args=None, operator='ilike', limit=100):
+        """
+        Kustomisasi pencarian untuk mendukung pencarian berdasarkan nama atau NIS
+        """
+        args = args or []
+        domain = []
+        if name:
+            domain = [
+                '|', 
+                ('name', operator, name), 
+                ('nis', operator, name)
+            ]
+        
+        # Gabungkan domain tambahan jika ada
+        recs = self.search(domain + args, limit=limit)
+        return recs.name_get()

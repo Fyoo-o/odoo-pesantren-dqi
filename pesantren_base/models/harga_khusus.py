@@ -72,7 +72,7 @@ class account_invoice(models.Model):
     def _default_tahunajaran(self):
        return self.env['res.company'].search([('id','=',1)]).tahun_ajaran_aktif
 
-    siswa_id            = fields.Many2one(comodel_name='cdn.siswa', string='Siswa')
+    siswa_id            = fields.Many2one(comodel_name='cdn.siswa', string='Santri')
     invoice_date         = fields.Date(string='Tgl Tagihan', required=True, default=fields.Date.context_today)
     
     #partner_id          = fields.Many2one('res.partner', 'Partner', related='siswa_id.partner_id', readonly=True, store=True)

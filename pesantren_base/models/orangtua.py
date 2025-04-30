@@ -15,6 +15,7 @@ class OrangTua(models.Model):
 
     nik                 = fields.Char( string="NIK",  help="")
     hubungan            = fields.Selection(selection=[('ayah','Ayah'),('ibu','Ibu'),('wali','Wali')],  string="Hubungan",  help="")
+    label               = fields.Many2many('res.partner.category', 'Tag')
     # Memiliki Siswa / Anak
     siswa_ids           = fields.One2many(comodel_name="cdn.siswa",  inverse_name="orangtua_id",  string="Siswa",  help="")
 

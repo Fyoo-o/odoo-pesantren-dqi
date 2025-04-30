@@ -71,11 +71,17 @@
         'views/prestasi_siswa.xml',
         'views/uang_saku.xml',
         'views/pos_wallet_transaction.xml',
-        
-        
-        
-        
+        # 'views/keterangan.xml',
+
     ],
+    'assets': {
+        'web.assets_backend': [
+            # "pesantren_musyrif/static/src/js/change_pin_popup.js",
+            "pesantren_musyrif/static/src/js/change_pin_popup.js",
+            # "pesantren_musyrif/static/src/xml/change_pin_popup.xml",
+            # "pesantren_musyrif/static/src/js/change_pin_popup.css",
+        ],
+    },
     # only loaded in demonstration mode
     'demo': [
         'demo/demo.xml',

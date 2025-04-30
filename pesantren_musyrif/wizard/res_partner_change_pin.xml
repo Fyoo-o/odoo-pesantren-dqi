@@ -19,7 +19,7 @@
         </record>
         <!-- res.partner.change.pin action window -->
         <record id="res_partner_change_pin_action" model="ir.actions.act_window">
-            <field name="name">Change Wallet PIN</field>
+            <field name="name">Ubah PIN</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">res.partner.change.pin</field>
             <field name="view_mode">form</field>

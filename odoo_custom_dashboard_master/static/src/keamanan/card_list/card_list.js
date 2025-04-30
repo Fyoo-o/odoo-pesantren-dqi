@@ -92,15 +92,15 @@ export class KeamananCardList extends Component {
       if (this.countdownTime < 0) {
         this.countdownTime = 10;
         if (this.state.startDate && this.state.endDate) {
-          console.log(
-            "dates state: ",
-            this.state.startDate,
-            "& ",
-            this.state.endDate
-          );
+          // console.log(
+          //   "dates state: ",
+          //   this.state.startDate,
+          //   "& ",
+          //   this.state.endDate
+          // );
           const startDate = this.state.startDate;
           const endDate = this.state.endDate;
-          console.log("dates: ", startDate, "& ", endDate);
+          // console.log("dates: ", startDate, "& ", endDate);
           this.refreshChart(startDate, endDate);
         } else {
           this.refreshChart();
@@ -124,9 +124,6 @@ export class KeamananCardList extends Component {
   }
 
   refreshChart(startDate, endDate) {
-    // Logika refresh chart
-    console.log("Refreshing chart...");
-    // Contoh penggunaan data fetching ulang
     this.fetchAllProducts();
   }
 
@@ -224,7 +221,6 @@ export class KeamananCardList extends Component {
 
       // console.log("Testing Fetch", tagihanLunasData);
 
-      console.log("Santri Keluar", keluarData);
       this.state.keluarIjin = this.getKeluarData(keluarData);
       await this.render();
     } catch (error) {
@@ -239,7 +235,7 @@ export class KeamananCardList extends Component {
           name: data.name,
           siswa: data.siswa_id ? data.siswa_id[1] || "N/A" : "N/A",
           tgl_ijin: data.tgl_ijin,
-          keperluan: data.keperluan,
+          keperluan: String(data.keperluan).replace(/^\d+,\s*/, ""),
           lamaijin: data.lama_ijin,
           state: data.state,
           id: data.id,
@@ -250,16 +246,28 @@ export class KeamananCardList extends Component {
 
     return Object.values(uniqueKeluar)
       .slice(0, 10)
+      .sort((a, b) => new Date(b.tgl_ijin) - new Date(a.tgl_ijin))
       .map((data, index) => ({
         number: index + 1,
         id: data.id,
         name: data.name,
         siswa: data.siswa,
-        tgl_ijin: data.tgl_ijin,
+        tgl_ijin: this.formatDate(data.tgl_ijin),
         keperluan: data.keperluan,
         lamaijin: data.lamaijin,
         state: data.state,
       }));
+  }
+
+  formatDate(dateString) {
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const month = date.toLocaleString("id-ID", { month: "long" }); // Use 'long' for full month name
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+    return `${day} ${month} ${year}, ${hours}:${minutes}`;
   }
 
   attachEventListeners() {
@@ -452,9 +460,6 @@ export class KeamananCardList extends Component {
     this.state.startDate = startDateInput.value || null;
     this.state.endDate = endDateInput.value || null;
 
-    console.log("Updated Dates:", this.state.startDate, this.state.endDate);
-
-    // Fetch and filter products based on updated date range
     this.fetchAllProducts();
   }
 
@@ -698,13 +703,13 @@ export class KeamananCardList extends Component {
           this.state.endDate = endDate.toISOString().split("T")[0];
           startDateInput.value = this.state.startDate;
           endDateInput.value = this.state.endDate;
-          console.log("dates down: ", startDate, "& ", endDate);
-          console.log(
-            "dates down state: ",
-            this.state.startDate,
-            "& ",
-            this.state.endDate
-          );
+          // console.log("dates down: ", startDate, "& ", endDate);
+          // console.log(
+          //   "dates down state: ",
+          //   this.state.startDate,
+          //   "& ",
+          //   this.state.endDate
+          // );
 
           this.fetchAllProducts(startDate, endDate);
         }
@@ -714,7 +719,6 @@ export class KeamananCardList extends Component {
 
   redirectToProductList(productId) {
     try {
-      console.log("Redirecting to product:", productId);
       return this.action.doAction({
         type: "ir.actions.act_window",
         name: "Product",
@@ -730,7 +734,6 @@ export class KeamananCardList extends Component {
   }
 
   onProductClick(productId) {
-    console.log("Product clicked:", productId);
     this.redirectToProductList(productId);
   }
 }
@@ -828,15 +831,15 @@ export class KeamananCardList2 extends Component {
       if (this.countdownTime < 0) {
         this.countdownTime = 10;
         if (this.state.startDate && this.state.endDate) {
-          console.log(
-            "dates state: ",
-            this.state.startDate,
-            "& ",
-            this.state.endDate
-          );
+          // console.log(
+          //   "dates state: ",
+          //   this.state.startDate,
+          //   "& ",
+          //   this.state.endDate
+          // );
           const startDate = this.state.startDate;
           const endDate = this.state.endDate;
-          console.log("dates: ", startDate, "& ", endDate);
+          // s
           this.refreshChart(startDate, endDate);
         } else {
           this.refreshChart();
@@ -860,9 +863,6 @@ export class KeamananCardList2 extends Component {
   }
 
   refreshChart(startDate, endDate) {
-    // Logika refresh chart
-    console.log("Refreshing chart...");
-    // Contoh penggunaan data fetching ulang
     this.fetchAllProducts();
   }
 
@@ -958,7 +958,6 @@ export class KeamananCardList2 extends Component {
         ],
       ]);
 
-      console.log("Santri Keluar", keluarData);
       this.state.keluarIjin = this.getKeluarData(keluarData);
       await this.render();
     } catch (error) {
@@ -973,7 +972,7 @@ export class KeamananCardList2 extends Component {
           name: data.name,
           siswa: data.siswa_id ? data.siswa_id[1] || "N/A" : "N/A",
           tgl_ijin: data.tgl_ijin,
-          keperluan: data.keperluan,
+          keperluan: String(data.keperluan).replace(/^\d+,\s*/, ""),
           lamaijin: data.lama_ijin,
           state: data.state,
           id: data.id,
@@ -984,16 +983,28 @@ export class KeamananCardList2 extends Component {
 
     return Object.values(uniqueKeluar)
       .slice(0, 10)
+      .sort((a, b) => new Date(b.tgl_ijin) - new Date(a.tgl_ijin))
       .map((data, index) => ({
         number: index + 1,
         id: data.id,
         name: data.name,
         siswa: data.siswa,
-        tgl_ijin: data.tgl_ijin,
+        tgl_ijin: this.formatDate(data.tgl_ijin),
         keperluan: data.keperluan,
         lamaijin: data.lamaijin,
         state: data.state,
       }));
+  }
+
+  formatDate(dateString) {
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const month = date.toLocaleString("id-ID", { month: "long" }); // Use 'long' for full month name
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+    return `${day} ${month} ${year}, ${hours}:${minutes}`;
   }
 
   attachEventListeners() {
@@ -1186,9 +1197,6 @@ export class KeamananCardList2 extends Component {
     this.state.startDate = startDateInput.value || null;
     this.state.endDate = endDateInput.value || null;
 
-    console.log("Updated Dates:", this.state.startDate, this.state.endDate);
-
-    // Fetch and filter products based on updated date range
     this.fetchAllProducts();
   }
 
@@ -1426,19 +1434,18 @@ export class KeamananCardList2 extends Component {
             );
         }
 
-        // Update the input fields and the state
         if (startDate && endDate) {
           this.state.startDate = startDate.toISOString().split("T")[0];
           this.state.endDate = endDate.toISOString().split("T")[0];
           startDateInput.value = this.state.startDate;
           endDateInput.value = this.state.endDate;
-          console.log("dates down: ", startDate, "& ", endDate);
-          console.log(
-            "dates down state: ",
-            this.state.startDate,
-            "& ",
-            this.state.endDate
-          );
+          // console.log("dates down: ", startDate, "& ", endDate);
+          // console.log(
+          //   "dates down state: ",
+          //   this.state.startDate,
+          //   "& ",
+          //   this.state.endDate
+          // );
 
           this.fetchAllProducts(startDate, endDate);
         }
@@ -1448,7 +1455,6 @@ export class KeamananCardList2 extends Component {
 
   redirectToProductList(productId) {
     try {
-      console.log("Redirecting to product:", productId);
       return this.action.doAction({
         type: "ir.actions.act_window",
         name: "Product",
@@ -1464,7 +1470,6 @@ export class KeamananCardList2 extends Component {
   }
 
   onProductClick(productId) {
-    console.log("Product clicked:", productId);
     this.redirectToProductList(productId);
   }
 }
