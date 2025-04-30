@@ -32,40 +32,30 @@
                         <field name="status" widget="statusbar" statusbar_visible="draft,konfirm" />
                     </header>
                     <sheet>
-                        <group string="Kamar Santri">
-
+                        <group>
                             <!-- Add your fields here -->
-
-                            <group>
-                                <field name="kamar_id" options="{'no_create_edit':True, 'no_create':True}" readonly="status ==  'konfirm'"/>
-                                <field name="musyrif_id" options="{'no_create_edit':True, 'no_create':True}" domain="[
-                                        ('jns_pegawai', 'in', ['musyrif','ustadz'])
-                                    ]" readonly="status ==  'konfirm'"/>
-                                <field name="pengganti_ids" widget="many2many_tags"
-                                    domain="[
-                                        ('id','!=',musyrif_id),
-                                        ('jns_pegawai', 'in', ['musyrif','ustadz'])
-                                    ]"
-                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="status ==  'konfirm'"/>
-                            </group>
-
-                            <group>
-                                <field name="fiscalyear_id" readonly="status ==  'konfirm'"/>
-                                <field name="jml_siswa" />
-                                <field name="keterangan" readonly="status ==  'konfirm'"/>
-                            </group>
-                            
+                            <field name="kamar_id" options="{'no_create_edit':True, 'no_create':True}" readonly="status ==  'konfirm'"/>
+                            <field name="musyrif_id" options="{'no_create_edit':True, 'no_create':True}" domain="[
+                                    ('jns_pegawai', 'in', ['musyrif','ustadz'])
+                                ]" readonly="status ==  'konfirm'"/>
+                            <field name="keterangan" readonly="status ==  'konfirm'"/>
+                            <field name="fiscalyear_id" readonly="status ==  'konfirm'"/>
+                            <field name="pengganti_ids" widget="many2many_tags"
+                                domain="[
+                                    ('id','!=',musyrif_id),
+                                    ('jns_pegawai', 'in', ['musyrif','ustadz'])
+                                ]"
+                                options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="status ==  'konfirm'"/>
                             <!-- <field name="status" /> -->
-
+                            <field name="jml_siswa" />
                         </group>
                         <!-- siswa -->
                         <notebook>
-                            <page string="Santri ">
+                            <page string="Siswa">
 								<field name="siswa_ids" readonly="status ==  'konfirm'">
 									<list editable="top">
 										<field name="nis"/>
 										<field name="name"/>
-                                        <field name="namapanggilan" string="Panggilan"/>
                                         <field name="ruang_kelas_id"/>
                                         <field name="orangtua_id"/>
                                         <field name="ayah_telp"/>
@@ -83,31 +73,9 @@
             <field name="name">cdn.kamar_santri.view.search</field>
             <field name="model">cdn.kamar_santri</field>
             <field name="arch" type="xml">
-                <search >
-                    <!-- Add your fields here -->                
-
-                    <filter name="status_draft" string="Draft" domain="[('status', '=', 'draft')]"/>
-                    <filter name="status_konfirm" string="Terkonfirmasi" domain="[('status', '=', 'konfirmasi')]"/>
-
-                    <field name="keterangan" string="Data" 
-                        filter_domain="[
-                            '|', ('status', 'ilike', self),
-                            '|', ('kamar_id.name', 'ilike', self),
-                            '|', ('kamar_id.parent_id', 'ilike', self),
-                            '|', ('siswa_ids.name', 'ilike', self),
-                            '|', ('siswa_ids.nis', 'ilike', self),
-                            '|', ('siswa_ids.namapanggilan', 'ilike', self),
-                            '|', ('siswa_ids.ruang_kelas_id', 'ilike', self),
-                            '|', ('siswa_ids.barcode_santri', 'ilike', self),
-                            '|', ('musyrif_id', 'ilike', self),
-                            '|', ('pengganti_ids', 'ilike', self),
-                            '|', ('fiscalyear_id', 'ilike', self),
-                            ('jml_siswa', 'ilike', self)
-                        ]"
-                    />
-                
+                <search string="Search Description">
+                    <!-- Add your fields here -->
                     <filter name="group_by_fiscalyear_id" string="Tahun Ajaran" context="{'group_by': 'fiscalyear_id'}" />
-                    <filter name="group_by_status" string="Status" context="{'group_by': 'status'}"/>
                 </search>
             </field>
         </record>

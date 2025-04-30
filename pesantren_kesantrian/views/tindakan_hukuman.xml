@@ -59,13 +59,13 @@
                     <!-- More details about what a user can do with this object will be OK --> 
                 </p>
             </field>
-        </record> 
+        </record>
 
         <menuitem
             id="cdn_tindakan_hukuman_menu"
             name="Tindakan Hukuman"
             action="tindakan_hukuman_action"
-            parent="pengaturan_pelanggaran_menu_categ"
+            parent="pengaturan_kepengasuhan_menu_categ"
             sequence="30"/>
     </data>
 </odoo>
