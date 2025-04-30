@@ -73,7 +73,7 @@
         'views/harga_diskon.xml',
         'views/penetapan_tagihan.xml',
         'views/pos_wallet_transaction.xml',
-        # 'views/res_partner_inherit.xml',
+        'views/res_partner_inherit.xml',
         'views/res_user.xml',
         'views/tagihan_vendor.xml',
         'views/pos_order.xml',
