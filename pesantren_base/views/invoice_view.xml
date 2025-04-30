@@ -45,7 +45,7 @@
                             '|', ('invoice_date', 'ilike', self), 
                             '|', ('partner_id.name', 'ilike', self), 
                             '|', ('periode_id.name', 'ilike', self), 
-                            '|', ('kelas_id.name', 'ilike', self), 
+                            '|', ('ruang_kelas_id', 'ilike', self), 
                             '|', ('state', 'ilike', self), 
                             '|', ('payment_state', 'ilike', self), 
                             '|', ('vendor_id', 'ilike', self), 
