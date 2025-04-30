@@ -5,12 +5,11 @@
 
         <!-- cdn.perijinan list view -->
         <record id="cdn_perijinan_view_tree" model="ir.ui.view">
-            <field name="name">cdn.perijinan.view.list</field>
+            <field name="name">Perijinan Santri</field>
             <field name="model">cdn.perijinan</field>
             <field name="arch" type="xml">
                 <list default_order="id desc">
-                    <!-- Add your fields here -->
-                    <field name="name" />
+                    <field name="name" string="No. Referensi" />
                     <field name="tgl_ijin" />
                     <field name="siswa_id" />
                     <field name="kamar_id" />
@@ -24,13 +23,15 @@
             </field>
         </record>
 
+ 
         <!-- cdn.perijinan form view -->
         <record id="cdn_perijinan_view_form" model="ir.ui.view">
-            <field name="name">cdn.perijinan.view.form</field>
+            <field name="name">Perijinan Santri</field>
             <field name="model">cdn.perijinan</field>
             <field name="arch" type="xml">
-                <form string="Permohonan Ijin Santri" duplicate="0">
+                <form string="Perijinan Santri" duplicate="0">
                     <header>
+                        <!-- <button name="action_save_record" type="object" string="Simpan" class="oe_highlight" groups="pesantren_kesantrian.group_kesantrian_staff"/> -->
                         <button string="Ijin Diperiksa" type="object" name="action_checked" groups="pesantren_kesantrian.group_kesantrian_staff" invisible="state != 'Draf'" />
 
                         <button string="Ijin Disetujui" type="object" name="action_approved" groups="pesantren_kesantrian.group_kesantrian_manager" invisible="state != 'Check'" />
@@ -39,22 +40,18 @@
 
                         <button string="Santri Keluar" type="object" name="action_permission" groups="pesantren_kesantrian.group_kesantrian_manager,
                                 pesantren_kesantrian.group_kesantrian_keamanan" invisible="state != 'Approved'"/>
-                        <button string="Santri Kembali" type="object" name="action_return" groups="pesantren_kesantrian.group_kesantrian_manager,
+                        <button string="Santri Masuk" type="object" name="action_return" groups="pesantren_kesantrian.group_kesantrian_manager,
                                 pesantren_kesantrian.group_kesantrian_keamanan" invisible="state != 'Permission'"/>
+
+                        <button name="action_save_record" type="object" string="Simpan" class="oe_highlight" group="pesantren_kesantrian.group_kesantrian_orang_tua" invisible="state != 'Draft'"/>
 
                         <field name="state" widget="statusbar" statusbar_visible="Draft,Check,Approved,Permission" />
                     </header>
                     <sheet>
-                        <div class="oe_title">
-                            <label for="name" class="oe_edit_only" string="No Referensi (Auto)" />
-                            <h1>
-                                <field name="name" readonly="1"/>
-                            </h1>
-                        </div>
-                        <group string="Data Ijin Santri">
+                        <group string="Santri">
                            <group>
-                                <field name="tgl_ijin" readonly="state == 'Check' or state == 'Approved' or state == 'Permission' or state == 'Return'"/>
-                                <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True}" readonly="state == 'Check' or state == 'Approved' or state == 'Permission' or state == 'Return'"/>
+                                <field name="barcode"/>
+                                <field name="siswa_id" string="Santri" options="{'no_create_edit':True, 'no_create':True}" readonly="state == 'Check' or state == 'Approved' or state == 'Permission' or state == 'Return'"/>
                                 <field name="kelas_id" />
                             </group>
                             <group>
@@ -63,27 +60,29 @@
                                 <field name="musyrif_id" />
                             </group>
                         </group>
-                        <group string="Pengajuan Ijin Santri">
+                        <group string="Ijin Santri">
                             <group>
+                                <field name="tgl_ijin" readonly="state == 'Check' or state == 'Approved' or state == 'Permission' or state == 'Return'"/>
                                 <field name="tgl_kembali" readonly="state == 'Approved' or state ==  'Permission' or state == 'Return'"/>
                                 <field name="penjemput" readonly="state == 'Approved' or state ==  'Permission' or state == 'Return'"/>
-
                             </group>
                             <group>
                                 <field name="lama_ijin" />
                                 <field name="keperluan" readonly="state == 'Approved' or state ==  'Permission' or state == 'Return'"/>
+                                <field name="catatan" string='Catatan'/>
                             </group>
                         </group>
                         <group>
-                            <field name="catatan" string='Catatan' />
+
                         </group>
-                        <group string="Akses Keamanan" invisible="state not in('Approved','Permission','Return')">
+                        <group string="Keamanan" invisible="state not in('Approved','Permission','Return')">
                             <group>
                                 <field name="waktu_keluar" />
-                                <field name="jatuh_tempo" />
+                                <field name="waktu_kembali" />
                             </group>
                             <group>
-                                <field name="waktu_kembali" />
+                                <field name="jatuh_tempo" />
+                                <field name="catatan_keamanan" string="Catatan"/>
                             </group>
                         </group>
                     </sheet>
@@ -105,7 +104,24 @@
             <field name="model">cdn.perijinan</field>
             <field name="arch" type="xml">
                 <search>
-                    <field name="siswa_id" string="Siswa" />
+                    <field name="name" string="Data"
+                        filter_domain="[
+                            '|', ('name', 'ilike', self),
+                            '|', ('tgl_ijin', 'ilike', self),
+                            '|', ('siswa_id', 'ilike', self),
+                            '|', ('siswa_id.barcode_santri', 'ilike', self),
+                            '|', ('kamar_id', 'ilike', self),
+                            '|', ('halaqoh_id', 'ilike', self),
+                            '|', ('musyrif_id', 'ilike', self),
+                            '|', ('keperluan', 'ilike', self),
+                            '|', ('lama_ijin', 'ilike', self),
+                            '|', ('penjemput', 'ilike', self),
+                            ('state', 'ilike', self),
+                        ]"
+                    />
+
+                    <separator/>
+
                     <!-- filter -->
                     <filter string="Tgl Izin Hari Ini" name="today" domain="[ ('tgl_ijin','=',(context_today().strftime('%Y-%m-%d'))),
                     ]" />
@@ -117,8 +133,11 @@
                     <filter string="Santri Ijin" name="permission" domain="[('state' ,'=', 'Permission')]" />
                     <filter string="Kembali" name="return" domain="[('state' ,'=', 'Return')]" />
                     <!-- group by siswa -->
-                    <group string="Siswa" colspan="4">
+                    <!-- <group string="Siswa" colspan="4">
                         <field name="siswa_id" />
+                    </group> -->
+                    <group>
+                        <filter string="Status Ijin" domain="[]" name="group_by_state" context="{'group_by':'state'}"/>
                     </group>
                 </search>
             </field>
@@ -137,7 +156,7 @@
 
         <!-- cdn.perijinan action window -->
         <record id="cdn_perijinan_action" model="ir.actions.act_window">
-            <field name="name">Perijinan</field>
+            <field name="name">Perijinan Santri</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.perijinan</field>
             <field name="view_mode">list,form,graph</field>
@@ -145,7 +164,7 @@
         </record>
 
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="perijinan_menu_act" name="Perijinan" parent="kepesantrenan_menu_categ" action="cdn_perijinan_action" sequence="10"/>
+        <menuitem id="perijinan_menu_act" name="Perijinan Santri" parent="aktivitas_kesantrian_menu_categ" action="cdn_perijinan_action" sequence="10"/>
 
     </data>
 

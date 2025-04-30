@@ -36,32 +36,48 @@
                         <field name="state" widget="statusbar" />
                     </header>
                     <sheet>
-                        <div class="oe_title">
+                        <!-- <div class="oe_title">
                             <label for="name" class="oe_edit_only" string="No Referensi" />
                             <h1>
                                 <field name="name" />
                             </h1>
-                        </div>
-
-                        <group string="Data Santri">
+                        </div> -->
+ 
+                        <group string="Santri">
                             <group>
-                                <field name="tanggal" readonly="state in ('draft','done')" />
-                                <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True}"
+                                <field name="barcode"/>
+                                <field name="siswa_id" string="Santri" options="{'no_create_edit':True, 'no_create':True}"
                                 readonly="state in ('draft','done')" />
-                                <field name="last_tahfidz" />
-                                <field name="surah_id" options="{'no_create_edit':True, 'no_create':True}" required="1" />
+                                <field name="kelas_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" readonly="1"/>
                             </group>
                             <group>
+                                <field name="kamar_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" readonly="1"/>
+                                <field name="halaqoh_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" readonly="1"/>
+                                <field name="musyrif_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" readonly="1"/>
+                            </group>
+                        </group>
+
+                        <group string="Pelaksanaan Tahfidz">
+
+                            <group>
+                                <field name="tanggal" readonly="state in ('draft','done')" />
                                 <field name="ustadz_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}"
                                     readonly="state in ('draft','done')" />
-                                <field name="halaqoh_id" />
                                 <field name="sesi_tahfidz_id"
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open':True}"
                                     readonly="state in ('draft','done')" />
+                            </group>
+
+                            <group>
+                                <field name="last_tahfidz" />
+                                <field name="surah_id" options="{'no_create_edit':True, 'no_create':True}" required="1" />
                                 <field name="jml_ayat" />
                             </group>
+
                         </group>
+
                         <field name="ayat_awal_name" invisible="1" />
+
                         <group string="Penilaian Tahfidz" >
                             <group>
                                 <field name="ayat_awal" domain="[('surah_id','=',surah_id)]"
@@ -77,9 +93,18 @@
                                 <field name="predikat" readonly="1"/>
                             </group>
                         </group>
+
                         <group>
-                            <field name="keterangan" />
+                        
+                            <group>
+                                <field name="keterangan" />
+                            </group>
+                        
+                            <group>
+
+                            </group>
                         </group>
+                        
                     </sheet>
                 </form>
             </field>
@@ -91,7 +116,28 @@
             <field name="model">cdn.tahfidz_quran</field>
             <field name="arch" type="xml">
                 <search string="Search Description">
-                    <field name="siswa_id" />
+                    <field name="name" string="Data"
+                        filter_domain="[
+                            '|', ('tanggal', 'ilike', self),
+                            '|', ('siswa_id.name', 'ilike', self),
+                            '|', ('siswa_id.nis', 'ilike', self),
+                            '|', ('siswa_id.barcode_santri', 'ilike', self),
+                            '|', ('halaqoh_id.name', 'ilike', self),
+                            '|', ('ustadz_id.name', 'ilike', self),
+                            '|', ('sesi_tahfidz_id.name', 'ilike', self),
+                            '|', ('surah_id.name', 'ilike', self),
+                            '|', ('number', 'ilike', self),
+                            '|', ('jml_ayat', 'ilike', self),
+                            '|', ('ayat_awal.name', 'ilike', self),
+                            '|', ('ayat_awal_name', 'ilike', self),
+                            '|', ('ayat_akhir.name', 'ilike', self),
+                            '|', ('jml_baris', 'ilike', self),
+                            '|', ('nilai_id.name', 'ilike', self),
+                            '|', ('penanggung_jawab_id.name', 'ilike', self),
+                            ('name', 'ilike', self)
+                        ]"
+                    />
+
                     <filter string="Hari Ini" name="today" domain="[
                         ('tanggal','=',(context_today().strftime('%Y-%m-%d'))),
                     ]" />
@@ -99,16 +145,7 @@
             </field>
         </record>
 
-        <!-- cdn.tahfidz_quran graph view -->
-        <!-- <record id="cdn_tahfidz_quran_view_graph" model="ir.ui.view">
-            <field name="name">cdn.tahfidz_quran.view.graph</field>
-            <field name="model">cdn.tahfidz_quran</field>
-            <field name="arch" type="xml">
-                <graph string="Tahfidz Quran" type="pie" stacked="True">
-                    <field name="siswa_id" />
-                </graph>
-            </field>
-        </record> -->
+
 
         <!-- cdn.tahfidz_quran calendar view -->
         <record id="cdn_tahfidz_quran_view_calendar" model="ir.ui.view">

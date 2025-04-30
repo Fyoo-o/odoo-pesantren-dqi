@@ -22,7 +22,7 @@
             <field name="name">cdn.absen_tahfidz_quran.view.form</field>
             <field name="model">cdn.absen_tahfidz_quran</field>
             <field name="arch" type="xml">
-                <form string="Absensi Kehadiran Halaqoh">
+                <form string="Absensi Kehadiran Halaqhttps://screensaver-sept-layers-promises.trycloudflare.comoh">
                 <header>
                     <field name="state" widget="statusbar" statusbar_visible="Draft,Proses,Done"/>
                     <button string="Proses" name="action_proses" type="object" class="btn btn-primary"
@@ -31,25 +31,36 @@
                             invisible="state == 'Draft' or state == 'Done'"/>
                 </header>
                     <sheet>
-                        <group>
+
+                        <group string="Pelaksanaan">
                             <group>
-                                <field name="name" />
+                                 <field name="name" />
+                            </group>
+                            <group>
+                                <field name="fiscalyear_id" />
+                            </group>
+                        </group>
+
+                        <group string="Absensi">
+                            <group>
                                 <field name="sesi_id" />
                                 <field name="keterangan" />
                             </group>
                             <group>
-                                <field name="fiscalyear_id" />
                                 <field name="halaqoh_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
                                 <field name="ustadz_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
                             </group>
                         </group>
+
                         <notebook>
                             <page string="Daftar Halaqoh">
                                 <field colspan="4" name="absen_ids" nolabel="1" widget="one2many_list">
                                     <list string="" editable="top">
-                                        <field name="siswa_id" />
+                                        <field name="siswa_id" string="Santri"/>
+                                        <field name="panggilan" string="Panggilan"/>
                                         <field name="nis" />
                                         <field name="kehadiran" />
+                                        <field name="keterangan_izin" />
                                     </list>
                                 </field>
                             </page>
@@ -66,7 +77,21 @@
             <field name="arch" type="xml">
                 <search string="Search Description">
                     <!-- Add your fields here -->
-                    <field name="ustadz_id" />
+                    <field name="ustadz_id" string="Data"
+                        filter_domain="[
+                            '|', ('halaqoh_id.name', 'ilike', self),
+                            '|', ('ustadz_id.name', 'ilike', self),
+                            '|', ('fiscalyear_id.name', 'ilike', self),
+                            '|', ('sesi_id.name', 'ilike', self),
+                            '|', ('absen_ids.name', 'ilike', self),
+                            '|', ('absen_ids.siswa_id.name', 'ilike', self),
+                            '|', ('absen_ids.siswa_id.nis', 'ilike', self),
+                            '|', ('absen_ids.siswa_id.barcode_santri', 'ilike', self),
+                            '|', ('penanggung_jawab_id.name', 'ilike', self),
+                            '|', ('state', 'ilike', self),
+                            ('name', 'ilike', self),
+                        ]"
+                    />
                     <!-- filter -->
                     <filter string="Hari Ini" name="today" domain="[('name','=',(context_today().strftime('%Y-%m-%d'))),]" />
                 </search>

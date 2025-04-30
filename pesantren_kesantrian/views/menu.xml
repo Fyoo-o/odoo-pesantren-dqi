@@ -16,6 +16,7 @@
         </menuitem>    
 
         <menuitem id="aktivitas_kesantrian_menu_categ" name="Aktivitas" sequence="30" parent="kesantrian_menu_root"/>
+        <menuitem id="kesantrian_mutasi_saldo_menu" name="Mutasi Saldo" parent="aktivitas_kesantrian_menu_categ" action="pesantren_keuangan.cdn_uang_saku_action" sequence="50"/>
 
         <menuitem id="pengaturan_menu_categ" name="Pengaturan" sequence="40" parent="kesantrian_menu_root" groups="pesantren_kesantrian.group_kesantrian_manager">
             <menuitem id="pengaturan_pesantren_menu_categ" name="Pesantren" sequence="10" />
@@ -28,12 +29,7 @@
             <menuitem id="pengaturan_halaqoh_dan_kamar_menu_categ" name="Kamar dan Halaqoh" sequence="50" />
             <menuitem id="prestasi_menu_categ" name="Prestasi" sequence="60"/>
         </menuitem>
-        
-        
-
-
     
     </data>
     
-
 </odoo>

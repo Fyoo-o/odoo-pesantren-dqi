@@ -20,6 +20,31 @@
                 </list>
             </field>
         </record>
+
+        <record id="cdn_mutabaah_harian_view_search" model="ir.ui.view">
+            <field name="name">cdn.mutabaah_harian.view.search</field>
+            <field name="model">cdn.mutabaah_harian</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name" string="Data"
+                        filter_domain="[
+                            '|', ('name', 'ilike', self),
+                            '|', ('tgl', 'ilike', self),
+                            '|', ('sesi_id.name', 'ilike', self),
+                            '|', ('siswa_id.name', 'ilike', self),
+                            '|', ('siswa_id.barcode_santri', 'ilike', self),
+                            '|', ('siswa_id.nis', 'ilike', self),
+                            '|', ('halaqoh_id.name', 'ilike', self),
+                            '|', ('state', 'ilike', self),
+                            '|', ('mutabaah_lines.name.name', 'ilike', self),
+                            '|', ('mutabaah_lines.kategori_id.name', 'ilike', self),
+                            ('name', 'ilike', self)
+                        ]"
+                    />
+                </search>
+            </field>
+        </record>
+
         <!-- cdn.mutabaah_harian form view -->
         <record id="cdn_mutabaah_harian_view_form" model="ir.ui.view">
             <field name="name">cdn.mutabaah_harian.view.form</field>
@@ -27,7 +52,7 @@
             <field name="arch" type="xml">
                 <form string="">
                     <header>
-                        <button string="Proses" name="action_confirm" type="object" class="oe_highlight"
+                        <button string="Selesai" name="action_confirm" type="object" class="oe_highlight"
                             groups="pesantren_kesantrian.group_kesantrian_manager"
                              invisible="state != 'Draft'"/>
                         <button string="Ubah ke Draft" name="action_draft" type="object" class="oe_highlight"
@@ -36,18 +61,36 @@
                         <field name="state" widget="statusbar" />
                     </header>
                     <sheet>
-                        <div class="oe_title">
+
+                        <!-- <div class="oe_title">
                             <label for="name" class="oe_edit_only" string="No. Referensi (AUTO)"/>
                             <h1>
                                 <field name="name" placeholder="Auto"/>
                             </h1>
-                        </div>
-                        <group>
-                            <field name="tgl" readonly="state =='Done'"/>
-                            <field name="sesi_id" options="{'no_create_edit':True, 'no_create':True}" readonly="state =='Done'" />
-                            <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True}" readonly="state =='Done'" />
-                            <field name="halaqoh_id" readonly="1"/>
+                        </div> -->
+
+                        <group string="Santri">
+                            <group>
+                                <field name="barcode" readonly="state =='Done'"/>
+                                <field name="siswa_id" string="Santri" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" readonly="state =='Done'" />
+                                <field name="kelas_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}"/>
+                            </group>
+                            <group>
+                                <field name="kamar_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}"/>
+                                <field name="halaqoh_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}"/>
+                                <field name="musyrif_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}"/>
+                            </group>
                         </group>
+
+                        <group string="Mutabaah">
+                            <group>
+                                <field name="tgl" readonly="state =='Done'"/>
+                            </group>
+                            <group>
+                                <field name="sesi_id" options="{'no_create_edit':True, 'no_create':True}" readonly="state =='Done'" />
+                            </group>
+                        </group>
+
                         <notebook>
                             <page name="mutabaah_harian_notebook" string="Check Aktivitas">
                                 <field name="mutabaah_lines" readonly="state =='Done'" >
@@ -69,14 +112,17 @@
                                 </group>
                             </page>
                         </notebook>
+
                         <group invisible="state =='Done'">
                             <button string="Uncheck All" name="btn_uncheckall" type="object" class="btn-link oe_edit_only" confirm="Apakah Anda yakin akan menghilangkan tanda Centang untuk semua isian tersebut (UN-CHECK ALL) ?"/>
                             <button string="Check All" name="btn_checkall" type="object" class="btn-link oe_edit_only" confirm="Apakah Anda yakin akan memberikan tanda Centang untuk semua isian tersebut (CHECK ALL) ?"/>
                         </group>
+
                     </sheet>
                 </form>
             </field>
         </record>
+        
         <record id="sequence_mutabaah_harian" model="ir.sequence">
             <field name="name">mutabaah_harian</field>
             <field name="code">cdn.mutabaah_harian</field>

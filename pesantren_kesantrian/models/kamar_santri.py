@@ -1,7 +1,6 @@
 from odoo import api, fields, models
 from odoo.exceptions import UserError
 
-
 class KamarSantri(models.Model):
     _name           = 'cdn.kamar_santri'
     _description    = 'Model untuk mencatat pembagian kamar'
