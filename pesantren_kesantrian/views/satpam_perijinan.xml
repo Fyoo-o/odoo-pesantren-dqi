@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <list create="0" edit="0" delete="0" expand="1">
                     <!-- Add your fields here -->
-                    <field name="name" />
+                    <field name="name" string="No. Referensi"/>
                     <field name="tgl_ijin" />
                     <field name="siswa_id" />
                     <field name="kamar_id" />
@@ -40,12 +40,12 @@
                         <field name="state" widget="statusbar" statusbar_visible="Draft,Check,Approved,Permission,Return" />
                     </header>
                     <sheet>
-                        <div class="oe_title">
+                        <!-- <div class="oe_title">
                             <label for="name" class="oe_edit_only" string="No Referensi (Auto)" />
                             <h1>
                                 <field name="name" readonly="1"/>
                             </h1>
-                        </div>
+                        </div> -->
                         <group string="Data Ijin Santri">
                             <group>
                                 <field name="tgl_ijin" />
@@ -91,6 +91,23 @@
             <field name="model">cdn.perijinan</field>
             <field name="arch" type="xml">
                 <search string="Perijinan">
+                    <field name="name" string="Data"
+                        filter_domain="[
+                            '|', ('name', 'ilike', self),
+                            '|', ('tgl_ijin', 'ilike', self),
+                            '|', ('siswa_id', 'ilike', self),
+                            '|', ('siswa_id.barcode_santri', 'ilike', self),
+                            '|', ('kamar_id', 'ilike', self),
+                            '|', ('halaqoh_id', 'ilike', self),
+                            '|', ('musyrif_id', 'ilike', self),
+                            '|', ('keperluan', 'ilike', self),
+                            '|', ('lama_ijin', 'ilike', self),
+                            '|', ('penjemput', 'ilike', self),
+                            ('state', 'ilike', self),
+                        ]"
+                    />
+
+                    <separator/>
 
                     <filter string="Pengajuan" name="state_draft" domain="[('state','=','Draft')]" />
                     <filter string="Ijin Diperiksa" name="state_checked" domain="[('state','=','Check')]" />
@@ -98,7 +115,7 @@
                     <filter string="Ijin Ditolak" name="state_rejected" domain="[('state','=','Rejected')]" />
                     <filter string="Santri Check OUT" name="state_permission" domain="[('state','=','Permission')]" />
                     <filter string="Santri Check IN" name="state_return" domain="[('state','=','Return')]" />
-                    <field name="siswa_id" select="True"/>
+                    <!-- <field name="siswa_id" select="True"/> -->
                     <group string="Group By.." expand="0">
                         <filter string="Status Ijin" domain="[]" name="group_by_state" context="{'group_by':'state'}"/>
                     </group>
@@ -108,7 +125,7 @@
 
         <!-- cdn.perijinan action window -->
         <record id="satpam_cdn_perijinan_action" model="ir.actions.act_window">
-            <field name="name">Data Perijinan Santri</field>
+            <field name="name">Perijinan Santri</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.perijinan</field>
             <field name="view_mode">list,form</field>
@@ -128,7 +145,7 @@
         </record>
 
         <record id="satpam_cdn_perijinan_action_approved" model="ir.actions.act_window">
-            <field name="name">Santri Ijin Diterima</field>
+            <field name="name">Perijinan Diterima</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.perijinan</field>
             <field name="view_mode">list,form</field>
@@ -148,7 +165,7 @@
         </record>
 
         <record id="satpam_cdn_perijinan_action_reject" model="ir.actions.act_window">
-            <field name="name">Santri Ijin Ditolak</field>
+            <field name="name">Perijinan Ditolak</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.perijinan</field>
             <field name="view_mode">list,form</field>
@@ -168,7 +185,7 @@
         </record>
 
         <record id="satpam_cdn_perijinan_action_permission" model="ir.actions.act_window">
-            <field name="name">Santri Status Ijin Keluar</field>
+            <field name="name">Santri Keluar</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.perijinan</field>
             <field name="view_mode">list,form</field>
@@ -190,7 +207,7 @@
 
 
         <menuitem id="satpam_ijin_keluar_menu_act" name="Perijinan Santri" parent="satpam_perijinan_menu_categ" action="satpam_cdn_perijinan_action" sequence="10"/>
-        <menuitem id="satpam_ijin_approved_menu_act" name="Perijinan Disetujui" parent="satpam_perijinan_menu_categ" action="satpam_cdn_perijinan_action_approved" sequence="20"/>
+        <menuitem id="satpam_ijin_approved_menu_act" name="Perijinan Diterima" parent="satpam_perijinan_menu_categ" action="satpam_cdn_perijinan_action_approved" sequence="20"/>
         <menuitem id="satpam_ijin_reject_menu_act" name="Perijinan Ditolak" parent="satpam_perijinan_menu_categ" action="satpam_cdn_perijinan_action_reject" sequence="30"/>
         <menuitem id="satpam_ijin_permission_menu_act" name="Santri Keluar" parent="satpam_perijinan_menu_categ" action="satpam_cdn_perijinan_action_permission" sequence="40"/>       
     

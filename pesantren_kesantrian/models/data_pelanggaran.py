@@ -1,6 +1,5 @@
 from odoo import api, fields, models
 
-
 class Pelanggaran(models.Model):
     _name = 'cdn.data_pelanggaran'
     _description = 'Master referensi pelanggaran'
@@ -12,7 +11,3 @@ class Pelanggaran(models.Model):
         ('Berat', 'Berat'), ('Dikeluarkan', 'Sangat Berat')
     ], required=True)
     poin = fields.Integer(string='Poin', required=True)
-    
-    
-    
-
