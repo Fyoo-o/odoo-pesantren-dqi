@@ -23,42 +23,36 @@
             <field name="model">cdn.halaqoh</field>
             <field name="arch" type="xml">
                 <form>
-                    <header> 
+                    <header>
                         <button string="Konfirmasi" name="konfirmasi" type="object" class="oe_highlight" invisible="status == 'konfirm'" confirm="Apakah Anda yakin ingin mengkonfirmasi Halaqoh ini?" groups="pesantren_kesantrian.group_kesantrian_staff"/>
                         <button string="Draft" name="draft" type="object" class="oe_highlight" invisible="status  != 'konfirm'" groups="pesantren_kesantrian.group_kesantrian_staff"/>
                         <field name="status" widget="statusbar" statusbar_visible="draft,konfirm" />
                     </header>
                     <sheet>
-
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only" string="Nama Halaqoh"/>
+                            <h1><field name="name" readonly="status ==  'konfirm'"/></h1>
+                        </div>
                         <group string="Halaqoh">
-
-                            <group>
-                                <field name="name" readonly="status ==  'konfirm'"/>
-                                <field name="penanggung_jawab_id" domain="[('jns_pegawai', 'in', ['guruquran'])]"
-                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="status == 'konfirm'"/>
-                                <field name="pengganti_ids" widget="many2many_tags"
-                                    domain="[
-                                        ('id','!=',penanggung_jawab_id),
-                                        ('jns_pegawai', 'in', ['guruquran','musyrif'])
-                                    ]"
-                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="status == 'konfirm'"/>
-                            </group>
-
-                            <group>
-                                <field name="fiscalyear_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="status ==  'konfirm'"/>
-                                <field name="jml_siswa" />
-                                <field name="keterangan" readonly="status ==  'konfirm'"/>
-                            </group>
-
+                            <field name="fiscalyear_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="status ==  'konfirm'"/>
+                            <field name="penanggung_jawab_id" domain="[('jns_pegawai', 'in', ['guruquran'])]"
+                                options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="status == 'konfirm'"/>
+                            <field name="pengganti_ids" widget="many2many_tags"
+                                domain="[
+                                    ('id','!=',penanggung_jawab_id),
+                                    ('jns_pegawai', 'in', ['guruquran','musyrif'])
+                                ]"
+                                options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="status == 'konfirm'"/>
+                            <field name="jml_siswa" />
+                            <field name="keterangan" readonly="status ==  'konfirm'"/>
                         </group>
                       
                         <notebook>
-							<page string="Santri">
+							<page string="Siswa">
 								<field name="siswa_ids" readonly="status ==  'konfirm'">
 									<list>
 										<field name="nis"/>
 										<field name="name"/>
-                                        <field name="namapanggilan" string="Panggilan"/>
                                         <field name="ruang_kelas_id"/>
                                         <field name="kamar_id"/>
                                         <field name="last_tahfidz"/>
@@ -78,25 +72,6 @@
             <field name="arch" type="xml">
                 <search string="Search Description">
                     <!-- Add your fields here -->
-
-                    <field name="name" string="Data" 
-                        filter_domain="[
-                            '|', ('status', 'ilike', self),
-                            '|', ('siswa_ids.name', 'ilike', self),
-                            '|', ('siswa_ids.nis', 'ilike', self),
-                            '|', ('siswa_ids.namapanggilan', 'ilike', self),
-                            '|', ('siswa_ids.ruang_kelas_id', 'ilike', self),
-                            '|', ('siswa_ids.barcode_santri', 'ilike', self),
-                            '|', ('siswa_ids.kamar_id', 'ilike', self),
-                            '|', ('siswa_ids.last_tahfidz', 'ilike', self),
-                            '|', ('penanggung_jawab_id.name', 'ilike', self),
-                            '|', ('name', 'ilike', self),
-                            '|', ('pengganti_ids', 'ilike', self),
-                            '|', ('fiscalyear_id', 'ilike', self),
-                            ('jml_siswa', 'ilike', self)
-                        ]"
-                    />
-                
                     <filter name="group_by_fiscalyear_id" string="Tahun Ajaran" context="{'group_by': 'fiscalyear_id'}" />
                 </search>
             </field>

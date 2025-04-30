@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data> 
+    <data>
         <!-- cdn.tahsin_quran list view -->
         <record id="cdn_tahsin_view_tree" model="ir.ui.view">
             <field name="name">cdn.tahsin_quran.view.list</field>
@@ -34,38 +34,23 @@
                     <sheet>
                         <div class="oe_button_box" name="button_box">
                         </div>
-
-                        <!-- <div class="oe_title">
+                        <div class="oe_title">
                             <label for="name" class="oe_edit_only" string="No Referensi" />
                             <h1>
                                 <field name="name" />
                             </h1>
-                        </div> -->
-
-                        <group string="Santri">
+                        </div>
+                        <group string="Data Santri Tahsin">
                             <group>
-                                <field name="barcode"/>
-                                <field name="siswa_id" string="Santri" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" readonly="1" />
+                                <field name="tanggal" />
+                                <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" readonly="1" />
                                 <field name="kelas_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" />
                             </group>
                             <group>
-                                <field name="kamar_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" readonly="1" />
-                                <field name="halaqoh_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" readonly="1" />
-                                <field name="musyrif_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" readonly="1" />
-                            </group>
-                        </group>
-
-                        <group string="Pelaksanaan Tahsin">
-                            <group>
-                                <field name="tanggal" />
-                            </group>
-
-                            <group>
                                 <field name="ustadz_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" />
+                                <field name="halaqoh_id" options="{'no_create_edit':True, 'no_create':True}" />
                             </group>
-
                         </group>
-
                         <group string="Penilaian Tahsin">
                             <group>
                                 <field name="buku_tahsin_id" />
@@ -74,10 +59,11 @@
                             <group>
                                 <field name="halaman_tahsin" />
                                 <!-- <field name="nilai_mad" /> -->
-                                <field name="keterangan" string="Catatan Musyrif/Ustadz" />
                             </group>
                         </group>
-
+                        <group string="Keterangan">
+                            <field name="keterangan" string="Catatan Musyrif/Ustadz" />
+                        </group>
                     </sheet>
                 </form>
             </field>
@@ -90,27 +76,7 @@
             <field name="arch" type="xml">
                 <search string="Search Description">
                     <!-- Add your fields here -->
-                    <field name="name" string="Data"
-                        filter_domain="[
-                            '|', ('name', 'ilike', self),
-                            '|', ('siswa_id.name', 'ilike', self),
-                            '|', ('siswa_id.nis', 'ilike', self),
-                            '|', ('siswa_id.barcode_santri', 'ilike', self),
-                            '|', ('kelas_id.name', 'ilike', self),
-                            '|', ('halaqoh_id.name', 'ilike', self),
-                            '|', ('ustadz_id.name', 'ilike', self),
-                            '|', ('level_tahsin_id.name', 'ilike', self),
-                            '|', ('nilai_tajwid', 'ilike', self),
-                            '|', ('nilai_makhroj', 'ilike', self),
-                            '|', ('nilai_mad', 'ilike', self),
-                            '|', ('buku_tahsin_id.name', 'ilike', self),
-                            '|', ('jilid_tahsin_id.name', 'ilike', self),
-                            '|', ('halaman_tahsin', 'ilike', self),
-                            '|', ('state', 'ilike', self),
-                            '|', ('penanggung_jawab_id.name', 'ilike', self),
-                            ('tanggal', 'ilike', self)
-                        ]"
-                    />
+                    <field name="siswa_id"/>
                     <group>
                         <field name="siswa_id"/>
                         <field name="ustadz_id" />

@@ -28,8 +28,7 @@ class OrangTua(models.Model):
                 # Assign grup guru user
                 self.env.ref('pesantren_guru.group_guru_user').id,
                 # Assign grup keuangan user
-                self.env.ref('pesantren_keuangan.group_keuangan_user').id,    
-                self.env.ref('account.group_account_readonly').id,
+                self.env.ref('pesantren_keuangan.group_keuangan_user').id
             ])]
         })
         
@@ -62,31 +61,19 @@ class OrangTua(models.Model):
                 self.env.ref('pesantren_base.group_sekolah_user').id,
                 self.env.ref('pesantren_kesantrian.group_kesantrian_user').id,
                 self.env.ref('pesantren_guru.group_guru_user').id,
-                self.env.ref('pesantren_keuangan.group_keuangan_user').id,
-                # self.env.ref('account.group_account_invoice').id,
-                self.env.ref('account.group_account_readonly').id,
+                self.env.ref('pesantren_keuangan.group_keuangan_user').id
             ])]
-
+        
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
             'params': {
-                'title': '✅ Berhasil',
-                'message': f'Hak Akses Sudah Diperbarui',
-                'type': 'success',
-                'sticky': False,
-            }
+                'title': _("Warning head"),
+                'type': 'notification',
+                'message': _("This is the detailed warning"),
+                'sticky': True,
+            },
         }
-        # return {
-        #     'type': 'ir.actions.client',
-        #     'tag': 'display_notification',
-        #     'params': {
-        #         'title': _("Warning head"),
-        #         'type': 'notification',
-        #         'message': _("This is the detailed warning"),
-        #         'sticky': True,
-        #     },
-        # }
 
 
 
