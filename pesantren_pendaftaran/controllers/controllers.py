@@ -763,6 +763,8 @@ class PesantrenPendaftaran(http.Controller):
     @http.route('/psb', auth='public')
     def index(self, **kw):
 
+    
+
         # Ambil nilai dari field konfigurasi
         config_obj = http.request.env['ir.config_parameter'].sudo()
 
@@ -1612,6 +1614,7 @@ class UbigPendaftaranController(http.Controller):
         pekerjaan_ayah         = request.params.get('pekerjaan_ayah')
         penghasilan_ayah       = request.params.get('penghasilan_ayah')
         # email_ayah             = post.get('email_ayah')
+        agama_ayah             = request.params.get('agama_ayah')
         kewarganegaraan_ayah   = request.params.get('kewarganegaraan_ayah')
         pendidikan_ayah        = request.params.get('pendidikan_ayah')
 
@@ -1621,6 +1624,7 @@ class UbigPendaftaranController(http.Controller):
         tanggal_lahir_ibu_str  = request.params.get('tanggal_lahir_ibu')
         email_ibu              = post.get('email_ibu')
         # Mengonversi format tanggal dd/mm/yyyy menjadi date
+        agama_ibu              = request.params.get('agama_ibu')
         tanggal_lahir_ibu      = datetime.datetime.strptime(tanggal_lahir_ibu_str, '%d/%m/%Y').date()
         telepon_ibu            = post.get('telepon_ibu')
         pekerjaan_ibu          = request.params.get('pekerjaan_ibu')
@@ -1744,6 +1748,7 @@ class UbigPendaftaranController(http.Controller):
             'pekerjaan_ayah'         : pekerjaan_ayah,
             'email_ayah'             : email_ayah,
             'penghasilan_ayah'       : penghasilan_ayah,
+            'agama_ayah'             : agama_ayah,
             # 'email_ayah'             : email_ayah,
             'kewarganegaraan_ayah'   : kewarganegaraan_ayah,
             'pendidikan_ayah'        : pendidikan_ayah, 
@@ -1756,6 +1761,7 @@ class UbigPendaftaranController(http.Controller):
             'pekerjaan_ibu'          : pekerjaan_ibu,
             'email_ibu'              : email_ibu,
             'penghasilan_ibu'        : penghasilan_ibu,
+            'agama_ibu'              : agama_ibu,
             # 'email_ibu'              : email_ibu,
             'kewarganegaraan_ibu'    : kewarganegaraan_ibu,
             'pendidikan_ibu'         : pendidikan_ibu,

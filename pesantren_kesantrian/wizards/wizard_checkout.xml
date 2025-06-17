@@ -41,7 +41,7 @@
                             <field name="keperluan"/>
                             <label for="penjemput" string="Penjemput"/>
                             <div class="o_row">
-                                <field name="penjemput" nolabel="1"/>
+                                <field name="penjemput" nolabel="1"/> 
                                 <button string="-" name="action_button" type="object" class="oe_highlight"/>
                             </div>
                             <field name="catatan_keamanan"/>

@@ -59,7 +59,7 @@ class WalletTransaction(models.Model):
         return super(WalletTransaction, self).create(vals)
 
     partner_id = fields.Many2one('res.partner', string='Siswa')
-    siswa_id = fields.Many2one('res.partner', string='Siswa', compute='_compute_siswa')
+    siswa_id = fields.Many2one('res.partner', string='Siswa', ondelete='cascade',compute='_compute_siswa')
 
     @api.depends('partner_id')
     def _compute_siswa(self):

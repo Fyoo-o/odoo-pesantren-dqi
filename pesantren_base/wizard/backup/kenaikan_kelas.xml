@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_kenaikan_kelas_form" model="ir.ui.view">
+            <field name="name">cdn.kenaikan_kelas.form</field>
+            <field name="model">cdn.kenaikan_kelas</field>
+            <field name="arch" type="xml">
+                <form string="Kenaikan Kelas">    
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="tahunajaran_id" string="Tahun Ajaran"/>
+                            </group>
+
+                            <group>
+                                <field name="next_tahunajaran_name" string="Ke Tahun Ajaran"
+                                    decoration-success="status == 'naik'"
+                                    decoration-primary="status == 'lulus'"
+                                    decoration-warning="status == 'tidak_naik'"
+                                    decoration-danger="status == 'tidak_lulus'"
+                                />
+                                <field name="angkatan_id" invisible="1"/>
+                                <field name="jenjang" invisible="1"/>
+                                <field name="status" invisible="1"
+                                    decoration-success="status == 'naik'"
+                                    decoration-primary="status == 'lulus'"
+                                    decoration-warning="status == 'tidak_naik'"
+                                    decoration-danger="status == 'tidak_lulus'"
+                                />
+                            </group>
+
+                            <group>    
+                                <field name="kelas_id" string="Dari kelas" options="{'no_create': True}" placeholder="Pilih Kelas"/>
+                            </group>
+
+                            <group>
+                                <field name="next_class" string="Ke Kelas" decoration-success="status == 'naik'" decoration-primary="status == 'lulus'" decoration-warning="status == 'tidak_naik'" decoration-danger="status == 'tidak_lulus'" options="{'no_create': True, 'no_open': True}"/>
+                                <field name="tingkat_id" invisible="1" readonly="1" options="{'no_create' : True, 'no_open' : True}"/>
+                            </group>
+
+                            <group string="Wali Kelas" invisible="1">
+                                <field name="walikelas_id" invisible="1"/>
+                            </group>
+
+                            <group string="Santri Yang Tidak Naik Kelas / Tidak Lulus" invisible="1">
+                                <field name="filtered_santri_ids" invisible="1" widget="many2many_tags" />
+                            </group>
+                        </group>
+                        <group>
+                            <!-- <field name="partner_ids" string=" ">
+                                <list editable="bottom" string=" ">
+                                    <field name="name"/>
+                                    <field name="nis"/>
+                                    <field name="ruang_kelas_id" string="Kelas Saat Ini"/>
+                                    <field name="next_class_id" />
+                                </list>
+                            </field> -->
+                        
+                            <!-- <field name="partner_lines" string="">
+                                <list editable="bottom" string="">
+                                    <field name="nis"/>
+                                    <field name="siswa_id"/>
+                                    <field name="kelas_sekarang_id"/>
+                                    <field name="next_class_id"/>
+                                </list>
+                            </field> -->
+                        </group>
+                        <notebook>
+                            <page string="Santri" >
+                                <field name="partner_ids" nolable="1">
+                                    <list editable="bottom" create="false" delete="false">
+                                        <field name="centang" string=" " widget="boolean_toggle" readonly="0"/>
+                                        <field name="name"/>
+                                        <field name="panggilan"/>
+                                        <field name="nis"/>
+                                        <field name="jns_kelamin" readonly="0"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <!-- <page string="Partner_lines">
+                                <field name="partner_lines" invisible="1" string="">
+                                    <list editable="bottom" string="">
+                                        <field name="nis"/>
+                                        <field name="siswa_id"/>
+                                        <field name="kelas_sekarang_id"/>
+                                        <field name="next_class_id"/>
+                                    </list>
+                                </field>
+                            </page> -->
+                        </notebook>
+                    </sheet>
+                  <footer>                                
+                        <button name="action_proses_kenaikan_kelas" string="Simpan" type="object" class="btn btn-primary"/>
+                        <button string="Batal" class="btn btn-secondary" special="cancel"/>
+                </footer>
+                </form>
+            </field>
+        </record>
+        <record id="action_kenaikan_kelas" model="ir.actions.act_window">
+            <field name="name">Kenaikan Kelas</field>
+            <field name="res_model">cdn.kenaikan_kelas</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        <menuitem id="menu_kenaikan_kelas"
+                  name="Kenaikan Kelas"
+                  parent="sekolah_top_menu"
+                  action="action_kenaikan_kelas"
+                  sequence="50"/>
+    </data>
+</odoo>

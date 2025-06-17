@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="wizard_pencairan_saldo_form" model="ir.ui.view">
+            <field name="name">wizard.pencairan.saldo.form</field>
+            <field name="model">wizard.pencairan.saldo</field>
+            <field name="arch" type="xml">
+                 <form string="Pencairan Saldo">
+                  <group string="Santri">
+                        <group>         
+                            <field name="kartu_santri" />
+                            <field name="santri_id" string="Santri" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" context="{'default_partner_id': id}" />
+                            <field name="kelas_id" />
+                        </group>
+                        <group>
+                            <field name="kamar_id" />
+                            <field name="halaqoh_id" />
+                            <field name="musyrif_id" />
+                        </group>
+                    </group>
+                    <group string="Pencairan Saldo">
+                        <group>
+                            <field name="saldo_santri"/>
+                            <field name="nominal_pencairan"/>
+                        </group>
+                        <group>
+                            <field name="catatan"/> 
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="action_submit" string="Cairkan" type="object" class="btn-primary"/>
+                        <button string="Batal" class="btn-secondary" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <record id="action_wizard_pencairan_saldo" model="ir.actions.act_window">
+            <field name="name">Pencairan Saldo</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.pencairan.saldo</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="pesantren_kesantrian.wizard_pencairan_saldo_form"/>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo> 

@@ -8,3 +8,5 @@ from . import predikat
 from . import report_penilaian_akhir
 from . import penilaian_ekstrakulikuler
 from . import organisasi
+from . import pembagian_ekstra
+from . import absensi_ekskul

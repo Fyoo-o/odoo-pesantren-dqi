@@ -32,6 +32,7 @@
         - Akim
         - Aldo
 
+
         November 2024
 
         Informasi Lebih lanjut, hubungi :
@@ -72,7 +73,14 @@
         'views/biaya_daftarulang.xml',
         'views/res_config_settings.xml',
         'views/pendaftaran_seleksi.xml',
+        'views/wizard_sandi.xml',
+        
+        
+        # 'views/inherit_button_password.xml',
         'views/pendaftaran_rincian_biaya.xml',
+        
+        
+        # 'views/konfigurasi_jenjang.xml',
 
         # report
         'report/ubig_pendaftaran_report.xml',
@@ -80,16 +88,19 @@
         # wizard
 
         # Menu
-        'views/menu.xml'
+        'views/menu.xml',
+        
+        # 'views/assets.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
         'demo/demo.xml',
     ],
-
+ 
     'assets': {
         'web.assets_backend': [
-            'pesantren_pendaftaran/static/src/css/style.css',
+            # 'pesantren_pendaftaran/static/src/fields/password_toggle_field.js',
+            # 'pesantren_pendaftaran/static/src/fields/password_toggle_field.xml',
         ],
     },
 }

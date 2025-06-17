@@ -37,7 +37,7 @@ class PenilaianAkhir(models.Model):
         return domain
 
     name                = fields.Char(string='Nama', readonly=True, compute='_compute_name')
-    siswa_id            = fields.Many2one('cdn.siswa', string='Siswa', required=True, domain=_get_domain_siswa)
+    siswa_id            = fields.Many2one('cdn.siswa', string='Siswa', required=True, domain=_get_domain_siswa , ondelete='cascade')
     nis                 = fields.Char(string='NIS', related='siswa_id.nis', readonly=True, store=True )
     kelas_id            = fields.Many2one('cdn.ruang_kelas', string='Kelas', related='siswa_id.ruang_kelas_id', readonly=True, store=True)
     tahunajaran_id      = fields.Many2one('cdn.ref_tahunajaran', string='Tahun Ajaran', required=True, default=lambda self:self.env.user.company_id.tahun_ajaran_aktif.id)
@@ -49,7 +49,7 @@ class PenilaianAkhir(models.Model):
                             ('confirm', 'Confirm'), 
                             ('approved', 'Di Setujui')], default='draft')
     tgl_disetujui       = fields.Date(string='Tgl di Setujui', readonly=True)
-    walikelas_id        = fields.Many2one(comodel_name='hr.employee', string='Wali Kelas', domain=_get_domain_walikelas)
+    walikelas_id        = fields.Many2one(comodel_name='hr.employee', string='Wali Kelas', required=True, domain=_get_domain_walikelas)
     
     penilaianakhir_ids  = fields.One2many('cdn.penilaian_akhir_lines', 'penilaianakhir_id', string='Nilai Raport', domain=[('penilaianguru_id.state', '=', 'confirm')])
     ekstrakulikuler_ids = fields.One2many('cdn.penilaian_ekstrakulikuler','penilaianakhir_id',string='Nilai Ekstrakulikuler')
@@ -60,11 +60,14 @@ class PenilaianAkhir(models.Model):
     def act_approved(self):
         self.state = 'approved'
         self.tgl_disetujui = date.today()
+        
     # compute
     @api.depends('siswa_id','semester')
     def _compute_name(self):
         for rec in self:
-            rec.name = '%s/%s' % (rec.siswa_id.name, rec.semester)
+            # rec.name = '%s/%s' % (rec.siswa_id.name, rec.semester)
+            rec.name = rec.siswa_id.name if rec.siswa_id else ''
+
     # onchange
     @api.onchange('siswa_id','semester','tahunajaran_id')
     def _onchange_siswa(self):

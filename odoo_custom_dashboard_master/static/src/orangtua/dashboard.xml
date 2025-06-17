@@ -48,7 +48,6 @@
                 </h2>
               </div>
               <div class="controls-wrapper d-flex align-items-center mt-1">
-                <!-- Custom Date Range Button -->
                 <div class="button-popup-wrapper dateButton">
                   <button
                     class="btn btn-outline-secondary dateButton"

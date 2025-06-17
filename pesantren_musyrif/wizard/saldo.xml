@@ -1,39 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <record id="saldo_santri_form" model="ir.ui.view">
-            <field name="name">wizard.recharge.wallet.scan.form</field>
-            <field name="model">recharge.wallet.scan</field>
+        <record id="wizard_transfer_saldo" model="ir.ui.view">
+            <field name="name">wizard.transfer.saldo.form</field>
+            <field name="model">wizard.transfer.saldo</field>
             <field name="arch" type="xml">
-                <form string="Isi Saldo Santri">
-                    <group string="Data Santri">
-                        <group>
-                            <field name="barcode"/>
-                            <field name="siswa_id" string="Santri"/>
-                            <field name="kelas_id" />
+                <form string="Transfer Antar Santri">
+                    <group >
+                        <group string="Pengirim">
+                            <field name="kartu"/>
+                            <field name="santri_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" string="Santri"/>
+                            <field name="wallet_santri" string="Saldo Santri"/>
                         </group>
-                        <group>
-                            <field name="kamar_id" />
-                            <field name="halaqoh_id" />
-                            <field name="musyrif_id" />
+                        <group string="Penerima">
+                            <field name="kartu_penerima" />
+                            <field name="santri_penerima" string="Santri"/>
+                            <field name="wallet_penerima" string="Saldo Santri"/>
                         </group>
                     </group>
-                    
-                    <group string="Saldo Dompet">
+                    <group string="Transfer">
                         <group>
-                            <field name="tgl_transaksi"/>
-                            <field name="recharge_amount" widget="integer"/>
-                            <field name="recharge_type" widget="radio"/>     
-                        </group>
+                            <field name="jumlah_transfer" />
+                            <field name="santri_pin" />
+                        </group>      
                         <group>
-                            <field name="saldo_uang_saku" widget="integer"/>
-                            <field name="wallet_balance" widget="integer"/>
-                            <field name="journal_id"/>
-                        </group>         
+                            <field name="validasi_id" string="Validasi" />
+                        </group>      
                     </group>
-
                       <footer>
-                        <button name="action_recharge" string="Isi Saldo" type="object" class="btn-primary"/>
+                        <button name="action_transfer" string="Transfer" type="object" class="btn-primary"/>
                         <button string="Batal" class="btn-secondary" special="cancel"/>
                     </footer> 
                 </form>
@@ -41,15 +36,15 @@
         </record>
 
         <record id="action_wizard_recharge_wallet" model="ir.actions.act_window">
-            <field name="name">Isi Saldo Santri</field>
+            <field name="name">Transfer Antar Santri</field>
             <field name="type">ir.actions.act_window</field>
-            <field name="res_model">recharge.wallet.scan</field>
+            <field name="res_model">wizard.transfer.saldo</field>
             <field name="view_mode">form</field>
-            <field name="view_id" ref="saldo_santri_form"/>
+            <field name="view_id" ref="wizard_transfer_saldo"/>
             <field name="target">new</field>
         </record>      
 
-        <menuitem id="wizard_isi_saldo_menu_categ" name="Isi Saldo Santri" parent="musyrif_menu_root" action="action_wizard_recharge_wallet" sequence="60"/>
+        <menuitem id="wizard_isi_saldo_menu_categ" name="Transfer Saldo" parent="musyrif_menu_root" action="action_wizard_recharge_wallet" sequence="60"/>
     </data>
 </odoo>
 

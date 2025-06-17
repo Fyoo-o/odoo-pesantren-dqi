@@ -227,6 +227,7 @@ export class CutiChartRenderer extends Component {
       }
       domain.push(["date_from", ">=", startDate]);
       domain.push(["date_to", "<=", endDate]);
+      domain.push([]);
 
       pie1 = await this.orm.call("hr.leave", "search_read", [
         domain,

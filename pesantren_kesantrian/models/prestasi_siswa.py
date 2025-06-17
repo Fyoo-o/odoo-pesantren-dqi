@@ -11,7 +11,7 @@ class Prestasi_siswa(models.Model):
     
     name             = fields.Char(string='No. Referensi', readonly=True)
     tgl_prestasi     = fields.Date(string='Tgl Prestasi', default=lambda self: date.today(), required=True)
-    siswa_id         = fields.Many2one(comodel_name='cdn.siswa', string='Santri', required=True)
+    siswa_id         = fields.Many2one(comodel_name='cdn.siswa', string='Santri', ondelete='cascade' ,required=True)
     tingkat_prestasi = fields.Selection(string='Tingkat Prestasi', selection=[('Internal', 'Internal'), ('Lokal', 'Lokal'), ('Kecamatan', 'Kecamatan'),('Kota', 'Kota'), ('Provinsi', 'Provinsi'), ('Nasional', 'Nasional'), ('Internasional', 'Internasional')], required=True)
     jns_prestasi_id  = fields.Many2one(comodel_name='cdn.jns_prestasi', string='Jenis Prestasi', required=True)
     #juara = fields.Selection(string='Juara', selection=[('1', 'Ke-1'), ('2', 'Ke-2'), ('3', 'Ke-3'), ('harapan 1','Harapan 1'), ('harapan 2', 'Harapan 2'), ('harapan 3', 'Harapan 3')], required=True)

@@ -27,3 +27,4 @@ from . import ekstrakulikuler
 from . import hr_employee
 from . import mobile_fasilitas
 from . import res_config_setting
+from . import konfigurasi_jenjang

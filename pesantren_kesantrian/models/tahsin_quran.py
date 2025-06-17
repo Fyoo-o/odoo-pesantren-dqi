@@ -182,7 +182,7 @@ class TahsinQuran(models.Model):
     name            = fields.Char(string='No Referensi', readonly=True)
     tanggal         = fields.Date(string='Tgl Tahfidz', required=True, states={'done': [('readonly', True)]})
 
-    siswa_id        = fields.Many2one('cdn.siswa', string='Santri', required=True)
+    siswa_id        = fields.Many2one('cdn.siswa', string='Santri', required=True , ondelete='cascade')
     kelas_id        = fields.Many2one('cdn.ruang_kelas', string='Kelas', related='siswa_id.ruang_kelas_id', readonly=True, store=True)
 
     halaqoh_id      = fields.Many2one('cdn.halaqoh', string='Halaqoh', required=True, states={'done': [('readonly', True)]})

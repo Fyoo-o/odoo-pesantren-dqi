@@ -47,7 +47,7 @@
     'license': 'LGPL-3',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','pesantren_base','pesantren_keuangan','pesantren_kesantrian'],
+    'depends': ['base','pesantren_base','pesantren_keuangan','pesantren_kesantrian', 'hr'],
 
     # always loaded
     'data': [
@@ -73,7 +73,9 @@
         'views/prestasi_siswa.xml',
         'views/uang_saku.xml',
         'views/pos_wallet_transaction.xml',
-        'views/report_filter.xml'       
+        'views/report_filter.xml',
+        # 'views/submenu_absen_tahfidz.xml',
+        # 'views/submenu_absen_tahsin.xml',  
     ],
     # only loaded in demonstration mode
     'demo': [

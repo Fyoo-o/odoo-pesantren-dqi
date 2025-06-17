@@ -297,3 +297,4 @@ export class TahfidzCardList extends Component {
 }
 
 TahfidzCardList.template = 'owl.TahfidzCardList';
+

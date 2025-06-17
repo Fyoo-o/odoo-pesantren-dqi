@@ -23,7 +23,7 @@ class biaya_daftarulang(models.Model):
 #     #Versi Baru
 #     name                = fields.Char(string="Nama Biaya")
     gambar              = fields.Binary( string="Gambar Biaya",  help="", filename="Rincian Biaya")
-    jenjang             = fields.Selection(selection=[('paud','PAUD'),('tk','TK'),('sdmi','SD / MI'),('smpmts','SMP / MTS'),('smama','SMA / MA'),('smk','SMK')], string='Jenjang', required=True)
+    jenjang             = fields.Selection(selection=[('paud','PAUD'),('tk','TK'),('sdmi','SD / MI'),('smpmts','SMP / MTS'),('smama','SMA / MA'),('smk','SMK'), ('nonformal', 'Nonformal')], string='Jenjang', required=True)
     is_alumni           = fields.Boolean(string="Alumni DQI",  help="", default=False)
     is_pindahan_sd      = fields.Boolean(string="Pindahan SD",  help="", default=False)
     biaya_id            = fields.Many2one('ubig.pendidikan', string="Jenjang Pendidikan",  help="")

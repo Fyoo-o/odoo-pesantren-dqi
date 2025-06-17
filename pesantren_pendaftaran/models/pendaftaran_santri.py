@@ -10,13 +10,13 @@ import string
 import logging
 
 _logger = logging.getLogger()
-
+ 
 class ResPartner(models.Model):
     _inherit            = 'res.partner'
 
     virtual_account     = fields.Char(string='Virtual Account', store=True)
     va_saku             = fields.Char(string='No. VA Uang Saku', store=True)
-    bank                = fields.Many2one('ubig.bank', string="Bank", help="Pilih bank untuk membuat virtual account")
+    bank                = fields.Many2one('ubig.bank', string="PPilih Bank untuk VA", help="Pilih bank untuk membuat virtual account")
     petunjuk_pembayaran = fields.Text(related='bank.petunjuk_pembayaran', string="Petunjuk Pembayaran")
     jns_partner         = fields.Selection(string='Jenis Partner', selection=[
                         ('siswa', 'Siswa'), 
@@ -31,32 +31,35 @@ class DataPendaftaran(models.Model):
     _inherit            = ['mail.thread', 'mail.activity.mixin']
     _inherits           = {"res.partner": "partner_id"}
     _description        = 'Data Pendaftaran'
-    _order              = 'total_nilai desc'
+    _order              = 'tanggal_daftar desc, total_nilai desc'
     
 
     token = fields.Char(string='Token')
-    is_notified = fields.Boolean(string='Is Notified', default=False)
+    is_notified = fields.Boolean(string='Notif', default=False)
     nomor_pendaftaran   = fields.Char(string='No Pendaftaran',readonly=True)
     tanggal_daftar      = fields.Date(string='Tanggal Daftar', default=fields.Date.context_today)
     partner_id          = fields.Many2one('res.partner', string="Nama Santri", required=False, help="Nama Calon Santri")
-
-    # Username
+    siswa_id            = fields.Many2one('cdn.siswa',ondelete='cascade' ,string="Data Siswa", readonly=True)
+    # Username 
     nik                 = fields.Char(string="NIK", help="Nomor Induk Keluarga Calon santri")
     email               = fields.Char(string="email", help="Email Calon Santri")
     password            = fields.Char(string="Kata Sandi", help="Kata Sandi Login")
     nomor_hp            = fields.Char(string="Nomor HP", help="Nomor HP/WhatsApp Calon Santri")
     nomor_login         = fields.Char(string="Nomor HP", help="Nomor HP/WhatsApp Untuk Login")
-
+  
     # Jenjang Calon Santri
     jenjang_id          = fields.Many2one('ubig.pendidikan', string="Jenjang Pendidikan")
     jenjang             = fields.Selection(related='jenjang_id.jenjang', string='Jenjang', readonly=True)
+
+    ini_nama            = fields.Char(related="jenjang_id.name", string="ya hoo")
+
     biaya               = fields.Integer(related='jenjang_id.biaya', string='Biaya Pendaftaran', readonly=True)
     keterangan          = fields.Char(related='jenjang_id.keterangan', string='Keterangan', readonly=True)
 
     # Data Diri
     gender              = fields.Selection([('L','Laki - Laki'),('P','Perempuan'),], string="Jenis Kelamin")
     kota_lahir          = fields.Char(string="Kota Kelahiran")
-    tanggal_lahir       = fields.Date(string="Tanggal Lahir Calon Santri")
+    tanggal_lahir       = fields.Date(string="Tanggal Lahir")
     golongan_darah      = fields.Selection([
                         ('A', 'A'),
                         ('B', 'B'),
@@ -64,7 +67,7 @@ class DataPendaftaran(models.Model):
                         ('O', 'O'),
                         ], string="Golongan Darah")
     kewarganegaraan     = fields.Selection(selection=[('wni','WNI'),('wna','WNA')],  string="Kewarganegaraan",  help="")
-    alamat              = fields.Char(string='Alamat Calon Santri')
+    alamat              = fields.Char(string='Alamat')
     provinsi_id         = fields.Many2one(comodel_name="cdn.ref_propinsi",  string="Provinsi",  help="")
     kota_id             = fields.Many2one(comodel_name="cdn.ref_kota",  string="Kota",  help="")
     kecamatan_id        = fields.Many2one(comodel_name="cdn.ref_kecamatan",  string="Kecamatan",  help="")
@@ -82,18 +85,18 @@ class DataPendaftaran(models.Model):
     npsn                = fields.Char(string='NPSN Sekolah')
 
     # Data Orang Tua - Ayah
-    nama_ayah           = fields.Char(string="Nama Ayah")
-    ktp_ayah            = fields.Char(string="Nomor KTP Ayah")
-    tanggal_lahir_ayah  = fields.Date(string="Tanggal Lahir Ayah")
-    telepon_ayah        = fields.Char(string="Nomor Telepon Ayah")
-    pekerjaan_ayah      = fields.Many2one('cdn.ref_pekerjaan',string="Pekerjaan Ayah")
+    nama_ayah           = fields.Char(string="Nama")
+    ktp_ayah            = fields.Char(string="Nomor KTP")
+    tanggal_lahir_ayah  = fields.Date(string="Tanggal Lahir")
+    telepon_ayah        = fields.Char(string="Nomor Telepon")
+    pekerjaan_ayah      = fields.Many2one('cdn.ref_pekerjaan',string="Pekerjaan")
     penghasilan_ayah    = fields.Selection([
                         ('1juta', ' < Rp. 1.000.000'),
                         ('5juta', 'Rp. 1.000.000 - Rp. 5.000.000'),
                         ('10juta', 'Rp. 6.000.000 - Rp. 10.000.000'),
                         ('11juta', '> Rp. 10.000.000')
-                        ], string="Penghasilan Ayah")
-    email_ayah          = fields.Char(string="Email Ayah")
+                        ], string="Penghasilan")
+    email_ayah          = fields.Char(string="Email", required=True)
     agama_ayah          = fields.Selection([
                         ('islam', 'Islam'),
                         ('kristen', 'Kristen'),
@@ -101,23 +104,33 @@ class DataPendaftaran(models.Model):
                         ('hindu', 'Hindu'),
                         ('budha', 'Budha'),
                         ('lainnya', 'Lainnya'),
-                        ], string="Agama Ayah")
-    kewarganegaraan_ayah = fields.Selection(selection=[('wni','WNI'),('wna','WNA')], string="Kewarganegaraan Ayah")
-    pendidikan_ayah     = fields.Many2one('cdn.ref_pendidikan', string="Riwayat Pendidikan Ayah")
+                        ], string="Agama")
+    kewarganegaraan_ayah = fields.Selection(selection=[('wni','WNI'),('wna','WNA')], string="Kewarganegaraan")
+    pendidikan_ayah     = fields.Many2one('cdn.ref_pendidikan', string="Riwayat Pendidikan")
+
+    ayah_sdi            = fields.Selection([
+                            ('sdi', 'SDI/DQI'),
+                            ('bukan', 'Bukan SDI DfQI')
+                        ],string="Sdi",default="bukan")
+
+    ibu_sdi            = fields.Selection([
+                            ('sdi', 'SDI/DQI'),
+                            ('bukan', 'Bukan SDI DQI')
+                        ],string="Sdi", default="bukan")
 
     # Data Orang Tua - Ibu
-    nama_ibu            = fields.Char(string="Nama Ibu")
-    ktp_ibu             = fields.Char(string="Nomor KTP Ibu")
-    tanggal_lahir_ibu   = fields.Date(string="Tanggal Lahir Ibu")
-    telepon_ibu         = fields.Char(string="Nomor Telepon Ibu")
-    pekerjaan_ibu       = fields.Many2one('cdn.ref_pekerjaan', string="Pekerjaan Ibu")
+    nama_ibu            = fields.Char(string="Nama")
+    ktp_ibu             = fields.Char(string="Nomor KTP")
+    tanggal_lahir_ibu   = fields.Date(string="Tanggal Lahir")
+    telepon_ibu         = fields.Char(string="Nomor Telepon")
+    pekerjaan_ibu       = fields.Many2one('cdn.ref_pekerjaan', string="Pekerjaan")
     penghasilan_ibu     = fields.Selection([
                         ('1juta', ' < Rp. 1.000.000'),
                         ('5juta', 'Rp. 1.000.000 - Rp. 5.000.000'),
                         ('10juta', 'Rp. 6.000.000 - Rp. 10.000.000'),
                         ('11juta', '> Rp. 10.000.000')
-                        ], string="Penghasilan Ibu")
-    email_ibu           = fields.Char(string="Email Ibu")
+                        ], string="Penghasilan")
+    email_ibu           = fields.Char(string="Email", required=True)
     agama_ibu           = fields.Selection([
                         ('islam', 'Islam'),
                         ('kristen', 'Kristen'),
@@ -125,9 +138,9 @@ class DataPendaftaran(models.Model):
                         ('hindu', 'Hindu'),
                         ('budha', 'Budha'),
                         ('lainnya', 'Lainnya'),
-                        ], string="Agama Ibu")
-    kewarganegaraan_ibu = fields.Selection(selection=[('wni','WNI'),('wna','WNA')], string="Kewarganegaraan Ibu")
-    pendidikan_ibu      = fields.Many2one('cdn.ref_pendidikan', string="Riwayat Pendidikan Ibu")
+                        ], string="Agama")
+    kewarganegaraan_ibu = fields.Selection(selection=[('wni','WNI'),('wna','WNA')], string="Kewarganegaraan")
+    pendidikan_ibu      = fields.Many2one('cdn.ref_pendidikan', string="Riwayat Pendidikan")
 
     wali_nama           = fields.Char( string="Nama Wali",  help="")
     wali_tmp_lahir      = fields.Char( string="Tmp lahir (Wali)",  help="")
@@ -157,7 +170,6 @@ class DataPendaftaran(models.Model):
     total_nilai         = fields.Integer(string="Total Nilai", compute="_compute_total_nilai", store=True)
 
     orangtua_id         = fields.Many2one('cdn.orangtua', string="Data Orang Tua", readonly=True)
-    siswa_id            = fields.Many2one('cdn.siswa', string="Data Siswa", readonly=True)
 
     status_va           = fields.Selection([
                             ('temporary', 'Temporary'),
@@ -175,6 +187,7 @@ class DataPendaftaran(models.Model):
 
     # perubahan
     is_alumni = fields.Boolean(string='Alumni DQI', default=False)
+
     is_pindahan_sd = fields.Boolean(string='Pindahan SD', default=False)
 
     # State
@@ -188,12 +201,34 @@ class DataPendaftaran(models.Model):
     ], string='Status', default='draft',
         track_visibility='onchange')
 
-    @api.depends('soal_ids')
+    show_password_button = fields.Boolean(compute='_compute_show_password_button')
 
+    @api.depends('password')
+    def _compute_show_password_button(self):
+        for rec in self:
+            rec.show_password_button = bool(rec.password)
+
+
+    def action_show_password(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Kata Sandi',
+            'res_model': 'lihat.password.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_password': self.password,
+            }
+        }
+
+    @api.depends('soal_ids')
     def _compute_total_nilai(self):
         for record in self:
             # Menghitung total nilai dari soal_ids
             record.total_nilai = sum(soal.nilai for soal in record.soal_ids if soal.nilai)
+
+    
 
     @api.model
     def create(self, vals):
@@ -255,7 +290,7 @@ class DataPendaftaran(models.Model):
         # Mapping Kode Lembaga
         lembaga = {
             'paud': '01', 'tk': '02', 'sdmi': '03',
-            'smpmts': '04', 'smama': '05', 'smk': '06'
+            'smpmts': '04', 'smama': '05', 'smk': '10', 'nonformal': '06'
         }.get(self.jenjang, '00')  # Default '00' jika tidak cocok
 
         # Konversi Tahun Daftar
@@ -277,93 +312,7 @@ class DataPendaftaran(models.Model):
         """Validasi NIS tidak boleh kosong dan minimal 8 karakter"""
         for record in self:
             if record.nis and len(record.nis) < 8:
-                raise ValidationError("NIS harus memiliki minimal 8 karakter. Silakan periksa kembali.")
-
-    # def get_psb_statistics(self):
-    #     total_pendaftar = self.search_count([])
-    #     total_diterima = self.search_count([('state', '=', 'diterima')])
-        
-    #     # Mengambil nilai kuota pendaftaran dari ir.config_parameter
-    #     config_param = self.env['ir.config_parameter'].sudo()
-    #     kuota_pendaftaran = int(config_param.get_param('pesantren_pendaftaran.kuota_pendaftaran', default=0))
-
-    #     sisa_kuota = kuota_pendaftaran - total_pendaftar
-
-    #     return {
-    #         'total_pendaftar': total_pendaftar,
-    #         'total_diterima': total_diterima,
-    #         'kuota_pendaftaran': kuota_pendaftaran,
-    #         'sisa_kuota': max(sisa_kuota, 0),  # Pastikan tidak negatif
-    #     }
-    
-    # @api.model
-    # def create(self, vals):
-    #     _logger.info(f"Vals sebelum create: {vals}")
-    #     record = super(DataPendaftaran, self).create(vals)
-        
-    #     if record is None:
-    #         record = self
-
-    #     if record.state == 'diterima':  # Generate NIS hanya jika santri diterima
-    #         nis = self._generate_nis(record)
-    #         if nis:
-    #             record.nis = nis  # Simpan NIS ke record
-
-    #     _logger.info(f"NIS setelah create: {record.nis}")
-    #     return record
-    
-    # @api.model
-    # def write(self, vals):
-    #     res = super(DataPendaftaran, self).write(vals)
-        
-    #     # Jika status berubah menjadi 'diterima', buat NIS
-    #     for record in self:
-    #         if 'state' in vals and vals['state'] == 'diterima' and not record.nis:
-    #             record.nis = record._generate_nis()
-
-    #     return res
-
-    
-    # def _generate_nis(self, record=None):
-    #     """Fungsi untuk membuat NIS otomatis"""
-    #     if record is None:
-    #         record = self
-
-    #     if not record.nomor_pendaftaran and record.tanggal_daftar:
-    #         _logger.warning("NIS tidak bisa dibuat: Tanggal lahir atau lembaga kosong.")
-    #         return False
-
-    #     # Mapping Kode Lembaga
-    #     lembaga = {
-    #         'paud': '01', 'tk': '02', 'sdmi': '03',
-    #         'smpmts': '04', 'smama': '05', 'smk': '06'
-    #     }.get(record.jenjang, '00')
-
-    #     # Konversi Tahun Lahir
-    #     if record.tanggal_daftar:
-    #         try:
-    #             tanggal = record.tanggal_daftar.strftime('%Y')[-2:]
-    #         except AttributeError:
-    #             tanggal = '00'
-    #     else:
-    #         tanggal= '00'
-
-    #     # # Generate 4 Digit Random
-    #     # random_digits = ''.join(random.choices(string.digits, k=4))
-    #     nomor = str(record.nomor_pendaftaran) if record.nomor_pendaftaran and record.nomor_pendaftaran.isdigit() else "000"
-    #     # Format NIP
-    #     nis = f"{lembaga}.{tanggal}.{nomor}"
-    #     # _logger.info(f"NIP yang dihasilkan: {nip}")  # Log hasil NIP
-    #     return nis
-    
-    # @api.constrains('nis')
-    # def _check_nis(self):
-    #     """Validasi NIS tidak boleh kosong dan minimal 8 karakter"""
-    #     for record in self:
-    #         if record.nis and len(record.nis) < 2:
-    #             raise ValidationError("NIS harus memiliki minimal 8 karakter. Silakan periksa kembali.")
-
-    
+                raise ValidationError("NIS harus memiliki minimal 8 karakter. Silakan periksa kembali.")    
     
     def hapus_pendaftaran_kadaluarsa(self):
         # Tentukan zona waktu Anda, misalnya 'Asia/Jakarta' untuk WIB
@@ -405,7 +354,6 @@ class DataPendaftaran(models.Model):
 
 
     def action_report_pendaftaran(self):
-        # Logika untuk meng-generate laporan PDF atau aksi lainnya
         return self.env.ref('pesantren_pendaftaran.action_report_pendaftaran').report_action(self)
 
     # @api.model
@@ -437,12 +385,12 @@ class DataPendaftaran(models.Model):
                 #     record.virtual_account = record._generate_virtual_account(nisn)
                 nis = record.nis
                 jenjang = record.jenjang
-                record.virtual_account = record._generate_virtual_account_permanent(nis, jenjang)
+                # record.virtual_account = record._generate_virtual_account_permanent(nis, jenjang)
                 record.status_va = 'permanent'
 
                 # Buat data virtual account uang saku
-                if not record.va_saku:
-                    record.va_saku = record._generate_va_uangsaku(nis, jenjang)
+                # if not record.va_saku:
+                #     record.va_saku = record._generate_va_uangsaku(nis, jenjang)
 
                 # Generate nis
                 # if not record.nis:
@@ -626,6 +574,9 @@ class DataPendaftaran(models.Model):
         for record in self:
             """Fungsi untuk membuat akun orang tua di cdn.orangtua"""
 
+            # if not record.password:
+            #     raise UserError("Password wajib diisi terlebih dahulu sebelum membuat akun orang tua.")
+
             # Cek apakah email orang tua sudah ada di res.partner
             existing_partner = self.env['res.partner'].search([('email', '=', record.email_ayah)], limit=1)
 
@@ -640,14 +591,14 @@ class DataPendaftaran(models.Model):
                     orangtua_vals = {
                         'partner_id': existing_partner.id,
                         'hubungan': 'ayah',
-                        'email': record.email,
+                        'email': record.email_ayah,
                     }
                     orangtua = self.env['cdn.orangtua'].sudo().create(orangtua_vals)
                     return orangtua
             else:
                 partner_vals = {
                     'name': record.nama_ayah,
-                    'email': record.email or record.nomor_login, 
+                    'email': record.email_ayah, 
                     'phone': record.telepon_ayah,
                     'city': record.kota_id.name,
                 }
@@ -658,7 +609,7 @@ class DataPendaftaran(models.Model):
                 orangtua_vals = {
                     'partner_id': partner.id,
                     'hubungan': 'ayah',
-                    'email': record.email,
+                    'email': record.email_ayah,
                 }
                 orangtua = self.env['cdn.orangtua'].sudo().create(orangtua_vals)
 
@@ -728,7 +679,6 @@ class DataPendaftaran(models.Model):
                 return orangtua
 
 
-
     def create_siswa(self):
         for record in self:
             """Fungsi untuk membuat data siswa dari pendaftaran"""
@@ -740,6 +690,7 @@ class DataPendaftaran(models.Model):
             'smpmts': 'smp',
             'smama': 'sma',
             'smk': 'sma',  
+            'nonformal': 'nonformal',
             }
         
             penghasilan_mapping = {
@@ -752,10 +703,13 @@ class DataPendaftaran(models.Model):
             penghasilan_ibu = penghasilan_mapping.get(record.penghasilan_ibu)
             penghasilan_ayah = penghasilan_mapping.get(record.penghasilan_ayah)
             jenjang_value = jenjang_mapping.get(record.jenjang, 'paud')  
+            tahun_daftar = self.tanggal_daftar.strftime('%Y')[-2:]
 
             siswa_vals = {
                 'name'                  : record.partner_id.name,
                 'propinsi_id'           : record.provinsi_id.id,
+                'tanggal_daftar'        : record.tanggal_daftar,
+                'nomor_pendaftaran'     : record.nomor_pendaftaran,
                 'kota_id'               : record.kota_id.id,
                 'kecamatan_id'          : record.kecamatan_id.id,
                 'street'                : record.alamat,
@@ -763,6 +717,7 @@ class DataPendaftaran(models.Model):
                 'nis'                   : record.nis,
                 'nik'                   : record.nik,
                 'jenjang'               : jenjang_value,
+                # 'jenjang_id'            : record.jenjang_id,
                 'kewarganegaraan'       : record.kewarganegaraan,
                 'orangtua_id'           : record.orangtua_id.id,
                 'tgl_lahir'             : record.tanggal_lahir,
@@ -841,6 +796,9 @@ class DataPendaftaran(models.Model):
             elif jenjang == "smama":
                 kode_jenjang = "30"
                 return f"{kode_bank}{kode_jenjang}{account_type}{nis}"
+            elif jenjang == "nonformal":
+                kode_jenjang = "40"
+                return f"{kode_bank}{kode_jenjang}{account_type}{nis}"
         
     def _generate_va_uangsaku(self, nis, jenjang):
         for record in self:
@@ -858,6 +816,9 @@ class DataPendaftaran(models.Model):
                 return f"{kode_bank}{kode_jenjang}{account_type}{nis}"
             elif jenjang == "smama":
                 kode_jenjang = "30"
+                return f"{kode_bank}{kode_jenjang}{account_type}{nis}"
+            elif jenjang == "nonformal":
+                kode_jenjang = "40"
                 return f"{kode_bank}{kode_jenjang}{account_type}{nis}"
 
     def get_formatted_tanggal(self):
@@ -1064,7 +1025,7 @@ class SoalSeleksi(models.Model):
     active          = fields.Boolean(string='Aktif', default=True)
     penilaian_id    = fields.Many2one(comodel_name='seleksi.penilaian', string='Penilaian', required=True)
     nilai           = fields.Integer(string='Nilai', default=0)
-    jenjang         = fields.Selection(selection=[('sdmi','SD / MI'),('smpmts','SMP / MTS'),('smama','SMA / MA'),('smk','SMK')], string='Jenjang', required=True)
+    jenjang         = fields.Selection(selection=[('sdmi','SD / MI'),('smpmts','SMP / MTS'),('smama','SMA / MA'),('smk','SMK'), ('nonformal', 'Nonformal')], string='Jenjang', required=True)
     deskripsi       = fields.Text(string='Deskripsi Soal')
 
     @api.depends('penilaian_id', 'name')

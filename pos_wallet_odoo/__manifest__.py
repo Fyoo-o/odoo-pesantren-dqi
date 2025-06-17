@@ -65,6 +65,8 @@
             'pos_wallet_odoo/static/src/xml/wallet_templates.xml',
             'pos_wallet_odoo/static/src/js/wallet.js',
             'pos_wallet_odoo/static/src/js/icon.js',
+            'https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/index.min.js',
+            'https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/css/index.min.css',
         ],
     },
     'images': ['static/description/banner.jpg'],

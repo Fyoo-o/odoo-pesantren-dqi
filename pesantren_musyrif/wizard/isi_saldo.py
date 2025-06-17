@@ -311,7 +311,7 @@ class isiSaldo(models.Model):
     _description = "Isi Saldo Dompet dengan Scan Barcode"
 
     barcode = fields.Char(string="Kartu Santri")
-    siswa_id = fields.Many2one('cdn.siswa', string='Siswa', readonly=False)
+    siswa_id = fields.Many2one('cdn.siswa', string='Siswa', ondelete='cascade' ,readonly=False)
     journal_id = fields.Many2one("account.journal", string="Jurnal Pembayaran", help="Pilih jenis jurnal")
     recharge_amount = fields.Float(string="Nominal Saldo", required=True, readonly=False, 
                                   help="Jumlah pengisian ulang di dompet", 
@@ -325,7 +325,7 @@ class isiSaldo(models.Model):
                         ], default='manual_based', string='Tipe Isi Saldo',
                         help="Untuk pilihan limit hanya bisa di isi satu kali dan akan ada waktu tunggu penggunaan, untuk isi berdasaarkan saldo akan mengambil keseluruhan saldo yang ada untuk isi dompet.")
     wallet_balance = fields.Float(string='Saldo Dompet', related='siswa_id.wallet_balance', readonly=True, digits=(16, 0))
-    saldo_uang_saku = fields.Float(string='Saldo Uang Saku', related='siswa_id.saldo_uang_saku', readonly=True, digits=(16, 0))
+    saldo_uang_saku = fields.Float(string='Saldo Santri', related='siswa_id.saldo_uang_saku', readonly=True, digits=(16, 0))
     tgl_transaksi = fields.Date(string='Tanggal Transaksi', required=True, default=fields.Date.context_today)
 
     kelas_id    = fields.Many2one('cdn.ruang_kelas', string='Kelas', related='siswa_id.ruang_kelas_id', readonly=True, store=True)

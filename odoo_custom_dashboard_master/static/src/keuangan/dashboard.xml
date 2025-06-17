@@ -263,7 +263,7 @@
           <div class="shadow-sm border p-4 bg-white h-100">
             <KeuanganChartRenderer
               type="'bar'"
-              title="'Tagihan Siswa'"
+              title="'Tagihan Santri'"
               startDate="state.selectedDateRange?.start"
               endDate="state.selectedDateRange?.end"
             />

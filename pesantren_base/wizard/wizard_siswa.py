@@ -7,7 +7,7 @@ class WizardSearchSiswa(models.TransientModel):
     _name = 'wizard.search.siswa'
     _description = 'Wizard Search Siswa'
 
-    siswa_id    = fields.Many2one('cdn.siswa', string='Siswa', required=False, store=True)
+    siswa_id    = fields.Many2one('cdn.siswa', string='Siswa', required=False, store=True, ondelete='cascade')
     tmp_lahir = fields.Char(related='siswa_id.tmp_lahir', string='Tmp Lahir', store=True)
     tgl_lahir = fields.Date(related='siswa_id.tgl_lahir', string='Tgl Lahir',store=True)
     nis = fields.Char(related='siswa_id.nis',string='NIS', required=False,store=True)
@@ -31,6 +31,7 @@ class WizardSearchSiswa(models.TransientModel):
                         'message': f"Data Santri dengan Kartu Santri {barcode_sementara} tidak ditemukan."
                     }
                 }
+                
 
     def button_search(self):
         if not self.siswa_id and self.barcode:

@@ -25,11 +25,11 @@
                                 <field name="keterangan"/>
                             </group>
                             <notebook>
-                                <page name="prestasi_siswa" string="Siswa ikut serta">
+                                <page name="prestasi_siswa" string="Santri ikut serta">
                                     <field name="prestasi_siswa_ids">
                                         <list>
                                             <field name="tgl_prestasi"/>
-                                            <field name="siswa_id"/>
+                                            <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
                                             <field name="tingkat_prestasi"/>
                                             <field name="joara"/>
                                         </list>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="wizard_penonaktifan_saldo_form" model="ir.ui.view">
+            <field name="name">wizard.penonaktifan.saldo.form</field>
+            <field name="model">wizard.penonaktifan.saldo</field>
+            <field name="arch" type="xml">
+                 <form string="Pencairan Saldo">
+                    <div invisible="not santri_id" class="alert alert-warning w-100" role="alert" style="margin-bottom: 0;">
+                        <strong>⚠️ Peringatan!</strong> Akun ini akan dinonaktifkan. Seluruh akses transaksi dan pembayaran sementara tidak tersedia hingga akun diaktifkan kembali oleh pengurus pesantren.
+                    </div>
+                    <group string="Santri">
+                        <group>         
+                            <field name="kartu_santri" />
+                            <field name="santri_id" string="Santri" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" context="{'default_partner_id': id}" />
+                            <field name="kelas_id" />
+                        </group>
+                        <group>
+                            <field name="kamar_id" />
+                            <field name="halaqoh_id" />
+                            <field name="musyrif_id" />
+                        </group>
+                    </group>
+                    <group string="Nonaktifkan Akun">
+                        <group >
+                            <field name="status" />
+                            <field name="alasan_penonaktifan" />       
+                        </group>
+                        <group>                
+                            <field name="catatan" />
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="action_submit" confirm="Apakah Anda yakin ingin menonaktifkan akun ini? Tindakan ini bisa bersifat sementara atau permanen tergantung keputusan pengurus." string="Nonaktifkan" type="object" class="btn-danger"/>
+                        <button string="Batal" class="btn-secondary" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <record id="action_wizard_penonaktifan_saldo" model="ir.actions.act_window">
+            <field name="name">Penonaktifan Akun</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.penonaktifan.saldo</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="pesantren_kesantrian.wizard_penonaktifan_saldo_form"/>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo> 

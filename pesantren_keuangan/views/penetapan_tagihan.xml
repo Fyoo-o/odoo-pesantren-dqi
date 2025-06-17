@@ -29,39 +29,44 @@
             <field name="act_window_id" ref="generate_invoice_action"/>
         </record> -->
     
-        <record id="generate_invoice_view_form" model="ir.ui.view">
-            <field name="name">generate.invoice.view.form</field>
+        <!-- Add you code here -->
+        <record model="ir.ui.view" id="view_wizard_generate_invoice">
+            <field name="name">Generate Invoice</field>
             <field name="model">generate.invoice</field>
             <field name="arch" type="xml">
-                <form string="Buat Penetapan Tagihan">
-                    <group>
-                        <group>
-                            <field name="tahunajaran_id"/>
-                            <field name="komponen_id"/>
-                        </group>
-                        <group>
-                            <field name="period_from" domain="[('tahunajaran_id','=', tahunajaran_id)]"/>
-                            <field name="period_to" domain="[('tahunajaran_id','=', tahunajaran_id)]"/>
-                        </group>
-                    </group>
-                    <group>
-                        <field name="angkatan_id"/>
-                        <field name="name"/>
-                    </group>
-                    <group string="Siswa">
-                        <field name="partner_ids" nolabel="1" colspan="4" domain="[('bebasbiaya','=', False), ('tahunajaran_id','=', angkatan_id)]">
-                            <list>
-                                <field name="name"/>
-                                <field name="nis"/>
-                                <field name="ruang_kelas_id"/>
-                            </list>
-                        </field>
-                    </group>
-                    <footer>
-                        <button name="create_invoice" string="Buat Tagihan" type="object" class="oe_highlight"/>
-                        <span>or</span>
-                        <button string="Batal" class="oe_link" special="cancel"/>
-                    </footer>
+                <form string="Buat Tagihan">
+					<group>
+						<group>
+							<field name="angkatan_id" string="Santri Angkatan"/>
+							<field name="period_from" domain="[('tahunajaran_id','=', tahunajaran_id)]"/>
+						</group>
+						<group>
+							<field name="tahunajaran_id"/>
+							<field name="period_to" domain="[('tahunajaran_id','=', tahunajaran_id)]"/>
+						</group>
+					</group>
+					<group>
+						<group>
+							<field name="komponen_id"/>
+						</group>
+						<group>
+							<field name="name" widget="integer" string="Biaya"/>
+						</group>
+					</group>
+					<group string="Santri">
+						<field name="partner_ids" nolabel="1" colspan="2">
+							<list>
+								<field name="name"/>
+								<field name="nis"/>
+								<field name="kamar_id"/>
+							</list>
+						</field>
+					</group>
+					<footer>
+	                    <button name="create_invoice" string="Buat Tagihan" type="object" class="oe_highlight"/>
+                        <!-- atau -->
+	                    <button string="Batal" class="oe_link" special="cancel" />
+	                </footer>
                 </form>
             </field>
         </record>

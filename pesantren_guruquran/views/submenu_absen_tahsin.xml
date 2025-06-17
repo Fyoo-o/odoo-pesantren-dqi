@@ -1,0 +1,58 @@
+<!-- <?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+           <record id="absensi_tahsin_admin_list" model="ir.ui.view">
+            <field name="name">absensi.tahsin.admin.list</field>
+            <field name="model">cdn.absen_tahsin_quran</field>
+            <field name="priority">99</field>
+            <field name="arch" type="xml">
+                <list string="Absensi Tahsin">
+                    <field name="name"/>
+                    <field name="halaqoh_id"/>
+                    <field name="ustadz_id"/>
+                    <field name="fiscalyear_id"/>
+                    <field name="state"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="absensi_tahsin_admin_search" model="ir.ui.view">
+            <field name="name">absensi.tahsin.admin.search</field>
+            <field name="model">cdn.absen_tahsin_quran</field>
+            <field name="arch" type="xml">
+                <search string="Cari Absensi Tahsin">
+                    <field name="name"/>
+                    <field name="halaqoh_id"/>
+                    <field name="ustadz_id"/>
+                    <filter string="Hari Ini" name="today" domain="[('name', '=', context_today())]"/>
+                    <filter string="Status Proses" name="status_proses" domain="[('state', '=', 'Proses')]"/>
+                    <filter string="Status Selesai" name="status_done" domain="[('state', '=', 'Done')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Halaqoh" name="group_by_halaqoh" domain="[]" context="{'group_by': 'halaqoh_id'}"/>
+                        <filter string="Ustadz" name="group_by_ustadz" domain="[]" context="{'group_by': 'ustadz_id'}"/>
+                        <filter string="Status" name="group_by_status" domain="[]" context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="absensi_tahsin_data" model="ir.actions.act_window">
+            <field name="name">Absensi Tahsin</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">cdn.absen_tahsin_quran</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[(1, '=', 1)]</field>
+            <field name="context">{'group_by': ['name:day']}</field>
+            <field name="search_view_id" ref="absensi_tahsin_admin_search"/>
+            <field name="view_ids" eval="[(5, 0, 0),
+                                         (0, 0, {'view_mode': 'list', 'view_id': ref('absensi_tahsin_admin_list')})]"/>
+        </record>
+
+        <menuitem id="absensi_tahsin_menu_act"
+                  name="Absensi Tahsin"
+                  parent="pesantren_base.absensi_menu_categ"
+                  action="absensi_tahsin_data"
+                  sequence="30"/>
+
+    </data>
+</odoo> -->

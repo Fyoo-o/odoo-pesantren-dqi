@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data> 
+        <record id="wizard_set_limit_form" model="ir.ui.view">
+            <field name="name">wizard.register.kartu.santri.form</field>
+            <field name="model">set.limit.santri</field>
+            <field name="arch" type="xml">
+                <form string="Regrister Kartu Santri">
+                    <group string="Santri">
+                        <group>
+                            <field name="kartu" />
+                            <field name="santri_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="1"/>  
+                            <field name="kelas"/>
+                        </group>
+                        <group>
+                            <field name="kamar" />
+                            <field name="halaqoh" />
+                            <field name="musyrif" string="Musyrif"/>
+                        </group>
+                    </group>
+                        <group string="Pengaturan Limit">  
+                            <group>
+                                <field name="limit" string="Periode Limit"/> 
+                            </group>
+                            <group>
+                                <field name="amount" string="Nominal Limit"/>
+                            </group>
+                        </group>
+                    <footer>
+                        <button name="action_set_limit" string="Simpan" type="object" class="btn-primary"/>
+                        <button string="Batal" class="btn-secondary" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <!-- <record id="action_set_limit_santri" model="ir.actions.act_window">
+            <field name="name">Atur Limit Penggunaan Saldo</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.register.kartu.santri</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="pesantren_kesantrian.wizard_kartu_register_form"/>
+            <field name="target">new</field>
+        </record> -->
+    </data>
+</odoo>

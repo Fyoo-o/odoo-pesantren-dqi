@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+	<t t-name="owl.WalletChartRenderer" owl="1">
+		<div class="chart-wrapper position-relative" style="width: 100%; height: 100%; cursor:pointer;">
+        	<button class="btn btn-sm btn-light position-absolute top-0 end-0 m-2 zoom-btn" t-on-click="toggleZoom">
+				<i class="fas fa-expand">
+				</i>
+			</button>
+			<canvas t-ref="chart" />
+		</div>
+	</t>
+</templates>

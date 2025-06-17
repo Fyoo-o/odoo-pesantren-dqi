@@ -1,38 +1,53 @@
 <?xml version='1.0' encoding='utf-8'?>
 <odoo>
-    <data>
+    <data> 
         <!-- Add you code here -->
         <record model="ir.ui.view" id="view_wizard_generate_invoice">
             <field name="name">Generate Invoice</field>
             <field name="model">generate.invoice</field>
             <field name="arch" type="xml">
                 <form string="Buat Tagihan">
-					<group>
+					<group> 
 						<group>
-							<field name="tahunajaran_id"/>
+							<field name="angkatan_id" string="Santri Angkatan"/>
 							<field name="period_from" domain="[('tahunajaran_id','=', tahunajaran_id)]"/>
 						</group>
 						<group>
-							<field name="komponen_id"/>
+							<field name="tahunajaran_id"/>
 							<field name="period_to" domain="[('tahunajaran_id','=', tahunajaran_id)]"/>
 						</group>
 					</group>
 					<group>
-						<field name="angkatan_id"/>
-						<field name="name" widget="integer"/>biaya
+						<group>
+							<field name="komponen_id"/>
+							<field name="kelas_id" widget="many2many_tags" options="{'no_create': True}"/>
+						</group>
+						<group>
+							<field name="name" widget="integer" string="Biaya"/>
+						</group>
 					</group>
-					<group string="Siswa">
-						<field name="partner_ids" nolabel="1" colspan="2">
+					<group>
+						<!-- <field name="partner_ids" nolabel="1" colspan="2">
 							<list>
 								<field name="name"/>
 								<field name="nis"/>
 								<field name="ruang_kelas_id"/>
 							</list>
-						</field>
+						</field> -->
+						<notebook>
+							<page string="Santri">
+								<field name="partner_ids" nolabel="1">
+									<list editable="bottom" create="false">
+										<field name="name" readonly="True"/>
+										<field name="nis" readonly="True"/>
+										<field name="ruang_kelas_id" readonly="True"/>
+									</list>
+								</field>
+							</page>
+						</notebook>
 					</group>
 					<footer>
 	                    <button name="create_invoice" string="Buat Tagihan" type="object" class="oe_highlight"/>
-	                    atau
 	                    <button string="Batal" class="oe_link" special="cancel" />
 	                </footer>
                 </form>
@@ -47,7 +62,7 @@
             <field name="target">new</field>
         </record>
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="generate_invoice_menu_act" name="Buat Tagihan" parent="tu_aktivitas_tagihan" action="action_generate_invoice" sequence="20"/>
+        <!-- <menuitem id="generate_invoice_menu_act" name="Buat Tagihan" parent="tu_aktivitas_tagihan" action="action_generate_invoice" sequence="20"/> -->
         
     </data>
 </odoo>

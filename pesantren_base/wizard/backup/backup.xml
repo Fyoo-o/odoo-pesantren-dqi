@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Form View untuk Kenaikan Kelas -->
+        <record id="view_kenaikan_kelas_form" model="ir.ui.view">
+            <field name="name">cdn.kenaikan_kelas.form</field>
+            <field name="model">cdn.kenaikan_kelas</field>
+            <field name="arch" type="xml">
+                <form string="Kenaikan Kelas">
+                    
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="tahunajaran_id" string="Tahun Ajaran"/>
+                                <!-- <field name="kenaikan" string="Naik/Lulus" widget="radio" options="{'horizontal': true}"/> -->
+                            </group>
+                            <group>
+                                <!-- Field jenjang tidak ada di model tapi ditampilkan di UI -->
+                                <!-- <field name="jenjang" invisible="1"/> -->
+                                <!-- Tingkat ditampilkan sebagai widget many2many_tags -->
+                            </group>
+                        </group>
+                        
+                        <group string="Kelas">
+                            <group>    
+                                <field name="kelas_id" widget="many2many_tags" options="{'no_create': True}" placeholder="Pilih Kelas"/>
+                            </group>
+
+                            <group>
+                                <field name="jenjang" invisible="1"/>
+                                <field name="tingkat_id" widget="many2many_tags"/>
+                            </group>
+                        </group>
+                        
+                        <notebook>
+                            <page string="Santri">
+                                <field name="partner_ids">
+                                    <list editable="bottom">
+                                        <field name="centang"/>
+                                        <field name="name" string="Nama"/>
+                                        <field name="nis" string="NIS"/>
+                                        <field name="ruang_kelas_id" string="Ruang Kelas" readonly="1"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+
+                    <footer>
+                        <button name="action_proses_kenaikan_kelas" string="Simpan" type="object" class="btn-primary"    />
+                        <button string="Batal" class="btn-secondary" special="cancel" />
+                    </footer>
+
+                </form>
+            </field>
+        </record>
+
+        <!-- Action untuk Kenaikan Kelas -->
+        <record id="action_kenaikan_kelas" model="ir.actions.act_window">
+            <field name="name">Kenaikan Kelas</field>
+            <field name="res_model">cdn.kenaikan_kelas</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <!-- Menu Item untuk Kenaikan Kelas -->
+        <menuitem id="menu_kenaikan_kelas"
+                  name="Kenaikan Kelas"
+                  parent="sekolah_top_menu"
+                  action="action_kenaikan_kelas"
+                  sequence="50"/>
+    </data>
+</odoo>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data>
+        <record id="view_wizard_kenaikan_kelas" model="ir.ui.view">
+            <field name="name">Kenaikan Kelas</field>
+            <field name="model">cdn.kenaikan_kelas</field> 
+            <field name="arch" type="xml">
+                <form string="Kenaikan Kelas">
+                    <group>
+                        <group> 
+                            <field name="tahunajaran_id"/>
+                            <field name="kelas_id" widget="many2many_tags" options="{'no_create': True}"/>
+                        </group> 
+                        <group> 
+                            <field name="kenaikan" widget="radio" options="{'horizontal': true}"/>
+                            <field name="santri_partner_id" string="Ya Hooooo !!!"/>
+                        </group> 
+                    </group>
+                    
+                    <group>
+                        <notebook>
+                            <page string="Santri">
+                                <field name="partner_ids" nolabel="1">
+                                    <list editable="bottom" create="false" delete="True">
+                                        <field name="name" readonly="True"/>
+                                        <field name="nis" readonly="True"/>
+                                        <field name="ruang_kelas_id" readonly="True"/>
+                                    </list>
+                                </field>
+                            </page>
+
+                            <page string="Santri">
+                                <field name="santri_partner_id" nolabel="1">
+                                    <list editable="bottom" create="false" delete="True">
+                                        <field name="name" readonly="True"/>
+                                        <field name="nis" readonly="True"/>
+                                        <field name="ruang_kelas_id" readonly="True"/>
+                                    </list>
+                                </field>
+                            </page>
+
+                        </notebook>
+                    </group>
+                    
+                    <footer>
+                        <button name="action_proses_kenaikan_kelas" string="Simpan" type="object" class="btn-primary"/>
+                        <button string="Batal" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field> 
+        </record>
+
+        <record id="action_view_kenaikan_kelas" model="ir.actions.act_window">
+            <field name="name">Kenaikan Kelas</field>
+            <field name="res_model">cdn.kenaikan_kelas</field> 
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="kenaikan_kelas_menu_act" name="Kenaikan Kelas" action="action_view_kenaikan_kelas" parent="sekolah_top_menu" sequence='50'/>
+    </data>
+</odoo> -->
+
+
+
+
+<!-- <?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data>
+        <record id="view_wizard_kenaikan_kelas" model="ir.ui.view">
+            <field name="name">Kenaikan Kelas</field>
+            <field name="model">cdn.kenaikan_kelas</field> 
+            <field name="arch" type="xml">
+                <form string="Kenaikan Kelas">
+                    <group>
+                        <group> 
+                            <field name="tahunajaran_id"/>
+                            <field name="kelas_id" widget="many2many_tags" options="{'no_create': true}"/>
+                        </group> 
+                        <group> 
+                            <field name="kenaikan" widget="radio" options="{'horizontal': true}"/>
+                        </group> 
+                    </group>
+                    
+                    <group>
+                        <notebook>
+                            <page string="Santri Terpilih">
+                                <field name="partner_ids" nolabel="1">
+                                    <list editable="bottom" create="false" delete="false">
+                                        <field name="name" readonly="true"/>
+                                        <field name="nis" readonly="true"/>
+                                        <field name="ruang_kelas_id" readonly="true"/>
+
+                                        <button name="%(action_exclude_santri_wizard)d" type="action" 
+                                                string="Hapus" icon="fa-times" 
+                                                context="{'default_santri_id': id, 'default_wizard_id': parent.id}"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Santri Dikecualikan">
+                                <field name="partner_excluded_ids" nolabel="1">
+                                    <list editable="bottom" create="false" delete="false">
+                                        <field name="name" readonly="true"/>
+                                        <field name="nis" readonly="true"/>
+                                        <field name="ruang_kelas_id" readonly="true"/>
+
+                                        <button name="%(action_include_santri_wizard)d" type="action" 
+                                                string="Tambahkan" icon="fa-plus" 
+                                                context="{'default_santri_id': id, 'default_wizard_id': parent.id}"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </group>
+                    
+                    <footer>
+                        <button name="action_proses_kenaikan_kelas" string="Simpan" type="object" class="btn-primary"/>
+                        <button string="Batal" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field> 
+        </record>
+
+        <record id="view_exclude_santri_wizard" model="ir.ui.view">
+            <field name="name">Kecualikan Santri</field>
+            <field name="model">cdn.exclude.santri.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Kecualikan Santri">
+                    <field name="santri_id" invisible="1"/>
+                    <field name="wizard_id" invisible="1"/>
+                    <p>Apakah Anda yakin ingin mengecualikan santri ini dari daftar?</p>
+                    <footer>
+                        <button name="action_confirm" string="Ya" type="object" class="btn-primary"/>
+                        <button string="Batal" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_exclude_santri_wizard" model="ir.actions.act_window">
+            <field name="name">Kecualikan Santri</field>
+            <field name="res_model">cdn.exclude.santri.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <record id="view_include_santri_wizard" model="ir.ui.view">
+            <field name="name">Sertakan Santri</field>
+            <field name="model">cdn.include.santri.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Sertakan Santri">
+                    <field name="santri_id" invisible="1"/>
+                    <field name="wizard_id" invisible="1"/>
+                    <p>Apakah Anda yakin ingin menyertakan santri ini kembali ke daftar?</p>
+                    <footer>
+                        <button name="action_confirm" string="Ya" type="object" class="btn-primary"/>
+                        <button string="Batal" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_include_santri_wizard" model="ir.actions.act_window">
+            <field name="name">Sertakan Santri</field>
+            <field name="res_model">cdn.include.santri.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <record id="action_view_kenaikan_kelas" model="ir.actions.act_window">
+            <field name="name">Kenaikan Kelas</field>
+            <field name="res_model">cdn.kenaikan_kelas</field> 
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="kenaikan_kelas_menu_act" name="Kenaikan Kelas" action="action_view_kenaikan_kelas" parent="sekolah_top_menu" sequence='50'/>
+    </data>
+</odoo> -->

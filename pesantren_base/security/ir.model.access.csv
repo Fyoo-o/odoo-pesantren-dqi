@@ -83,3 +83,9 @@ access_user_message_wizard,access_user_message_wizard,model_message_wizard,,1,1,
 access_generate_invoice,access_generate_invoice,model_generate_invoice,pesantren_base.group_sekolah_user,1,1,1,1
 access_wizard_search_siswa,access_wizard_search_siswa,model_wizard_search_siswa,pesantren_base.group_sekolah_user,1,1,1,1
 
+access_cdn_pengaturan_jenjang,access_cdn_pengaturan_jenjang,model_cdn_pengaturan_jenjang,pesantren_base.group_sekolah_manager,1,1,1,1
+access_cdn_kenaikan_kelas,access_cdn_kenaikan_kelas,model_cdn_kenaikan_kelas,pesantren_base.group_sekolah_manager,1,1,1,1
+
+
+access_kenaikan_kelas_line_user,access.kenaikan.kelas.line.user,model_cdn_kenaikan_kelas_line,base.group_user,1,1,1,0
+access_kenaikan_kelas_line_manager,access.kenaikan.kelas.line.manager,model_cdn_kenaikan_kelas_line,base.group_system,1,1,1,1

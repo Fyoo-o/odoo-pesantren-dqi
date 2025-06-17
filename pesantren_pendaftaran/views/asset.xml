@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Contoh mewarisi form view yang ada -->
+        <record id="view_form_inherit_password_toggle" model="ir.ui.view">
+            <field name="name">contoh.model.form.inherit.password.toggle</field>
+            <field name="model">contoh.model</field> <!-- Ganti dengan nama model Anda -->
+            <field name="inherit_id" ref="pesantren_pendaftaran.pendaftaran_santri_view_form"/> <!-- Ganti dengan referensi view yang akan diwarisi -->
+            <field name="arch" type="xml">
+                <xpath expr="//page[@string='Akun']//field[@name='password']" position="attributes">
+                    <attribute name="widget">password_toggle</attribute>
+                    <!-- Tidak perlu menghapus atribut password="True", widget akan mengabaikannya -->
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

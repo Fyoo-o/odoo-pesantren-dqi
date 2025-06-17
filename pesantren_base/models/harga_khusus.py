@@ -9,7 +9,7 @@ class harga_khusus(models.Model):
     _description        = 'Harga Khusus / Diskon Keringanan Biaya'
 
     name                = fields.Many2one(comodel_name='cdn.komponen_biaya', string='Komponen Biaya', required=True)
-    siswa_id            = fields.Many2one(comodel_name='cdn.siswa', string='Nama Siswa', required=True)
+    siswa_id            = fields.Many2one(comodel_name='cdn.siswa', string='Nama Siswa', required=True, ondelete='cascade')
     price               = fields.Float(string='Harga', compute='_compute_price', store=True)
     partner_id          = fields.Many2one(comodel_name='res.partner', string='Partner ID', related='siswa_id.partner_id', store=True)
     disc_amount         = fields.Integer(string='Diskon Rupiah', default=0)
@@ -72,7 +72,7 @@ class account_invoice(models.Model):
     def _default_tahunajaran(self):
        return self.env['res.company'].search([('id','=',1)]).tahun_ajaran_aktif
 
-    siswa_id            = fields.Many2one(comodel_name='cdn.siswa', string='Santri')
+    siswa_id            = fields.Many2one(comodel_name='cdn.siswa', string='Santri', ondelete='cascade')
     invoice_date         = fields.Date(string='Tgl Tagihan', required=True, default=fields.Date.context_today)
     
     #partner_id          = fields.Many2one('res.partner', 'Partner', related='siswa_id.partner_id', readonly=True, store=True)

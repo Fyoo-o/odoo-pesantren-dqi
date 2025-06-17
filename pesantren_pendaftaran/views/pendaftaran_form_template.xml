@@ -468,7 +468,7 @@
                 <span class="fw-semibold step">Data Berkas</span>
               </div>
               <div class="mb-4 d-flex justify-content-between align-items-center">
-                <h4 class="fw-semibold fs-3">Data Siswa</h4>
+                <h4 class="fw-semibold fs-3">Data Santri</h4>
                 <p style="font-style: italic;">Data yang ada tanda <span class="text-danger">*</span> wajib diisi.</p>
               </div>
               <div>
@@ -710,7 +710,7 @@
               <div class="step-indicator mb-3 overflow-auto">
                 <span class="fw-semibold step">
                   Data Login</span>
-                <span class="fw-semibold step">Data Siswa</span>
+                <span class="fw-semibold step">Data Santri</span>
                 <span class="fw-semibold step active">Data
                   Orang Tua</span>
                 <span class="fw-semibold step">Data Sekolah
@@ -810,7 +810,7 @@
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-6">
+                  <div class="col-md-4">
                     <div class="mb-3">
                       <label for="pendidikan_ayah" class="form-label">Pendidikan Ayah<span class="text-danger">*</span>
                       </label>
@@ -826,7 +826,21 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-md-6">
+                  <div class="col-md-4">
+                   <div class="mb-3">
+                       <label for="agama_ayah" class="form-label">Agama Ayah<span class="text-danger">*</span>
+                      </label>
+                        <select class="form-select" required="true" name="agama_ayah" id="agama_ayah">
+                          <option selected="true" disabled="true" hidden="true" value="">Pilih Agama</option>
+                          <option value="islam">Islam</option>
+                          <option value="kristen">Kristen</option>
+                          <option value="katolik">Katolik</option>
+                          <option value="hindu">Hindu</option>
+                          <option value="budha">Budha</option>
+                        </select>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
                     <div class="mb-3">
                       <label for="kewarganegaraan_ayah" class="form-label">Kewarganegaraan Ayah<span class="text-danger">*</span>
                       </label>
@@ -927,7 +941,7 @@
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-6">
+                  <div class="col-md-4">
                     <div class="mb-3">
                       <label for="pendidikan_ibu" class="form-label">Pendidikan Ibu<span class="text-danger">*</span>
                       </label>
@@ -943,7 +957,21 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-md-6">
+                  <div class="col-md-4">
+                    <div class="mb-3">
+                       <label for="agama_ibu" class="form-label">Agama Ibu<span class="text-danger">*</span>
+                      </label>
+                        <select class="form-select" required="true" name="agama_ibu" id="agama_ibu">
+                          <option selected="true" disabled="true" hidden="true" value="">Pilih Agama</option>
+                          <option value="islam">Islam</option>
+                          <option value="kristen">Kristen</option>
+                          <option value="katolik">Katolik</option>
+                          <option value="hindu">Hindu</option>
+                          <option value="budha">Budha</option>
+                        </select>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
                     <div class="mb-3">
                       <label for="kewarganegaraan_ibu" class="form-label">Kewarganegaraan Ibu<span class="text-danger">*</span>
                       </label>
@@ -1019,7 +1047,7 @@
               <div class="step-indicator mb-3 overflow-auto">
                 <span class="fw-semibold step">
                   Data Login</span>
-                <span class="fw-semibold step">Data Siswa</span>
+                <span class="fw-semibold step">Data Santri</span>
                 <span class="fw-semibold step">Data Orang
                   Tua</span>
                 <span class="fw-semibold step active">Data
@@ -1101,7 +1129,7 @@
               <div class="step-indicator mb-3 overflow-auto">
                 <span class="fw-semibold step">
                   Data Login</span>
-                <span class="fw-semibold step">Data Siswa</span>
+                <span class="fw-semibold step">Data Santri</span>
                 <span class="fw-semibold step">Data Orang
                   Tua</span>
                 <span class="fw-semibold step">Data Sekolah

@@ -73,8 +73,9 @@
                 </graph>
             </field>
         </record> -->
+
         <!-- action window -->
-        <record id="action_cdn_biaya_tahunajaran" model="ir.actions.act_window">
+        <!-- <record id="action_cdn_biaya_tahunajaran" model="ir.actions.act_window">
             <field name="name">Biaya Per Tahun Ajaran</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.biaya_tahunajaran</field>
@@ -87,8 +88,8 @@
                 Click the Create button to add a new Biaya tahunajaran
                 </p>
             </field>
-        </record>
+        </record> -->
 
-        <menuitem id="menu_cdn_biaya_tahunajaran" name="Biaya Tahun Ajaran" parent="pengaturan_admkeu_menu_categ" action="action_cdn_biaya_tahunajaran" sequence="20"/>
+        <!-- <menuitem id="menu_cdn_biaya_tahunajaran" name="Biaya Tahun Ajaran" parent="pengaturan_admkeu_menu_categ" action="action_cdn_biaya_tahunajaran" sequence="20"/> -->
     </data>
 </odoo>

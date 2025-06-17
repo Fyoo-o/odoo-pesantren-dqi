@@ -12,4 +12,5 @@ from . import tagihan
 from . import produk_nama
 from . import account_payment_inherit
 from . import invoice_unduh
+# from . import kerugian_piutang
 # from . import invoices

@@ -15,7 +15,7 @@ class Santri(models.Model):
     halaqoh_id          = fields.Many2one('cdn.halaqoh', string='Halaqoh', readonly=True)
     penanggung_jawab_id = fields.Many2one(comodel_name='hr.employee', related='halaqoh_id.penanggung_jawab_id', string='Penanggung Jawab', readonly=True)
     pengganti_ids       = fields.Many2many(comodel_name ='hr.employee', related='halaqoh_id.pengganti_ids', string='Ustadz Pengganti', readonly=True)
-    
+
     tahfidz_quran_ids   = fields.One2many('cdn.tahfidz_quran', 'siswa_id', string='Tahfidz Quran', readonly=True)
 
     #state info smart button
@@ -29,7 +29,8 @@ class Santri(models.Model):
     
     saldo_tagihan_formatted = fields.Integer(string='Saldo Tagihan (Format)', compute='_compute_saldo_tagihan_formatted')
     uang_saku_formatted = fields.Integer(string='Uang Saku (Format)', compute='_compute_uang_saku_formatted')
-
+    catatan_akun        = fields.Text(string="Catatan")
+    alasan_akun         = fields.Char(string="Alasan")
 
     def _compute_count_kesehatan(self):
         for siswa in self:
@@ -51,7 +52,7 @@ class Santri(models.Model):
                 tagihan = self.env['account.move'].search([
                     ('partner_id', '=', siswa.partner_id.id),
                     ('move_type', '=', 'out_invoice'),
-                    ('state', '=', 'posted')  # Hanya tagihan yang sudah diposting
+                    ('state', 'in', ['posted'])  # tagihan dan kerugian tetap terhitung
                 ])
                 # Hitung sisa tagihan (amount_residual_signed)
                 siswa.saldo_tagihan_count = sum(tagihan.mapped('amount_residual_signed'))
@@ -74,18 +75,132 @@ class Santri(models.Model):
             record.uang_saku_formatted = int(record.uang_saku_count)
 
     # actions smart button
+    # def action_saldo_tagihan(self):
+    #     self.ensure_one()
+    #     return {
+    #         'type': 'ir.actions.act_window',
+    #         'name': 'Tagihan Santri',
+    #         'res_model': 'account.move',
+    #         'view_mode': 'list,form',
+    #         'target': 'current',
+    #         'context': {
+    #             'default_siswa_id': self.id,
+    #             'default_partner_id': self.partner_id.id,
+    #             'default_move_type': 'out_invoice',
+    #             'search_default_filter_by_blm_lunas': 1,
+    #         },
+    #         'domain': [
+    #             ('partner_id', '=', self.partner_id.id),
+    #             ('move_type', '=', 'out_invoice'),
+    #         ],
+    #     }
+
+
     def action_saldo_tagihan(self):
-        self.ensure_one()
-        # Action untuk menampilkan daftar tagihan siswa
-        action = {
-            'name': 'Tagihan Santri',
-            'type': 'ir.actions.act_window',
-            'res_model': 'account.move',
-            'view_mode': 'tree,form',
-            'domain': [('siswa_id', '=', self.id), ('move_type', '=', 'out_invoice')],
-            'context': {'default_siswa_id': self.id, 'default_move_type': 'out_invoice'},
-        }
-        return action
+            self.ensure_one()
+            
+            return {
+                'name': f'Tagihan {self.partner_id.name}',
+                'type': 'ir.actions.act_window',
+                'res_model': 'account.move',
+                'view_mode': 'list,form',
+                'views': [
+                    (self.env.ref('pesantren_keuangan.pesantren_tagihan_keuangan_view_tree').id, 'list'),
+                    (self.env.ref('pesantren_keuangan.pesantren_tagihan_keuangan_view_form').id, 'form'),
+                ],
+                'search_view_id': self.env.ref('pesantren_keuangan.pesantren_tagihan_keuangan_view_search').id,
+                'domain': [
+                    ('partner_id', '=', self.partner_id.id), 
+                    ('move_type', '=', 'out_invoice')
+                ],
+                'context': {
+                    'default_move_type': 'out_invoice',
+                    'default_partner_id': self.partner_id.id,
+                    'default_siswa_id': self.id,
+                    'search_default_filter_by_blm_lunas': 1,
+                    # Pastikan form view menggunakan view yang benar
+                    'form_view_ref': 'pesantren_keuangan.pesantren_tagihan_keuangan_view_form',
+                    'tree_view_ref': 'pesantren_keuangan.pesantren_tagihan_keuangan_view_tree',
+                },
+                'target': 'current',
+            }
+
+
+
+    # def action_saldo_tagihan(self):
+
+    #     self.ensure_one()
+
+    #     base_action = self.env.ref('pesantren_keuangan.pesantren_tagihan_keuangan_action').sudo().read()[0]
+
+    #     return {
+    #         'name': f'Tagihan {self.partner_id.name}',
+    #         'type': 'ir.actions.act_window',
+    #         'res_model': 'account.move',
+    #         'view_mode': 'list,form',
+    #         'views': base_action.get('views', []),  # Menggunakan views dari action custom
+    #         'view_id': base_action.get('view_id', False),  # View ID utama
+    #         'domain': [
+    #             ('partner_id', '=', self.partner_id.id), 
+    #             ('move_type', '=', 'out_invoice')
+    #         ],
+    #         'context': {
+    #             # 'default_santri_id': self.id,
+    #             'search_default_filter_by_blm_lunas': 1,
+    #         },
+    #     }
+
+        # return {
+        #     'name': 'Tagihan Santri',
+        #     'type': 'ir.actions.act_window',
+        #     'res_model': 'account.move',
+        #     'view_mode': 'list,form',
+        #     'domain': [('partner_id', '=', self.partner_id.id), ('move_type', '=', 'out_invoice')],
+        #     'context': {
+        #         'default_santri_id': self.id,
+        #         'search_default_filter_by_blm_lunas': 1,
+        #     },
+        # }
+        # self.ensure_one()
+        # action = self.env.ref('pesantren_keuangan.pesantren_tagihan_keuangan_action').sudo().read()[0]
+        # action['domain'] = [
+        #     ('partner_id', '=', self.partner_id.id),
+        #     ('move_type', '=', 'out_invoice'),
+        # ]
+        # action['context'] = {
+        #     'default_siswa_id': self.id,
+        #     'default_partner_id': self.partner_id.id,
+        #     'default_move_type': 'out_invoice',
+        #     'search_default_filter_by_blm_lunas': 1,
+        #     'use_search_default_filter_by_blm_lunas': True,
+        # }
+        # return action
+
+
+    # def action_saldo_tagihan(self):
+    #     self.ensure_one()
+    #     action = self.env.ref('pesantren_keuangan.pesantren_tagihan_keuangan_action').read()[0]
+        
+    #     # Use permanent domain filters instead of context-based filters
+    #     action['domain'] = [
+    #         ('partner_id', '=', self.partner_id.id),
+    #         ('move_type', '=', 'out_invoice'),
+    #         # Add this line to make the "Belum Lunas" filter permanent in the domain
+    #         ('payment_state', 'in', ['not_paid', 'partial'])
+    #         ('state', 'in', ['posted', 'kerugian']),
+    #     ]
+        
+    #     action['context'] = {
+    #         'default_siswa_id': self.id,
+    #         'default_partner_id': self.partner_id.id,
+    #         'default_move_type': 'out_invoice',
+    #         # Keep this for initial filtering, but now we have a permanent domain filter too
+    #         'search_default_filter_by_blm_lunas': 1,
+    #     }
+        
+    #     return action
+
+
 
     def action_kesehatan(self):
         return {
@@ -137,7 +252,6 @@ class Santri(models.Model):
     #     }
 
     def action_open_custom_wizard(self):
-         # This should be on the CDN.Siswa model
         if not hasattr(self, 'partner_id') or not self.partner_id:
             raise UserError("Santri tidak memiliki partner yang terkait!")
             
@@ -149,6 +263,23 @@ class Santri(models.Model):
                 'model': 'res.partner.change.pin',
                 'partner_id': self.partner_id.id,
                 'context': {'active_id': self.id, 'active_model': 'cdn.siswa'}
+            }
+        }
+
+    def action_open_custom_wizard_cuy(self):
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'custom_saldo_santri_wizard', 
+            'name': 'Wizard Saldo Santri',
+            'target': 'new', 
+            'params': {
+                'model': 'cdn.siswa',  
+                'partner_id': self.partner_id.id,
+                'santri_id': self.id,
+                'context': {
+                    'active_id': self.id, 
+                    'active_model': 'cdn.siswa'
+                }
             }
         }
 
@@ -190,30 +321,6 @@ class Santri(models.Model):
     #         'context': {'default_partner_id': self.partner_id.id, 'default_move_type': 'out_invoice'},
     #         'domain': [('partner_id', '=', self.partner_id.id),('move_type', '=', 'out_invoice')]
     #     }
-
-    def action_saldo_tagihan(self):
-        return {
-            'type': 'ir.actions.act_window',
-            'name': 'Tagihan Santri',
-            'res_model': 'account.move',
-            'view_mode': 'list,form',
-            'view_id': False,  # Biarkan False supaya mengambil view default
-            'res_id': False,
-            'target': 'current',
-            'context': {
-                'default_siswa_id': self.id,  # Gunakan self.id jika ini dipanggil dari model siswa
-                'default_partner_id': self.partner_id.id,
-                'default_move_type': 'out_invoice',
-                'search_default_filter_by_blm_lunas': 1,
-            },
-            'domain': [
-                ('siswa_id', '=', self.id),  # Gunakan siswa_id yang lebih spesifik
-                ('move_type', '=', 'out_invoice'),
-            ],
-            'views': [(self.env.ref('pesantren_keuangan.pesantren_tagihan_keuangan_view_tree').id, 'list'),
-                    (self.env.ref('pesantren_keuangan.pesantren_tagihan_keuangan_view_form').id, 'form')],
-        }
-
 
     def action_uang_saku(self):
         return {

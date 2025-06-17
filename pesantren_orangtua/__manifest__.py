@@ -47,7 +47,7 @@
     'license': 'LGPL-3',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','pesantren_base','stock','pesantren_kesantrian','sale', 'purchase','pesantren_keuangan', 'mail'],
+    'depends': ['base','pesantren_base','stock','pesantren_kesantrian','sale', 'purchase','pesantren_keuangan','pesantren_pendaftaran' ,'mail'],
 
     # always loaded
     'data': [
@@ -76,6 +76,7 @@
         'views/orangtua.xml',
         'views/temp.xml',
         'views/inherit_button_pay.xml',
+        'views/invoices_wizard.xml',
         # wizard
         
        

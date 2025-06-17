@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- View untuk Wizard PIN Dompet Santri -->
+    <record id="view_dompet_santri_pin_wizard_form" model="ir.ui.view">
+        <field name="name">dompet.santri.pin.wizard.form</field>
+        <field name="model">dompet.santri.pin.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Konfirmasi PIN Dompet Santri">   
+                <group> 
+                    <field name="santri_pin" />
+                </group>
+                <footer>
+                    <button name="action_confirm_payment" string="Konfirmasi" type="object" class="btn-primary"/>
+                    <button string="Batal" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action untuk membuka wizard -->
+    <record id="action_dompet_santri_pin_wizard" model="ir.actions.act_window">
+        <field name="name">Konfirmasi PIN Dompet Santri</field>
+        <field name="res_model">dompet.santri.pin.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_dompet_santri_pin_wizard_form"/>
+    </record>
+</odoo>

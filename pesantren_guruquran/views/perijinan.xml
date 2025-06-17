@@ -3,7 +3,7 @@
     <data>
         <!-- cdn.perijinan action window -->
         <record id="cdn_perijinan_action" model="ir.actions.act_window">
-            <field name="name">Periksa Ijin Santri</field>
+            <field name="name">Perijinan Santri</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.perijinan</field>
             <field name="view_mode">list,form</field>
@@ -29,6 +29,6 @@
             <field name="act_window_id" ref="cdn_perijinan_action" />
         </record>
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="cdn_perijinan_menu_act" name="Periksa Ijin" parent="kepesantrenan_menu_categ" action="cdn_perijinan_action" sequence="0"/>
+        <menuitem id="cdn_perijinan_menu_act" name="Periksa Izin" parent="kepesantrenan_menu_categ" action="cdn_perijinan_action" sequence="0"/>
     </data>
 </odoo>

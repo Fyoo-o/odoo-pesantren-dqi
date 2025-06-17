@@ -17,6 +17,7 @@ class PerijinanCheckOut(models.TransientModel):
     siswa_id = fields.Many2one(
         'cdn.siswa', 
         string='Santri', 
+        ondelete='cascade',
         domain=[
             '|', 
             ('name', 'ilike', ''),
@@ -232,7 +233,6 @@ class PerijinanCheckOut(models.TransientModel):
                     self.keluar_masuk = 'keluar'
                     self.has_permission = 'Benar' 
                 else:
-                    # 3. Tidak ada izin sama sekali, pakai default terakhir
                     self.perijinan_id = False
                     self.keluar_masuk = 'keluar'
                     self.has_permission = 'Salah'

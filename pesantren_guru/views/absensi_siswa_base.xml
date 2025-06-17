@@ -1,0 +1,185 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data>
+        <!-- Inherit Absen form view siswa - Akses Umum -->
+        <record id="view_inherited_tahfidz_quran_public" model="ir.ui.view">
+            <field name="name">inherited.tahfidz.quran.form.public</field>
+            <field name="model">cdn.siswa</field>
+            <field name="inherit_id" ref="pesantren_base.view_cdn_siswa_form" />
+            <field name="arch" type="xml">
+                <!-- Inherit the specific page by its name attribute -->
+                <xpath expr="//notebook" position="inside">
+                    <page string="KBM" name="kbm_samtri_public">
+                        <!-- You can add other modifications or elements here -->
+                        <field name="kbm_id">
+                            <list default_order="id desc" create="false">
+                                <field name="name" />
+                                <field name="tanggal" />
+                                <field name="kelas_id" />
+                                <field name="mapel_id" />
+                            </list>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- cdn.absensi_siswa list view - Akses Umum -->
+        <record id="cdn_absensi_siswa_view_tree_public" model="ir.ui.view">
+            <field name="name">cdn.absensi_siswa.view.list.public</field>
+            <field name="model">cdn.absensi_siswa</field>
+            <field name="arch" type="xml">
+                <list create="false" edit="false" delete="false">
+                    <field name="name" />
+                    <field name="tanggal" />
+                    <field name="jampelajaran_id" />
+                    <field name="kelas_id" />
+                    <field name="mapel_id" />
+                    <field name="guru_id" />
+                    <field name="state" />
+                </list>
+            </field>
+        </record>
+
+        <!-- cdn.absensi_siswa form view - Akses Umum (Read Only) -->
+        <record id="cdn_absensi_siswa_view_form_public" model="ir.ui.view">
+            <field name="name">cdn.absensi_siswa.view.form.public</field>
+            <field name="model">cdn.absensi_siswa</field>
+            <field name="arch" type="xml">
+                <form string="" create="false" edit="false" delete="false">
+                    <header>
+                        <field name="state" widget="statusbar" />
+                    </header>
+                    <sheet>
+                        <group string="Kelas">
+                            <group>
+                                <field name="kelas_id" readonly="1" />
+                            </group>
+                            <group>
+                                <field name="tanggal" readonly="1" />
+                            </group>
+                        </group>
+
+                        <group string="Aktivitas Pelajaran">
+                            <group>
+                                <field name="hari" readonly="1" />
+                                <field name="jampelajaran_id" readonly="1" />
+                            </group>
+                            <group>
+                                <field name="mapel_id" readonly="1" />
+                                <field name="guru_id" readonly="1" />
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Absensi Santri">
+                                <field name="absensi_ids" nolabel="1" readonly="1">
+                                    <list create="false" edit="false" delete="false">
+                                        <field name="siswa_id" string="Santri"/>
+                                        <field name="panggilan" string="Panggilan"/>
+                                        <field name="nis" />
+                                        <field name="kehadiran"/>
+                                        <field name="keterangan"/>
+                                    </list>
+                                </field>
+                            </page> 
+                            <page string="Jurnal">
+                                <group>
+                                    <group>
+                                        <field name="tingkat_id" invisible="1" />
+                                        <field name="tema" readonly="1"/>
+                                        <field name="materi" readonly="1"/>
+                                    </group>
+                                    <group>
+                                        <field name="rpp_id" readonly="1" />
+                                        <field name="pertemuan_ke" readonly="1" />  
+                                    </group>
+                                </group>
+                                <field name="dokumen" widget="pdf_viewer" nolabel="1" readonly="1" />
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- cdn.absensi_siswa search view - Akses Umum -->
+        <record id="cdn_absensi_siswa_search_public" model="ir.ui.view">
+            <field name="name">cdn.absensi_siswa.view.search.public</field>
+            <field name="model">cdn.absensi_siswa</field>
+            <field name="arch" type="xml">
+                <search string="">
+                    <field name="name" string="Data"
+                        filter_domain="[
+                            '|', ('name', 'ilike', self),
+                            '|', ('absensi_ids.siswa_id.name', 'ilike', self),
+                            '|', ('absensi_ids.siswa_id.panggilan', 'ilike', self),
+                            '|', ('absensi_ids.siswa_id.nis', 'ilike', self),
+                            '|', ('absensi_ids.siswa_id.nisn', 'ilike', self),
+                            '|', ('absensi_ids.siswa_id.tmp_lahir', 'ilike', self),
+                            '|', ('absensi_ids.siswa_id.rt_rw', 'ilike', self),
+                            '|', ('absensi_ids.siswa_id.nik', 'ilike', self),
+                            '|', ('absensi_ids.siswa_id.tahunajaran_id.name', 'ilike', self),
+                            '|', ('absensi_ids.siswa_id.kamar_id', 'ilike', self),
+                            '|', ('absensi_ids.siswa_id.ayah_nama', 'ilike', self),
+                            '|', ('absensi_ids.siswa_id.ibu_nama', 'ilike', self),
+                            '|', ('absensi_ids.siswa_id.barcode_santri', 'ilike', self),
+                            '|', ('absensi_ids.siswa_id.barcode', 'ilike', self),
+                            '|', ('absensi_ids.siswa_id.cita_cita', 'ilike', self),
+                            '|', ('kelas_id.name', 'ilike', self),
+                            '|', ('absensi_ids.siswa_id.propinsi_id', 'ilike', self),
+                            '|', ('absensi_ids.siswa_id.kecamatan_id', 'ilike', self),
+                            '|', ('absensi_ids.siswa_id.kota_id', 'ilike', self),
+                            '|', ('absensi_ids.siswa_id.street', 'ilike', self),
+                            '|', ('absensi_ids.siswa_id.street2', 'ilike', self),
+                            '|', ('absensi_ids.siswa_id.mobile', 'ilike', self),
+                            '|', ('absensi_ids.siswa_id.ayah_telp', 'ilike', self),
+                            '|', ('absensi_ids.siswa_id.ibu_telp', 'ilike', self),
+                            '|', ('absensi_ids.siswa_id.wali_nama', 'ilike', self),
+                            '|', ('absensi_ids.siswa_id.wali_telp', 'ilike', self),
+                            '|', ('absensi_ids.siswa_id.gol_darah', 'ilike', self),
+                            ('absensi_ids.siswa_id.jns_kelamin', 'ilike', self)
+                        ]"/>
+                    <field name="kelas_id"/>
+                    <field name="mapel_id"/>
+                    <field name="guru_id"/>
+                    <field name="tanggal"/>
+                    
+                    <filter string="Hari Ini" name="today" 
+                        domain="[('tanggal', '=', context_today())]"/>
+                    <filter string="7 Hari Terakhir" name="last_week" 
+                        domain="[('tanggal', '&gt;=', (context_today() - relativedelta(days=7)))]"/>
+                    <filter string="30 Hari Terakhir" name="last_month" 
+                        domain="[('tanggal', '&gt;=', (context_today() - relativedelta(days=30)))]"/>
+                    
+                    <group expand="0" string="Group By">
+                        <filter string="Kelas" name="group_kelas" context="{'group_by':'kelas_id'}"/>
+                        <filter string="Mata Pelajaran" name="group_mapel" context="{'group_by':'mapel_id'}"/>
+                        <filter string="Guru" name="group_guru" context="{'group_by':'guru_id'}"/>
+                        <filter string="Tanggal" name="group_tanggal" context="{'group_by':'tanggal'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- cdn.absensi_siswa action window - Akses Umum -->
+        <record id="cdn_absensi_siswa_action_public" model="ir.actions.act_window">
+            <field name="name">Data Absensi Santri</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">cdn.absensi_siswa</field>
+            <field name="view_mode">list,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'list', 'view_id': ref('cdn_absensi_siswa_view_tree_public')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('cdn_absensi_siswa_view_form_public')})]"/>
+            <field name="search_view_id" ref="cdn_absensi_siswa_search_public"/>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+        </record>
+
+        <!-- Menu Item untuk Akses Umum dengan akses pesantren_base -->
+        <menuitem id="cdn_absensi_siswa_menu_public" name="Absensi Santri"
+            parent="pesantren_base.absensi_menu_categ" 
+            action="cdn_absensi_siswa_action_public" 
+            sequence="10" />
+
+    </data>
+</odoo>

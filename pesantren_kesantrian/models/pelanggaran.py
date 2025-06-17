@@ -30,7 +30,7 @@ class Pelanggaran(models.Model):
             'confirmed': [('readonly', True)],
             'approved': [('readonly', True)],
         } ,
-        required=True, readonly=True)
+        required=True, ondelete='cascade' ,readonly=True)
     barcode = fields.Char(string='Kartu Santri', states= {
         'draft': [('readonly', False)],
         'confirmed': [('readonly', True)],

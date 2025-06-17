@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="views_ekstra_list" model="ir.ui.view">
+            <field name="name">cdn_pembagian_ekstra_list</field>
+            <field name="model">cdn.pembagian_ekstra</field>
+            <field name="type">list</field>
+            <field name="arch" type="xml">
+                <list string="Pembagian Ekskul" expand="1">
+                    <field name="name"/>
+                    <field name="penanggung_id"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="views_ekstra_form" model="ir.ui.view">
+            <field name="name">cdn_pembagian_ekstra_form</field>
+            <field name="model">cdn.pembagian_ekstra</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Pembagian Ekskul">
+                    <sheet>
+                        <group string="Ekstrakulikuler">
+                            <group>
+                                <field name="name"/>
+                            </group>
+                            <group>
+                                <field name="penanggung_id"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+							<page string="Santri">
+								<field name="siswa_ids">
+									<list>
+										<field name="nis"/>
+										<field name="name"/>
+                                        <field name="namapanggilan" string="Panggilan"/>
+                                        <field name="ruang_kelas_id"/>
+                                        <!-- <field name="kamar_id"/> -->
+									</list>
+								</field>
+							</page>
+						</notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="views_ekstra_search" model="ir.ui.view">
+            <field name="name">cdn_pembagian_ekstra_search</field>
+            <field name="model">cdn.pembagian_ekstra</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name" string="Data"
+                        filter_domain="[
+                            '|', ('ekstra_id', 'illike', self),
+                            '|', ('name', 'illike', self),
+                            ('name', 'ilike', self),
+                        ]"
+                    />
+                </search>
+            </field>
+        </record>
+
+        <record id="action_cdn_pembagian_ekstra" model="ir.actions.act_window">
+            <field name="name">Pembagian Ekskul</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">cdn.pembagian_ekstra</field> 
+            <field name="view_mode">list,form</field> 
+        </record>
+
+        <menuitem id="action_menu_pembagian_ekstra" name="Pembagian Ekskul" parent="pesantren_base.tu_opkilang" action="action_cdn_pembagian_ekstra" sequence="10"/>
+
+    </data>
+</odoo>

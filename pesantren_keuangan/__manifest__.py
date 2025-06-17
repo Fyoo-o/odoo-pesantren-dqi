@@ -55,6 +55,8 @@
         'security/ir.model.access.csv',
        
         'data/ir_sequence.xml',
+        'data/cron_data.xml',
+        'data/cron.xml',
         # 'data/ks_keuangan_data.xml',
 
          # data
@@ -77,7 +79,18 @@
         'views/res_user.xml',
         'views/tagihan_vendor.xml',
         'views/pos_order.xml',
+        'wizard/wallet_limit.xml',
         'views/siswa.xml',
+        'wizard/dompet_santri.xml',        
+        'wizard/limit_masal/limit.xml',        
+        'views/invoice_struk.xml',
+        'views/komponen_biaya.xml',
+        'views/biaya_tahun_ajaran.xml',
+        'views/pos_inherit.xml',
+
+        # 'wizard/rugi_piutang.xml',
+        # 'views/kerugian_piutang.xml',
+        
         # wizard
         'views/res_config_setting_inherit.xml'
 

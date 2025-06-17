@@ -82,6 +82,6 @@
             <!-- <field name="view_ids" eval="[(4, ref('pesantren_kesantrian.cdn_perijinan_view_tree')), (4, ref('pesantren_kesantrian.cdn_perijinan_view_form'))]"/> -->
         </record>
 
-        <menuitem id="cdn_perijinan_menu_act" name="Perijinan Santri" parent="musyrif_menu_root" action="musyrif_perijinan_action" sequence="10"/>
+        <menuitem id="cdn_perijinan_menu_act" name="Perizinan Santri" parent="musyrif_menu_root" action="musyrif_perijinan_action" sequence="10"/>
     </data>
 </odoo>

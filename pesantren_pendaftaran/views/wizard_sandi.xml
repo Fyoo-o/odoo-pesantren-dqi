@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_lihat_password_wizard_form" model="ir.ui.view">
+        <field name="name">lihat.password.wizard.form</field>
+        <field name="model">lihat.password.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Kata Sandi">
+                <group>
+                    <field name="password"/>
+                </group>
+                <footer>
+                    <button string="Tutup" class="btn-primary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

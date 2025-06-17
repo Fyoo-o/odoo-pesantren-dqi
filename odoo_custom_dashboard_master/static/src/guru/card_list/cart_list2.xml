@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="owl.EkskulList" owl="1">
+        <div class="row w-100 h-100 m-0" style="font-size: 12px; line-height: 1.5;">
+            <div class="col-lg-12 p-0">
+                <div class="card shadow-sm border-0 rounded-0">
+                    <div class="card-header d-flex justify-content-between">
+                        <h3 class="card-title mb-0">Kehadiran Ekskul</h3>
+                         <!-- <select class="form-select form-select-sm" style="width: auto;" t-on-change="onViewChange" t-model="state.viewMode">
+                            <option value="current">Data Guru Saat Ini</option>
+                            <option value="all">Semua Data Guru</option>
+                        </select> -->
+                    </div>
+                    <div class="card-body pt-1">
+                        <t t-if="state.guruu.length > 0">
+                            <div style="overflow-x: auto;">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Santri</th>
+                                            <th>Ekskul</th>
+                                            <th>Pembimbing</th>
+                                            <th>Kehadiran</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="overflow-x-scroll">
+                                        <t t-foreach="state.guruu" t-as="guru" t-key="guru.id">
+                                            <tr style="cursor: pointer;" t-att-id="'product-' + guru.id" t-on-click="() => this.onGuruClick(guru.id)">
+                                                <td>
+                                                    <t t-esc="guru.nama"/>
+                                                </td>
+                                                <td>
+                                                    <td t-esc="guru.ekskul"/>
+                                                </td>
+                                                <td>
+                                                    <td t-esc="guru.pembimbing"/>
+                                                </td>
+                                                <td>
+                                                    <span t-if="guru.kehadiran == 'Hadir'" class="badge rounded-pill bg-primary text-light">Hadir</span>
+                                                    <span t-if="guru.kehadiran == 'Izin'" class="badge rounded-pill bg-info text-light">Izin</span>
+                                                    <span t-if="guru.kehadiran == 'Alpa'" class="badge rounded-pill bg-danger text-light">Alpa</span>
+                                                    <span t-if="guru.kehadiran == 'Sakit'" class="badge rounded-pill bg-secondary text-black">Sakit</span>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="text-center p-3">
+                                <span class="ms-2">Data tidak ditemukan</span>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

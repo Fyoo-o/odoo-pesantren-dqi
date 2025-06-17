@@ -29,6 +29,6 @@
             <field name="res_model">cdn.siswa</field>
             <field name="view_mode">list,form</field>
         </record>  
-        <menuitem id="wizard_cari_santri" name="Santri" action="action_wizard_get_santri" web_icon="pesantren_base,static/description/santri.png" sequence="5"/>
+       
     </data>  
 </odoo>

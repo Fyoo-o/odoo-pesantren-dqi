@@ -23,3 +23,5 @@ access_penilaian_manager,cdn.penilaian.manager,model_seleksi_penilaian,pesantren
 
 access_rincian_biaya_user,ubig.rincian_biaya.user,model_ubig_rincian_biaya,base.group_public,1,0,0,0
 access_rincian_biaya_manager,ubig.rincian_biaya.manager,model_ubig_rincian_biaya,pesantren_pendaftaran.group_pendaftaran_manager,1,1,1,1
+
+access_lihat_password_wizard,access.lihat.password.wizard,model_lihat_password_wizard,,1,0,0,0

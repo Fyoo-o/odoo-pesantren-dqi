@@ -3,7 +3,7 @@ from odoo import api, fields, models
 class PoswalletTransaction(models.Model):
     _inherit = 'pos.wallet.transaction'
 
-    siswa_id = fields.Many2one(comodel_name='cdn.siswa', string='Siswa', compute='_compute_siswa',store=True)
+    siswa_id = fields.Many2one(comodel_name='cdn.siswa', string='Siswa',ondelete='cascade' ,compute='_compute_siswa',store=True)
 
     @api.depends('partner_id')
     def _compute_siswa(self):

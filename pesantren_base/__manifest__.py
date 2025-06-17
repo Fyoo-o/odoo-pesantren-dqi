@@ -47,7 +47,7 @@
     'license': 'LGPL-3',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','l10n_id','l10n_id_efaktur','mail','hr','sale','account','muk_web_theme', 'pos_wallet_odoo','hr_attendance','hr_holidays'],
+    'depends': ['base','l10n_id','l10n_id_efaktur','mail','hr','sale','account','muk_web_theme', 'pos_wallet_odoo','hr_attendance','hr_holidays',  ],
     #test
     # always loaded
     'data': [
@@ -94,10 +94,16 @@
         'views/ekstrakulikuler.xml',
         'views/mobile_fasilitas.xml',
         'views/res_config_setting_inherit.xml',
+        
+        
+        'views/kongfigurasi_jenjang.xml',
+        
+        
         # wizard
         'wizard/wizard_invoice.xml',
         'wizard/wizard_siswa.xml',
         'wizard/wizard_kartu.xml',
+        'wizard/kenaikan_kelas.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

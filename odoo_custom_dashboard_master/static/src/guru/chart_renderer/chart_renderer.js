@@ -230,26 +230,33 @@ export class GuruChartRenderer extends Component {
 
       domain1.push(["tanggal", ">=", startDate]);
       domain1.push(["tanggal", "<=", endDate]);
-      domain1.push(["guru_id", "=", session.partner_display_name]);
-      domain2.push(["guru_id", "=", session.partner_display_name]);
+      // domain1.push(["guru_id", "=", session.partner_display_name]);
       domain3.push(["guru_id", "=", session.partner_display_name]);
       domain2.push(["tanggal", ">=", startDate]);
       domain2.push(["tanggal", "<=", endDate]);
+      domain2.push([
+        "penanggung_jawab_id",
+        "ilike",
+        session.partner_display_name,
+      ]);
 
-      pie1 = await this.orm.call("cdn.absensi_siswa", "search_read", [
+      pie1 = await this.orm.call("cdn.absensi_siswa_lines", "search_read", [
         domain1,
-        ["id", "kelas_id", "guru_id", "tanggal", "mapel_id"],
+        ["id", "kelas_id", "tanggal", "guru", "kehadiran"],
       ]);
 
-      pie2 = await this.orm.call("cdn.penugasan", "search_read", [
+      pie2 = await this.orm.call(
+        "cdn.absen_tahfidz_quran_line",
+        "search_read",
+        [
+          domain2,
+          ["name", "halaqoh_id", "tanggal", "kehadiran", "penanggung_jawab_id"],
+        ]
+      );
+
+      pie3 = await this.orm.call("cdn.absen_tahsin_quran_line", "search_read", [
         domain2,
-        // ["id", "partner_name", "application_status"],
-        ["id", "kelas_id", "guru_id", "tanggal"],
-      ]);
-
-      pie3 = await this.orm.call("cdn.penilaian", "search_read", [
-        domain3,
-        ["id", "kelas_id", "state"],
+        ["name", "halaqoh_id", "tanggal", "kehadiran", "penanggung_jawab_id"],
       ]);
 
       await this.processData(pie1, pie2, pie3);
@@ -261,10 +268,10 @@ export class GuruChartRenderer extends Component {
   }
 
   async processData(pie1, pie2, pie3) {
-    const aggregateDataByPenugasan = (data) => {
+    const aggregateDataByAbsenTahfidz = (data) => {
       const stateCounts = {};
       data.forEach((record) => {
-        const state = record.kelas_id;
+        const state = record.kehadiran;
         if (!stateCounts[state]) {
           stateCounts[state] = { count: 0, ids: [] };
         }
@@ -276,7 +283,7 @@ export class GuruChartRenderer extends Component {
     const aggregateDataByAbsensi = (data) => {
       const stateCounts = {};
       data.forEach((record) => {
-        const state = record.mapel_id;
+        const state = record.kehadiran;
         if (!stateCounts[state]) {
           stateCounts[state] = { count: 0, ids: [] };
         }
@@ -285,10 +292,10 @@ export class GuruChartRenderer extends Component {
       });
       return stateCounts;
     };
-    const aggregateDataByPenilaianSiswa = (data) => {
+    const aggregateDataByAbsensiTahsin = (data) => {
       const stateCounts = {};
       data.forEach((record) => {
-        const state = record.kelas_id;
+        const state = record.kehadiran;
         if (!stateCounts[state]) {
           stateCounts[state] = { count: 0, ids: [] };
         }
@@ -309,8 +316,7 @@ export class GuruChartRenderer extends Component {
 
       this.state.datasets = [
         {
-          label: "Jumlah Kelas",
-          // label: "Departement",
+          label: "Jumlah",
           data: Object.values(stateCounts).map((item) => item.count),
           backgroundColor: this.state.labels.map((_, index) =>
             this.getDiverseGradientColor(index, this.state.labels.length)
@@ -324,7 +330,7 @@ export class GuruChartRenderer extends Component {
 
       console.log("Processed Data for pie1:", this.state.datasets);
     } else if (this.props.title === "pie2") {
-      const stateCounts = aggregateDataByPenugasan(pie2);
+      const stateCounts = aggregateDataByAbsenTahfidz(pie2);
 
       this.state.originalLabels = Object.keys(stateCounts).map((state) => {
         return state.replace(/^\d+[, ]*/, "");
@@ -334,7 +340,7 @@ export class GuruChartRenderer extends Component {
 
       this.state.datasets = [
         {
-          label: "Total Penugasan",
+          label: "Total",
           data: Object.values(stateCounts).map((item) => item.count),
           backgroundColor: this.state.labels.map((_, index) =>
             this.getDiverseGradientColor(index, this.state.labels.length)
@@ -348,7 +354,7 @@ export class GuruChartRenderer extends Component {
 
       console.log("Processed Data for pie2:", this.state.datasets);
     } else if (this.props.title === "pie3") {
-      const stateCounts = aggregateDataByPenilaianSiswa(pie3);
+      const stateCounts = aggregateDataByAbsensiTahsin(pie3);
 
       this.state.originalLabels = Object.keys(stateCounts).map((state) => {
         return state.replace(/^\d+[, ]*/, ""); // Hapus angka dan koma di depan
@@ -358,7 +364,7 @@ export class GuruChartRenderer extends Component {
 
       this.state.datasets = [
         {
-          label: "Jumlah",
+          label: "Total",
           data: Object.values(stateCounts).map((item) => item.count),
           backgroundColor: this.state.labels.map((_, index) =>
             this.getDiverseGradientColor(index, this.state.labels.length)
@@ -608,47 +614,49 @@ export class GuruChartRenderer extends Component {
         return;
       }
 
+      console.log("label", label);
+
       let resModel;
       if (this.props.title === "pie1") {
-        resModel = "cdn.absensi_siswa";
+        resModel = "cdn.absensi_siswa_lines";
       } else if (this.props.title === "pie2") {
-        resModel = "cdn.penugasan";
+        resModel = "cdn.absen_tahfidz_quran_line";
       } else if (this.props.title === "pie3") {
-        resModel = "cdn.penilaian";
+        resModel = "cdn.absen_tahsin_quran_line";
       }
 
       let domainAction = [];
 
       if (this.props.title === "pie1") {
-        let mapel = originalLabel;
+        let kehadiran = originalLabel;
         domainAction.push(
           ["id", "in", associatedIds],
-          ["mapel_id", "=", mapel],
-          ["guru_id", "=", session.partner_display_name]
+          ["kehadiran", "=", kehadiran],
+          ["guru", "=", session.partner_display_name]
         );
       } else if (this.props.title === "pie2") {
-        let kelas = originalLabel;
+        let kehadiran = originalLabel;
         domainAction.push(
           ["id", "in", associatedIds],
-          ["kelas_id", "=", kelas],
-          ["guru_id", "=", session.partner_display_name]
+          ["kehadiran", "=", kehadiran]
+          // ["penaggung_jawab_id", "=", session.partner_display_name]
         );
       } else if (this.props.title === "pie3") {
-        let kelas = originalLabel;
+        let kehadiran = originalLabel;
         domainAction.push(
           ["id", "in", associatedIds],
-          ["kelas_id", "=", kelas],
-          ["guru_id", "=", session.partner_display_name]
+          ["kehadiran", "=", kehadiran],
+          ["penanggung_jawab_id", "=", session.partner_display_name]
         );
       }
 
       let nameHeader;
       if (this.props.title === "pie1") {
-        nameHeader = "Absensi";
+        nameHeader = "Absensi Santri";
       } else if (this.props.title === "pie2") {
-        nameHeader = "Data Penugasan";
+        nameHeader = "Absensi Tahfidz";
       } else if (this.props.title === "pie3") {
-        nameHeader = "Data Penilaian Siswa";
+        nameHeader = "Absensi Tahsin";
       }
       if (
         this.actionService &&
@@ -663,12 +671,6 @@ export class GuruChartRenderer extends Component {
             views: [[false, "list"]],
             target: "current",
             domain: domainAction,
-            // domain: [
-            //   ["id", "in", associatedIds],
-            //   ["payment_state", "=", "not_paid"],
-            // ],
-            // domain: [[associatedIds], [domainAction]],
-            // domain: [["payment_state", "=", "not_paid"]],
           })
           .then(() => {
             console.log(
@@ -1039,644 +1041,3 @@ export class GuruChartRenderer extends Component {
   }
 }
 GuruChartRenderer.template = "owl.GuruChartRenderer";
-
-//PENANDAAA
-
-// /** @odoo-module */
-
-// import { registry } from "@web/core/registry";
-// import { loadJS } from "@web/core/assets";
-// const { Component, onWillStart, useRef, onMounted, onWillUnmount } = owl;
-// import { useService } from "@web/core/utils/hooks";
-
-// export class StockChartRenderer extends Component {
-//   setup() {
-//     this.chartRef = { el: null };
-//     this.orm = useService("orm");
-//     this.actionService = useService("action");
-//     this.default_period = "thisMonth";
-//     this.state = {
-//       labels: [],
-//       datasets: [],
-//       hasData: true,
-//       startDate2: null,
-//       endDate2: null,
-//     };
-
-//     this.hasData = true;
-
-//     // COUNTDOWN
-//     this.refreshInterval = null;
-//     this.countdownInterval = null;
-//     this.countdownTime = 10;
-//     this.isCountingDown = false;
-//     this.chartInstance = null;
-//     this.noDataMessage = null;
-
-//     onWillStart(async () => {
-//       try {
-//         await loadJS("https://cdn.jsdelivr.net/npm/apexcharts");
-//         await this.fetchAndProcessData();
-//       } catch (error) {
-//         console.error("Error loading ApexCharts or fetching data:", error);
-//       }
-//     });
-
-//     onMounted(() => {
-//       const periodSelection = document.getElementById('periodSelection');
-//       if (periodSelection) {
-//         periodSelection.value = 'thisMonth';
-//       }
-
-//       if (this.props.title === 'pie1' || this.props.title === 'pie2' || this.props.title === 'pie3') {
-//         this.attachEventListeners();
-//         this.filterDataByPeriod();
-//       }
-
-//       // Ensure chart element exists before rendering
-//       this.chartRef.el = document.getElementById('chart');
-//       if (!this.chartRef.el) {
-//         console.error("Chart element not found. Make sure there's an element with id 'chart'");
-//         return;
-//       }
-
-//       // Add debugging logs
-//       console.log("Current state before rendering:", {
-//         labels: this.state.labels,
-//         datasets: this.state.datasets
-//       });
-
-//       // Render chart even with minimal data
-//       this.renderChart();
-//     });
-
-//     onWillUnmount(() => {
-//       this.clearIntervals();
-//       if (this.chartInstance) {
-//         try {
-//           this.chartInstance.destroy();
-//         } catch (error) {
-//           console.error("Error destroying chart:", error);
-//         }
-//       }
-//     });
-//   }
-
-//   // COUNTDOWN FUNCTIONS
-//   toggleCountdown() {
-//     if (this.isCountingDown) {
-//       this.clearIntervals();
-//       document.getElementById("timerCountdown").textContent = "";
-//       const clockElement = document.getElementById("timerIcon");
-//       if (clockElement) {
-//         clockElement.classList.add("fas", "fa-clock");
-//       }
-//     } else {
-//       this.isCountingDown = true;
-//       this.startCountdown();
-//       const clockElement = document.getElementById("timerIcon");
-//       if (clockElement) {
-//         clockElement.classList.remove("fas", "fa-clock");
-//       }
-//     }
-//   }
-
-//   clearIntervals() {
-//     if (this.countdownInterval) {
-//       clearInterval(this.countdownInterval);
-//       this.countdownInterval = null;
-//     }
-//     if (this.refreshInterval) {
-//       clearInterval(this.refreshInterval);
-//       this.refreshInterval = null;
-//     }
-//     this.countdownTime = 10;
-//     this.isCountingDown = false;
-//   }
-
-//   startCountdown() {
-//     this.countdownTime = 10;
-//     this.clearIntervals();
-//     this.updateCountdownDisplay();
-
-//     this.countdownInterval = setInterval(() => {
-//       this.countdownTime--;
-
-//       if (this.countdownTime < 0) {
-//         this.countdownTime = 10;
-//         if (this.state.startDate2 && this.state.endDate2) {
-//           this.refreshChart(this.state.startDate2, this.state.endDate2);
-//         } else {
-//           this.refreshChart();
-//         }
-//       }
-
-//       this.updateCountdownDisplay();
-//     }, 1000);
-
-//     this.isCountingDown = true;
-//   }
-
-//   updateCountdownDisplay() {
-//     const countdownElement = document.getElementById("timerCountdown");
-//     if (countdownElement) {
-//       countdownElement.textContent = this.countdownTime;
-//     }
-//   }
-
-//   refreshChart(startDate, endDate) {
-//     console.log("Refreshing chart...");
-//     this.fetchAndProcessData(startDate, endDate);
-//   }
-
-//   async fetchAndProcessData(startDate, endDate) {
-//     try {
-//       let pie1 = [];
-//       let pie2 = [];
-//       let pie3 = [];
-//       const domain1 = [['picking_type_code', '=', 'internal']];
-//       const domain2 = [['picking_type_code', '=', 'incoming']];
-//       const domain3 = [['picking_type_code', '=', 'outgoing']];
-
-//       // Set default startDate and endDate if not provided
-//       if (!startDate) {
-//         const today = new Date();
-//         const firstDayOfMonth = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1, 0, 0, 1));
-//         startDate = firstDayOfMonth.toISOString().split('T')[0];
-//       }
-
-//       if (!endDate) {
-//         const today = new Date();
-//         const lastDayOfMonth = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 23, 59, 59, 999));
-//         endDate = lastDayOfMonth.toISOString().split('T')[0];
-//       }
-
-//       // Add date filters to domains
-//       domain1.push(["create_date", ">=", startDate]);
-//       domain1.push(["create_date", "<=", endDate]);
-//       domain2.push(["create_date", ">=", startDate]);
-//       domain2.push(["create_date", "<=", endDate]);
-//       domain3.push(["create_date", ">=", startDate]);
-//       domain3.push(["create_date", "<=", endDate]);
-
-//       // Fetch data for each pie chart
-//       pie1 = await this.orm.call("stock.picking", "search_read", [
-//         domain1,
-//         ["id", "create_date", "state"]
-//       ]);
-
-//       pie2 = await this.orm.call("stock.picking", "search_read", [
-//         domain2,
-//         ["id", "create_date", "state"]
-//       ]);
-
-//       pie3 = await this.orm.call("stock.picking", "search_read", [
-//         domain3,
-//         ["id", "create_date", "state"]
-//       ]);
-
-//       console.log("Fetched Data:", { pie1, pie2, pie3 });
-
-//       await this.processData(pie1, pie2, pie3);
-//     } catch (error) {
-//       console.error("Error fetching data from Odoo:", error);
-//       this.handleEmptyChart();
-//     }
-//   }
-
-//   async processData(pie1, pie2, pie3) {
-//     const aggregateDataByState = (data) => {
-//       const stateCounts = {};
-//       data.forEach((record) => {
-//         const state = record.state;
-//         if (!stateCounts[state]) {
-//           stateCounts[state] = { count: 0, ids: [] };
-//         }
-//         stateCounts[state].count += 1;
-//         stateCounts[state].ids.push(record.id);
-//       });
-//       return stateCounts;
-//     };
-
-//     if (this.props.title === "pie1") {
-//       const stateCounts = aggregateDataByState(pie1);
-
-//       this.state.labels = Object.keys(stateCounts).map(state => {
-//         if (state === 'done') return 'Selesai';
-//         if (state === 'assigned') return 'Proses';
-//         if (state === 'draft') return 'Draft';
-//         if (state === 'waiting') return 'Menunggu';
-//         if (state === 'cancel') return 'Dibatalkan';
-//         return state;
-//       });
-
-//       this.state.datasets = [
-//         {
-//           name: 'Status Count',
-//           data: Object.values(stateCounts).map(item => item.count)
-//         }
-//       ];
-
-//       console.log("Processed Data for pie1:", this.state.datasets);
-//     }
-//     else if (this.props.title === "pie2") {
-//       const stateCounts = aggregateDataByState(pie2);
-
-//       this.state.labels = Object.keys(stateCounts).map(state => {
-//         if (state === 'done') return 'Selesai';
-//         if (state === 'assigned') return 'Proses';
-//         if (state === 'draft') return 'Draft';
-//         if (state === 'waiting') return 'Menunggu';
-//         if (state === 'cancel') return 'Dibatalkan';
-//         return state;
-//       });
-
-//       this.state.datasets = [
-//         {
-//           name: 'Status Count',
-//           data: Object.values(stateCounts).map(item => item.count)
-//         }
-//       ];
-
-//       console.log("Processed Data for pie2:", this.state.datasets);
-//     }
-//     else if (this.props.title === "pie3") {
-//       const stateCounts = aggregateDataByState(pie3);
-
-//       this.state.labels = Object.keys(stateCounts).map(state => {
-//         if (state === 'done') return 'Selesai';
-//         if (state === 'assigned') return 'Proses';
-//         if (state === 'draft') return 'Draft';
-//         if (state === 'waiting') return 'Menunggu';
-//         if (state === 'cancel') return 'Dibatalkan';
-//         return state;
-//       });
-
-//       this.state.datasets = [
-//         {
-//           name: 'Status Count',
-//           data: Object.values(stateCounts).map(item => item.count)
-//         }
-//       ];
-
-//       console.log("Processed Data for pie3:", this.state.datasets);
-//     }
-
-//     // Always call renderChart, even if data is empty
-//     this.renderChart();
-//   }
-
-//   getDiverseGradientColor(index, totalItems) {
-//     const colors = [
-//       "#16a34a", "#0891b2", "#22c55e", "#06b6d4",
-//       "#15803d", "#0e7490", "#86efac", "#67e8f9",
-//       "#166534", "#155e75"
-//     ];
-//     return colors[index % colors.length];
-//   }
-
-//   renderChart() {
-//     // Debugging: Log chart rendering conditions
-//     console.log("Rendering Chart Conditions:", {
-//       chartRefEl: this.chartRef.el,
-//       labels: this.state.labels,
-//       labelLength: this.state.labels.length,
-//       datasets: this.state.datasets,
-//       datasetsValid: this.state.datasets.some(dataset => dataset.data && dataset.data.length > 0)
-//     });
-
-//     if (!this.chartRef.el) {
-//       console.error("Chart element not found. Cannot render chart.");
-//       this.handleEmptyChart();
-//       return;
-//     }
-
-//     // Destroy existing chart instance
-//     if (this.chartInstance) {
-//       try {
-//         this.chartInstance.destroy();
-//       } catch (error) {
-//         console.error("Error destroying previous chart:", error);
-//       }
-//     }
-
-//     try {
-//       const chartOptions = this.getChartOptions();
-//       this.chartInstance = new ApexCharts(this.chartRef.el, chartOptions);
-//       this.chartInstance.render();
-//     } catch (error) {
-//       console.error("Error rendering chart. Check data and configuration.", error);
-//       this.handleEmptyChart();
-//     }
-//   }
-
-//   getChartOptions() {
-//     const baseOptions = {
-//       series: this.state.datasets[0].data,
-//       labels: this.state.labels,
-//       chart: {
-//         type: 'pie',
-//         height: 350,
-//         events: {
-//           dataPointSelection: (event, chartContext, config) => {
-//             this.handleChartClick(config);
-//           }
-//         }
-//       },
-//       colors: this.state.labels.map((_, index) =>
-//         this.getDiverseGradientColor(index, this.state.labels.length)
-//       ),
-//       legend: {
-//         position: this.props.type === 'bar' ? 'bottom' : 'top',
-//         show: this.props.type !== 'line'
-//       },
-//       responsive: [
-//         {
-//           breakpoint: 480,
-//           options: {
-//             chart: {
-//               width: '100%'
-//             },
-//             legend: {
-//               position: 'bottom'
-//             }
-//           }
-//         }
-//       ]
-//     };
-
-//     // Customize options based on chart type
-//     switch (this.props.type) {
-//       case 'line':
-//         baseOptions.stroke = { curve: 'smooth' };
-//         baseOptions.fill = { type: 'solid' };
-//         break;
-//       case 'bar':
-//         baseOptions.plotOptions = {
-//           bar: {
-//             horizontal: false
-//           }
-//         };
-//         break;
-//     }
-
-//     return baseOptions;
-//   }
-
-//   convertChartType(chartjsType) {
-//     const typeMap = {
-//       'pie': 'pie',
-//       'doughnut': 'donut',
-//       'line': 'line',
-//       'bar': 'bar'
-//     };
-//     return typeMap[chartjsType] || 'pie';
-//   }
-
-//   handleEmptyChart() {
-//     if (this.chartRef.el) {
-//       this.chartRef.el.style.display = 'none';
-//     }
-
-//     if (!this.noDataMessage) {
-//       this.noDataMessage = document.createElement('div');
-//       this.noDataMessage.style.position = 'absolute';
-//       this.noDataMessage.style.top = '50%';
-//       this.noDataMessage.style.left = '50%';
-//       this.noDataMessage.style.transform = 'translate(-50%, -50%)';
-//       this.noDataMessage.style.textAlign = 'center';
-//       this.noDataMessage.style.fontSize = '16px';
-//       this.noDataMessage.style.color = 'gray';
-//       this.noDataMessage.style.backgroundColor = 'white';
-//       this.noDataMessage.style.padding = '10px 20px';
-//       this.noDataMessage.style.borderRadius = '4px';
-//       this.noDataMessage.style.zIndex = '10';
-//       this.noDataMessage.style.width = '200px';
-//       this.noDataMessage.style.height = '50px';
-//       this.noDataMessage.style.display = 'flex';
-//       this.noDataMessage.style.alignItems = 'center';
-//       this.noDataMessage.style.justifyContent = 'center';
-//       this.noDataMessage.textContent = 'Data tidak ditemukan';
-
-//       this.chartRef.el.parentNode.style.position = 'relative';
-//       this.chartRef.el.parentNode.style.minHeight = '200px';
-//       this.chartRef.el.parentNode.appendChild(this.noDataMessage);
-//     }
-//   }
-
-//   handleChartClick(config) {
-//     this.clearIntervals();
-//     const datasetIndex = config.seriesIndex;
-//     const dataPointIndex = config.dataPointIndex;
-
-//     const dataset = this.state.datasets[0];
-//     const associatedIds = dataset.associatedIds ? dataset.associatedIds[dataPointIndex] : null;
-
-//     if (!associatedIds) {
-//       console.error("No associated IDs for the clicked data point.");
-//       return;
-//     }
-//     const resModel = 'stock.picking';
-
-//     if (this.actionService && typeof this.actionService.doAction === 'function') {
-//       this.actionService.doAction({
-//         name: "Record List",
-//         type: "ir.actions.act_window",
-//         res_model: resModel,
-//         view_mode: "list",
-//         views: [[false, "list"]],
-//         target: "current",
-//         domain: [["id", "in", associatedIds]],
-//       }).then(() => {
-//         console.log(`Redirected to list view of ${resModel} for selected IDs.`);
-//       }).catch(error => {
-//         console.error("Error in actionService.doAction redirect:", error);
-//       });
-//     } else {
-//       console.error('actionService.doAction is not a function or actionService is undefined:', this.actionService);
-//     }
-//   }
-
-//   attachEventListeners() {
-//     const startDateInput = document.getElementById("startDate");
-//     const endDateInput = document.getElementById("endDate");
-//     const timerButton = document.getElementById("timerButton");
-//     this.updateDateRangeText();
-//     if (startDateInput && endDateInput) {
-//       startDateInput.addEventListener("change", () => this.filterData());
-//       endDateInput.addEventListener("change", () => this.filterData());
-//     } else {
-//       console.error("Date input elements not found");
-//     }
-
-//     if (timerButton) {
-//       timerButton.addEventListener("click", this.toggleCountdown.bind(this));
-//     } else {
-//       console.error("Timer button element not found");
-//     }
-
-//     const datePickerButton = document.getElementById("datePickerButton");
-//     const datePickerContainer = document.getElementById("datePickerContainer");
-
-//     if (datePickerButton && datePickerContainer) {
-//       datePickerButton.addEventListener("click", (event) => {
-//         event.stopPropagation(); // Prevent event from bubbling up
-//         // Toggle the display property
-//         datePickerContainer.style.display = datePickerContainer.style.display === "flex" ? "none" : "flex";
-//       });
-//     } else {
-//       console.error("Date picker button or container element not found");
-//     }
-
-//     // Close the date picker if clicking outside of it
-//     document.addEventListener("click", (event) => {
-//       if (
-//         datePickerContainer &&
-//         !datePickerContainer.contains(event.target) &&
-//         !datePickerButton.contains(event.target)
-//       ) {
-//         datePickerContainer.style.display = "none";
-//       }
-//     });
-
-//   }
-
-//   filterData() {
-//     var startDate = document.getElementById("startDate")?.value;
-//     var endDate = document.getElementById("endDate")?.value;
-
-//     if (startDate && endDate) {
-//       this.fetchAndProcessData(startDate, endDate);
-//       this.state.startDate2 = startDate;
-//       this.state.endDate2 = endDate;
-//       this.updateDateRangeText(); // Perbarui teks pada tombol
-//     } else {
-//       this.fetchAndProcessData();
-//     }
-//   }
-
-//   filterDataByPeriod() {
-//     const startDateInput = document.getElementById('startDate');
-//     const endDateInput = document.getElementById('endDate');
-//     const periodSelection = document.getElementById('periodSelection');
-
-//     // Langsung eksekusi logic tanpa mendaftarkan event listener baru
-//     const today = new Date();
-//     let startDate;
-//     let endDate;
-//     const defaultPeriod = 'thisMonth'; // Default ke Bulan Ini
-//     periodSelection.value = defaultPeriod; // Pilih default period pada dropdown
-
-//     if (periodSelection) {
-//       periodSelection.addEventListener('change', () => {
-//         switch (periodSelection.value) {
-//           case 'today':
-//             // Hari Ini
-//             startDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 0, 0, 0, 1));
-//             endDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 23, 59, 59, 999));
-//             break;
-//           case 'yesterday':
-//             // Kemarin
-//             startDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() - 1, 0, 0, 0, 1));
-//             endDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() - 1, 23, 59, 59, 999));
-//             break;
-//           case 'thisWeek':
-//             // Minggu Ini
-//             const startOfWeek = today.getUTCDate() - today.getUTCDay(); // Set ke hari Minggu
-//             startDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), startOfWeek, 0, 0, 0, 1));
-//             endDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), startOfWeek + 6, 23, 59, 59, 999));
-//             break;
-//           case 'lastWeek':
-//             // Minggu Lalu
-//             const lastWeekStart = today.getUTCDate() - today.getUTCDay() - 7; // Minggu sebelumnya
-//             startDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), lastWeekStart, 0, 0, 0, 1));
-//             endDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), lastWeekStart + 6, 23, 59, 59, 999));
-//             break;
-//           case 'thisMonth':
-//             // Bulan Ini
-//             startDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1, 0, 0, 0, 1));
-//             endDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() + 1, 0, 23, 59, 59, 999));
-//             break;
-//           case 'lastMonth':
-//             // Bulan Lalu
-//             startDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() - 1, 1, 0, 0, 0, 1));
-//             endDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 0, 23, 59, 59, 999));
-//             break;
-//           case 'thisYear':
-//             // Tahun Ini
-//             startDate = new Date(Date.UTC(today.getUTCFullYear(), 0, 1, 0, 0, 0, 1));
-//             endDate = new Date(Date.UTC(today.getUTCFullYear(), 11, 31, 23, 59, 59, 999));
-//             break;
-//           case 'lastYear':
-//             // Tahun Lalu
-//             startDate = new Date(Date.UTC(today.getUTCFullYear() - 1, 0, 1, 0, 0, 0, 1));
-//             endDate = new Date(Date.UTC(today.getUTCFullYear() - 1, 11, 31, 23, 59, 59, 999));
-//             break;
-//           default:
-//             // Default ke Bulan Ini jika tidak ada yang cocok
-//             startDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1, 0, 0, 0, 1));
-//             endDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() + 1, 0, 23, 59, 59, 999));
-//         }
-
-//         // Update the input fields and the state
-//         if (startDate && endDate) {
-//           this.state.startDate2 = startDate.toISOString().split('T')[0];
-//           this.state.endDate2 = endDate.toISOString().split('T')[0];
-//           startDateInput.value = this.state.startDate2;
-//           endDateInput.value = this.state.endDate2;
-//           console.log("dates down: ", startDate, "& ", endDate);
-//           console.log("dates down state: ", this.state.startDate2, "& ", this.state.endDate2);
-//           this.updateDateRangeText();
-//           this.fetchAndProcessData(startDate, endDate);
-//         }
-//       });
-//     }
-//   }
-
-//   updateDateRangeText() {
-//     const dateRangeText = document.getElementById("dateRangeText");
-//     if (!dateRangeText) return;
-
-//     // Jika startDate2 dan endDate2 null, set default ke bulan ini
-//     if (!this.state.startDate2 && !this.state.endDate2) {
-//       const today = new Date();
-//       const startOfMonth = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1));
-//       const endOfMonth = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() + 1, 0));
-
-//       this.state.startDate2 = startOfMonth.toISOString().split('T')[0];
-//       this.state.endDate2 = endOfMonth.toISOString().split('T')[0];
-//     }
-
-//     const startText = this.state.startDate2
-//       ? new Date(this.state.startDate2).toLocaleDateString('id-ID', {
-//         day: 'numeric',
-//         month: 'short',
-//         year: 'numeric',
-//       })
-//       : null;
-//     const endText = this.state.endDate2
-//       ? new Date(this.state.endDate2).toLocaleDateString('id-ID', {
-//         day: 'numeric',
-//         month: 'short',
-//         year: 'numeric',
-//       })
-//       : null;
-
-//     let dateText;
-
-//     if (!this.state.startDate2 && !this.state.endDate2) {
-//       dateText = "Pilih Tanggal";
-//     } else if (this.state.startDate2 && this.state.endDate2) {
-//       dateText = `${startText} - ${endText}`;
-//     } else if (this.state.startDate2) {
-//       dateText = `${startText} - Pilih`;
-//     } else if (this.state.endDate2) {
-//       dateText = `Pilih - ${endText}`;
-//     }
-
-//     dateRangeText.textContent = dateText;
-//   }
-
-// }
-
-// StockChartRenderer.template = "owl.StockChartRenderer";

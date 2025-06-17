@@ -32,21 +32,14 @@
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
-                        <group>
+
+                        <group string="Penilaian">
                             <field name="id" invisible="1"/>
                             <group>
                                 <field name="guru_id"
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
-                                <field name="name" placeholder="inputan nama dari tipe yang di pilih"/>
-                            </group>
-                            <group>
-                            </group>
-                        </group>
-                        
-                        <group>
-                            <group>
                                 <field name="kelas_id"
-                                        options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
+                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
                                 <field name="mapel_id"
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
                             </group>
@@ -60,13 +53,14 @@
                             'default_id_penilaian': id,
                             'default_id_kelas':kelas_id}">
                             <list editable="bottom">
-                                <field name="name"/>
-                                <field name="id_penilaian" invisible="1"/>
-                                <field name="id_kelas" invisible="1"/>
-                                <field name="state" invisible="1"/>
+                                <field name="name" string="Tipe"/>
+                                <!-- <field name="id_penilaian" invisible="1"/> -->
+                                <!-- <field name="id_kelas" invisible="1"/> -->
+                                <!-- <field name="state" invisible="1"/> -->
                                 <field name="siswa_id"
                                     domain="[('ruang_kelas_id', '=', id_kelas)]"
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
+                                <field name="panggilan" string="Panggilan"/>
                                 <field name="nilai" widget="integer"/>
                                 <field name="predikat"/>
                             </list>

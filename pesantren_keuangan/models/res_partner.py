@@ -11,11 +11,11 @@ class ResPartner(models.Model):
 
     virtual_account = fields.Char(string='Virtual Account', store=True)
     va_saku         = fields.Char(string='No. VA Uang Saku', store=True)
-    saldo_uang_saku = fields.Float(string='Saldo Uang Saku', compute='_compute_saldo_uang_saku', store=True)
+    saldo_uang_saku = fields.Float(string='Saldo Santri', compute='_compute_saldo_uang_saku', store=True)
     wallet_pin      = fields.Char(string='PIN Dompet', store=True)
     has_wallet_pin  = fields.Boolean(string='Apakah ada Wallet PIN', compute='_compute_has_wallet_pin', store=True, readonly=True)
     nis             = fields.Char(string="No Induk Siswa", related='siswa_id.nis', readonly=True)
-    barcode_santri  = fields.Char(string="Barcode Santri", related='siswa_id.barcode_santri', store=True)
+    barcode_santri  = fields.Char(string="Barcode Santri", related='siswa_id.barcode_santri', ondelete='cascade' ,store=True)
     siswa_id        = fields.One2many('cdn.siswa', 'partner_id', string='Siswa')
     name            = fields.Char(string='Siswa')
 

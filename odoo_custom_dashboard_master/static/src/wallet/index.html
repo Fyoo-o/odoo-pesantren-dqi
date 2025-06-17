@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Wallet Santri</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Header -->
+    <nav class="bg-white shadow-lg border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center">
+            <i class="fas fa-wallet text-indigo-600 text-2xl mr-3"></i>
+            <h1 class="text-xl font-bold text-gray-800">
+              Dashboard Wallet Santri
+            </h1>
+          </div>
+          <div class="flex items-center space-x-4">
+            <span class="text-sm text-gray-600" id="currentDateTime"></span>
+            <div
+              class="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center"
+            >
+              <i class="fas fa-user text-white text-sm"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Filter Section -->
+      <div
+        class="bg-white rounded-xl shadow-lg p-6 mb-8 border border-gray-200"
+      >
+        <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+          <i class="fas fa-filter text-indigo-600 mr-2"></i>
+          Filter Data
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Periode</label
+            >
+            <select
+              id="periodFilter"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            >
+              <option value="today">Hari Ini</option>
+              <option value="week">Minggu Ini</option>
+              <option value="month">Bulan Ini</option>
+              <option value="year">Tahun Ini</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Kelas</label
+            >
+            <select
+              id="classFilter"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            >
+              <option value="all">Semua Kelas</option>
+              <option value="1">Kelas 1</option>
+              <option value="2">Kelas 2</option>
+              <option value="3">Kelas 3</option>
+              <option value="4">Kelas 4</option>
+              <option value="5">Kelas 5</option>
+              <option value="6">Kelas 6</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Asrama</label
+            >
+            <select
+              id="dormFilter"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            >
+              <option value="all">Semua Asrama</option>
+              <option value="putra">Putra</option>
+              <option value="putri">Putri</option>
+            </select>
+          </div>
+          <div class="flex items-end">
+            <button
+              id="applyFilter"
+              class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center justify-center"
+            >
+              <i class="fas fa-search mr-2"></i>
+              Terapkan Filter
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div
+          class="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition duration-300"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600">Total Saldo</p>
+              <p class="text-2xl font-bold text-gray-900" id="totalBalance">
+                Rp 0
+              </p>
+            </div>
+            <div
+              class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center"
+            >
+              <i class="fas fa-money-bill-wave text-green-600 text-xl"></i>
+            </div>
+          </div>
+        </div>
+        <div
+          class="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition duration-300"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600">Total Santri</p>
+              <p class="text-2xl font-bold text-gray-900" id="totalStudents">
+                0
+              </p>
+            </div>
+            <div
+              class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center"
+            >
+              <i class="fas fa-users text-blue-600 text-xl"></i>
+            </div>
+          </div>
+        </div>
+        <div
+          class="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition duration-300"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600">Rata-rata Saldo</p>
+              <p class="text-2xl font-bold text-gray-900" id="avgBalance">
+                Rp 0
+              </p>
+            </div>
+            <div
+              class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center"
+            >
+              <i class="fas fa-chart-line text-yellow-600 text-xl"></i>
+            </div>
+          </div>
+        </div>
+        <div
+          class="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition duration-300"
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600">Tertinggi</p>
+              <p class="text-2xl font-bold text-gray-900" id="highestBalance">
+                Rp 0
+              </p>
+            </div>
+            <div
+              class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center"
+            >
+              <i class="fas fa-crown text-purple-600 text-xl"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- Balance Distribution Chart -->
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+          <h3
+            class="text-lg font-semibold text-gray-800 mb-4 flex items-center"
+          >
+            <i class="fas fa-chart-pie text-indigo-600 mr-2"></i>
+            Distribusi Saldo
+          </h3>
+          <canvas id="balanceChart" class="w-full h-64"></canvas>
+        </div>
+
+        <!-- Top Students Chart -->
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+          <h3
+            class="text-lg font-semibold text-gray-800 mb-4 flex items-center"
+          >
+            <i class="fas fa-chart-bar text-indigo-600 mr-2"></i>
+            Top 10 Santri Terkaya
+          </h3>
+          <canvas id="topStudentsChart" class="w-full h-64"></canvas>
+        </div>
+      </div>
+
+      <!-- Students Table -->
+      <div
+        class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden"
+      >
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+            <i class="fas fa-table text-indigo-600 mr-2"></i>
+            Daftar Santri Berdasarkan Saldo
+          </h3>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-gray-50">
+              <tr>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Rank
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Nama Santri
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Kelas
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Asrama
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Saldo
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Status
+                </th>
+              </tr>
+            </thead>
+            <tbody
+              id="studentsTableBody"
+              class="bg-white divide-y divide-gray-200"
+            >
+              <!-- Data will be populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Sample data - replace with real data from your database
+      const studentsData = [
+        {
+          name: "Ahmad Fauzi",
+          class: "6",
+          dorm: "putra",
+          balance: 850000,
+          id: "001",
+        },
+        {
+          name: "Siti Aisyah",
+          class: "5",
+          dorm: "putri",
+          balance: 720000,
+          id: "002",
+        },
+        {
+          name: "Muhammad Rizki",
+          class: "6",
+          dorm: "putra",
+          balance: 680000,
+          id: "003",
+        },
+        {
+          name: "Fatimah Zahra",
+          class: "4",
+          dorm: "putri",
+          balance: 650000,
+          id: "004",
+        },
+        {
+          name: "Abdul Rahman",
+          class: "5",
+          dorm: "putra",
+          balance: 600000,
+          id: "005",
+        },
+        {
+          name: "Khadijah Nur",
+          class: "3",
+          dorm: "putri",
+          balance: 580000,
+          id: "006",
+        },
+        {
+          name: "Umar Faruq",
+          class: "6",
+          dorm: "putra",
+          balance: 550000,
+          id: "007",
+        },
+        {
+          name: "Zainab Hasan",
+          class: "2",
+          dorm: "putri",
+          balance: 520000,
+          id: "008",
+        },
+        {
+          name: "Ali Akbar",
+          class: "4",
+          dorm: "putra",
+          balance: 480000,
+          id: "009",
+        },
+        {
+          name: "Maryam Salma",
+          class: "1",
+          dorm: "putri",
+          balance: 450000,
+          id: "010",
+        },
+        {
+          name: "Yusuf Ibrahim",
+          class: "3",
+          dorm: "putra",
+          balance: 420000,
+          id: "011",
+        },
+        {
+          name: "Hafsah Amina",
+          class: "5",
+          dorm: "putri",
+          balance: 380000,
+          id: "012",
+        },
+        {
+          name: "Bilal Ahmad",
+          class: "2",
+          dorm: "putra",
+          balance: 350000,
+          id: "013",
+        },
+        {
+          name: "Ruqayyah Sari",
+          class: "4",
+          dorm: "putri",
+          balance: 320000,
+          id: "014",
+        },
+        {
+          name: "Hamza Malik",
+          class: "1",
+          dorm: "putra",
+          balance: 280000,
+          id: "015",
+        },
+      ];
+
+      let filteredData = [...studentsData];
+      let balanceChart = null;
+      let topStudentsChart = null;
+
+      document.addEventListener("DOMContentLoaded", () => {
+        updateDateTime();
+        setInterval(updateDateTime, 60000); // 1 menit sekali
+
+        setupEventListeners();
+        applyFilters(); // langsung render pertama kali
+      });
+
+      function updateDateTime() {
+        const now = new Date();
+        const options = {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        };
+        document.getElementById("currentDateTime").textContent =
+          now.toLocaleDateString("id-ID", options);
+      }
+
+      function setupEventListeners() {
+        document
+          .getElementById("applyFilter")
+          .addEventListener("click", applyFilters);
+        document
+          .getElementById("periodFilter")
+          .addEventListener("change", applyFilters);
+        document
+          .getElementById("classFilter")
+          .addEventListener("change", applyFilters);
+        document
+          .getElementById("dormFilter")
+          .addEventListener("change", applyFilters);
+      }
+
+      function applyFilters() {
+        const classFilter = document.getElementById("classFilter").value;
+        const dormFilter = document.getElementById("dormFilter").value;
+
+        filteredData = studentsData.filter((student) => {
+          return (
+            (classFilter === "all" || student.class === classFilter) &&
+            (dormFilter === "all" || student.dorm === dormFilter)
+          );
+        });
+
+        updateStats();
+        updateCharts();
+        updateTable();
+      }
+
+      function updateStats() {
+        const totalBalance = filteredData.reduce(
+          (sum, student) => sum + student.balance,
+          0
+        );
+        const totalStudents = filteredData.length;
+        const avgBalance = totalStudents > 0 ? totalBalance / totalStudents : 0;
+        const highestBalance =
+          filteredData.length > 0
+            ? Math.max(...filteredData.map((s) => s.balance))
+            : 0;
+
+        document.getElementById("totalBalance").textContent =
+          formatCurrency(totalBalance);
+        document.getElementById("totalStudents").textContent = totalStudents;
+        document.getElementById("avgBalance").textContent =
+          formatCurrency(avgBalance);
+        document.getElementById("highestBalance").textContent =
+          formatCurrency(highestBalance);
+      }
+
+      function updateCharts() {
+        updateBalanceChart();
+        updateTopStudentsChart();
+      }
+
+      function updateBalanceChart() {
+        const ctx = document.getElementById("balanceChart").getContext("2d");
+
+        if (balanceChart) balanceChart.destroy();
+
+        const balanceRanges = {
+          "> 500k": filteredData.filter((s) => s.balance > 500000).length,
+          "300k - 500k": filteredData.filter(
+            (s) => s.balance >= 300000 && s.balance <= 500000
+          ).length,
+          "< 300k": filteredData.filter((s) => s.balance < 300000).length,
+        };
+
+        balanceChart = new Chart(ctx, {
+          type: "doughnut",
+          data: {
+            labels: Object.keys(balanceRanges),
+            datasets: [
+              {
+                data: Object.values(balanceRanges),
+                backgroundColor: ["#4f46e5", "#6366f1", "#a5b4fc"],
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: "bottom",
+              },
+            },
+          },
+        });
+      }
+
+      function updateTopStudentsChart() {
+        const ctx = document
+          .getElementById("topStudentsChart")
+          .getContext("2d");
+
+        if (topStudentsChart) topStudentsChart.destroy();
+
+        const topStudents = [...filteredData]
+          .sort((a, b) => b.balance - a.balance)
+          .slice(0, 10);
+
+        topStudentsChart = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: topStudents.map((s) => s.name),
+            datasets: [
+              {
+                label: "Saldo (Rp)",
+                data: topStudents.map((s) => s.balance),
+                backgroundColor: "#6366f1",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: (value) => formatCurrency(value),
+                },
+              },
+            },
+            plugins: {
+              legend: { display: false },
+            },
+          },
+        });
+      }
+
+      function updateTable() {
+        const tbody = document.getElementById("studentsTableBody");
+        tbody.innerHTML = "";
+
+        const sortedData = [...filteredData].sort(
+          (a, b) => b.balance - a.balance
+        );
+
+        sortedData.forEach((student, index) => {
+          const tr = document.createElement("tr");
+
+          tr.innerHTML = `
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${
+        index + 1
+      }</td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${
+        student.name
+      }</td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Kelas ${
+        student.class
+      }</td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-capitalize">${
+        student.dorm
+      }</td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatCurrency(
+        student.balance
+      )}</td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm">
+        <span class="inline-flex px-2 py-1 rounded-full text-xs font-semibold ${
+          student.balance > 500000
+            ? "bg-green-100 text-green-800"
+            : student.balance >= 300000
+            ? "bg-yellow-100 text-yellow-800"
+            : "bg-red-100 text-red-800"
+        }">
+          ${
+            student.balance > 500000
+              ? "Tinggi"
+              : student.balance >= 300000
+              ? "Sedang"
+              : "Rendah"
+          }
+        </span>
+      </td>
+    `;
+
+          tbody.appendChild(tr);
+        });
+      }
+
+      function formatCurrency(amount) {
+        return new Intl.NumberFormat("id-ID", {
+          style: "currency",
+          currency: "IDR",
+          minimumFractionDigits: 0,
+        }).format(amount);
+      }
+    </script>
+  </body>
+</html>

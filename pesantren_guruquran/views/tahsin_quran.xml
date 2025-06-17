@@ -10,10 +10,17 @@
 
                 <xpath expr="//sheet" position="inside">
                     <group name="nilai_tahsin" string="Nilai">
-                        <field name="fashohah"/>
-                        <field name="tajwid"/>
-                        <field name="ghorib_musykilat"/>
-                        <field name="suara_lagu"/>
+
+                        <group>
+                            <field name="fashohah"/>
+                            <field name="tajwid"/>
+                        </group>
+
+                        <group>
+                            <field name="ghorib_musykilat"/>
+                            <field name="suara_lagu"/>
+                        </group>
+                    
                     </group>
                 </xpath>
 
@@ -45,6 +52,6 @@
             <field name="act_window_id" ref="cdn_tahsin_quran_action" />
         </record>
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="cdn_tahsin_quran_menu_act" name="Tahsin Al Qur'an" parent="guruquran_tahsin_kepesantrenan_menu_categ" action="cdn_tahsin_quran_action" sequence="20"/>
+        <menuitem id="cdn_tahsin_quran_menu_act" name="Tahsin Al Qur'an" parent="pesantren_guru.kepesantrenan_dqi" action="cdn_tahsin_quran_action" sequence="20"/>
     </data>
 </odoo>

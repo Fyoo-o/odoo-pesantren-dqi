@@ -75,4 +75,9 @@ access_keamanan_cdn_perijinan_checkin,access_keamanan_cdn_perijinan_checkin,mode
 access_master.keterangan,access.master.keterangan,model_master_keterangan,pesantren_musyrif.group_musyrif_staff,1,1,1,1
 
 access_wizard.register.kartu.santri,access.wizard.register.kartu.santri,model_wizard_register_kartu_santri,pesantren_musyrif.group_musyrif_staff,1,1,1,1
+access_wizard.pencairan.saldo,access.wizard.pencairan.saldo,model_wizard_pencairan_saldo,pesantren_musyrif.group_musyrif_staff,1,1,1,1
+access_wizard.penonaktifan.saldo,access.wizard.penonaktifan.saldo,model_wizard_penonaktifan_saldo,pesantren_musyrif.group_musyrif_staff,1,1,1,1
+access_wizard.blokir.saldo,access.wizard.blokir.saldo,model_wizard_blokir_saldo,pesantren_musyrif.group_musyrif_staff,1,1,1,1
+access_wizard.open.block,access.wizard.open.block,model_wizard_open_block,pesantren_musyrif.group_musyrif_staff,1,1,1,1
+access_wizard.open.account,access.wizard.open.account,model_wizard_open_account,pesantren_musyrif.group_musyrif_staff,1,1,1,1
 

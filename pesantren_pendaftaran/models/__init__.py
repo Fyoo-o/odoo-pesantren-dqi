@@ -5,4 +5,5 @@ from . import ref_bank
 from . import ref_biaya
 from . import biaya_daftarulang
 from . import komponen_biaya
+from . import wizard_sandi
 

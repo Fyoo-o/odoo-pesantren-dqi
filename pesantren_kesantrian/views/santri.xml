@@ -14,7 +14,6 @@
             </field>
         </record>
 
-        <!-- cdn.siswa inherit form view -->
         <record id="cdn_siswa_inherit_form_view" model="ir.ui.view">
             <field name="name">cdn.siswa.inherit.view.form</field>
             <field name="model">cdn.siswa</field>
@@ -22,13 +21,13 @@
             <field name="arch" type="xml">
                 <xpath expr="//div[@class='oe_button_box']" position="inside">
                     <button name="action_saldo_tagihan" type="object" class="oe_stat_button" icon="fa-money">
-                        <field name="saldo_tagihan_formatted" widget="statinfo" string="Sisa Tagihan" />
+                        <field name="saldo_tagihan_formatted" widget="statinfo" string="Tagihan" />
                     </button>
                     <button name="action_uang_saku" type="object" class="oe_stat_button" icon="fa-credit-card">
-                        <field name="uang_saku_formatted" widget="statinfo" string="Uang Saku" />
+                        <field name="uang_saku_formatted" widget="statinfo" string="Saldo" />
                     </button>
                     <button name="action_tahfidz_quran" type="object" class="oe_stat_button" icon="fa-book">
-                        <field name="tahfidz_quran_count" widget="statinfo" string="Tahfidz Al Qur'an" />
+                        <field name="tahfidz_quran_count" widget="statinfo" string="Tahfidz Al-Qur'an" />
                     </button>
                     <button name="action_pelanggaran" type="object" class="oe_stat_button" icon="fa-exclamation-triangle">
                         <field name="pelanggaran_count" widget="statinfo" string="Pelanggaran" />

@@ -15,6 +15,27 @@
             </list>
         </field>
     </record>
+
+    <record id="view_cdn_donation_search" model="ir.ui.view">
+        <field name="name">cdn.donation.search</field>
+        <field name="model">cdn.donation</field>
+        <field name="arch" type="xml">
+            <search string="Donasi">
+                <field name="name" string="Data"
+                    filter_domain="[ 
+                        '|', ('name', 'ilike', self),
+                        '|', ('target_amount', 'ilike', self),
+                        '|', ('collected_amount', 'ilike', self),
+                        '|', ('start_date', 'ilike', self),
+                        '|', ('end_date', 'ilike', self),
+                        ('bank_account', 'ilike', self),
+                    ]"/>
+                <separator/>
+            </search>
+        </field>
+    </record>
+
+
     <!-- Tampilan form untuk Donasi -->
     <record id="view_cdn_donation_form" model="ir.ui.view">
         <field name="name">cdn.donation.form</field>
@@ -22,39 +43,51 @@
         <field name="arch" type="xml">
             <form string="Donasi">
                 <sheet>
-                    <group>
-                        <field name="name"/>
-                    </group>
-                    <!-- Field lainnya -->
-                    <group>
+
+                    <group string="Data">
                         <group>
+                            <field name="name"/>
                             <field name="bank_account"/>
+                        </group>
+                        <group>
+                            <field string="Target Donasi" name="target_amount" widget="integer"/>
+                            <field name="description" widget="html"/>
+                        </group>
+                    </group>
+
+                    <group string="Pengaturan Donasi">   
+                        <group>
+                            <field name="start_date" string="Tgl Mulai" groups="pesantren_kesantrian.group_kesantrian_manager"/>
+                            <field name="end_date" string="Tgl Selesai" groups="pesantren_kesantrian.group_kesantrian_manager"/>
+                            <field string="Status Donasi" name="is_active"/>
+                        </group>
+                        <group>
                             <field name="qr_image" widget="image"/>
                         </group>
-                        <group>
-                            <field name="description" widget="html"/>
-                            <field name="donation_detail_ids" readonly="1"/>
-                        </group>
                     </group>
-                    <group>
-                        <field string="Target Donasi" name="target_amount" widget="integer"/>
-                    </group>
+
+
                     <notebook>
-                        <page string="Setting" >
-                            <group>
-                                <field name="start_date" string="Tgl Mulai" groups="pesantren_kesantrian.group_kesantrian_manager"/>
-                                <field name="end_date" string="Tgl Selesai" groups="pesantren_kesantrian.group_kesantrian_manager"/>
-                                <field string="Status Donasi" name="is_active"/>
-                            </group>
+                        <page string="Detail Donasi">
+                            <field name="donation_detail_ids">
+                                <list editable="bottom">
+                                    <field name="name"/>
+                                    <field name="amount" widget="integer"/>
+                                    <field name="date"/>
+                                    <field name="donation_id"/>
+                                    <field name="created_by"/>
+                                </list>
+                            </field>
                         </page>
                     </notebook>
+
                 </sheet>
             </form>
         </field>
     </record>
     <!-- Aksi untuk membuka tampilan Donasi -->
     <record id="action_cdn_donation_list" model="ir.actions.act_window">
-        <field name="name">Setting Donasi</field>
+        <field name="name">Pengaturan Donasi</field>
         <field name="res_model">cdn.donation</field>
         <field name="view_mode">list,form</field>
         <field name="target">current</field>
@@ -74,12 +107,16 @@
                         />
                 </header>
                 <sheet>
-                    <group>
-                        <field name="name"/>
-                        <field name="date"/>
+                    <group string="Donatur">
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                        </group>
                     </group>
                     <group>
-                        <group string="Detail Sumbangan Terkait">
+                        <group string="Detail Sumbangan">
                             <field name="donation_id" context="{'form_view_ref': 'view_cdn_donation_form'}" options="{'no_create': True}" />
                             <field name="bank_account" readonly="1"/>
                             <field name="qr_image" widget="image" readonly="1"/>
@@ -95,12 +132,13 @@
             </form>
         </field>
     </record>
-    <record id="view_cdn_donation_detail_list" model="ir.ui.view">
+
+    <!-- <record id="view_cdn_donation_detail_list" model="ir.ui.view">
         <field name="name">cdn.donation.detail.list</field>
         <field name="model">cdn.donation.detail</field>
         <field name="arch" type="xml">
             <list string="Detail Donasi">
-                <!-- Daftar field yang ingin ditampilkan -->
+                Daftar field yang ingin ditampilkan
                 <field name="name"/>
                 <field name="amount" widget="integer"/>
                 <field name="date"/>
@@ -108,9 +146,29 @@
                 <field name="created_by"/>
             </list>
         </field>
+    </record> -->
+
+    <record id="view_cdn_donation_detail_search" model="ir.ui.view">
+        <field name="name">cdn.donation.detail.search</field>
+        <field name="model">cdn.donation.detail</field>
+        <field name="arch" type="xml">
+            <search string="Detail Donasi">
+                <field name="name" string="Data"
+                    filter_domain="[ 
+                        '|', ('name', 'ilike', self),
+                        '|', ('amount', 'ilike', self),
+                        '|', ('date', 'ilike', self),
+                        '|', ('donation_id.name', 'ilike', self),
+                        '|', ('created_by', 'ilike', self),
+                        ('bank_account', 'ilike', self),
+                    ]"/>
+                <separator/>
+            </search>
+        </field>
     </record>
+
     <record id="action_cdn_donation_detail_list" model="ir.actions.act_window">
-        <field name="name">Detail Donasi</field>
+        <field name="name">Detail Donatur</field>
         <field name="res_model">cdn.donation.detail</field>
         <field name="view_mode">list,form</field>
         <field name="target">main</field>

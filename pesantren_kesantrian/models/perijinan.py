@@ -10,6 +10,7 @@ class Perijinan(models.Model):
     _name = 'cdn.perijinan'
     _description = 'Data Perijinan Santri'
     _inherit = ['mail.thread', 'mail.activity.mixin']
+    _order = 'create_date desc' 
 
     name = fields.Char(string='Nama', readonly=True)
     tgl_ijin = fields.Datetime(string='Tgl Ijin', required=True,
@@ -42,7 +43,7 @@ class Perijinan(models.Model):
             'Rejected': [('readonly', True)],
             'Permission': [('readonly', True)],
             'Return': [('readonly', True)],
-        })
+        }) 
     siswa_id = fields.Many2one('cdn.siswa', string='Santri', required=True,
         states={
             'Draft': [('readonly', False)],
@@ -51,7 +52,7 @@ class Perijinan(models.Model):
             'Rejected': [('readonly', True)],
             'Permission': [('readonly', True)],
             'Return': [('readonly', True)],
-        })
+        }, ondelete='cascade')
     barcode = fields.Char(string='Kartu Santri', states= {
         'Draft': [('readonly', False)],
         'Check': [('readonly', True)],  
@@ -64,7 +65,15 @@ class Perijinan(models.Model):
     kamar_id = fields.Many2one('cdn.kamar_santri', string='Kamar', related='siswa_id.kamar_id', readonly=True)
     halaqoh_id = fields.Many2one('cdn.halaqoh', string='Halaqoh', related='siswa_id.halaqoh_id', readonly=True)
     musyrif_id = fields.Many2one('hr.employee', string='Musyrif', related='siswa_id.musyrif_id', readonly=True)
-    
+    foto_bukti = fields.Binary(string="Foto Bukti", attachment=True, readonly=False,states={
+        'Draft': [('readonly', False)],
+        'Check': [('readonly', False)],
+        'Approved': [('readonly', True)],
+        'Rejected': [('readonly', True)],
+        'Permission': [('readonly', True)],
+        'Return': [('readonly', True)],
+    })
+
     catatan = fields.Text(string='Catatan', readonly=False,
         states={
             'Draft': [('readonly', False)],
@@ -146,7 +155,7 @@ class Perijinan(models.Model):
             self.barcode = False
 
             
-
+ 
     @api.onchange('barcode')
     def _onchange_barcode(self):
         if self.barcode:

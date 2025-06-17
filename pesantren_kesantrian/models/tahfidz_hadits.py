@@ -7,7 +7,7 @@ class TahfidzHadits(models.Model):
     _description = 'Tabel Tahfid AL Hadits'
 
     name = fields.Char(string='No Referensi', readonly=True)
-    siswa_id = fields.Many2one(comodel_name='cdn.siswa', string='Siswa', required=True) 
+    siswa_id = fields.Many2one(comodel_name='cdn.siswa', string='Siswa', ondelete='cascade' ,required=True) 
     kelas_id = fields.Many2one(comodel_name='cdn.ruang_kelas', string='Kelas', readonly=True, related='siswa_id.ruang_kelas_id')
     
     tanggal = fields.Date(string='Tgl Tahfidz', default=fields.Date.context_today, required=True)
