@@ -279,7 +279,7 @@ export class KeuanganChartRenderer extends Component {
 
       // Existing fetch logic remains the same
       switch (this.props.title) {
-        case "Tagihan Siswa":
+        case "Tagihan Santri":
           await this.fetchTagihanData(startDate, endDate);
           break;
         case "Uang Saku Masuk":
@@ -818,13 +818,13 @@ export class KeuanganChartRenderer extends Component {
       stroke: {
         show: true,
         width:
-          this.props.title === "Tagihan Siswa"
+          this.props.title === "Tagihan Santri"
             ? [0, 0, 3, 3] // For Tagihan (2 bars, 2 lines)
             : [2], // For Uang Saku (single area)
         curve: "smooth",
       },
       colors:
-        this.props.title === "Tagihan Siswa"
+        this.props.title === "Tagihan Santri"
           ? ["#0c8351", "#d14343", "#2a7a9c", "#c79832"] // Updated all colors to match theme
           : ["#0c8351"],
       dataLabels: {
@@ -859,7 +859,7 @@ export class KeuanganChartRenderer extends Component {
         },
       },
       yaxis:
-        this.props.title === "Tagihan Siswa"
+        this.props.title === "Tagihan Santri"
           ? [
               {
                 title: {
@@ -917,7 +917,7 @@ export class KeuanganChartRenderer extends Component {
         shared: true,
         intersect: false,
         y:
-          this.props.title === "Tagihan Siswa"
+          this.props.title === "Tagihan Santri"
             ? [
                 {
                   formatter: function (value) {
@@ -1124,7 +1124,7 @@ export class KeuanganChartRenderer extends Component {
     };
 
     switch (this.props.title) {
-      case "Tagihan Siswa": {
+      case "Tagihan Santri": {
         actionConfig.res_model = "account.move.line";
         const domain = [
           [

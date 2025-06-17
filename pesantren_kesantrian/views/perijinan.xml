@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
     <data>
-
         <!-- cdn.perijinan list view -->
         <record id="cdn_perijinan_view_tree" model="ir.ui.view">
             <field name="name">Perijinan Santri</field>
@@ -23,7 +21,6 @@
             </field>
         </record>
 
- 
         <!-- cdn.perijinan form view -->
         <record id="cdn_perijinan_view_form" model="ir.ui.view">
             <field name="name">Perijinan Santri</field>
@@ -65,6 +62,7 @@
                                 <field name="tgl_ijin" readonly="state == 'Check' or state == 'Approved' or state == 'Permission' or state == 'Return'"/>
                                 <field name="tgl_kembali" readonly="state == 'Approved' or state ==  'Permission' or state == 'Return'"/>
                                 <field name="penjemput" readonly="state == 'Approved' or state ==  'Permission' or state == 'Return'"/>
+                                <field name="foto_bukti" readonly="state == 'Approved' or state == 'Permission' or state == 'Return'" />
                             </group>
                             <group>
                                 <field name="lama_ijin" />
@@ -119,7 +117,6 @@
                             ('state', 'ilike', self),
                         ]"
                     />
-
                     <separator/>
 
                     <!-- filter -->
@@ -167,6 +164,4 @@
         <menuitem id="perijinan_menu_act" name="Perijinan Santri" parent="aktivitas_kesantrian_menu_categ" action="cdn_perijinan_action" sequence="10"/>
 
     </data>
-
-
 </odoo>

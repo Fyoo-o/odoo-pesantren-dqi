@@ -56,11 +56,18 @@
                             <page string="Daftar Halaqoh">
                                 <field colspan="4" name="absen_ids" nolabel="1" widget="one2many_list">
                                     <list string="" editable="top">
-                                        <field name="siswa_id" string="Santri"/>
+                                        <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" string="Santri"/>
                                         <field name="panggilan" string="Panggilan"/>
                                         <field name="nis" />
                                         <field name="kehadiran" />
+                                        <field name="keterangan" />
                                         <field name="keterangan_izin" />
+                                        <button name="action_view_permission"
+                                            string="Detail"
+                                            type="object"
+                                            icon="fa-eye"
+                                            invisible="kehadiran != 'keluar'"
+                                            class="btn-primary"/>
                                     </list>
                                 </field>
                             </page>

@@ -67,8 +67,7 @@ class AbsenTahfidzQuran(models.Model):
                         ayat_awal = self.env['cdn.ayat'].search([('surah_id', '=', last_tahfidz.surah_id.id)], limit=1).id
                     else:
                         ayat_awal = last_tahfidz.ayat_akhir.id + 1
-                        surah = last_tahfidz.surah_id.id
-                    
+                        surah = last_tahfidz.surah_id.id       
                 tahfidz_quran_vals = {
                     'tanggal': self.name,
                     'siswa_id': absen.siswa_id.id,
@@ -80,8 +79,27 @@ class AbsenTahfidzQuran(models.Model):
                     'ayat_awal': ayat_awal,
                 }
                 self.env['cdn.tahfidz_quran'].create(tahfidz_quran_vals)
+
+
     def action_confirm(self):
         self.state = 'Done'
+
+    @staticmethod
+    def format_datetime_indonesia(dt):
+        bulan_dict = {
+            '01': 'Januari', '02': 'Februari', '03': 'Maret', '04': 'April',
+            '05': 'Mei', '06': 'Juni', '07': 'Juli', '08': 'Agustus',
+            '09': 'September', '10': 'Oktober', '11': 'November', '12': 'Desember'
+        }
+        if dt:
+            hari = dt.strftime('%d')
+            bulan_angka = dt.strftime('%m')
+            tahun = dt.strftime('%Y')
+            jam_menit = dt.strftime('%H:%M')
+            nama_bulan = bulan_dict.get(bulan_angka, bulan_angka)
+            return f"{hari} {nama_bulan} {tahun} {jam_menit}"
+        return 'Tidak tercatat'
+
 
     @api.onchange('halaqoh_id')
     def _onchange_halaqoh_id(self):
@@ -89,10 +107,28 @@ class AbsenTahfidzQuran(models.Model):
         if halaqoh:
             absen_ids = [(5, 0, 0)]
             for siswa in halaqoh.siswa_ids:
-                absen_ids.append((0, 0, {
-                    'siswa_id': siswa.id,
-                    'kehadiran':'Hadir'
-                }))
+                permission = self.env['cdn.perijinan'].search([
+                    ('siswa_id', '=', siswa.id),
+                    ('state', '=', 'Permission')
+                ], limit=1)
+
+                if permission:
+                    keperluan_name = permission.keperluan.name if permission.keperluan else 'Tidak ada keterangan'
+                    waktu_keluar = self.format_datetime_indonesia(permission.waktu_keluar) if permission.waktu_keluar else 'Tidak tercatat'
+
+                    message = f"Santri Keluar pada {waktu_keluar}, karena {keperluan_name}".encode()
+                    absen_ids.append((0,0, {
+                        'siswa_id' : siswa.id,
+                        'kehadiran' : 'keluar',
+                        'keterangan' : message,
+                    }))
+
+                else:
+                    absen_ids.append((0, 0, {
+                        'siswa_id': siswa.id,
+                        'kehadiran':'Hadir'
+                    }))
+
             ustadz = halaqoh.penanggung_jawab_id + halaqoh.pengganti_ids
             if not self.env.user.has_group('pesantren_kesantrian.group_kesantrian_manager'):
                 ustadz = [x for x in ustadz if x.user_id.id == self.env.user.id]
@@ -240,14 +276,47 @@ class AbsenTahfidzQuranLine(models.Model):
     absen_id        = fields.Many2one('cdn.absen_tahfidz_quran', string='Absen', ondelete='cascade')
     tanggal         = fields.Date(string='Tgl Absen', related='absen_id.name', readonly=True, store=True)
     halaqoh_id      = fields.Many2one('cdn.halaqoh', string='Halaqoh', related='absen_id.halaqoh_id', readonly=True, store=True)
-    siswa_id        = fields.Many2one('cdn.siswa', string='Siswa', required=True)
+    siswa_id        = fields.Many2one('cdn.siswa', string='Siswa', required=True , ondelete='cascade')
     nis             = fields.Char(string='NIS', related='siswa_id.nis', readonly=True, store=True)
     panggilan       = fields.Char(string='Nama Panggilan', related='siswa_id.namapanggilan', readonly=True, store=True)
-    keterangan_izin = fields.Char(string='Keterangan Izin', store=True)
+    keterangan      = fields.Char(string="Keterangan")
+    keterangan_izin = fields.Char(string='Foto', store=True)
     kehadiran       = fields.Selection([
         ('Hadir', 'Hadir'),
         ('Izin', 'Izin'),
+        ('keluar', 'Izin Keluar'),
         ('Sakit', 'Sakit'),
         ('Alpa', 'Alpa'),
     ], string='Kehadiran', required=True)
     penanggung_jawab_id = fields.Many2one('hr.employee', string='Penanggung Jawab', related='halaqoh_id.penanggung_jawab_id', readonly=True, store=True)
+
+    def action_view_permission(self):
+        """Open permission form for this student"""
+        if not self.siswa_id or not self.tanggal:
+            return
+            
+        permission = self.env['cdn.perijinan'].search([
+            ('siswa_id', '=', self.siswa_id.id),
+            ('state', '=', 'Permission')
+        ], limit=1)
+        
+        if not permission:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title' : '❌ Tidak Dapat Menemukan Data !',
+                    'message': 'Data perizinan tidak ditemukan, mungkin santri telah kembali.',
+                    'type': 'danger',
+                    'sticky': False,
+                }
+            }
+        
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Detail Perijinan',
+            'res_model': 'cdn.perijinan',
+            'res_id': permission.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }

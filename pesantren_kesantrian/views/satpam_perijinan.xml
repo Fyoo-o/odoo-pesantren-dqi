@@ -48,7 +48,7 @@
                         </div> -->
                         <group string="Data Ijin Santri">
                             <group>
-                                <field name="tgl_ijin" />
+                                <field name="barcode" />
                                 <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True}" />
                                 <field name="kelas_id" />
                             </group>
@@ -60,25 +60,25 @@
                         </group>
                         <group string="Pengajuan Ijin Santri">
                             <group>
+                                <field name="tgl_ijin" />
                                 <field name="tgl_kembali" />
                                 <field name="penjemput" />
-                                
                             </group>
                             <group>
                                 <field name="lama_ijin" />
                                 <field name="keperluan" />
+                                <field name="catatan" string='Catatan' />
                             </group>
                         </group>
-                        <group>
-                            <field name="catatan" string='Catatan' />
-                        </group>
+                  
                         <group string="Akses Keamanan" invisible="state not in('Approved','Permission','Return')">
                             <group>
                                 <field name="waktu_keluar" />
-                                <field name="jatuh_tempo" />
+                                <field name="waktu_kembali" />                            
                             </group>
                             <group>
-                                <field name="waktu_kembali" />
+                                <field name="jatuh_tempo" />
+                                <field name="catatan_keamanan" string="Catatan"/>
                             </group>
                         </group>
                     </sheet>
@@ -206,9 +206,9 @@
 
 
 
-        <menuitem id="satpam_ijin_keluar_menu_act" name="Perijinan Santri" parent="satpam_perijinan_menu_categ" action="satpam_cdn_perijinan_action" sequence="10"/>
-        <menuitem id="satpam_ijin_approved_menu_act" name="Perijinan Diterima" parent="satpam_perijinan_menu_categ" action="satpam_cdn_perijinan_action_approved" sequence="20"/>
-        <menuitem id="satpam_ijin_reject_menu_act" name="Perijinan Ditolak" parent="satpam_perijinan_menu_categ" action="satpam_cdn_perijinan_action_reject" sequence="30"/>
+        <menuitem id="satpam_ijin_keluar_menu_act" name="Perizinan Santri" parent="satpam_perijinan_menu_categ" action="satpam_cdn_perijinan_action" sequence="10"/>
+        <menuitem id="satpam_ijin_approved_menu_act" name="Perizinan Diterima" parent="satpam_perijinan_menu_categ" action="satpam_cdn_perijinan_action_approved" sequence="20"/>
+        <menuitem id="satpam_ijin_reject_menu_act" name="Perizinan Ditolak" parent="satpam_perijinan_menu_categ" action="satpam_cdn_perijinan_action_reject" sequence="30"/>
         <menuitem id="satpam_ijin_permission_menu_act" name="Santri Keluar" parent="satpam_perijinan_menu_categ" action="satpam_cdn_perijinan_action_permission" sequence="40"/>       
     
     </data>

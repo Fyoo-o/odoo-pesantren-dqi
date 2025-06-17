@@ -28,7 +28,160 @@ class siswa(models.Model):
     partner_id          = fields.Many2one('res.partner', 'Partner', ondelete="cascade")
     active_id           = fields.Many2one('res.partner', string='Customer Active', compute="_compute_partner_id")
 
+    jenjang             = fields.Selection(selection=[('paud','PAUD'),('tk','TK/RA'),('sd','SD/MI'),('smp','SMP/MTS'),('sma','SMA/MA/SMK'), ('nonformal', 'Nonformal')],  string="Jenjang", related="ruang_kelas_id.name.jenjang", readonly=False, store=True, help="")
+    nama_sekolah        = fields.Selection(selection='_get_pilihan_nama_sekolah',string="Nama Sekolah",store=True,tracking=True)
+
+    @api.model
+    def _get_pilihan_nama_sekolah(self):
+        pendidikan = self.env['ubig.pendidikan'].search([])
+        return [(p.name, p.name) for p in pendidikan]
+
+    @api.depends('partner_id', 'jenjang')
+    def _compute_nama_sekolah(self):
+        mapping_jenjang = {
+            'paud': 'paud',
+            'tk': 'tk',
+            'sd': 'sdmi',
+            'smp': 'smpmts',
+            'sma': 'smama',
+            'nonformal': 'nonformal'
+        }
+
+        for rec in self:
+            nama_sekolah = False
+
+            # 1. Coba dari pendaftaran
+            pendaftaran = self.env['ubig.pendaftaran'].search([
+                ('siswa_id', '=', rec.id)
+            ], limit=1)
+
+            if pendaftaran and pendaftaran.jenjang_id and pendaftaran.jenjang_id.name:
+                nama_sekolah = pendaftaran.jenjang_id.name
+            else:
+                # 2. Alternatif dari partner
+                partner_name = rec.partner_id.name
+                alt_pendaftaran = self.env['ubig.pendaftaran'].search([
+                    ('partner_id.name', '=', partner_name)
+                ], limit=1)
+                if alt_pendaftaran and alt_pendaftaran.jenjang_id and alt_pendaftaran.jenjang_id.name:
+                    nama_sekolah = alt_pendaftaran.jenjang_id.name
+                else:
+                    # 3. Coba mapping dari jenjang
+                    kode_jenjang = mapping_jenjang.get(rec.jenjang)
+                    if kode_jenjang:
+                        pendidikan = self.env['ubig.pendidikan'].search([
+                            ('jenjang', '=', kode_jenjang)
+                        ], limit=1)
+                        nama_sekolah = pendidikan.name if pendidikan else False
+
+            rec.nama_sekolah = nama_sekolah
+
+    # @api.onchange('jenjang')
+    # def _onchange_jenjang(self):
+    #     """
+    #     Update nama_sekolah saat jenjang berubah di form view.
+    #     """
+    #     mapping_jenjang = {
+    #         'paud': 'paud',
+    #         'tk': 'tk',
+    #         'sd': 'sdmi',
+    #         'smp': 'smpmts',
+    #         'sma': 'smama',
+    #         'nonformal': 'nonformal'
+    #     }
+
+    #     kode_jenjang = mapping_jenjang.get(self.jenjang)
+    #     if kode_jenjang:
+    #         pendidikan = self.env['ubig.pendidikan'].search([
+    #             ('jenjang', '=', kode_jenjang)
+    #         ], limit=1)
+    #         self.nama_sekolah = pendidikan.name if pendidikan else False
+    #     else:
+    #         self.nama_sekolah = False
+
+    @api.onchange('nama_sekolah')
+    def _onchange_nama_sekolah(self):
+        """
+        Update jenjang saat nama_sekolah berubah di form view.
+        """
+        # Mapping dari kode jenjang ke selection value
+        mapping_kode_to_jenjang = {
+            'paud': 'paud',
+            'tk': 'tk',
+            'sdmi': 'sd',
+            'smpmts': 'smp',
+            'smama': 'sma',
+            'nonformal': 'nonformal'
+        }
+
+        if self.nama_sekolah:
+            # Cari data pendidikan berdasarkan nama sekolah
+            pendidikan = self.env['ubig.pendidikan'].search([
+                ('name', '=', self.nama_sekolah)
+            ], limit=1)
+            
+            if pendidikan and pendidikan.jenjang:
+                # Mapping dari kode jenjang ke selection value
+                jenjang_value = mapping_kode_to_jenjang.get(pendidikan.jenjang)
+                if jenjang_value:
+                    self.jenjang = jenjang_value
+                else:
+                    # Jika tidak ada mapping, coba langsung assign
+                    self.jenjang = pendidikan.jenjang
+            else:
+                # Jika tidak ditemukan data pendidikan, reset jenjang
+                self.jenjang = False
+        else:
+            # Jika nama_sekolah kosong, reset jenjang
+            self.jenjang = False
     
+    @api.model
+    def update_nama_sekolah_all(self):
+        """
+        Method untuk memperbarui nama sekolah pada semua data santri
+        yang dapat dipanggil dari shell Odoo
+        """
+        siswa_ids = self.search([])
+        count = 0
+        for siswa in siswa_ids:
+            # Cari data pendaftaran yang punya siswa_id = siswa ini
+            pendaftaran = self.env['ubig.pendaftaran'].search([
+                ('siswa_id', '=', siswa.id)
+            ], limit=1)
+            
+            if pendaftaran and pendaftaran.jenjang_id and pendaftaran.jenjang_id.name:
+                siswa.nama_sekolah = pendaftaran.jenjang_id.name
+                count += 1
+            else:
+                # Coba metode alternatif jika pendaftaran tidak ditemukan
+                partner_name = siswa.partner_id.name
+                alt_pendaftaran = self.env['ubig.pendaftaran'].search([
+                    ('partner_id.name', '=', partner_name)
+                ], limit=1)
+                
+                if alt_pendaftaran and alt_pendaftaran.jenjang_id and alt_pendaftaran.jenjang_id.name:
+                    siswa.nama_sekolah = alt_pendaftaran.jenjang_id.name
+                    count += 1
+        
+        _logger.info(f"Berhasil update {count} data nama sekolah santri")
+        return True
+
+
+    # nama_sekolah        = fields.Char(string="Nama Sekolah", readonly=False, store=True)
+    
+    # @api.onchange('jenjang')
+    # def _onchange_jenjang(self):
+    #     if self.jenjang:
+    #         # Cari pendaftaran yang cocok dengan nama dan jenjang
+    #         pendaftaran = self.env['ubig.pendaftaran'].search([
+    #             ('jenjang', '=', self.jenjang)
+    #         ], limit=1)
+
+    #         if pendaftaran:
+    #             self.nama_sekolah = pendaftaran.ini_nama
+    #         else:
+    #             self.nama_sekolah = False
+
 
     nis                 = fields.Char( string="NIS",  help="")
     namapanggilan       = fields.Char(string="Nama Panggilan")
@@ -55,6 +208,11 @@ class siswa(models.Model):
     hobi                = fields.Many2one(comodel_name='cdn.ref_hobi', string='Hobi')
     cita_cita           = fields.Char(string='Cita-Cita')
 
+    status_akun = fields.Selection([
+        ('aktif', 'Aktif'),
+        ('nonaktif', 'Tidak Aktif'),
+        ('blokir', 'Diblokir')
+    ], string="Kartu", default='aktif')
     #Data Tempat Tinggal
     # tinggal_di          = fields.Selection(string='Tinggal di', selection=[('rumah', 'Rumah'), ('pondok', 'Pondok Pesantren'),], default='rumah')
     # pesantren_id        = fields.Many2one(comodel_name='res.partner', string='Nama Pesantren', domain="[('is_pesantren','=',True)]")
@@ -102,13 +260,76 @@ class siswa(models.Model):
     wali_email          = fields.Char( string="Email (Wali)",  help="")
     wali_agama          = fields.Selection(selection=[('islam', 'Islam'), ('katolik', 'Katolik'), ('protestan', 'Protestan'), ('hindu', 'Hindu'), ('budha', 'Budha')],  string="Agama (Wali)",  help="")
     wali_hubungan       = fields.Char( string="Hubungan dengan Siswa",  help="")
-
+ 
     orangtua_id         = fields.Many2one(comodel_name="cdn.orangtua",  string="Orangtua",  help="")
     tahunajaran_id      = fields.Many2one(comodel_name="cdn.ref_tahunajaran",  string="Thn Ajaran",  help="")
     ruang_kelas_id      = fields.Many2one(comodel_name="cdn.ruang_kelas",  string="Ruang Kelas", help="")
     ekstrakulikuler_ids = fields.Many2many("cdn.ekstrakulikuler",string="Ekstrakulikuler")
-    jenjang             = fields.Selection(selection=[('paud','PAUD'),('tk','TK/RA'),('sd','SD/MI'),('smp','SMP/MTS'),('sma','SMA/MA/SMK')],  string="Jenjang", related="ruang_kelas_id.name.jenjang", readonly=False, store=True, help="")
+    
+    centang             = fields.Boolean(string="", default=True)
+
+    # jenjang_id_moki          = fields.Many2one(comodel_name='ubig.pendaftaran', string='Sekolah')
+    
+    
     tingkat             = fields.Many2one(comodel_name="cdn.tingkat",  string="Tingkat", related="ruang_kelas_id.name.tingkat", readonly=True, store=True, help="")
+
+
+    # @api.model
+    # def _get_jenjang_from_ubig(self):
+    #     """
+    #     Fungsi untuk mendapatkan nilai jenjang dari model ubig.pendidikan
+    #     """
+    #     # Daftar asli selection
+    #     jenjang_list = [
+    #         ('paud', 'PAUD'),
+    #         ('tk', 'TK/RA'),
+    #         ('sd', 'SD/MI'),
+    #         ('smp', 'SMP/MTS'),
+    #         ('sma', 'SMA/MA/SMK')
+    #     ]
+        
+    #     # Mencari semua data di tabel ubig.pendidikan
+    #     ubig_pendidikan = self.env['ubig.pendidikan'].search([])
+    #     result = []
+        
+    #     # Mapping yang menyesuaikan nilai jenjang di cdn.siswa dengan ubig.pendidikan
+    #     mapping = {
+    #         'paud': 'paud',
+    #         'tk': 'tk',
+    #         'sd': 'sdmi',
+    #         'smp': 'smpmts',
+    #         'sma': 'smama',  # Untuk SMA
+    #     }
+        
+    #     # Menambahkan nilai SMK jika diperlukan
+    #     # Ada perbedaan antara kedua model, SMK terpisah di ubig.pendidikan
+    #     mapping_tambahan = {
+    #         'sma': 'smk'  # Untuk SMK
+    #     }
+        
+    #     # Untuk setiap nilai jenjang di daftar asli
+    #     for key, label in jenjang_list:
+    #         records = []
+            
+    #         # Cari data di ubig.pendidikan yang cocok dengan jenjang saat ini
+    #         if key in mapping:
+    #             records = ubig_pendidikan.filtered(lambda r: r.jenjang == mapping[key])
+            
+    #         # Untuk kasus SMA, kita juga perlu memeriksa SMK
+    #         if key == 'sma':
+    #             smk_records = ubig_pendidikan.filtered(lambda r: r.jenjang == 'smk')
+    #             records += smk_records
+            
+    #         if records:
+    #             # Jika ada data yang cocok, gunakan nama dari ubig.pendidikan
+    #             for record in records:
+    #                 result.append((key, record.name))
+    #         else:
+    #             # Jika tidak ada yang cocok, gunakan label asli
+    #             result.append((key, label))
+        
+    #     return result
+
 
     # Data Pendaftaran
     tgl_daftar          = fields.Date(string='Tgl Pendaftaran')
@@ -167,6 +388,8 @@ class siswa(models.Model):
     #         partner = self.env['res.partner'].browse(vals['partner_id'])
     #         partner.write({'barcode_santri': vals['barcode_santri']})
     #     return super(siswa, self).create(vals)
+    
+    
 
     def write(self, vals):
         # Update barcode_santri in res.partner on record update
@@ -230,7 +453,7 @@ class siswa(models.Model):
         # Mapping Kode Lembaga
         lembaga = {
             'paud': '01', 'tk': '02', 'sdmi': '03',
-            'smpmts': '04', 'smama': '05', 'smk': '06'
+            'smpmts': '04', 'smama': '05', 'smk': '10', 'nonformal': '06',
         }.get(self.jenjang, '00')  # Default '00' jika tidak cocok
 
         # Konversi Tahun Daftar

@@ -157,10 +157,10 @@ class WalletRecharge(models.TransientModel):
             string='Nominal Saldo', required=True, readonly=False, compute="_compute_recharge_amount", store=True
         )
     siswa_id = fields.Many2one(
-        comodel_name='res.partner', string='Siswa', readonly=True, default=lambda self: self._get_partner_id()
+        comodel_name='res.partner', string='Siswa', readonly=True, default=lambda self: self._get_partner_id(), ondelete='cascade'
     )
     wallet_balance = fields.Float(string='Saldo Dompet', related='siswa_id.wallet_balance', readonly=True)
-    saldo_uang_saku = fields.Float(string='Saldo Uang Saku', related='siswa_id.saldo_uang_saku', readonly=True)
+    saldo_uang_saku = fields.Float(string='Saldo Santri', related='siswa_id.saldo_uang_saku', readonly=True)
     recharge_type = fields.Selection(selection=[
         ('manual_based', 'Isi Dompet Manual'),
         ('saku_based', 'Isi Berdasarkan Saldo'),

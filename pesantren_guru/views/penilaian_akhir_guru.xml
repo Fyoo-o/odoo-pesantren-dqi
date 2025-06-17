@@ -28,17 +28,12 @@
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
-                        <group>
+
+                        <group string="Data">
                             <group>
                                 <field name="guru_id"
                                     readonly="state == 'confirm'"
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
-                            </group>
-                            <group>
-                            </group>
-                        </group>
-                        <group>
-                            <group>
                                 <field name="kelas_id"
                                     readonly=" state == 'confirm'"
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
@@ -54,16 +49,17 @@
                                     readonly="state == 'confirm'"/>
                             </group>
                         </group>
+
                         <field name="penilaian_ids" readonly=" state == 'confirm'">
                             <list editable="bottom">
                                 <field name="siswa_id"
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
-                                <field name="mapel_id" invisible="1"/>
-                                <field name="tahunajaran_id" invisible="1"/>
-                                <field name="semester" invisible="1"/>
-                                <field name="nilai1" widget="integer" />
+                                <!-- <field name="mapel_id" invisible="1"/> -->
+                                <!-- <field name="tahunajaran_id" invisible="1"/> -->
+                                <!-- <field name="semester" invisible="1"/> -->
+                                <field name="nilai1" string="Nilai 1" widget="integer" />
                                 <field name="predikat1"/>
-                                <field name="nilai2" widget="integer"/>
+                                <field name="nilai2" string="Nilai 2" widget="integer"/>
                                 <field name="predikat2"/>
                                 <field name="aspek1"/>
                                 <field name="aspek2"/>

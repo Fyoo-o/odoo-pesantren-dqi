@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <!-- View Form khusus untuk Orang Tua dengan ID spesifik -->
+    <record id="view_account_payment_register_parent_form" model="ir.ui.view">
+        <field name="name">account.payment.register.parent.form</field>
+        <field name="model">account.payment.register</field>
+        <field name="inherit_id" ref="account.view_account_payment_register_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Tambahkan field hidden untuk kontrol -->
+            <xpath expr="//field[@name='journal_id']" position="before">
+                <field name="is_parent_user" invisible="1"/>
+            </xpath>
+
+            <!-- Modifikasi journal dengan domain khusus orang tua -->
+            <xpath expr="//field[@name='journal_id']" position="attributes">
+                <attribute name="domain">[('name', 'ilike', 'Bank Amal Usaha')]</attribute>
+                <attribute name="options">{'no_create': True, 'no_open': True}</attribute>
+            </xpath>
+
+            <!-- Modifikasi payment method dengan domain khusus -->
+            <!-- <xpath expr="//field[@name='payment_method_line_id']" position="attributes">
+                <attribute name="domain">[('journal_id', '=', journal_id), ('name', 'ilike', 'Dompet Santri')]</attribute>
+                <attribute name="options">{'no_create': True, 'no_open': True}</attribute>
+                <attribute name="string">Metode Pembayaran</attribute>
+            </xpath> -->
+             <xpath expr="//field[@name='payment_method_line_id']" position="attributes">
+                <attribute name="domain">[('journal_id', '=', journal_id), ('name', 'ilike', 'Dompet Santri')]</attribute>
+                <attribute name="options">{'no_create': True, 'no_open': True}</attribute>
+                <attribute name="string">Metode Pembayaran</attribute>
+                <attribute name="groups">pesantren_kesantrian.group_kesantrian_orang_tua</attribute>
+            </xpath>
+            
+            <!-- Field payment method untuk user lain (domain normal) -->
+             <xpath expr="//field[@name='payment_method_line_id']" position="after">
+                <field name="payment_method_line_id" 
+                       domain="[('journal_id', '=', journal_id), ('payment_type', '=', 'inbound')]"
+                       options="{'no_create': True, 'no_open': True}"
+                       string="Metode Pembayaran"
+                       groups="!pesantren_kesantrian.group_kesantrian_orang_tua"/>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

@@ -131,6 +131,6 @@
                 </p>
             </field>
         </record>
-        <menuitem id="menu_cdn_guru" name="Data Guru Karyawan" parent="guru_menu_categ" action="hr_employee_guru_open_action" sequence="20"/>
+        <menuitem id="menu_cdn_guru" name="Guru" parent="sekolah_top_menu" action="hr_employee_guru_open_action" sequence="20"/>
     </data>
 </odoo>

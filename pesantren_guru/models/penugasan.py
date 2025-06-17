@@ -6,7 +6,7 @@ class Penugasan(models.Model):
   _description   = 'Data Penugasan'
   _rec_name      = 'tugas_ujian'
 
-  # domain
+
   def _domain_guru(self):
       domain = ['&',('jns_pegawai','=','guru')]
       if self.env.user.has_group('pesantren_guru.group_guru_manager'):
@@ -19,7 +19,7 @@ class Penugasan(models.Model):
 
   # name           = fields.Char(string='Nama')
   kelas_id       = fields.Many2one('cdn.ruang_kelas', string='Ruang Kelas', required=True)
-  tugas_ujian    = fields.Text('Tugas / Ujian', required=True)
+  tugas_ujian    = fields.Text(string='Deskripsi Tugas / Ujian', required=True)
   tanggal        = fields.Date(string='Tgl Penugasan', default=fields.Date.today())
   deadline       = fields.Date(string='Deadline')
   state          = fields.Selection([
@@ -69,7 +69,7 @@ class Penugasan(models.Model):
     _description  = 'Tugas Line'
 
     name          = fields.Char(string='Nama', related='siswa_id.name', readonly=True, store=True)
-    siswa_id      = fields.Many2one('cdn.siswa', string='Nama', required=True)
+    siswa_id      = fields.Many2one('cdn.siswa', string='Nama', required=True , ondelete='cascade')
     kelas_id      = fields.Many2one('cdn.ruang_kelas', string='Kelas', related='penugasan_id.kelas_id', readonly=True, store=True)
     nilai         = fields.Float(string='Nilai')
     keterangan    = fields.Char(string='Keterangan')
@@ -79,3 +79,5 @@ class Penugasan(models.Model):
                       ('proses', 'Ditugaskan'),
                       ('done', 'Selesai'),
                     ], default='draft', string='Status', related='penugasan_id.state', readonly=True, store=True)
+
+    panggilan     = fields.Char(string='Nama Panggilan', related='siswa_id.namapanggilan', readonly=True, store=True)

@@ -59,6 +59,6 @@
         </record>
         <!-- This Menu Item must have a parent and an action -->
         <menuitem id="jadwal_pelajaran_menu_act" name="Jadwal Pelajaran" 
-            parent="tu_aktivitas_akademik" action="cdn_jadwal_pelajaran_action" sequence="10"/>
+            parent="pengaturan_akademik_menu_categ" action="cdn_jadwal_pelajaran_action" sequence="10"/>
     </data>
 </odoo>

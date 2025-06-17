@@ -10,7 +10,7 @@
                 </group>
                 <group>
                     <field name="nis"/>
-                    <field name="siswa_id" readonly="1"/>
+                    <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="1"/>
                     <field name="tmp_lahir" readonly="1"/>
                     <field name="tgl_lahir" readonly="1"/>
                 </group>

@@ -11,7 +11,7 @@
                         <field name="name"/>
                         <field name="walikelas_id"/>
                         <field name="kelas_id"/>
-                        <field name="siswa_id"/>
+                        <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
                         <field name="nis"/>
                         <field name="tahunajaran_id"/>
                         <field name="semester"/>
@@ -21,7 +21,7 @@
                 </field>
             </record>
 
-            <!-- cdn.penilaian_akhir form view -->
+
             <record id="cdn_penilaian_akhir_view_form" model="ir.ui.view">
                 <field name="name">cdn.penilaian_akhir.view.form</field>
                 <field name="model">cdn.penilaian_akhir</field>
@@ -37,15 +37,10 @@
                                 <label for="name" class="oe_edit_only" string="Nama"/>
                                 <h1><field name="name"/></h1>
                             </div>
-                            <group>
+
+                            <group string="Data">
                                 <group>
                                     <field name="walikelas_id" options="{'no_create_edit':True, 'no_create':True}"/>
-                                </group>
-                                <group>
-                                </group>
-                            </group>
-                            <group>
-                                <group>
                                     <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
                                     <field name="nis"/>
                                     <field name="kelas_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
@@ -56,14 +51,16 @@
                                     <field name="tgl_disetujui"/>
                                 </group>
                             </group>
+
+                            
                             <notebook>
                                  <page name="penilaian_akhir" string="Penilaian Akhir">
                                     <field name="penilaianakhir_ids">
                                         <list editable="bottom"> 
                                             <field name="mapel_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
-                                            <field name="nilai1" widget="integer"/>
+                                            <field name="nilai1" string="Nilai 1" widget="integer"/>
                                             <field name="predikat1"/>
-                                            <field name="nilai2" widget="integer"/>
+                                            <field name="nilai2" string="Nilai 2" widget="integer"/>
                                             <field name="predikat2"/>
                                             <field name="aspek1"/>
                                             <field name="aspek2"/>
@@ -98,7 +95,6 @@
                 </field>
             </record>
 
-            <!-- cdn.penilaian_akhir action window -->
             <record id="penilaian_akhir_action" model="ir.actions.act_window">
                 <field name="name">Penilaian Akhir ( Wali Kelas )</field>
                 <field name="type">ir.actions.act_window</field>

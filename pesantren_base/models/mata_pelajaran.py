@@ -19,6 +19,7 @@ class MataPelajaran(models.Model):
                     ('sd', 'SD'),
                     ('smp', 'SMP'),
                     ('sma', 'SMA'),
+                    ('nonformal', 'Nonformal'),
                   ], string='Jenjang Pendidikan', required=True)
   tingkat_id    = fields.Many2one('cdn.tingkat', string='Kelas')
   jurusan_id    = fields.Many2one(comodel_name='cdn.master_jurusan', string='Jurusan / Peminatan')

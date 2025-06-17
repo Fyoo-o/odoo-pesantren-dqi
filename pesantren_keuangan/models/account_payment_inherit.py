@@ -19,7 +19,7 @@
 #    If not, see <http://www.gnu.org/licenses/>.
 #
 #############################################################################
-from odoo import fields, models, _
+from odoo import fields, models, _ ,api
 from odoo.exceptions import UserError
 
 
@@ -97,32 +97,117 @@ class AccountRegisterPayments(models.TransientModel):
         return payments
 
     def action_create_payments_and_preview(self):
-        # Buat pembayaran menggunakan metode asli
-        payments = self.sudo()._create_payments()
-        
-        # Dapatkan invoice terkait
-        invoice = False
-        if self.line_ids and self.line_ids[0].move_id:
-            invoice = self.line_ids[0].move_id
-        
-        # Jika invoice ditemukan, buka dialog konfirmasi unduh
-        if invoice:
+
+        if self.payment_method_line_id.name == 'Dompet Santri':
+            invoice = False
+            if self.line_ids and self.line_ids[0].move_id:
+                invoice = self.line_ids[0].move_id
+            
+            if not invoice:
+                raise UserError("Tidak dapat menemukan faktur terkait")
+
+            amount = self.amount
+            santri = self.env['cdn.siswa'].search([('partner_id', '=', self.partner_id.id)], limit=1)
+            
+            if santri and santri.status_akun in ['nonaktif', 'blokir']:
+                status = santri.status_akun.capitalize()
+                raise UserError(f"Transaksi tidak dapat diproses karena akun santri bernama {santri.name} saat ini berstatus {status}. Mohon hubungi pengurus pesantren untuk informasi lebih lanjut.")
+
             return {
                 'type': 'ir.actions.act_window',
-                'name': 'Cetak Transaksi',
-                'res_model': 'invoice.download.wizard',
+                'name': 'Konfirmasi PIN Dompet Santri',
+                'res_model': 'dompet.santri.pin.wizard',
                 'view_mode': 'form',
                 'target': 'new',
                 'context': {
+                    'default_payment_id': self.id,
+                    'default_santri_id': santri.id,
+                    'default_nomor_tagihan': self.communication,
                     'default_invoice_id': invoice.id,
-                    'default_invoice_name': invoice.name or invoice.ref or '',
+                    'default_amount': amount,
                 },
                 'views': [(False, 'form')],
             }
+        else:
+
+            # Buat pembayaran menggunakan metode asli
+            payments = self.sudo()._create_payments()
+            
+            # Dapatkan invoice terkait
+            invoice = False
+            if self.line_ids and self.line_ids[0].move_id:
+                invoice = self.line_ids[0].move_id
+            
+            # Jika invoice ditemukan, buka dialog konfirmasi unduh
+            if invoice:
+                return {
+                    'type': 'ir.actions.act_window',
+                    'name': 'Unduh Transaksi',
+                    'res_model': 'invoice.download.wizard',
+                    'view_mode': 'form',
+                    'target': 'new',
+                    'context': {
+                        'default_invoice_id': invoice.id,
+                        'default_invoice_name': invoice.name or invoice.ref or '',
+                    },
+                    'views': [(False, 'form')],
+                }
+            
+            # Jika tidak ada invoice, kembalikan action default
+            action = self.env['ir.actions.act_window']._for_xml_id('account.action_account_payments')
+            return action
+
+    # def action_create_payments_and_preview(self):
+    #     """Membuat pembayaran dengan sudo dan memperbaiki currency_id"""
+    #     # Simpan currency_id dan company_id sebelum menggunakan sudo
+    #     currency_id = self.currency_id.id
+    #     company_id = self.company_id.id
         
-        # Jika tidak ada invoice, kembalikan action default
-        action = self.env['ir.actions.act_window']._for_xml_id('account.action_account_payments')
-        return action
+    #     # Buat pembayaran menggunakan sudo
+    #     payments = self.sudo()._create_payments()
+        
+    #     # Perbaiki currency_id yang hilang akibat penggunaan sudo
+    #     if payments:
+    #         self.env.cr.execute("""
+    #             UPDATE account_move 
+    #             SET currency_id = %s, company_id = %s
+    #             WHERE id IN (
+    #                 SELECT move_id FROM account_payment WHERE id IN %s
+    #             ) AND (currency_id IS NULL OR company_id IS NULL)
+    #         """, (currency_id, company_id, tuple(payments.ids)))
+            
+    #         # Perbaiki juga currency_id pada account_move_line
+    #         self.env.cr.execute("""
+    #             UPDATE account_move_line 
+    #             SET currency_id = %s, company_id = %s
+    #             WHERE move_id IN (
+    #                 SELECT move_id FROM account_payment WHERE id IN %s
+    #             ) AND (currency_id IS NULL OR company_id IS NULL)
+    #         """, (currency_id, company_id, tuple(payments.ids)))
+        
+    #     # Dapatkan invoice terkait
+    #     invoice = False
+    #     if self.line_ids and self.line_ids[0].move_id:
+    #         invoice = self.line_ids[0].move_id
+        
+    #     # Jika invoice ditemukan, buka dialog konfirmasi unduh
+    #     if invoice:
+    #         return {
+    #             'type': 'ir.actions.act_window',
+    #             'name': 'Cetak Transaksi',
+    #             'res_model': 'invoice.download.wizard',
+    #             'view_mode': 'form',
+    #             'target': 'new',
+    #             'context': {
+    #                 'default_invoice_id': invoice.id,
+    #                 'default_invoice_name': invoice.name or invoice.ref or '',
+    #             },
+    #             'views': [(False, 'form')],
+    #         }
+        
+    #     # Jika tidak ada invoice, kembalikan action default
+    #     action = self.env['ir.actions.act_window']._for_xml_id('account.action_account_payments')
+    #     return action
 
 class AccountPayment(models.Model):
     """It inherits the account.payment model for adding new fields

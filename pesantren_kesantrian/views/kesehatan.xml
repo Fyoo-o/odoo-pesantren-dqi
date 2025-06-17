@@ -10,7 +10,7 @@
           <!-- Add your fields here -->
           <field name="name"/>
           <field name="tgl_diperiksa"/>
-          <field name="siswa_id"/>
+          <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
           <field name="kelas_id"/>
           <field name="keluhan"/>
           <field name="obat"/>
@@ -57,7 +57,7 @@
             <group string="Santri">
               <group>
                 <field name="barcode" readonly="state not in ('periksa')"/>
-                <field name="siswa_id" string="Santri" readonly="state not in ('periksa')"/>
+                <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" string="Santri" readonly="state not in ('periksa')"/>
                 <field name="kelas_id"/>
               </group>
               <group>
@@ -139,7 +139,7 @@
               ]"
           />
 
-          <field name="siswa_id" select="True"/>
+          <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" select="True"/>
           <field name="tgl_diperiksa" select="True"/>
           <field name="tgl_selesai" select="True"/>
           <field name="keterangan_rawat" select="True"/>

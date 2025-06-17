@@ -27,6 +27,10 @@
                     <field name="tahunajaran_id" />
                     <field name="ruang_kelas_id" />
                     <field name="jenjang" />
+                    <field name="status_akun" widget="badge" 
+                        decoration-success="status_akun == 'aktif'"
+                        decoration-warning="status_akun == 'nonaktif'" 
+                        decoration-danger="status_akun == 'blokir'"/>
                 </list>
             </field>
         </record>
@@ -91,8 +95,10 @@
                                     <group>
                                         <field name="nis"/>
                                         <field name="tahunajaran_id"/>
-                                        <field name="jenjang" readonly="1"/>
-                                        <field name="jurusan_sma"/>
+                                        <field name="jenjang"/>
+                                        <field name="nama_sekolah"/>
+                                        <field name="jurusan_sma" invisible="1"/>
+                                        
                                         <!-- <field name="qr_code" widget="image" style="width: 120px; height: 120px;"/> -->
                                     </group>
                                     <group>
@@ -261,6 +267,7 @@
                             '|', ('barcode_santri', 'ilike', self),
                             '|', ('barcode', 'ilike', self),
                             '|', ('cita_cita', 'ilike', self),
+                            '|', ('nama_sekolah', 'ilike', self),
                             '|', ('ruang_kelas_id.name', 'ilike', self),
                             '|', ('propinsi_id.name', 'ilike', self),
                             '|', ('kecamatan_id.name', 'ilike', self),
@@ -403,6 +410,15 @@
                         </t>
                     </templates>
                 </kanban>
+            </field>
+        </record>
+        <record id="action_update_nama_sekolah" model="ir.actions.server">
+            <field name="name">Perbarui Sekolah Sesuai PSB</field>
+            <field name="model_id" ref="model_cdn_siswa"/>
+            <field name="binding_model_id" ref="model_cdn_siswa"/>
+            <field name="state">code</field>
+            <field name="code">
+                model.update_nama_sekolah_all()
             </field>
         </record>
         <!-- action window -->

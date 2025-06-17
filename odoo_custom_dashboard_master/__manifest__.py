@@ -8,7 +8,7 @@
     'category': 'OWL',
     'depends' : ['base', 'web', 'sale', 'board', 'pesantren_orangtua', 'pesantren_kesantrian', 'pesantren_guruquran', 'pesantren_karyawan', "pesantren_guru"],
     'data': [
-        'views/dashboard.xml',
+        'views/dashboard_keuangan.xml',
         'views/dashboard_kesantrian.xml',
         'views/dashboard_musyrif.xml',
         'views/dashboard_orangtua.xml',
@@ -27,6 +27,7 @@
         # 'views/dashboard_crm.xml',
         'views/dashboard_penjualan.xml',
         'views/sales_dashboard.xml',
+        'views/dashboard_wallet.xml',
     ],
     'demo': [
     ],
@@ -125,11 +126,17 @@
             'odoo_custom_dashboard_master/static/src/penjualan/**/*.xml', 
             'odoo_custom_dashboard_master/static/src/penjualan/**/*.css', 
 
-
+ 
             # #Inventory
             'odoo_custom_dashboard_master/static/src/inventory/**/*.js',
             'odoo_custom_dashboard_master/static/src/inventory/**/*.xml',
             'odoo_custom_dashboard_master/static/src/inventory/**/*.css', 
+
+            
+            # Wallet
+            'odoo_custom_dashboard_master/static/src/wallet/**/*.js',
+            'odoo_custom_dashboard_master/static/src/wallet/**/*.xml',
+            'odoo_custom_dashboard_master/static/src/wallet/**/*.css', 
             
 
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <data noupdate="1">
+    <data noupdate="0">
         <!-- <record id="ir_cron_check_invoice_due_date" model="ir.cron">
             <field name="name">Cek Tagihan Jatuh Tempo</field>
             <field name="model_id" ref="account.model_account_move"/>
@@ -11,15 +11,32 @@
             <field name="numbercall">-1</field> 
             <field name="active" eval="True"/>
         </record> -->
-    <record id="ir_cron_check_overdue_invoices" model="ir.cron">
-        <field name="name">Cek Tagihan Jatuh Tempo</field>
-        <field name="model_id" ref="account.model_account_move"/>
-        <field name="state">code</field>
-        <field name="code">model._run_check_overdue_invoices()</field>
-        <field name="interval_number">1</field>
-        <field name="interval_type">days</field>
-        <field name="active" eval="True"/>
-    </record>
+        <record id="ir_cron_check_overdue_invoices" model="ir.cron">
+            <field name="name">Cek Tagihan Jatuh Tempo</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="state">code</field>
+            <field name="code">model._run_check_overdue_invoices()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="active" eval="True"/>
+            <!-- <field name="nextcall" eval="(datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')"/>
+             -->
+              <field name="nextcall"
+                  eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 16:00:00')"/>
+        </record>
+
+        <record id="ir_cron_reset_santri_limits" model="ir.cron">
+            <field name="name">Reset Limit Santri</field>
+            <field name="model_id" ref="model_cdn_siswa"/>
+            <field name="state">code</field>
+            <field name="code">model._reset_expired_limits()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <field name="active" eval="True"/>
+        </record>
     </data>
 </odoo>
 
+
+ <!-- <field name="nextcall"
+                  eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 12:00:00')"/> -->

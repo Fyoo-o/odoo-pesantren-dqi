@@ -31,7 +31,8 @@ class WalletRechargeMass(models.TransientModel):
         'res.partner', 
         string='Santri', 
         required=True,
-        default=lambda self: self._get_partner_ids()
+        default=lambda self: self._get_partner_ids(),
+        ondelete='cascade'
     )
 
     recharge_amount = fields.Float(
@@ -51,7 +52,8 @@ class WalletRechargeMass(models.TransientModel):
         comodel_name='res.partner',  
         string='Siswa', 
         readonly=True,
-        default=lambda self: self._get_partner_ids()
+        default=lambda self: self._get_partner_ids(),
+        ondelete='cascade'
     )
     
     wallet_balance = fields.Float(
@@ -60,7 +62,7 @@ class WalletRechargeMass(models.TransientModel):
         readonly=True
     )
     saldo_uang_saku = fields.Float(
-        string='Saldo Uang Saku', 
+        string='Saldo Santri', 
         related='siswa_id.saldo_uang_saku', 
         readonly=True
     )

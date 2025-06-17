@@ -85,7 +85,13 @@
         'wizards/wizard_checkout.xml',
         'wizards/wizard_santridata.xml',
         'wizards/wizard_checkin.xml',
-        'wizards/register.xml',
+        'wizards/menu.xml',
+        'wizards/Akun/pencairan_saldo.xml',
+        'wizards/Akun/penonaktifan.xml',
+        'wizards/Akun/blokir.xml',
+        'wizards/Akun/open_account.xml',
+        'wizards/Akun/open_block.xml',
+        'wizards/Register/register.xml',
 
        
 

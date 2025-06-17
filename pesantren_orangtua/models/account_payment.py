@@ -4,7 +4,7 @@ from odoo import api, fields, models
 class AccountPayment(models.Model):
     _inherit = 'account.payment'
 
-    siswa_id = fields.Many2one('cdn.siswa', string='siswa', compute='_compute_siswa', store=True)
+    siswa_id = fields.Many2one('cdn.siswa', string='siswa', compute='_compute_siswa',ondelete='cascade' ,store=True)
     is_internal_transfer = fields.Boolean(string='Internal Transfer')
     bukti_pembayaran =fields.Binary(
         string='Bukti Pembayaran'

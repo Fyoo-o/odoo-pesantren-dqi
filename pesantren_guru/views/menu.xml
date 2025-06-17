@@ -2,8 +2,13 @@
 <odoo>
     <data>
         <menuitem id="guru_menu_root" name="Guru" sequence="10" web_icon="pesantren_base,static/description/guru.png" groups="pesantren_guru.group_guru_staff"/>
+        <!-- <menuitem id="absen_santri" name="Absensi" parent="guru_menu_root" sequence="13"/> -->
+        <menuitem id="absensi_pengajar" name="Absensi" parent="guru_menu_root" sequence="15"/>
+        <menuitem id="tahfidz_tahsin" name="Kepesantrenan" parent="guru_menu_root" sequence="16"/>
+        <menuitem id="kepesantrenan_dqi" name="Tahfidz dan Tahsin" parent="tahfidz_tahsin" sequence="18"/>
         <menuitem id="aktivitas_menu_categ" name="Aktivitas" parent="guru_menu_root" sequence="20"/>
         <menuitem id="aktivitas_penilaian_menu_categ" name="Penilaian" parent="aktivitas_menu_categ" sequence="40"/>
         <menuitem id="pengaturan_menu_categ" name="Pengaturan" parent="guru_menu_root" sequence="30"/>
+        <!-- <menuitem id="ekstra_santri" name="Ekstrakullikuler" parent="pengaturan_menu_categ" sequence="35"/> -->
     </data>
 </odoo>

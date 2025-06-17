@@ -1,0 +1,41 @@
+<!-- <?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data>
+        Wizard Form View
+        <record id="view_tagihan_kerugian_wizard_form" model="ir.ui.view">
+            <field name="name">tagihan.kerugian.wizard.form</field>
+            <field name="model">tagihan.kerugian.wizard</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <p>Tagihan ini akan dianggap sebagai kerugian piutang, yang akan:</p>
+                        <ul>
+                            <li>Dikeluarkan dari laporan piutang aktif</li>
+                            <li>Dipindahkan ke laporan kerugian piutang terpisah</li>
+                            <li>Dapat dipulihkan kembali jika diperlukan</li>
+                        </ul>
+                        
+                        <group>
+                            <field name="alasan" placeholder="Contoh: Santri keluar" required="1"/>
+                        </group>                        
+                    </sheet>
+                    
+                    <footer>
+                        <button name="action_confirm" string="Konfirmasi" type="object" class="btn-primary"/>
+                        <button string="Batal" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_tagihan_kerugian_wizard" model="ir.actions.act_window">
+            <field name="name">Konfirmasi Kerugian Piutang</field>
+            <field name="res_model">tagihan.kerugian.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_tagihan_kerugian_wizard_form"/>
+            <field name="target">new</field>
+            <field name="binding_model_id" ref="model_account_move"/>
+            <field name="binding_view_types">form,list</field>
+        </record>
+    </data>
+</odoo> -->

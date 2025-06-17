@@ -10,7 +10,7 @@ class Kesehatan(models.Model):
     # draft
     name = fields.Char(string='No Referensi', readonly=True)
     tgl_diperiksa = fields.Date(string='Tgl Diperiksa', default=date.today(), required=True)
-    siswa_id = fields.Many2one(comodel_name='cdn.siswa', string='Santri', required=True)
+    siswa_id = fields.Many2one(comodel_name='cdn.siswa', string='Santri',  ondelete='cascade' ,required=True)
     kelas_id = fields.Many2one(comodel_name='cdn.ruang_kelas', string='Kelas', readonly=True, related='siswa_id.ruang_kelas_id')
     keluhan = fields.Text(string='Keluhan', required=True)
     

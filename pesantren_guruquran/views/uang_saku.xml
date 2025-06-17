@@ -7,9 +7,9 @@
             <field name="model">cdn.uang_saku</field>
             <field name="arch" type="xml">
                 <list delete="false">
-                    <field name="name"/>
+                    <field name="name" string="Nomor"/>
                     <field name="tgl_transaksi"/>
-                    <field name="siswa_id"/>
+                    <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
                     <field name="va_saku"/>
                     <field name="amount_in" widget="integer"/>
                     <field name="amount_out" widget="integer"/>

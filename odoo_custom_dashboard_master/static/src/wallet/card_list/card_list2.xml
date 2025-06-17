@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="owl.WalletCardList2" owl="1">
+        <div class="row w-100 h-100 m-0" style="font-size: 12px; line-height: 1.5;">
+            <div class="col-lg-12 p-0">
+                <div class="card shadow-sm border-0 rounded-0">
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">Top Saldo Terbanyak</h3>
+                    </div>
+                    <div class="card-body pt-1">
+                        <t t-if="state.products.length > 0">
+                            <div style="overflow-x: auto;">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Nomor</th>
+                                            <th>Nama Santri</th>
+                                            <th>Nis</th>
+                                            <th>Kelas</th>
+                                            <th>Saldo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="">
+                                        <t t-foreach="state.products" t-as="product" t-key="product.id">
+                                            <tr style="cursor: pointer;" t-att-id="'product-' + product.id" t-on-click="() => this.onProductClick(product.id)">
+                                                <td>
+                                                    <t t-esc="product.number"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="product.name"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="product.nis"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="product.kelas"/>
+                                                </td>
+                                                 <td>
+                                                    <t t-esc="product.formatted_saldo"/>
+                                                </td>
+                                                <!-- <td class="text-center">
+                                                    <span t-if="product.state == 'draft'" class="badge rounded-pill bg-secondary text-light">Draft</span>
+                                                    <span t-if="product.state == 'waiting'" class="badge rounded-pill bg-warning text-dark">Waiting</span>
+                                                    <span t-if="product.state == 'confirmed'" class="badge rounded-pill bg-info text-dark">Confirm</span>
+                                                    <span t-if="product.state == 'assigned'" class="badge rounded-pill bg-primary text-light">Ready</span>
+                                                    <span t-if="product.state == 'done'" class="badge rounded-pill bg-success text-light">Done</span>
+                                                    <span t-if="product.state == 'cancel'" class="badge rounded-pill bg-danger text-light">Cancelled</span>
+                                                </td> -->
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="text-center p-3">
+                                <span class="ms-2">Data tidak ditemukan</span>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

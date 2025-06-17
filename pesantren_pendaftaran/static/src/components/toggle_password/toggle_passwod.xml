@@ -1,0 +1,6 @@
+<!-- <?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="nama_modul_anda.TogglePasswordButton" owl="1">
+        <i class="fa fa-eye toggle-password" t-att-title="state.isVisible ? 'Sembunyikan Kata Sandi' : 'Tampilkan Kata Sandi'" style="cursor: pointer;"/>
+    </t>
+</templates> -->

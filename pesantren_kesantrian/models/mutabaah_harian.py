@@ -12,7 +12,7 @@ class Mutabaah_harian(models.Model):
     name        = fields.Char(string='No. Referensi', readonly=True)
     tgl         = fields.Date('Tgl Mutabaah', required=True, default=lambda self: date.today())
     sesi_id     = fields.Many2one(comodel_name='cdn.mutabaah.sesi', string='Sesi', required=True)
-    siswa_id    = fields.Many2one('cdn.siswa', string='Santri', required=True)
+    siswa_id    = fields.Many2one('cdn.siswa', string='Santri',  ondelete='cascade', required=True)
     halaqoh_id  = fields.Many2one('cdn.halaqoh', string='Halaqoh', readonly=True, related='siswa_id.halaqoh_id')
     
     barcode          = fields.Char(string="Kartu Santri", readonly=False)
@@ -272,7 +272,7 @@ class Mutabaah_line(models.Model):
 
     mutabaah_harian_id = fields.Many2one('cdn.mutabaah_harian', string='mutabaah_harian')
     skor = fields.Integer(string='Skor', related='name.skor')
-    siswa_id = fields.Many2one('cdn.siswa', string='Siswa', related='mutabaah_harian_id.siswa_id', readonly=True, store=True)
+    siswa_id = fields.Many2one('cdn.siswa', string='Siswa', related='mutabaah_harian_id.siswa_id', ondelete='cascade' , readonly=True, store=True)
     tgl = fields.Date('Tgl Mutabaah', related='mutabaah_harian_id.tgl', readonly=True, store=True)
     name = fields.Many2one('cdn.mutabaah', string='Aktivitas / Perbuatan')
     kategori_id = fields.Many2one(comodel_name='cdn.mutabaah.kategori', string='Kategori', related='name.kategori_id')

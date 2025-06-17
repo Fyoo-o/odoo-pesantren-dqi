@@ -9,6 +9,7 @@ class MasterRPP(models.Model):
     ('sd', 'SD/MI'),
     ('smp', 'SMP/MTS'),
     ('sma', 'SMA/MA'),
+    ('nonformal', 'Nonformal'),
   ], string='Jenjang')
   matpel_id = fields.Many2one('cdn.mata_pelajaran', string='Mata Pelajaran')
   tingkat_id = fields.Many2one('cdn.tingkat', string='Kelas')

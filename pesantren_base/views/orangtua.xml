@@ -70,7 +70,7 @@
                                 <field name="email" string="Email"/>
                                 <field name="phone" string="No. Telepon"/>
                                 <field name="nik" />
-                                <field name="jns_partner" readonly="1" string="Kategori Pengguna"/>
+                                <field name="jns_partner" readonly="1" string="Kategori Pengguna" />
                             </group>
 
                             <group>
@@ -79,6 +79,7 @@
                                 <field name="street2" string="RT/RW"/>
                                 <field name="hubungan" />
                                 <field name="label" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                                <field name="isLimit" widget="boolean_toogle" />
                             </group>
                         </group>
                         <notebook>
@@ -142,6 +143,6 @@
             </field>
         </record>
 
-        <menuitem id="menu_cdn_orangtua" name="Orangtua" parent="siswa_menu_categ" action="action_cdn_orangtua" sequence="30"/>
+        <menuitem id="menu_cdn_orangtua" name="Orang tua" parent="siswa_menu_categ" action="action_cdn_orangtua" sequence="30"/>
     </data>
 </odoo>

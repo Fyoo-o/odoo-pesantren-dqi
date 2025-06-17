@@ -59,6 +59,7 @@
         'views/menu.xml',
         # views
         # 'data/ks_guru_data.xml',
+        'views/absensi_ekskul.xml',
         'views/absensi_siswa.xml',
         'views/master_rpp.xml',
         'views/penilaian.xml',
@@ -66,6 +67,9 @@
         'views/penilaian_akhir.xml',
         'views/penilaian_akhir_guru.xml',
         'views/predikat.xml',
+        'views/pembagian_ekstra.xml',
+        'views/absensi_ekskul_base.xml',
+        'views/absensi_siswa_base.xml',
         # reports
         'reports/report_penilaian_akhir.xml'
     ],

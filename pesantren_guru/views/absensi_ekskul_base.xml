@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+      
+        <record id="absensi_ekskul_admin_list" model="ir.ui.view">
+            <field name="name">absensi.ekskul.admin.list</field>
+            <field name="model">cdn.absensi_ekskul</field>
+            <field name="priority">99</field>
+            <field name="arch" type="xml">
+                <list string="Absensi Ekskul">
+                    <field name="name"/>
+                    <field name="ekskul_id"/>
+                    <field name="guru"/>
+                    <field name="fiscalyear_id"/>
+                    <field name="states"/>
+                </list>
+            </field>
+        </record>
+
+
+        <record id="absensi_ekskul_admin_search" model="ir.ui.view">
+            <field name="name">absensi.ekskul.admin.search</field>
+            <field name="model">cdn.absensi_ekskul</field>
+            <field name="arch" type="xml">
+                <search string="Cari Absensi Ekskul">
+
+                <field name="search" string="Data"
+                        filter_domain="[
+                            '|', ('name', 'ilike', self),
+                            '|', ('ekskul_id.name', 'ilike', self),
+                            '|', ('guru.name', 'ilike', self),
+                            '|', ('fiscalyear_id.name', 'ilike', self),
+                            '|', ('absen_ids.siswa_id.barcode_santri', 'ilike', self),
+                            '|', ('absen_ids.siswa_id.name', 'ilike', self),
+                            '|', ('absen_ids.nis', 'ilike', self),
+                            ('absen_ids.panggilan', 'ilike', self)
+                        ]"/>
+                <filter string="Status Proses" name="filter_by_proses" domain="[('states','=','Proses')]" />
+                <filter string="Status Selesai" name="filter_by_done" domain="[('states','=','Done')]" />
+                <filter string="Tanpa Absensi" name="filter_by_no_absen" domain="[('absen_ids','=',False)]" />
+                <field name="name" select="True"/>
+                <field name="ekskul_id" select="True"/>
+                <field name="guru" select="True"/>
+                <field name="fiscalyear_id" select="True"/>
+                <field name="absen_ids" select="True"/>
+                <group string="Group By..">
+                    <filter string="Ekskul" domain="[]" name="group_by_ekskul" context="{'group_by':'ekskul_id'}" />
+                    <filter string="Guru" domain="[]" name="group_by_guru" context="{'group_by':'guru'}" />
+                    <filter string="Tahun Ajaran" domain="[]" name="group_by_fiscalyear" context="{'group_by':'fiscalyear_id'}" />
+                    <filter string="Status" domain="[]" name="group_by_states" context="{'group_by':'states'}" />
+                </group>
+
+                    <!-- <field name="name"/>
+                    <field name="ekskul_id"/>
+                    <field name="guru"/>
+                    <filter string="Hari Ini" name="today" domain="[('name', '=', context_today())]"/>
+                    <filter string="Status Proses" name="status_proses" domain="[('states', '=', 'Proses')]"/>
+                    <filter string="Status Selesai" name="status_done" domain="[('states', '=', 'Done')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Ekskul" name="group_by_ekskul" domain="[]" context="{'group_by': 'ekskul_id'}"/>
+                        <filter string="Guru" name="group_by_guru" domain="[]" context="{'group_by': 'guru'}"/>
+                        <filter string="Status" name="group_by_status" domain="[]" context="{'group_by': 'states'}"/>
+                    </group> -->
+                </search>
+            </field>
+        </record>
+
+       
+        <record id="absensi_ekskul_data" model="ir.actions.act_window">
+            <field name="name">Absensi Ekskul</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">cdn.absensi_ekskul</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[(1, '=', 1)]</field> 
+            <field name="context">{'group_by': ['name:day']}</field>  
+            <field name="search_view_id" ref="absensi_ekskul_admin_search"/>
+            <field name="view_ids" eval="[(5, 0, 0), 
+                                         (0, 0, {'view_mode': 'list', 'view_id': ref('absensi_ekskul_admin_list')})]"/>
+        </record>
+
+       <menuitem id="absensi_ekskul_menu_act" 
+                  name="Absensi Ekskul"
+                  parent="pesantren_base.absensi_menu_categ" 
+                  action="absensi_ekskul_data" 
+                  sequence="40"/>
+    </data>
+</odoo>

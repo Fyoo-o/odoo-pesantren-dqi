@@ -125,7 +125,6 @@ export class PosChartRenderer extends Component {
   }
 
   hideLoading() {
-    // Hide loading overlay
     if (this.loadingOverlay) {
       this.loadingOverlay.style.display = "none";
     }
@@ -143,13 +142,12 @@ export class PosChartRenderer extends Component {
         { order: "name asc" }
       );
 
-      // Check if stores have changed
       const currentStoreIds = this.state.stores.map((store) => store.id).sort();
       const newStoreIds = newStores.map((store) => store.id).sort();
 
       if (JSON.stringify(currentStoreIds) !== JSON.stringify(newStoreIds)) {
         this.state.stores = newStores;
-        // Re-render dropdown
+
         const storeFilter = document.getElementById("storeFilter");
         if (storeFilter) {
           const currentValue = storeFilter.value;
@@ -169,7 +167,7 @@ export class PosChartRenderer extends Component {
           `;
         }
       }
-    }, 300000); // 5 minutes
+    }, 300000);
   }
 
   async fetchStores() {

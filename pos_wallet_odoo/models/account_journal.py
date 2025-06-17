@@ -20,7 +20,8 @@
 #
 #############################################################################
 from odoo import fields, models, api
-from datetime import date
+from datetime import date, datetime
+from odoo.exceptions import ValidationError
 
 class AccountJournal(models.Model):
     """Adding fields to account journal"""
@@ -64,7 +65,8 @@ class Donation(models.Model):
     )
     bank_account = fields.Char(
         string='Rekening Bank', 
-        help='Nomor rekening bank untuk menerima donasi jika tidak menggunakan QR Code'
+        help='Nomor rekening bank untuk menerima donasi jika tidak menggunakan QR Code',
+        required=True
     )
 
     # Relasi ke donasi yang masuk
@@ -100,6 +102,74 @@ class Donation(models.Model):
     #         is_active = bool(record.start_date and record.end_date and record.start_date <= today <= record.end_date)
     #         if record.is_active != is_active:
     #             record.write({'is_active': is_active})
+    
+    # @api.model
+    # def _search(self, domain, offset=0, limit=None, order=None, count=False):
+    #     # Handle empty domain
+    #     if not domain:
+    #         return super(Donation, self)._search(domain, offset=offset, limit=limit, order=order, )
+        
+    #     # Periksa domain untuk mencegah error
+    #     if isinstance(domain, list):
+    #         new_domain = []
+    #         for item in domain:
+    #             if isinstance(item, (list, tuple)) and len(item) == 3:
+    #                 field, operator, value = item
+                            
+    #                 # Handle tanggal
+    #                 if field in ['start_date','end_date'] and operator == 'ilike' and value:
+    #                     try:
+    #                         # Coba parsing format tanggal yang umum
+    #                         date_formats = ['%d/%m/%Y', '%Y-%m-%d', '%d-%m-%Y', '%d.%m.%Y']
+    #                         parsed_date = None
+                            
+    #                         for fmt in date_formats:
+    #                             try:
+    #                                 parsed_date = datetime.strptime(value, fmt)
+    #                                 break
+    #                             except ValueError:
+    #                                 continue
+                            
+    #                         if parsed_date:
+    #                             start_date = datetime.combine(parsed_date.date(), datetime.min.time())
+    #                             end_date = datetime.combine(parsed_date.date(), datetime.max.time())
+    #                             new_domain.append('&')
+    #                             new_domain.append((field, '>=', start_date))
+    #                             new_domain.append((field, '<=', end_date))
+    #                         else:
+    #                             # Jika tidak bisa diparsing sebagai tanggal, gunakan pencarian biasa
+    #                             new_domain.append(item)
+    #                     except Exception:
+    #                         # Fallback ke pencarian biasa jika ada error
+    #                         new_domain.append(item)
+                    
+    #                 else:
+    #                     new_domain.append(item)
+    #             else:
+    #                 new_domain.append(item)
+            
+    #         domain = new_domain
+
+    #         # Filter hanya domain valid (list/tuple dengan panjang 3)
+    #         valid_domain = []
+    #         or_count = 0
+            
+    #         for item in domain:
+    #             if isinstance(item, (list, tuple)) and len(item) == 3:
+    #                 valid_domain.append(item)
+    #             elif isinstance(item, str) and item in ['&', '|', '!']:
+    #                 if item == '|':
+    #                     or_count += 1
+    #                 valid_domain.append(item)
+            
+    #         # Ensure proper balancing for OR operators
+    #         if or_count > 0 and len(valid_domain) < (or_count * 2 + 1):
+    #             # Domain is invalid, fall back to simple name search
+    #             return super(Donation, self)._search([('name', 'ilike', '')], offset=offset, limit=limit, order=order, )
+            
+    #         domain = valid_domain if valid_domain else domain
+        
+    #     return super(Donation, self)._search(domain, offset=offset, limit=limit, order=order, )
 
 
 
@@ -163,3 +233,72 @@ class DonationDetail(models.Model):
         for record in self:
             if record.donation_id and not record.donation_id.is_active:
                 raise ValidationError("Donasi ini sudah tidak aktif. Anda tidak dapat menambahkan donasi baru.")
+
+    
+    # @api.model
+    # def _search(self, domain, offset=0, limit=None, order=None, count=False):
+    #     # Handle empty domain
+    #     if not domain:
+    #         return super(DonationDetail, self)._search(domain, offset=offset, limit=limit, order=order, )
+        
+    #     # Periksa domain untuk mencegah error
+    #     if isinstance(domain, list):
+    #         new_domain = []
+    #         for item in domain:
+    #             if isinstance(item, (list, tuple)) and len(item) == 3:
+    #                 field, operator, value = item
+                            
+    #                 # Handle tanggal
+    #                 if field in ['date'] and operator == 'ilike' and value:
+    #                     try:
+    #                         # Coba parsing format tanggal yang umum
+    #                         date_formats = ['%d/%m/%Y', '%Y-%m-%d', '%d-%m-%Y', '%d.%m.%Y']
+    #                         parsed_date = None
+                            
+    #                         for fmt in date_formats:
+    #                             try:
+    #                                 parsed_date = datetime.strptime(value, fmt)
+    #                                 break
+    #                             except ValueError:
+    #                                 continue
+                            
+    #                         if parsed_date:
+    #                             start_date = datetime.combine(parsed_date.date(), datetime.min.time())
+    #                             end_date = datetime.combine(parsed_date.date(), datetime.max.time())
+    #                             new_domain.append('&')
+    #                             new_domain.append((field, '>=', start_date))
+    #                             new_domain.append((field, '<=', end_date))
+    #                         else:
+    #                             # Jika tidak bisa diparsing sebagai tanggal, gunakan pencarian biasa
+    #                             new_domain.append(item)
+    #                     except Exception:
+    #                         # Fallback ke pencarian biasa jika ada error
+    #                         new_domain.append(item)
+                    
+    #                 else:
+    #                     new_domain.append(item)
+    #             else:
+    #                 new_domain.append(item)
+            
+    #         domain = new_domain
+
+    #         # Filter hanya domain valid (list/tuple dengan panjang 3)
+    #         valid_domain = []
+    #         or_count = 0
+            
+    #         for item in domain:
+    #             if isinstance(item, (list, tuple)) and len(item) == 3:
+    #                 valid_domain.append(item)
+    #             elif isinstance(item, str) and item in ['&', '|', '!']:
+    #                 if item == '|':
+    #                     or_count += 1
+    #                 valid_domain.append(item)
+            
+    #         # Ensure proper balancing for OR operators
+    #         if or_count > 0 and len(valid_domain) < (or_count * 2 + 1):
+    #             # Domain is invalid, fall back to simple name search
+    #             return super(DonationDetail, self)._search([('name', 'ilike', '')], offset=offset, limit=limit, order=order, )
+            
+    #         domain = valid_domain if valid_domain else domain
+        
+    #     return super(DonationDetail, self)._search(domain, offset=offset, limit=limit, order=order, )

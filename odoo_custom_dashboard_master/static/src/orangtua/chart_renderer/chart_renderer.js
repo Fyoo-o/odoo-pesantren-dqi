@@ -27,7 +27,7 @@ export class OrangtuaChartRenderer extends Component {
     this.orm = useService("orm");
     this.actionService = useService("action");
     this.state = {
-      chartData: { series: [], labels: [] },
+      chartData: { series: [], labels: [], fullData: [] },
     };
     this.chartInstance = null;
     this.countdownInterval = null;
@@ -340,8 +340,6 @@ export class OrangtuaChartRenderer extends Component {
         "invoice_line_ids",
       ]);
 
-      console.log("Data Invoice", invoiceData);
-
       this.processTagihanData(invoiceData);
     } catch (error) {
       console.error("Error fetching tagihan data:", error);
@@ -396,8 +394,6 @@ export class OrangtuaChartRenderer extends Component {
       }))
       .sort((a, b) => b.total - a.total)
       .slice(0, 6);
-
-    console.log("Data Diproses", processedData);
 
     this.state.chartData = {
       labels: processedData.map((student) => student.name),
@@ -597,177 +593,49 @@ export class OrangtuaChartRenderer extends Component {
     }
   }
 
-  // async onChartClick(event, chartContext, config) {
-  //   const dataPointIndex = config.dataPointIndex;
-  //   const seriesIndex = config.seriesIndex;
+  // onChartClick(event, chartContext, config) {
+  //   const seriesIndex = config.seriesIndex; // 0 for "Lunas", 1 for "Belum Lunas"
+  //   const dataPointIndex = config.dataPointIndex; // Index of the student in labels
+  //   const studentName = this.state.chartData.labels[dataPointIndex];
+  //   const fullData = this.state.chartData.fullData[dataPointIndex];
 
-  //   if (dataPointIndex === -1) return;
-
-  //   let actionConfig = {
-  //     type: "ir.actions.act_window",
-  //     view_mode: "list,form",
-  //     target: "current",
-  //     views: [
-  //       [false, "list"],
-  //       [false, "form"],
-  //     ],
-  //     context: {},
-  //   };
-
-  //   if (this.props.title === "Tagihan Santri") {
-  //     const studentData = this.state.chartData.fullData[dataPointIndex];
-  //     const seriesName = this.state.chartData.series[seriesIndex].name;
-
-  //     actionConfig.res_model = "account.move";
-  //     actionConfig.name = `${this.props.title} - ${studentData.name} - ${seriesName}`;
-
-  //     const relevantLines =
-  //       seriesName === "Lunas" ? studentData.lunas : studentData.belumLunas;
-
-  //     const moveIds = [...new Set(relevantLines.map((line) => line.move_id))];
-  //     const lineIds = relevantLines.map((line) => line.line_id);
-
-  //     const domain = [
-  //       ["id", "in", lineIds],
-  //       // ["move_id", "in", moveIds],
-  //       // ["display_type", "in", ["product"]],
-  //       // ["product_id", "!=", false],
-  //       // ["move_id.partner_id", "=", parseInt(studentData.id)],
-  //     ];
-
-  //     // if (this.state.isFiltered) {
-  //     //   if (this.state.currentStartDate) {
-  //     //     domain.push([
-  //     //       "move_id.invoice_date",
-  //     //       ">=",
-  //     //       this.state.currentStartDate,
-  //     //     ]);
-  //     //   }
-  //     //   if (this.state.currentEndDate) {
-  //     //     domain.push([
-  //     //       "move_id.invoice_date",
-  //     //       "<=",
-  //     //       this.state.currentEndDate,
-  //     //     ]);
-  //     //   }
-  //     // }
-
-  //     if (seriesName === "Lunas") {
-  //       domain.push(["payment_state", "=", "paid"]);
-  //     } else {
-  //       domain.push(["payment_state", "!=", "paid"]);
-  //     }
-
-  //     actionConfig.domain = domain;
-  //     await this.actionService.doAction(actionConfig);
+  //   let filteredInvoices = [];
+  //   if (seriesIndex === 0) {
+  //     // Clicked on "Lunas" bar
+  //     filteredInvoices = fullData.lunas;
+  //   } else if (seriesIndex === 1) {
+  //     // Clicked on "Belum Lunas" bar
+  //     filteredInvoices = fullData.belumLunas;
   //   }
-  // }
 
-  // handleEscapeKey(event) {
-  //   if (event.key === "Escape" && this.isZoomed) {
-  //     this.toggleZoom();
-  //   }
+  //   // Here you can navigate or display the filtered invoices
+  //   // For example, log or show a popup with invoice details
+  //   console.log(
+  //     `Clicked on ${
+  //       seriesIndex === 0 ? "Lunas" : "Belum Lunas"
+  //     } for ${studentName}:`,
+  //     filteredInvoices
+  //   );
+
+  //   // Example: Navigate to a detail page or open a modal
+  //   // this.$router.push({ path: `/tagihan-detail/${studentName}`, query: { invoices: JSON.stringify(filteredInvoices) }});
+  //   // Or show a modal with filteredInvoices
   // }
 
   // async onChartClick(event, chartContext, config) {
   //   const dataPointIndex = config.dataPointIndex;
   //   const seriesIndex = config.seriesIndex;
-
-  //   if (dataPointIndex === -1) return;
-
-  //   // Define the action ID from your module
-  //   const actionId = "pesantren_keuangan.tagihan_keuangan_action";
-
-  //   // Get student data
-  //   const studentData = this.state.chartData.fullData[dataPointIndex];
-  //   const seriesName = this.state.chartData.series[seriesIndex].name;
-
-  //   // Build domain based on the clicked segment
-  //   let domainAction = [
-  //     ["partner_id", "=", parseInt(studentData.id)],
-  //     ["move_type", "=", "out_invoice"],
-  //   ];
-
-  //   if (seriesName === "Lunas") {
-  //     domainAction.push(["payment_state", "=", "paid"]);
-  //   } else {
-  //     domainAction.push(["payment_state", "!=", "paid"]);
-  //   }
-
-  //   // Load the existing action and modify it
-  //   this.actionService
-  //     .loadAction(actionId)
-  //     .then((action) => {
-  //       const newAction = {
-  //         ...action,
-  //         domain: domainAction,
-  //         context: {
-  //           ...action.context,
-  //           default_move_type: "out_invoice",
-  //           search_default_filter_by_blm_lunas: seriesName !== "Lunas" ? 1 : 0,
-  //         },
-  //         name: `${this.props.title} - ${studentData.name} - ${seriesName}`,
-  //         // Keep the original views configuration from the action
-  //       };
-
-  //       return this.actionService.doAction(newAction);
-  //     })
-  //     .catch((error) => {
-  //       console.error(`Error loading action ${actionId}:`, error);
-  //     });
+  //   console.log("DI KLIK", dataPointIndex);
+  //   console.log("DI KLIK", se);
   // }
-  // async onChartClick(event, chartContext, config) {
-  //   const dataPointIndex = config.dataPointIndex;
-  //   const seriesIndex = config.seriesIndex;
 
-  //   if (dataPointIndex === -1) return;
-
-  //   // Get student data
-  //   const studentData = this.state.chartData.fullData[dataPointIndex];
-  //   const seriesName = this.state.chartData.series[seriesIndex].name;
-
-  //   // Build domain based on the clicked segment
-  //   let domainAction = [
-  //     ["partner_id", "=", parseInt(studentData.id)],
-  //     ["move_type", "=", "out_invoice"],
-  //   ];
-
-  //   if (seriesName === "Lunas") {
-  //     domainAction.push(["payment_state", "=", "paid"]);
-  //   } else {
-  //     domainAction.push(["payment_state", "!=", "paid"]);
-  //   }
-
-  //   // Instead of loading and modifying the action, use direct action parameters
-  //   try {
-  //     await this.actionService.doAction({
-  //       type: "ir.actions.act_window",
-  //       name: `${this.props.title} - ${studentData.name} - ${seriesName}`,
-  //       res_model: "account.move", // Make sure this is the correct model for tagihan_keuangan
-  //       view_mode: "list,form",
-  //       views: [
-  //         [false, "list"],
-  //         [false, "form"],
-  //       ], // Use false to let Odoo use default views
-  //       domain: domainAction,
-  //       context: {
-  //         default_move_type: "out_invoice",
-  //         search_default_filter_by_blm_lunas: seriesName !== "Lunas" ? 1 : 0,
-  //       },
-  //       target: "current",
-  //     });
-  //   } catch (error) {
-  //     console.error(`Error executing action:`, error);
-  //   }
-  // }
   async onChartClick(event, chartContext, config) {
     const dataPointIndex = config.dataPointIndex;
     const seriesIndex = config.seriesIndex;
 
     if (dataPointIndex === -1) return;
 
-    // Define the action XML ID from your module
-    // Make sure this exactly matches what's in the External ID field from your screenshot
+    // Define the action XML ID from the module
     const actionId = "pesantren_keuangan.pesantren_tagihan_keuangan_action";
 
     // Get student data

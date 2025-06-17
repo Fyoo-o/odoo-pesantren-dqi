@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Error Modal</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: "Segoe UI", sans-serif;
+        background: #f9fafb;
+      }
+
+      /* Modal Toggle */
+      #error-toggle {
+        display: none;
+      }
+
+      /* Modal Background */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 999;
+      }
+
+      /* Show Modal */
+      #error-toggle:checked + .modal-overlay {
+        display: flex;
+      }
+
+      /* Modal Box */
+      .modal-box {
+        background: #fff;
+        padding: 2rem;
+        border-radius: 0.75rem;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        text-align: center;
+        position: relative;
+      }
+
+      .modal-box h2 {
+        color: #e53e3e;
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .modal-box p {
+        color: #4a5568;
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .modal-box .btn {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background-color: rgb(0, 187, 0);
+        color: white;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        font-weight: 600;
+        transition: background 0.3s ease;
+      }
+
+      .modal-box .btn:hover {
+        background-color: rgb(0, 120, 0);
+      }
+
+      /* Close Button */
+      .modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 1.2rem;
+        cursor: pointer;
+        color: #a0aec0;
+      }
+
+      .modal-close:hover {
+        color: #718096;
+      }
+
+      /* Trigger button */
+      .open-btn {
+        margin: 4rem auto;
+        display: block;
+        padding: 0.75rem 1.5rem;
+        background: #e53e3e;
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .open-btn:hover {
+        background: #c53030;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Trigger -->
+    <label for="error-toggle" class="open-btn">Show Error Popup</label>
+
+    <!-- Hidden Checkbox Toggle -->
+    <input type="checkbox" id="error-toggle" />
+
+    <!-- Modal -->
+    <div class="modal-overlay">
+      <div class="modal-box">
+        <label for="error-toggle" class="modal-close">&times;</label>
+        <h2>Terjadi Kesalahan</h2>
+        <p>
+          Maaf, sistem mengalami gangguan saat memproses permintaan Anda.
+          Silakan coba beberapa saat lagi.
+        </p>
+        <label for="error-toggle" class="btn">Tutup</label>
+      </div>
+    </div>
+  </body>
+</html>

@@ -9,7 +9,12 @@ class KamarSantri(models.Model):
     kamar_id        = fields.Many2one(comodel_name='cdn.aset_pesantren', string='Nama Kamar', domain=[('is_kamar_santri', '=', True)], required=True)
     parent_id       = fields.Many2one(comodel_name='cdn.aset_pesantren', related='kamar_id.parent_id', string='Lokasi', store=True, readonly=True)
     musyrif_id      = fields.Many2one(comodel_name='hr.employee', string='Musyrif/Pembina', required=True)
-    siswa_ids       = fields.Many2many(comodel_name='cdn.siswa', string='Siswa')
+    siswa_ids       = fields.Many2many(
+        comodel_name='cdn.siswa', 
+        string='Siswa', 
+        ondelete='cascade',
+        domain="[('active', '=', True), '|', ('kamar_id', '=', False), ('kamar_id', '=', id)]"
+    )    
     keterangan      = fields.Char(string='Keterangan')
     fiscalyear_id   = fields.Many2one('cdn.ref_tahunajaran', string='Tahun Ajaran', required=True, default=lambda self: self.env.user.company_id.tahun_ajaran_aktif.id)
     pengganti_ids   = fields.Many2many('hr.employee', string='Ustadz Pengganti')

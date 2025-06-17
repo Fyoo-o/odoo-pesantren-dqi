@@ -9,7 +9,12 @@ class Halaqoh(models.Model):
     name = fields.Char(string='Nama Halaqoh', required=True)
     keterangan = fields.Char(string='Keterangan')
     fiscalyear_id = fields.Many2one('cdn.ref_tahunajaran', string='Tahun Ajaran', required=True, default=lambda self: self.env.user.company_id.tahun_ajaran_aktif.id)
-    siswa_ids = fields.Many2many('cdn.siswa', string='Siswa')
+    siswa_ids       = fields.Many2many(
+        comodel_name='cdn.siswa', 
+        string='Siswa', 
+        ondelete='cascade',
+        domain="[('active', '=', True), '|', ('halaqoh_id', '=', False), ('halaqoh_id', '=', id)]"
+    )    
     penanggung_jawab_id = fields.Many2one('hr.employee', string='Penanggung jawab', required=True)
     pengganti_ids = fields.Many2many('hr.employee', string='Ustadz Pengganti')
     status          = fields.Selection(string='Status', selection=[('draft', 'Draft'), ('konfirm', 'Terkonfirmasi')], default="draft")

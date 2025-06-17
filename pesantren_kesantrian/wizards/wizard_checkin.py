@@ -100,7 +100,7 @@ class PerijinanCheckIn(models.TransientModel):
     _description    = 'CheckIn Perijinan Santri'
 
     tgl_ijin     = fields.Datetime(string='Tgl Ijin', required=True, default=lambda self: fields.Datetime.now())
-    siswa_id     = fields.Many2one('cdn.siswa', string='Siswa', required=True)
+    siswa_id     = fields.Many2one('cdn.siswa', string='Siswa', required=True , ondelete='cascade')
     perijinan_id = fields.Many2one('cdn.perijinan', string='Perijinan', required=False)
     kelas_id     = fields.Many2one('cdn.ruang_kelas', string='Kelas', related='siswa_id.ruang_kelas_id', readonly=True)
     kamar_id     = fields.Many2one('cdn.kamar_santri', string='Kamar', related='siswa_id.kamar_id', readonly=True)

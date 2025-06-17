@@ -43,6 +43,7 @@
                                 <field name="tingkat" domain="[('jenjang', '=', jenjang)]"
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
                                 <field name="jurusan_id" invisible="jenjang != 'sma'"/>
+                                <field name="nama_kelas"/>
                             </group>
                             <group>
                             </group>

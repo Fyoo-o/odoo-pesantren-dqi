@@ -10,13 +10,13 @@
                     <!-- Add your fields here -->
                     <field name="name"/>
                     <field name="nis"/>
-                    <field name="nisn"/>
+                    <field name="nama_sekolah" string="Sekolah"/>
                     <field name="ruang_kelas_id" />
                     <field name="tahunajaran_id" />
-                    <field name="total_invoiced" string="Total Tagihan" widget="integer"/>
-                    <field name="total_due" string="Sisa Tagihan" widget="integer"/>
+                    <field name="total_invoiced" string="Total Tagihan" widget="integer" sum="Total Tagihan"/>
+                    <field name="total_due" string="Sisa Tagihan" widget="integer" sum="Total Sisa"/>
+                    <field name="total_paid" string="Total Dibayar" widget="integer" sum="Total Dibayar"/>
                     <field name="saldo_uang_saku" widget="integer"/>
-                    <field name="wallet_balance" string="Saldo Dompet" widget="integer"/>
                 </list>
             </field>
         </record>
@@ -28,42 +28,29 @@
                 <form string="">
                     <sheet>
                         <div class="oe_button_box" name="button_box">
-                            <button name="action_uang_saku" type="object" class="oe_stat_button" icon="fa-money">
-                                <span>
-                                    <field name="uang_saku_count" widget="integer"  string="Uang Saku" />
-                                </span>
+                            <button name="action_uang_saku" type="object" class="oe_stat_button" icon="fa-credit-card">
+                                <field name="uang_saku_formatted" widget="statinfo" string="Saldo Uang Saku"/>
                             </button>
-                            <button type="object" name="action_saldo_tagihan" class="oe_stat_button" context="{'default_siswa_id': id}" groups="pesantren_keuangan.group_keuangan_manager">
-                                <div class="o_field_widget o_stat_info mr4">
-                                    <span class="o_stat_text">Tag:</span>
-                                    <span class="o_stat_text">Sisa:</span>
-                                </div>
-                                <div class="o_field_widget o_stat_info">
-                                    <span class="o_stat_value">
-                                        <field name="total_invoiced" widget="integer" options="{'currency_field': 'currency_id'}"/>
-                                    </span>
-                                    <span class="o_stat_value">
-                                        <field name="total_due" widget="integer" options="{'currency_field': 'currency_id'}"/>
-                                    </span>
-                                </div>
+                            <button name="action_saldo_tagihan" type="object" class="oe_stat_button" icon="fa-money">
+                                <field name="saldo_tagihan_formatted" widget="statinfo" string="Sisa Tagihan"/>
                             </button>
                         </div>
                         <field name="image_1920" widget="image" class="oe_avatar" options="{'preview_image': 'image_128'}"/>
                         <div class="oe_title">
-                            <label for="name" class="oe_edit_only" string="Nama Lengkap Siswa"/>
+                            <label for="name" class="oe_edit_only" string="Nama Lengkap Santri"/>
                             <h1>
                                 <field name="name" style="width:50%"/>
                             </h1>
                         </div>
                         <group>
                             <group>
-                                <field name="street" string="Alamat Rumah"/>
+                                <field name="street" string="Alamat"/>
                                 <field name="propinsi_id"/>
                                 <field name="kecamatan_id" domain="[('kota_id','=',kota_id)]" />
-                                <field name="jns_partner" readonly="1" string="Jenis Partner"/>
+                                <!-- <field name="jns_partner" readonly="1" string="Jenis Partner"/> -->
                                 <field name="barcode_santri"/>
-                                <field name="partner_id" readonly="1"/>
-                                <field name="barcode"/>
+                                <!-- <field name="partner_id" readonly="1"/> -->
+                                <!-- <field name="barcode"/> -->
                             </group>
                             <group>
                                 <field name="street2" string="RT / RW"/>
@@ -78,7 +65,7 @@
                             <field name="pesantren_telp"/>
                         </group> -->
                         <notebook>
-                            <page name="info_siswa" string="Informasi Siswa">
+                            <page name="info_siswa" string="Informasi Santri">
                                 <group string="Akademik">
                                     <group>
                                         <field name="nis"/>
@@ -100,7 +87,7 @@
                                         <field name="pengganti_ids" widget="many2many_tags"/>
                                     </group>
                                 </group>
-                                <group string="Data Siswa">
+                                <group string="Data Santri">
                                     <group>
                                         <field name="panggilan" />
                                         <field name="tgl_lahir"/>
@@ -233,7 +220,7 @@
         </record>
         <!-- cdn.siswa action window -->
         <record id="keuangang_cdn_siswa_action" model="ir.actions.act_window">
-            <field name="name">Data Siswa</field>
+            <field name="name">Data Santri</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.siswa</field>
             <field name="view_mode">list,form</field>
@@ -250,6 +237,6 @@
             </field>
         </record>
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="keuangan_data_siswa_menu_act" name="Data Siswa" parent="keuangan_menu_root" action="keuangang_cdn_siswa_action" sequence="25"/>
+        <menuitem id="keuangan_data_siswa_menu_act" name="Data Santri" parent="keuangan_menu_root" action="keuangang_cdn_siswa_action" sequence="25"/>
     </data>
 </odoo>

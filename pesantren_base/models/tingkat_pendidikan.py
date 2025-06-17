@@ -6,6 +6,6 @@ class Tingkat(models.Model):
     _description    = 'Tabel Data Tingkat Pendidikan'
 
     name            = fields.Integer(string='Jenjang', required=True)
-    jenjang         = fields.Selection(selection=[('sd','SD/MI'),('smp','SMP/MTS'),('sma','SMA/MA')], string='Jenjang', required=True)
+    jenjang         = fields.Selection(selection=[('sd','SD/MI'),('smp','SMP/MTS'),('sma','SMA/MA'), ('nonformal', 'Nonformal')], string='Jenjang', required=True)
     keterangan      = fields.Char(string='Keterangan', help='')
 

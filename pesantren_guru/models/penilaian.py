@@ -80,12 +80,15 @@ class PenilaianLines(models.Model):
                             ('ujian_nasional','Ujian Nasional')], related='penilaian_id.tipe', readonly=True, store=True)
     semester            = fields.Selection(selection=[('1', 'Ganjil'), ('2', 'Genap')], string='Semester', related='penilaian_id.semester', readonly=True, store=True)
     state               = fields.Selection(string='Status', selection=[('draft', 'Draft'), ('done', 'Done')], related='penilaian_id.state', readonly=True, store=True)
-    siswa_id            = fields.Many2one(comodel_name='cdn.siswa', string='Siswa', required=True)
+    siswa_id            = fields.Many2one(comodel_name='cdn.siswa', string='Siswa', required=True , ondelete='cascade')
     nilai               = fields.Float(string='Nilai')
     predikat            = fields.Char(string='Predikat')
     # Field untuk domain di view penilaian
     id_kelas            = fields.Integer(string='Kelas ID', compute='_compute_id_kelas')
     id_penilaian        = fields.Integer(string='Penilaian ID', compute='_compute_id_penilaian')
+
+    panggilan       = fields.Char(string='Nama Panggilan', related='siswa_id.namapanggilan', readonly=True, store=True)
+
 
     # compute
 

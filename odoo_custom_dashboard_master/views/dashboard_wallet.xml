@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="action_owl_wallet_dashboard" model="ir.actions.client">
+            <field name="name">Dashboard</field>
+            <field name="tag">owl.wallet_dashboard</field>
+        </record>
+        <menuitem name="Dashboard" id="menu_wallet_dashboard" parent="pesantren_kesantrian.wizard_cari_santri" sequence="0" action="action_owl_wallet_dashboard"/>
+    </data>
+</odoo>

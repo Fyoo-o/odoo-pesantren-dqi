@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="wizard_open_block_form" model="ir.ui.view">
+            <field name="name">wizard.open.block.form</field>
+            <field name="model">wizard.open.block</field>
+            <field name="arch" type="xml">
+                 <form string="Buka Akun">
+                  <group string="Santri">
+                        <group>         
+                            <field name="kartu_santri" />
+                            <field name="santri_id" string="Santri" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" context="{'default_partner_id': id}" />
+                            <field name="kelas_id" />
+                        </group>
+                        <group>
+                            <field name="kamar_id" />
+                            <field name="halaqoh_id" />
+                            <field name="musyrif_id" />
+                        </group>
+                    </group>
+                    <group string="Data Terakhir">
+                        <group >
+                            <field name="status" />
+                            <field name="alasan" />       
+                        </group>
+                        <group>                
+                            <field name="catatan" />
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="action_submit" string="Buka Blokir" type="object" class="btn-primary"/>
+                        <button string="Batal" class="btn-secondary" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <record id="action_wizard_open_block" model="ir.actions.act_window">
+            <field name="name">Buka Blokir</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.open.block</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="pesantren_kesantrian.wizard_open_block_form"/>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo> 

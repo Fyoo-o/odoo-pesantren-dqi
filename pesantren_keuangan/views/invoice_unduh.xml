@@ -5,13 +5,13 @@
         <field name="model">invoice.download.wizard</field>
         <field name="arch" type="xml">
             <form string="Konfirmasi Unduh Faktur">
+                <field name="user_type" invisible="1"/>
                 <div>
                     <h2>Faktur <field name="invoice_name" readonly="1" class="oe_inline"/> berhasil dibuat.</h2>
-                    <p>Apakah Anda ingin unduh bukti transaksi ini sekarang?</p>
+                    <p><field name="message_text" readonly="1" nolabel="1"/></p>
                 </div>
                 <footer>
                     <button name="action_download" string="Iya" type="object" class="btn-primary"/>
-                    <!-- <button name="action_preview" string="Lihat Pratinjau" type="object" class="btn-secondary"/> -->
                     <button string="Tidak" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>

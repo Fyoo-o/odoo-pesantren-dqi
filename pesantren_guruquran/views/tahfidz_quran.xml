@@ -37,7 +37,7 @@
         </record>
 
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="tahfidz_quran_menu_act" name="Tahfidz Al Qur'an" parent="guruquran_tahfidz_kepesantrenan_menu_categ"
+        <menuitem id="tahfidz_quran_menu_act" name="Tahfidz Al Qur'an" parent="pesantren_guru.kepesantrenan_dqi"
          action="cdn_tahfidz_quran_action" sequence="20"/>
 
     </data>

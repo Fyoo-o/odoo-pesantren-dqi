@@ -14,7 +14,7 @@
                     <field name="biaya" />
                     <field name="keterangan" />
                 </list>
-            </field>
+            </field> 
         </record>
 
         <!-- form view -->
@@ -34,17 +34,14 @@
                     <sheet>
                         <div class="oe_button_box" name="button_box">
                         </div>
-                        <div class="oe_title">
-                            <label for="name" class="oe_edit_only" string="Nama Biaya Pendidikan"/>
-                            <h1><field name="name" readonly="status == 'konfirm'"/></h1>
-                        </div>
                         <group>
                             <group>
+                                <field name="name" string="Nama Jenjang Pendidikan" readonly="status == 'konfirm'"/>
                                 <field name="jenjang" readonly="status == 'konfirm'" />
-                                <field name="biaya" readonly="status == 'konfirm'" />
-                                <field name="keterangan" readonly="status == 'konfirm'" />
                             </group>
                             <group>
+                                <field name="biaya" readonly="status == 'konfirm'" />
+                                <field name="keterangan" readonly="status == 'konfirm'" />
                             </group>
                         </group>
                         <notebook>
@@ -79,7 +76,7 @@
             <field name="name">ubig_pendidikan</field>
             <field name="model">ubig.pendidikan</field>
             <field name="arch" type="xml">
-                <search string="BIaya Pendidikan">
+                <search string="Data">
 
                     <filter string="Name" name="filter_by_name" domain="[('name','=','')]" />
                     <filter string="Jenjang" name="filter_by_jenjang" domain="[('jenjang','=','')]" />
@@ -121,7 +118,7 @@
         </record> -->
 
         <record id="action_ubig_pendidikan" model="ir.actions.act_window">
-            <field name="name">Biaya Pendaftaran</field>
+            <field name="name">Jenjang Pendidikan</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">ubig.pendidikan</field>
             <field name="view_mode">list,form</field>

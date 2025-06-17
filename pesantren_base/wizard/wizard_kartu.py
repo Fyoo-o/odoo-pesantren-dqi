@@ -22,8 +22,6 @@ class WizardSearchSiswa(models.TransientModel):
         if self.kartu_santri:
             existing_kartu = self.env['cdn.siswa'].search([('barcode', '=', self.kartu_santri)], limit=1)
             
-            
-
             if existing_kartu:
                 self.kartu_santri = False
                 return {

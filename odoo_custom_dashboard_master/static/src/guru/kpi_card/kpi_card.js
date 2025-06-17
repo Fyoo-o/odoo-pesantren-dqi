@@ -170,84 +170,86 @@ export class GuruKpiCard extends Component {
       const domain3 = [];
       const domain = [];
       if (this.state.startDate) {
-        domain.push(["tgl_disetujui", ">=", this.state.startDate]);
-        domain1.push(["tanggal", ">=", this.state.startDate]);
-        domain2.push(["tanggal", ">=", this.state.startDate]);
+        domain.push(["name", ">=", this.state.startDate]);
+        domain1.push(["name", ">=", this.state.startDate]);
+        domain2.push(["name", ">=", this.state.startDate]);
+        domain3.push(["name", ">=", this.state.startDate]);
       }
       if (this.state.endDate) {
-        domain.push(["tgl_disetujui", "<=", this.state.endDate]);
-        domain1.push(["tanggal", "<=", this.state.endDate]);
-        domain2.push(["tanggal", "<=", this.state.endDate]);
+        domain.push(["name", "<=", this.state.endDate]);
+        domain1.push(["name", "<=", this.state.endDate]);
+        domain2.push(["name", "<=", this.state.endDate]);
+        domain3.push(["name", "<=", this.state.endDate]);
       }
 
-      domain.push(["walikelas_id", "=", session.partner_display_name]);
-      domain.push(["state", "=", "approved"]);
+      domain.push(["penanggung_jawab_id", "=", session.partner_display_name]);
       domain1.push(["guru_id", "=", session.partner_display_name]);
       domain2.push(["guru_id", "=", session.partner_display_name]);
 
-      let penugasnTugasData = await this.orm.call(
-        "cdn.penugasan",
+      let absensiTahfidz = await this.orm.call(
+        "cdn.absen_tahfidz_quran",
         "search_read",
-        [domain1, ["id", "kelas_id", "tanggal"]]
+        [domain, ["name", "absen_ids"]]
       );
 
-      let absensiData = await this.orm.call(
+      let absensiSantri = await this.orm.call(
         "cdn.absensi_siswa",
         "search_read",
         [domain2, ["id", "kelas_id", "tanggal"]]
       );
 
-      let jumlahRpp = await this.orm.call("cdn.master_rpp", "search_read", [
-        domain3,
-        ["id", "name"],
-      ]);
-
-      let penilaianData = await this.orm.call(
-        "cdn.penilaian_akhir",
+      let absensiTahsin = await this.orm.call(
+        "cdn.absen_tahsin_quran",
         "search_read",
-        [domain, ["id", "name"]]
+        [domain, ["name", "absen_ids"]]
       );
 
-      let penugasan = penugasnTugasData.length;
-      let absensi = absensiData.length;
-      let jumlahrpp = jumlahRpp.length;
-      let penilaian = penilaianData.length;
+      let absensiEkskul = await this.orm.call(
+        "cdn.absensi_ekskul",
+        "search_read",
+        [domain3, ["id", "name"]]
+      );
+
+      let absenTahfidz = absensiTahfidz.length;
+      let absenSantri = absensiSantri.length;
+      let absenTahsin = absensiTahsin.length;
+      let absenEkskul = absensiEkskul.length;
 
       this.state.kpiData = [
         {
-          name: "Penugasan",
-          value: penugasan,
-          icon: "fa-tasks",
-          res_model: "cdn.penugasan",
-          domain: domain1,
-        },
-        {
-          name: "Absensi Kelas",
-          value: absensi,
-          icon: "fa-calendar-check",
-          res_model: "cdn.absensi_siswa",
+          name: "Absen Santri",
+          value: absenSantri,
+          icon: "fa-user-check",
+          res_model: "cdn.absensi_santri",
           domain: domain2,
         },
         {
-          name: "Rpp Dibuat",
-          value: jumlahrpp,
-          icon: "fa-book-open",
-          res_model: "cdn.master_rpp",
-          domain: domain3,
+          name: "Absen Tahfidz",
+          value: absenTahfidz,
+          icon: "fa-quran",
+          res_model: "cdn.absen_tahfidz_quran",
+          domain: domain,
         },
         {
-          name: "Penilaian Akhir Wali Kelas",
-          value: penilaian,
-          icon: "fa-chalkboard-teacher",
-          res_model: "cdn.penilaian_akhir",
+          name: "Absen Tahsin",
+          value: absenTahsin,
+          icon: "fa-book",
+          res_model: "cdn.absen_tahsin_quran",
           domain: domain,
+        },
+        {
+          name: "Absen Ekskul",
+          value: absenEkskul,
+          icon: "fa-chalkboard-teacher",
+          res_model: "cdn.absensi_ekskul",
+          domain: domain3,
         },
       ];
 
       this.state.kpiData.forEach((kpi, index) => {
         const kpiElement = document.querySelector(`.kpi-value-${index}`);
         if (kpiElement) {
-          animateValue(kpiElement, 0, kpi.value, 1000); // Animate from 0 to target value over 1 second
+          animateValue(kpiElement, 0, kpi.value, 1000);
         }
       });
     } catch (error) {
@@ -258,7 +260,6 @@ export class GuruKpiCard extends Component {
   }
 
   attachEventListeners() {
-    // Add click listener to each KPI card
     const kpiCards = document.querySelectorAll(".kpi-card");
     var timerButton = document.getElementById("timerButton");
     if (timerButton) {

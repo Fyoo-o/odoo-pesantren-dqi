@@ -43,7 +43,7 @@ class ResPartner(models.Model):
         active_ids = context.get('active_ids', [])
 
         return {
-            'name': 'Wallet Recharge',
+            'name': 'Pengisian Saldo Dompet',
             'type': 'ir.actions.act_window',
             'res_model': 'recharge.wallet',
             'view_mode': 'form',
@@ -67,6 +67,8 @@ class ResPartner(models.Model):
             'target': 'new',
             'context': {'default_partner_ids': active_ids}
         }
+
+    
 
     # def action_recharge_mass(self):
     #     "Membuka Modul Wallet Recharge"

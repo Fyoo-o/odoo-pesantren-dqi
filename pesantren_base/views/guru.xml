@@ -161,6 +161,6 @@
             </field>
         </record>
 
-        <menuitem id="menu_cdn_guru" name="Data Guru" parent="guru_menu_categ" action="action_cdn_guru" sequence="10"/>
+        <menuitem id="menu_cdn_guru" name="Data Guru" parent="sekolah_top_menu" action="action_cdn_guru" sequence="10"/>
     </data>
 </odoo>

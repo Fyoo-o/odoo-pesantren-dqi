@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="wizard_wizard_blokir_saldo_form" model="ir.ui.view">
+            <field name="name">wizard.blokir.saldo.form</field>
+            <field name="model">wizard.blokir.saldo</field>
+            <field name="arch" type="xml">
+                 <form string="Pencairan Saldo">
+                    <div invisible="not santri_id" class="alert alert-warning w-100" role="alert" style="margin-bottom: 0;">
+                        <strong>⚠️ Peringatan!</strong> Akun ini akan <u>diblokir</u>. Seluruh akses ke sistem, transaksi, dan layanan pesantren akan <u>dinonaktifkan secara tegas</u>. Tindakan ini hanya dapat dibuka kembali oleh pihak pengurus pesantren melalui proses evaluasi.
+                    </div>
+                    <group string="Santri">
+                        <group>         
+                            <field name="kartu_santri" />
+                            <field name="santri_id" string="Santri" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" context="{'default_partner_id': id}" />
+                            <field name="kelas_id" />
+                        </group>
+                        <group>
+                            <field name="kamar_id" />
+                            <field name="halaqoh_id" />
+                            <field name="musyrif_id" />
+                        </group>
+                    </group>
+                    <group string="Blokir Akun">
+                        <group >
+                            <field name="status" />
+                            <field name="alasan_block" />       
+                        </group>
+                        <group>                
+                            <field name="catatan" />
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="action_submit" confirm="Apakah Anda yakin ingin memblokir akun ini? Tindakan ini akan menonaktifkan seluruh akses santri hingga dibuka kembali oleh pengurus." string="Blokir" type="object" class="btn-danger"/>
+                        <button string="Batal" class="btn-secondary" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <record id="action_wizard_blokir_saldo" model="ir.actions.act_window">
+            <field name="name">Blokir Akun</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.blokir.saldo</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="pesantren_kesantrian.wizard_wizard_blokir_saldo_form"/>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo> 

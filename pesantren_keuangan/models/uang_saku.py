@@ -157,11 +157,11 @@ class UangSaku(models.Model):
 
     name            = fields.Char(string='Name', readonly=True)
     tgl_transaksi   = fields.Datetime(string='Tgl Transaksi', required=True, default=fields.Datetime.now, widget="date")
-    siswa_id        = fields.Many2one(comodel_name='res.partner', string='Santri', required=True, domain=[('siswa_id', '!=', False)])
-    siswa           = fields.Many2one(comodel_name='cdn.siswa',compute='_compute_siswa',string='Siswa',store=True)
+    siswa_id        = fields.Many2one(comodel_name='res.partner', string='Santri', required=True, domain=[('siswa_id', '!=', False)], ondelete='cascade')
+    siswa           = fields.Many2one(comodel_name='cdn.siswa',compute='_compute_siswa',string='Siswa',store=True, ondelete='cascade')
     va_saku         = fields.Char(string='No. VA Saku', related='siswa_id.va_saku', readonly=True, store=True)
     saldo_awal      = fields.Float(string='Saldo Awal', readonly=True, store=True, compute='_compute_saldo_awal')
-
+    status_akun     = fields.Selection(related='siswa.status_akun')
     barcode_santri  = fields.Char(string='Kartu Santri', related='siswa.barcode_santri', store=True, readonly=False )
 
     
@@ -231,17 +231,42 @@ class UangSaku(models.Model):
 
 
 
+    # @api.onchange('siswa_id')
+    # def _check_virtual_account(self):
+    #     if self.siswa_id and not self.siswa_id.va_saku:
+    #         siswa = self.siswa_id.name
+    #         self.siswa_id = False
+    #         return {
+    #             'warning' :{
+    #                 'title' : 'Perhatian !',
+    #                 'message' : f"Santri bernama {siswa} belum memiliki Virtual Account"
+    #             }
+    #         }
+
     @api.onchange('siswa_id')
-    def _check_virtual_account(self):
-        if self.siswa_id and not self.siswa_id.va_saku:
+    def _check_virtual_account_and_status(self):
+        if self.siswa_id:
             siswa = self.siswa_id.name
-            self.siswa_id = False
-            return {
-                'warning' :{
-                    'title' : 'Perhatian !',
-                    'message' : f"Santri bernama {siswa} belum memiliki Virtual Account"
+
+            if not self.siswa_id.va_saku:
+                self.siswa_id = False
+                return {
+                    'warning': {
+                        'title': 'Perhatian!',
+                        'message': f"Santri bernama {siswa} belum memiliki Virtual Account."
+                    }
                 }
-            }
+
+            siswa_obj = self.env['cdn.siswa'].search([('partner_id', '=', self.siswa_id.id)], limit=1)
+            if siswa_obj and siswa_obj.status_akun in ['nonaktif', 'blokir']:
+                self.siswa_id = False
+                status = siswa_obj.status_akun.capitalize()
+                return {
+                    'warning': {
+                        'title': 'Akses Ditolak!',
+                        'message': f"Transaksi tidak dapat diproses karena akun santri bernama {siswa} saat ini berstatus {status}. Mohon hubungi pengurus pesantren untuk informasi lebih lanjut."
+                    }
+                }
 
     # # Field untuk Group By per minggu
     # week_tgl_transaksi = fields.Char(string='Minggu Transaksi', compute='_compute_week_tgl_transaksi', store=True)
@@ -309,12 +334,21 @@ class UangSaku(models.Model):
     # actions
     def action_confirm(self):
         for rec in self:
+            Partner = rec.siswa_id
             rec.state = 'confirm'
             rec.validasi_id = self.env.user.id
             rec.validasi_time = fields.Datetime.now()
             rec.siswa_id.write({
                 'saldo_uang_saku': rec.siswa_id.calculate_saku(),
             })
+
+            # rec.env['pos.wallet.transaction'].sudo().create({
+            #     'wallet_type': 'kas',
+            #     'reference': 'manual',
+            #     'amount': rec.amount_in,
+            #     'partner_id': Partner.id,
+            #     'currency_id': Partner.property_product_pricelist.currency_id.id,
+            # })
             rec.kirim_email_pemberitahuan()
 
     def kirim_email_pemberitahuan(self):

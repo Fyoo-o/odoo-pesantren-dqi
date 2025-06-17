@@ -78,6 +78,7 @@
         'web.assets_backend': [
             # "pesantren_musyrif/static/src/js/change_pin_popup.js",
             "pesantren_musyrif/static/src/js/change_pin_popup.js",
+            "pesantren_musyrif/static/src/js/saldo_santri.js",
             # "pesantren_musyrif/static/src/xml/change_pin_popup.xml",
             # "pesantren_musyrif/static/src/js/change_pin_popup.css",
         ],

@@ -230,7 +230,6 @@ export class StockChartRenderer extends Component {
       domain3.push(["create_date", ">=", startDate]);
       domain3.push(["create_date", "<=", endDate]);
 
-      // Build domain untuk filter berdasarkan tanggal
       pie1 = await this.orm.call("stock.picking", "search_read", [
         domain1,
         ["id", "create_date", "state"],
