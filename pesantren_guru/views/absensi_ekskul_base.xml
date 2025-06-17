@@ -78,10 +78,10 @@
                                          (0, 0, {'view_mode': 'list', 'view_id': ref('absensi_ekskul_admin_list')})]"/>
         </record>
 
-       <menuitem id="absensi_ekskul_menu_act" 
+       <!-- <menuitem id="absensi_ekskul_menu_act" 
                   name="Absensi Ekskul"
                   parent="pesantren_base.absensi_menu_categ" 
                   action="absensi_ekskul_data" 
-                  sequence="40"/>
+                  sequence="40"/> -->
     </data>
 </odoo>
