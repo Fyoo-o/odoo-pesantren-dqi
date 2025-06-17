@@ -176,10 +176,10 @@
         </record>
 
         <!-- Menu Item untuk Akses Umum dengan akses pesantren_base -->
-        <!-- <menuitem id="cdn_absensi_siswa_menu_public" name="Absensi Santri"
+        <menuitem id="cdn_absensi_siswa_menu_public" name="Absensi Santri"
             parent="pesantren_base.absensi_menu_categ" 
             action="cdn_absensi_siswa_action_public" 
-            sequence="10" /> -->
+            sequence="10" />
 
     </data>
 </odoo>
