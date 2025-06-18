@@ -1,8 +1,8 @@
 <odoo>
 	<data>
 		<record model="ir.module.category" id="module_category_guru_quran">
-			<field name="name">Guru Qur'an</field>
-			<field name="description">Group Guru Quran</field>
+			<field name="name">Guru Al-Qur'an</field>
+			<field name="description">Group Guru Al-Qur'an</field>
 			<field name="sequence">10</field>
 		</record>
 		<record id="group_guru_quran_user" model="res.groups">
@@ -24,7 +24,7 @@
 		<!-- Rules -->
 
 		<record id="group_guru_quran_user_rule_absen_tahfidz_quran" model="ir.rule">
-			<field name="name">User Rule Absen Tahfidz Quran</field>
+			<field name="name">User Rule Absensi Tahfidz Al-Qur'an</field>
 			<field name="model_id" ref="pesantren_kesantrian.model_cdn_absen_tahfidz_quran"/>
 			<field name="domain_force">
 				[
@@ -37,13 +37,13 @@
 		</record>
 
 		<record id="group_guru_quran_manager_rule_absen_tahfidz_quran" model="ir.rule">
-			<field name="name">Manager Rule Absen Tahfidz Quran</field>
+			<field name="name">Manager Rule Absensi Tahfidz Al-Qur'an</field>
 			<field name="model_id" ref="pesantren_kesantrian.model_cdn_absen_tahfidz_quran"/>
 			<field name="groups" eval="[(4, ref('group_guru_quran_manager'))]"/>
 		</record>
 
 		<record id="group_guru_quran_user_rule_tahfidz_quran" model="ir.rule">
-			<field name="name">User Rule Tahfidz Quran</field>
+			<field name="name">User Rule Tahfidz Al-Qur'an</field>
 			<field name="model_id" ref="pesantren_kesantrian.model_cdn_tahfidz_quran"/>
 			<field name="domain_force">
 				[
@@ -56,13 +56,13 @@
 		</record>
 
 		<record id="group_guru_quran_manager_rule_tahfidz_quran" model="ir.rule">
-			<field name="name">Manager Rule Tahfidz Quran</field>
+			<field name="name">Manager Rule Tahfidz Al-Qur'an</field>
 			<field name="model_id" ref="pesantren_kesantrian.model_cdn_tahfidz_quran"/>
 			<field name="groups" eval="[(4, ref('group_guru_quran_manager'))]"/>
 		</record>
 
 		<record id="group_guru_quran_user_rule_absen_tahsin_quran" model="ir.rule">
-			<field name="name">User Rule Absen Tahsin Quran</field>
+			<field name="name">User Rule Absensi Tahsin Al-Qur'an</field>
 			<field name="model_id" ref="pesantren_kesantrian.model_cdn_absen_tahsin_quran"/>
 			<field name="domain_force">
 				[
@@ -75,13 +75,13 @@
 		</record>
 
 		<record id="group_guru_quran_manager_rule_absen_tahsin_quran" model="ir.rule">
-			<field name="name">Manager Rule Absen Tahsin Quran</field>
+			<field name="name">Manager Rule Absensi Tahsin Al-Qur'an</field>
 			<field name="model_id" ref="pesantren_kesantrian.model_cdn_absen_tahsin_quran"/>
 			<field name="groups" eval="[(4, ref('group_guru_quran_manager'))]"/>
 		</record>
 
 		<record id="group_guru_quran_user_rule_tahsin_quran" model="ir.rule">
-			<field name="name">User Rule Tahsin Quran</field>
+			<field name="name">User Rule Tahsin Al-Qur'an</field>
 			<field name="model_id" ref="pesantren_kesantrian.model_cdn_tahsin_quran"/>
 			<field name="domain_force">
 				[
@@ -94,7 +94,7 @@
 		</record>
 
 		<record id="group_guru_quran_manager_rule_tahsin_quran" model="ir.rule">
-			<field name="name">Manager Rule Tahsin Quran</field>
+			<field name="name">Manager Rule Tahsin Al-Qur'an</field>
 			<field name="model_id" ref="pesantren_kesantrian.model_cdn_tahsin_quran"/>
 			<field name="groups" eval="[(4, ref('group_guru_quran_manager'))]"/>
 		</record>

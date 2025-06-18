@@ -70,17 +70,17 @@
                             <group>
                                 <field name="namapanggilan" string="Panggilan"/>
                                 <field name="street" string="Alamat Rumah"/>
-                                <field name="propinsi_id"/>
-                                <field name="kecamatan_id" domain="[('kota_id','=',kota_id)]" />
+                                <field name="street2" string="RT / RW"/>
+                                <field name="zip" string="Kode Pos" />
                                 <!-- <field name="jns_partner" readonly="1" string="Jenis Partner"/> -->
                                 <field name="barcode_santri" string="Kartu Santri" readonly="True"/>
                                 <!-- <field name="partner_id" readonly="1" required="False"/> -->
                                 <!-- <field name="barcode"/>  -->
                             </group>
                             <group>
-                                <field name="street2" string="RT / RW"/>
+                                <field name="kecamatan_id" domain="[('kota_id','=',kota_id)]" />
                                 <field name="kota_id" domain="[('propinsi_id','=',propinsi_id)]" />
-                                <field name="zip" string="Kode Pos" />
+                                <field name="propinsi_id"/>
                             </group>
                             <!-- <field name="tinggal_di"/> -->
                         </group>
@@ -90,7 +90,7 @@
                             <field name="pesantren_telp"/>
                         </group> -->
                         <notebook>
-                            <page name="info_siswa" string="Informasi Santri">
+                            <page name="info_siswa" string="Santri">
                                 <group string="Akademik">
                                     <group>
                                         <field name="nis"/>
@@ -108,18 +108,18 @@
                                         <field name="kewarganegaraan" />
                                     </group>
                                 </group>
-                                <group string="Data Santri">
+                                <group string="Santri">
                                     <group>
                                         <field name="panggilan" string="Panggilan"/>
                                         <field name="tgl_lahir"/>
-                                        <field name="jns_kelamin" />
-                                        <field name="nik" />
-                                        <field name="jml_saudara_kandung" />
+                                        <field name="jns_kelamin" string="Jns Kelamin" />
+                                        <field name="nik" string="NIK" />
+                                        <field name="jml_saudara_kandung" string="Jm Saudara" />
                                         <field name="hobi"/>
                                     </group>
                                     <group>
-                                        <field name="tmp_lahir"/>
-                                        <field name="gol_darah"/>
+                                        <field name="tmp_lahir" string="Tmp Lahir"/>
+                                        <field name="gol_darah" string="Gol Darah"/>
                                         <field name="agama" />
                                         <field name="anak_ke" />
                                         <field name="bahasa" />
@@ -129,12 +129,12 @@
                                 <group string="Pendidikan Sebelumnya">
                                     <group>
                                         <field name="asal_sekolah" />
-                                        <field name="kepsek_sekolah_asal" />
-                                        <field name="status_sekolah_asal" />
+                                        <field name="kepsek_sekolah_asal" string="Kepala Sekolah"/>
+                                        <field name="status_sekolah_asal" string="Status" />
                                     </group>
                                     <group>
-                                        <field name="telp_asal_sek" />
-                                        <field name="alamat_asal_sek" />
+                                        <field name="telp_asal_sek" string="No Telp" />
+                                        <field name="alamat_asal_sek" string="Alamat" />
                                         <field name="prestasi_sebelum" />
                                         <field name="bakat" string="Bakat Santri" widget="many2many_tags"/>
                                     </group>
@@ -209,7 +209,7 @@
                                     <field name="bebasbiaya"/>
                                 </group>
                                 <group>
-                                    <field name="harga_komponen">
+                                    <field name="harga_komponen" string=" ">
                                         <list>
                                             <field name="name"/>
                                             <field name="keterangan"/>
@@ -437,6 +437,6 @@
                 </p>
             </field>
         </record>
-        <menuitem id="menu_cdn_siswa" name="Data Santri" parent="siswa_menu_categ" action="action_cdn_siswa" sequence="10"/>
+        <menuitem id="menu_cdn_siswa" name="Santri" parent="siswa_menu_categ" action="action_cdn_siswa" sequence="10"/>
     </data>
 </odoo>

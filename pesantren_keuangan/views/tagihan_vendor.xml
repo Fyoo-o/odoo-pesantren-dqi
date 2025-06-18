@@ -31,7 +31,7 @@
         </record>
 
         <record id="vendor_invoice_action" model="ir.actions.act_window">
-            <field name="name">Tagihan Vendor</field>
+            <field name="name">Tagihan Pemasok</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">account.move</field>
             <field name="view_mode">list,form,kanban</field>
@@ -58,6 +58,6 @@
             <field name="act_window_id" ref="vendor_invoice_action"/>
         </record>
 
-        <menuitem id="vendor_invoice_menu_act" name="Tagihan Vendor" parent="aktivitas_menu_categ" action="vendor_invoice_action" sequence="40"/>
+        <menuitem id="vendor_invoice_menu_act" name="Tagihan Pemasok" parent="aktivitas_menu_categ" action="vendor_invoice_action" sequence="40"/>
     </data>
 </odoo>

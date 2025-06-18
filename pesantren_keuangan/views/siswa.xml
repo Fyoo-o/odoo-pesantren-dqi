@@ -65,7 +65,7 @@
                             <field name="pesantren_telp"/>
                         </group> -->
                         <notebook>
-                            <page name="info_siswa" string="Informasi Santri">
+                            <page name="info_siswa" string="Santri">
                                 <group string="Akademik">
                                     <group>
                                         <field name="nis"/>
@@ -82,12 +82,12 @@
                                         <field name="tingkat" domain="[('jenjang', '=', jenjang)]"
                                         options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
                                         <field name="kewarganegaraan" />
-                                        <field name="halaqoh_id" />
+                                        <field name="halaqoh_id" string="Halaqah" />
                                         <field name="penanggung_jawab_id" />
                                         <field name="pengganti_ids" widget="many2many_tags"/>
                                     </group>
                                 </group>
-                                <group string="Data Santri">
+                                <group string="Santri">
                                     <group>
                                         <field name="panggilan" />
                                         <field name="tgl_lahir"/>
@@ -220,7 +220,7 @@
         </record>
         <!-- cdn.siswa action window -->
         <record id="keuangang_cdn_siswa_action" model="ir.actions.act_window">
-            <field name="name">Data Santri</field>
+            <field name="name">Santri</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.siswa</field>
             <field name="view_mode">list,form</field>
@@ -237,6 +237,6 @@
             </field>
         </record>
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="keuangan_data_siswa_menu_act" name="Data Santri" parent="keuangan_menu_root" action="keuangang_cdn_siswa_action" sequence="25"/>
+        <menuitem id="keuangan_data_siswa_menu_act" name="Santri" parent="keuangan_menu_root" action="keuangang_cdn_siswa_action" sequence="25"/>
     </data>
 </odoo>

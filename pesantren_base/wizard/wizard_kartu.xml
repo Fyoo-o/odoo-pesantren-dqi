@@ -18,7 +18,7 @@
             </field>
         </record>
         <record id="register_kartusantri_action" model="ir.actions.act_window">
-            <field name="name">Register Kartu Santri</field>
+            <field name="name">Pendaftaran Kartu Santri</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wizard.register.kartu</field>
             <field name="view_mode">form</field>

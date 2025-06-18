@@ -47,7 +47,7 @@
             <div
               class="d-flex flex-wrap align-items-center justify-content-between"
             >
-              <h2 class="text-primary fw-bold header-text">Dashboard Guru Qur'an</h2>
+              <h2 class="text-primary fw-bold header-text">Dashboard Guru Al-Qur'an</h2>
               <div class="controls-wrapper d-flex align-items-center mt-1">
 
                 <!-- Custom Date Range Button -->
@@ -286,7 +286,7 @@
 
         <div class="col-lg-6 col-md-12 col-sm-12 m-0 p-2">
           <div class="shadow-sm border p-4 bg-white h-100">
-            <h2 class="mb-5">Absen Tahsin per Kehadiran</h2>
+            <h2 class="mb-5">Absensi Tahsin per Kehadiran</h2>
             <GuruquranChartRenderer
               type="'donutChart2'"
               period="state.selectedPeriod"

@@ -116,7 +116,7 @@
             </field>             
         </record>
         <record id="ks_mutabaah_harian_item" model="ks_dashboard_ninja.item">
-            <field name="name">Mutabaah Harian</field>
+            <field name="name">Mutaba'ah Harian</field>
             <field name="ks_chart_data_count_type">count</field>
             <field name="ks_chart_groupby_type">relational_type</field>
             <field name="ks_model_id" eval="ref('pesantren_kesantrian.model_cdn_mutabaah_line')"/>

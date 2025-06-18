@@ -24,7 +24,7 @@
                                     <th>Tanggal</th>
                                     <th>Nama Siswa</th>
                                     <th>Sesi</th>
-                                    <th>Halaqoh</th>
+                                    <th>Halaqah</th>
                                     <th>Skor</th>
                                 </tr>
                             </thead>
@@ -76,7 +76,7 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Nama Santri</th>
-                                    <th>Halaqoh</th>
+                                    <th>Halaqah</th>
                                     <th>Tanggal</th>
                                     <th>Surah</th> 
                                     <th>Ayat Awal</th>

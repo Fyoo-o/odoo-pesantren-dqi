@@ -1478,7 +1478,7 @@ class PesantrenPekerjaanKaryawan(http.Controller):
                         <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
                             <ul class="navbar-nav" data-aos="fade-left">
                                 <li class="nav-item">
-                                    <a class="nav-link m-0 mt-1 mb-1 mt-md-0 mb-md-0" href="/beranda_karyawan">Beranda</a>
+                                    <a class="nav-link m-0 mt-1 mb-1 mt-md-0 mb-md-0" href="/karyawan">Beranda</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link m-0 mt-1 mb-1 mt-md-0 mb-md-0" href="/tentang">Tentang Kami</a>
@@ -1866,7 +1866,7 @@ class PesantrenTentangKaryawan(http.Controller):
                         <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
                             <ul class="navbar-nav" data-aos="fade-left">
                                 <li class="nav-item">
-                                    <a class="nav-link m-0 mt-1 mb-1 mt-md-0 mb-md-0" href="/beranda_karyawan">Beranda</a>
+                                    <a class="nav-link m-0 mt-1 mb-1 mt-md-0 mb-md-0" href="/karyawan">Beranda</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link m-0 mt-1 mb-1 mt-md-0 mb-md-0" href="/tentang">Tentang Kami</a>
@@ -2035,7 +2035,7 @@ class PesantrenTentangKaryawan(http.Controller):
     
     
 class PesantrenBerandaKaryawan(http.Controller):
-    @http.route('/beranda_karyawan', auth='public')
+    @http.route('/karyawan', auth='public')
     def index(self, **kw):
         
         thn_sekarang = datetime.datetime.now().year
@@ -2378,7 +2378,7 @@ class PesantrenBerandaKaryawan(http.Controller):
                         <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
                             <ul class="navbar-nav" data-aos="fade-left">
                                 <li class="nav-item">
-                                    <a class="nav-link m-0 mt-1 mb-1 mt-md-0 mb-md-0" href="/beranda_karyawan">Beranda</a>
+                                    <a class="nav-link m-0 mt-1 mb-1 mt-md-0 mb-md-0" href="/karyawan">Beranda</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link m-0 mt-1 mb-1 mt-md-0 mb-md-0" href="/tentang">Tentang Kami</a>

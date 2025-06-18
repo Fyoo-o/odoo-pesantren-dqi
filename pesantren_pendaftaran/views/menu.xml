@@ -61,7 +61,7 @@
                 sequence="2"/>
             <menuitem 
                 id="menu_daftar_ulang" 
-                name="Biaya Jenjang Pendidikan" 
+                name="Biaya per Jenjang Pendidikan" 
                 parent="keuangan_menu" 
                 action="action_ubig_biaya_daftarulang" 
                 sequence="3"/>

@@ -12,7 +12,7 @@
                     <field name="tgl_ijin" />
                     <field name="siswa_id" />
                     <field name="kamar_id" />
-                    <field name="halaqoh_id" />
+                    <field name="halaqoh_id" string="Halaqah" />
                     <field name="musyrif_id" />
                     <field name="keperluan" />
                     <field name="lama_ijin" />
@@ -54,7 +54,7 @@
                             </group>
                             <group>
                                 <field name="kamar_id" />
-                                <field name="halaqoh_id" />
+                                <field name="halaqoh_id" string="Halaqah" />
                                 <field name="musyrif_id" />
                             </group>
                         </group>
@@ -125,7 +125,7 @@
 
         <!-- cdn.perijinan action window -->
         <record id="satpam_cdn_perijinan_action" model="ir.actions.act_window">
-            <field name="name">Perijinan Santri</field>
+            <field name="name">Perizinan Santri</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.perijinan</field>
             <field name="view_mode">list,form</field>

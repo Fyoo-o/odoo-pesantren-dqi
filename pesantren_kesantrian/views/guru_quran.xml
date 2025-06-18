@@ -3,7 +3,7 @@
     <data>
         <!-- hr.employee action window -->
         <record id="hr_employee_guruquran_action" model="ir.actions.act_window">
-            <field name="name">Guru Qur'an</field>
+            <field name="name">Guru Al-Qur'an</field>
             <field name="res_model">hr.employee</field>
             <field name="view_mode">list,form</field>
             <field name="view_id" ref="hr.view_employee_tree"/>
@@ -27,6 +27,6 @@
         </record>
 
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="guruquran_menu_act" name="Guru Qur'an" parent="data_kesantrian_menu_categ" action="hr_employee_guruquran_action" sequence="35"/>
+        <menuitem id="guruquran_menu_act" name="Guru Al-Qur'an" parent="data_kesantrian_menu_categ" action="hr_employee_guruquran_action" sequence="35"/>
     </data>
 </odoo>

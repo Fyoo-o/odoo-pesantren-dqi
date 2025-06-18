@@ -468,7 +468,7 @@
                 <span class="fw-semibold step">Data Berkas</span>
               </div>
               <div class="mb-4 d-flex justify-content-between align-items-center">
-                <h4 class="fw-semibold fs-3">Data Santri</h4>
+                <h4 class="fw-semibold fs-3">Santri</h4>
                 <p style="font-style: italic;">Data yang ada tanda <span class="text-danger">*</span> wajib diisi.</p>
               </div>
               <div>
