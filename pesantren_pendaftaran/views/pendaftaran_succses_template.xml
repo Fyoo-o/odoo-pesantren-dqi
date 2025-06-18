@@ -26,111 +26,337 @@
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
             <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css" rel="stylesheet" />
             <style>
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
+
+                html, body {
+                    height: 100%;
+                    overflow-x: hidden;
+                }
 
                 .container-main {
-                background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+                    background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+                    min-height: 100vh;
+                    position: relative;
+                }
+
+                .container-main::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: 
+                        radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 80%, rgba(255,255,255,0.08) 0%, transparent 50%);
+                    pointer-events: none;
                 }
 
                 .offcanvas.offcanvas-end {
-                width: 250px; /* Lebar kustom untuk offcanvas */
+                    width: 250px;
                 }
 
                 .offcanvas .nav-link {
-                color: #ffffff; /* teks warna putih */
+                    color: #ffffff;
                 }
 
                 .offcanvas .btn-close {
-                position: absolute;
-                top: 10px;
-                right: 10px;
-                filter: invert(1);
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    filter: invert(1);
                 }
 
                 input:focus {
-                border-bottom: 1.5px solid #FD0870 !important;
-                transition: .5s;
+                    border-bottom: 1.5px solid #FD0870 !important;
+                    transition: .5s;
                 }
 
                 .background {
-                background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+                    background: linear-gradient(135deg, #065c5c 0%, #0a7575 25%, #4a9b4a 50%, #7cb34a 75%, #f5e505 100%);
                 }
 
-                /* Desain Dropdown */
+                /* Navbar Styling */
+                .navbar {
+                    background: transparent;
+                }
+
+                .navbar-brand {
+                    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+                }
+
+                /* Success Card Styling */
+                .success-card {
+                    background: rgba(255, 255, 255, 0.95);
+                    backdrop-filter: blur(15px);
+                    border-radius: 20px;
+                    box-shadow: 
+                        0 20px 40px rgba(0, 0, 0, 0.1),
+                        0 8px 25px rgba(0, 0, 0, 0.08),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+                    border: 1px solid rgba(255, 255, 255, 0.3);
+                    position: relative;
+                    z-index: 2;
+                }
+
+                .success-card::before {
+                    content: '';
+                    position: absolute;
+                    top: -2px;
+                    left: -2px;
+                    right: -2px;
+                    bottom: -2px;
+                    background: linear-gradient(45deg, #065c5c, #f5e505, #065c5c);
+                    border-radius: 22px;
+                    z-index: -1;
+                    opacity: 0.3;
+                }
+
+                .success-header {
+                    background: linear-gradient(135deg, #065c5c, #4a9b4a);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                    text-align: center;
+                    font-weight: 700;
+                    margin-bottom: 1.5rem;
+                    text-shadow: none;
+                }
+
+                .success-subtitle {
+                    color: #666;
+                    text-align: center;
+                    line-height: 1.6;
+                    margin-bottom: 2rem;
+                }
+
+                /* Info Cards */
+                .info-card {
+                    background: rgba(255, 255, 255, 0.7);
+                    border-radius: 15px;
+                    padding: 1.5rem;
+                    margin-bottom: 1.5rem;
+                    border: 1px solid rgba(0, 0, 0, 0.05);
+                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+                }
+
+                .info-card:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+                }
+
+                .info-header {
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 1rem;
+                    padding-bottom: 0.5rem;
+                    border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+                }
+
+                .info-icon {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 10px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-right: 12px;
+                    font-size: 18px;
+                    color: white;
+                }
+
+                .icon-id { background: linear-gradient(135deg, #FD0870, #ff4081); }
+                .icon-user { background: linear-gradient(135deg, #A812AE, #e040fb); }
+                .icon-education { background: linear-gradient(135deg, #17a2b8, #00bcd4); }
+                .icon-bank { background: linear-gradient(135deg, #ffc107, #ffb300); }
+
+                .info-title {
+                    font-size: 1.1rem;
+                    font-weight: 600;
+                    color: #333;
+                    margin: 0;
+                }
+
+                .info-content {
+                    padding-left: 52px;
+                    color: #555;
+                    line-height: 1.6;
+                }
+
+                .registration-number {
+                    font-size: 2rem;
+                    font-weight: 700;
+                    color: #FD0870;
+                    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+                }
+
+                .data-item {
+                    margin-bottom: 0.5rem;
+                    padding: 0.3rem 0;
+                }
+
+                .data-label {
+                    font-weight: 600;
+                    color: #333;
+                }
+
+                .data-value {
+                    color: #666;
+                }
+
+                .login-data {
+                    background: rgba(108, 117, 125, 0.1);
+                    padding: 1rem;
+                    border-radius: 10px;
+                    margin-top: 1rem;
+                }
+
+                .login-data b {
+                    color: #495057;
+                    display: block;
+                    margin-bottom: 0.5rem;
+                }
+
+                /* Button Styling */
+                .print-button {
+                    background: linear-gradient(135deg, #A812AE, #e040fb);
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 25px;
+                    color: white;
+                    text-decoration: none;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    box-shadow: 0 4px 15px rgba(168, 18, 174, 0.3);
+                    transition: all 0.3s ease;
+                    display: inline-block;
+                    margin-top: 1rem;
+                }
+
+                .print-button:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px rgba(168, 18, 174, 0.4);
+                    color: white;
+                    text-decoration: none;
+                }
+
+                /* Footer Styling */
+                footer {
+                    background: rgba(0, 0, 0, 0.2);
+                    backdrop-filter: blur(10px);
+                    border-top: 1px solid rgba(255, 255, 255, 0.1);
+                    margin-top: auto;
+                }
+
+                footer a {
+                    transition: color 0.3s ease;
+                }
+
+                footer a:hover {
+                    color: #f5e505 !important;
+                }
+
+                /* Dropdown Styling */
                 .dropdown {
-                position: relative;
+                    position: relative;
                 }
 
                 .dropdown-link {
-                cursor: pointer;
+                    cursor: pointer;
                 }
 
                 .dropdown-content {
-                display: none;
-                position: absolute;
-                top: 100%;
-                right: 0;
-                background-color: #ffffff;
-                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-                border-radius: 5px;
-                min-width: 150px;
-                z-index: 1;
-                overflow: hidden;
+                    display: none;
+                    position: absolute;
+                    top: 100%;
+                    right: 0;
+                    background-color: rgba(255, 255, 255, 0.95);
+                    backdrop-filter: blur(10px);
+                    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+                    border-radius: 10px;
+                    min-width: 150px;
+                    z-index: 1000;
+                    overflow: hidden;
+                    border: 1px solid rgba(255, 255, 255, 0.2);
                 }
 
                 .dropdown-content a {
-                color: #333;
-                padding: 10px 15px;
-                display: block;
-                text-decoration: none;
-                transition: background-color 0.2s;
+                    color: #333;
+                    padding: 12px 16px;
+                    display: block;
+                    text-decoration: none;
+                    transition: background-color 0.2s;
                 }
 
                 .dropdown-content a:hover {
-                background-color: #f1f1f1;
+                    background-color: rgba(245, 229, 5, 0.1);
                 }
 
-                /* Menampilkan dropdown saat hover */
                 .dropdown:hover .dropdown-content {
-                display: block;
-                animation: fadeIn 0.3s;
+                    display: block;
                 }
 
-                /* Animasi fade-in */
-                @keyframes fadeIn {
-                from {
-                opacity: 0;
-                transform: translateY(-10px);
-                }
-                to {
-                opacity: 1;
-                transform: translateY(0);
-                }
+                /* Responsive Design */
+                @media (max-width: 768px) {
+                    .success-card {
+                        margin: 1rem;
+                        padding: 1rem;
+                    }
+                    
+                    .registration-number {
+                        font-size: 1.5rem;
+                    }
+                    
+                    .info-content {
+                        padding-left: 0;
+                        margin-top: 1rem;
+                    }
+                    
+                    .info-header {
+                        flex-direction: column;
+                        align-items: flex-start;
+                    }
+                    
+                    .info-icon {
+                        margin-bottom: 0.5rem;
+                    }
                 }
 
             </style>
-            <div class="container-main">
+            
+            <div class="container-main d-flex flex-column">
                 <nav class="navbar navbar-expand-lg" style="height: 65px;">
                     <div class="container-fluid">
                         <a class="navbar-brand ms-5 text-white fw-semibold" style="color: white;" href="/psb">
                             <img src="https://i.ibb.co.com/1MFsvMq/1731466812700.png" width="50" alt="Logo Pesantren" />
- Daarul Qur'an Istiqomah </a>
+                            Daarul Qur'an Istiqomah
+                        </a>
                         <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
                             <span class="navbar-toggler-icon"></span>
                         </button>
                         <div class="collapse navbar-collapse" style="color: white;" id="navbarNav">
                             <ul class="navbar-nav ms-auto">
                                 <li class="nav-item me-3">
-                                    <a class="nav-link stext-white" style="color: white !important;" href="/psb">
-                                        <i class="fa-solid fa-house me-2"></i>Beranda</a>
+                                    <a class="nav-link text-white" style="color: white !important;" href="/psb">
+                                        <i class="fa-solid fa-house me-2"></i>Beranda
+                                    </a>
                                 </li>
                                 <li class="nav-item me-3">
                                     <a class="nav-link text-white" style="color: white !important;" href="/pendaftaran">
-                                        <i class="fa-solid fa-note-sticky me-2"></i>
-                                        Pendaftaran</a>
+                                        <i class="fa-solid fa-note-sticky me-2"></i>Pendaftaran
+                                    </a>
                                 </li>
                                 <li class="nav-item dropdown">
                                     <a href="#" class="dropdown-link nav-link" style="color: white !important;">
-                                        <i class="fa-solid fa-fingerprint me-2"></i>Login</a>
+                                        <i class="fa-solid fa-fingerprint me-2"></i>Login
+                                    </a>
                                     <div class="dropdown-content">
                                         <a href="/login">Login PSB</a>
                                         <a href="/web/login">Login Orang Tua</a>
@@ -138,12 +364,14 @@
                                 </li>
                                 <li class="nav-item me-3">
                                     <a class="nav-link text-white" style="color: white !important;" href="/bantuan">
-                                        <i class="fa-solid fa-lock me-2"></i>Bantuan</a>
+                                        <i class="fa-solid fa-lock me-2"></i>Bantuan
+                                    </a>
                                 </li>
                                 <t t-if="is_halaman_pengumuman">
                                     <li class="nav-item dropdown">
                                         <a href="#" class="dropdown-link nav-link" style="color: white !important;">
-                                            <i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>
+                                            <i class="fa-solid fa-bullhorn me-2"></i>Pengumuman
+                                        </a>
                                         <div class="dropdown-content">
                                             <a href="/pengumuman/sd-mi">SD / MI</a>
                                             <a href="/pengumuman/smp-mts">SMP / MTS</a>
@@ -160,20 +388,24 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                     <a class="navbar-brand mt-1 text-white fw-semibold" href="/psb" style="display: flex; flex-direction: column; align-items: center; color: white;">
                         <img src="https://i.ibb.co.com/1MFsvMq/1731466812700.png" width="50" alt="Logo Pesantren" />
- Daarul Qur'an Istiqomah </a>
+                        Daarul Qur'an Istiqomah
+                    </a>
                     <div class="offcanvas-body">
                         <ul class="navbar-nav ms-auto">
                             <li class="nav-item me-3">
                                 <a class="nav-link text-white" style="color: white !important;" href="/psb">
-                                    <i class="fa-solid fa-house me-2"></i>Beranda</a>
+                                    <i class="fa-solid fa-house me-2"></i>Beranda
+                                </a>
                             </li>
                             <li class="nav-item me-3">
                                 <a class="nav-link text-white" href="/pendaftaran">
-                                    <i class="fa-solid fa-note-sticky me-2"></i>Pendaftaran</a>
+                                    <i class="fa-solid fa-note-sticky me-2"></i>Pendaftaran
+                                </a>
                             </li>
                             <li class="nav-item dropdown">
                                 <a href="#" class="dropdown-link nav-link" style="color: white !important;">
-                                    <i class="fa-solid fa-fingerprint me-2"></i>Login</a>
+                                    <i class="fa-solid fa-fingerprint me-2"></i>Login
+                                </a>
                                 <div class="dropdown-content">
                                     <a href="/login">Login PSB</a>
                                     <a href="/web/login">Login Orang Tua</a>
@@ -181,12 +413,14 @@
                             </li>
                             <li class="nav-item me-3">
                                 <a class="nav-link text-white" href="/bantuan">
-                                    <i class="fa-solid fa-lock me-2"></i>Bantuan</a>
+                                    <i class="fa-solid fa-lock me-2"></i>Bantuan
+                                </a>
                             </li>
                             <t t-if="is_halaman_pengumuman">
                                 <li class="nav-item dropdown">
                                     <a href="#" class="dropdown-link nav-link" style="color: white !important;">
-                                        <i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>
+                                        <i class="fa-solid fa-bullhorn me-2"></i>Pengumuman
+                                    </a>
                                     <div class="dropdown-content">
                                         <a href="/pengumuman/sd-mi">SD / MI</a>
                                         <a href="/pengumuman/smp-mts">SMP / MTS</a>
@@ -194,153 +428,188 @@
                                     </div>
                                 </li>
                             </t>
-                            <!-- <li class="nav-item me-3">
-                                <a class="nav-link text-white portalOrangTua" href="#">
-                                    <i class="fa-solid fa-user me-2"></i>Portal Orang Tua </a>
-                            </li> -->
                         </ul>
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-center">
-                    <div style="width: 800px; padding-top: 30px;" class="bg-white rounded mt-5 mb-3">
-                        <h4 class="text-center mb-2">Alhamdulillah pendaftaran sudah berhasil</h4>
-                        <p class="text-center mb-4">Pastikan selalu memantau email login jika menggunakan email untuk info tentang PSB dibagian menu kotak masuk (Inbox) atau Spam, Jika menggunakan No Telp/Wa pastikan selalu memantau di WhatsApp.</p>
-                        <div style="display: flex; flex-wrap: wrap; justify-content: space-around;">
-                            <div>
-                                <div class="mb-4">
-                                    <div class="d-flex align-items-center">
-                                        <i class="fa-solid fa-id-card me-2" style="color: #FD0870; font-size: 20px;"></i>
-                                        <span class="fs-5">Nomor Pendaftaran</span>
+                <div class="d-flex justify-content-center flex-grow-1 py-4">
+                    <div class="success-card" style="max-width: 900px; width: 100%; margin: 2rem;">
+                        <div class="p-4">
+                            <h2 class="success-header">Alhamdulillah pendaftaran sudah berhasil</h2>
+                            <p class="success-subtitle">
+                                Pastikan selalu memantau email login jika menggunakan email untuk info tentang PSB dibagian menu kotak masuk (Inbox) atau Spam, Jika menggunakan No Telp/Wa pastikan selalu memantau di WhatsApp.
+                            </p>
+
+                            <div class="row">
+                                <div class="col-lg-6 mb-3">
+                                    <!-- Nomor Pendaftaran -->
+                                    <div class="info-card">
+                                        <div class="info-header">
+                                            <div class="info-icon icon-id">
+                                                <i class="fa-solid fa-id-card"></i>
+                                            </div>
+                                            <h5 class="info-title">Nomor Pendaftaran</h5>
+                                        </div>
+                                        <div class="info-content">
+                                            <div class="registration-number">
+                                                <t t-esc="pendaftaran.nomor_pendaftaran" />
+                                            </div>
+                                        </div>
                                     </div>
-                                    <br />
-                                    <div>
-                                        <h4 style="margin-left: 30px;">
-                                            <t t-esc="pendaftaran.nomor_pendaftaran" />
-                                        </h4>
+
+                                    <!-- Data Calon Santri -->
+                                    <div class="info-card">
+                                        <div class="info-header">
+                                            <div class="info-icon icon-user">
+                                                <i class="fa-solid fa-user-group"></i>
+                                            </div>
+                                            <h5 class="info-title">Data Calon Santri</h5>
+                                        </div>
+                                        <div class="info-content">
+                                            <div class="data-item">
+                                                <span class="data-label">Nama:</span>
+                                                <span class="data-value"><t t-esc="pendaftaran.partner_id.name" /></span>
+                                            </div>
+                                            <div class="data-item">
+                                                <span class="data-label">TTL:</span>
+                                                <span class="data-value text-capitalize">
+                                                    <t t-esc="pendaftaran.kota_lahir" />, <t t-esc="pendaftaran.get_formatted_tanggal_lahir()" />
+                                                </span>
+                                            </div>
+                                            <div class="data-item">
+                                                <span class="data-label">Alamat:</span>
+                                                <span class="data-value"><t t-esc="pendaftaran.alamat" /></span>
+                                            </div>
+                                            <div class="data-item">
+                                                <span class="data-label">NIK:</span>
+                                                <span class="data-value"><t t-esc="pendaftaran.nik" /></span>
+                                            </div>
+                                            
+                                            <div class="login-data">
+                                                <b>Data Login</b>
+                                                <t t-if="pendaftaran.nomor_login">
+                                                    <div class="data-item">
+                                                        <span class="data-label">No Telp/Wa:</span>
+                                                        <span class="data-value"><t t-esc="pendaftaran.nomor_login" /></span>
+                                                    </div>
+                                                </t>
+                                                <t t-if="pendaftaran.email">
+                                                    <div class="data-item">
+                                                        <span class="data-label">Email:</span>
+                                                        <span class="data-value"><t t-esc="pendaftaran.email" /></span>
+                                                    </div>
+                                                </t>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="mb-3">
-                                    <div class="d-flex align-items-center mb-3">
-                                        <i class="fa-solid fa-user-group me-2" style="color: #A812AE; font-size: 20px;"></i>
-                                        <span class="fs-5">Data Calon Santri</span>
+
+                                <div class="col-lg-6 mb-3">
+                                    <!-- Jenjang Pendidikan -->
+                                    <div class="info-card">
+                                        <div class="info-header">
+                                            <div class="info-icon icon-education">
+                                                <i class="fa-solid fa-graduation-cap"></i>
+                                            </div>
+                                            <h5 class="info-title">Jenjang Pendidikan yang dipilih</h5>
+                                        </div>
+                                        <div class="info-content">
+                                            <div style="font-size: 1.2rem; font-weight: 600; color: #17a2b8;">
+                                                <t t-esc="pendaftaran.jenjang_id.name" />
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div style="display: flex; flex-direction: column; margin-left: 30px;">
-                                        <span>Nama : <t t-esc="pendaftaran.partner_id.name" />
-                                        </span>
-                                        <span>TTL : <span class="text-capitalize">
-                                            <t t-esc="pendaftaran.kota_lahir" />
-                                        </span>
-                                            ,                                        <t t-esc="pendaftaran.get_formatted_tanggal_lahir()" />
-                                    </span>
-                                    <span>Alamat : <t t-esc="pendaftaran.alamat" />
-                                    </span>
-                                    <span>NIK : <t t-esc="pendaftaran.nik" />
-                                    </span>
-                                    <div>
-                                        <b>Data Login</b>
-                                        <br/>
-                                        <t t-if="pendaftaran.nomor_login">
-                                            <span>No Telp/Wa : <t t-esc="pendaftaran.nomor_login" />
-                                            </span>
-                                        </t>
-                                        <t t-if="pendaftaran.email">
-                                            <span>Email : <t t-esc="pendaftaran.email" />
-                                            </span>
-                                        </t>
+
+                                    <!-- Nomor Rekening Bank -->
+                                    <div class="info-card">
+                                        <div class="info-header">
+                                            <div class="info-icon icon-bank">
+                                                <i class="fa-solid fa-university"></i>
+                                            </div>
+                                            <h5 class="info-title">Nomor Rekening Bank</h5>
+                                        </div>
+                                        <div class="info-content">
+                                            <div class="data-item">
+                                                <span class="data-label">Bank:</span>
+                                                <span class="data-value">Bank BSI</span>
+                                            </div>
+                                            <div class="data-item">
+                                                <span class="data-label">Nomor Rekening:</span>
+                                                <span class="data-value" style="font-weight: 600; color: #333;">
+                                                    <t t-esc="no_rekening" />
+                                                </span>
+                                            </div>
+                                            <div class="data-item">
+                                                <span class="data-label">Sebesar:</span>
+                                                <span class="data-value" style="font-weight: 600; color: #28a745;">
+                                                    Rp. <t t-esc="'{:,}'.format(pendaftaran.biaya).replace(',', '.')" />
+                                                </span>
+                                            </div>
+                                            
+                                            <a t-attf-href="/pendaftaran/cetak?token=#{pendaftaran.token}" 
+                                               class="print-button" 
+                                               target="_blank">
+                                                <i class="fa-solid fa-print me-2"></i>Cetak Form Pembayaran
+                                            </a>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <div class="d-flex align-items-center">
-                                    <i class="fa-solid fa-code me-2 text-info" style="font-size: 20px;"></i>
-                                    <span class="fs-5">Jenjang Pendidikan yang dipilih</span>
-                                </div>
-                                <br />
-                                <div>
-                                    <span class="text-capitalize" style="margin-left: 30px;">
-                                        <t t-esc="pendaftaran.jenjang_id.name" />
-                                    </span>
                                 </div>
                             </div>
                         </div>
-                        <div>
-                            <div class="mb-5">
-                                <div class="d-flex align-items-center mb-3">
-                                    <i class="fa-solid fa-briefcase me-2 text-warning" style="font-size: 20px;"></i>
-                                    <span class="fs-5">Nomor Rekening Bank</span>
-                                </div>
-                                <div style="display: flex; flex-direction: column; margin-left: 30px;">
-                                    <span>Bank BSI</span>
-                                    <span>Nomor Rekening: <br />
-                                    <span t-esc="no_rekening" />
-                                </span>
-                                <span>Sebesar : Rp. <t t-esc="'{:,}'.format(pendaftaran.biaya).replace(',', '.')" />
-                                </span>
-                            </div>
+                    </div>
+                </div>
+
+                <footer class="p-3 mt-auto" style="display: flex; justify-content: space-between; flex-wrap: wrap; color: white !important;">
+                    <div class="ms-5">
+                        <ul style="list-style-type: none; display: flex; text-transform: uppercase; font-size: 13px;" class="fw-semibold">
+                            <li>
+                                <a href="/psb" class="me-4" style="text-decoration: none; color: white;">Home</a>
+                            </li>
+                            <li>
+                                <a href="/beranda" class="me-4" style="text-decoration: none; color: white;" target="_blank">Info Pondok</a>
+                            </li>
+                            <li>
+                                <a href="https://drive.google.com/drive/mobile/folders/1EYat5411joyoOmH_DkJ3g2DeJKgyyuBQ?usp=share_link&amp;fbclid=IwY2xjawGflGlleHRuA2FlbQIxMQABHTusVv9hD3VRDSLW9-671QhOL86e3KMv30smsAYW0DHkkWf7zwPlcBlbeA_aem_XXofAY-ay0syx043L5BLvw" 
+                                   class="me-4" style="text-decoration: none; color: white;" target="_blank">Brosur</a>
+                            </li>
+                            <li>
+                                <a href="" class="me-4" style="text-decoration: none; color: white;">Panduan</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="me-5">
+                        <p class="text-center mt-1">© 2024 TIM IT PPIB</p>
+                    </div>
+                </footer>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="modalPendaftaranTutup" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Pendaftaran ditutup!</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <a t-attf-href="/pendaftaran/cetak?token=#{pendaftaran.token}" class="text-uppercase mb-5 d-inline-block" style="background-color: #A812AE; padding: 10px; border-radius: 20px; color: white; text-decoration: none; font-size: 13px; margin-left: 30px;" target="_blank">Cetak Form Pembayaran</a>
-                        <!-- <p>Simpan kode akses ini <br /> <span class="fw-bold" t-esc="pendaftaran.kode_akses" /> <br /> untuk digunakan di
-                                    halaman portal orang tua.</p> -->
+                        <div class="modal-body">
+                            <p>Mohon maaf, pendaftaran telah ditutup.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <footer class="p-2" style="display: flex; justify-content: space-between; flex-wrap: wrap; color: white !important;">
-            <div class="ms-5">
-                <ul style="list-style-type: none; display: flex; text-transform: uppercase; font-size: 13px;" class="fw-semibold">
-                    <li>
-                        <a href="/psb" class="me-4" style="text-decoration: none; color: white;">Home</a>
-                    </li>
-                    <li>
-                        <a href="/beranda" class="me-4" style="text-decoration: none; color: white;" target="_blank">Info
-                                    Pondok</a>
-                    </li>
-                    <li>
-                        <a href="https://drive.google.com/drive/mobile/folders/1EYat5411joyoOmH_DkJ3g2DeJKgyyuBQ?usp=share_link&amp;fbclid=IwY2xjawGflGlleHRuA2FlbQIxMQABHTusVv9hD3VRDSLW9-671QhOL86e3KMv30smsAYW0DHkkWf7zwPlcBlbeA_aem_XXofAY-ay0syx043L5BLvw" class="me-4" style="text-decoration: none; color: white;" target="_blank">Brosur</a>
-                    </li>
-                    <li>
-                        <a href="" class="me-4" style="text-decoration: none; color: white;">
-                                    Panduan</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="me-5">
-                <p class="text-center mt-1">© 2024 TIM IT PPIB</p>
-            </div>
-        </footer>
-    </div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="modalPendaftaranTutup" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Pendaftaran ditutup!</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Mohon maaf, pendaftaran telah ditutup.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
-    <script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+            <script>
                 // Cari elemen body dengan class spesifik
-                const bodyElement =
-                document.querySelector('body.o_body_html.container.overflow-x-hidden');
+                const bodyElement = document.querySelector('body.o_body_html.container.overflow-x-hidden');
 
                 // Jika elemen ditemukan, hapus class "container"
                 if (bodyElement) {
-                bodyElement.classList.remove('o_body_html');
-                bodyElement.classList.remove('container');
+                    bodyElement.classList.remove('o_body_html');
+                    bodyElement.classList.remove('container');
                 }
 
                 // Membuat elemen link
@@ -351,8 +620,7 @@
 
                 // Menambahkan elemen ke dalam tag head
                 document.head.appendChild(linkElement);
-
-    </script>
-</t>
-</template>
+            </script>
+        </t>
+    </template>
 </odoo>
