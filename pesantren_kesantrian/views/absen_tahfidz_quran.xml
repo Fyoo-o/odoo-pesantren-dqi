@@ -10,7 +10,7 @@
                     <!-- Add your fields here -->
                     <field name="name" />
                     <field name="sesi_id" />
-                    <field name="halaqoh_id" />
+                    <field name="halaqoh_id" string="Halaqah" />
                     <field name="ustadz_id" />
                     <field name="state" />
                 </list>
@@ -47,13 +47,13 @@
                                 <field name="keterangan" />
                             </group>
                             <group>
-                                <field name="halaqoh_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
+                                <field name="halaqoh_id" string="Halaqah" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
                                 <field name="ustadz_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
                             </group>
                         </group>
 
                         <notebook>
-                            <page string="Daftar Halaqoh">
+                            <page string="Daftar Halaqah">
                                 <field colspan="4" name="absen_ids" nolabel="1" widget="one2many_list">
                                     <list string="" editable="top">
                                         <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" string="Santri"/>
@@ -107,14 +107,14 @@
 
         <!-- cdn.absen_tahfidz_quran action window -->
         <record id="cdn_absen_tahfidz_quran_action" model="ir.actions.act_window">
-            <field name="name">Absen Tahfidz Al Qur'an</field>
+            <field name="name">Absensi Tahfidz Al-Qur'an</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.absen_tahfidz_quran</field>
             <field name="view_mode">list,form</field>
         </record>
 
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="absen_tahfidz_quran_menu_act" name="Absen Tahfidz" 
+        <menuitem id="absen_tahfidz_quran_menu_act" name="Absensi Tahfidz" 
             parent="kepesantrenan_tahfidz_menu_categ" action="cdn_absen_tahfidz_quran_action" sequence="10"/>
 
     </data>

@@ -4,11 +4,11 @@
         <!-- Index -->
         <menuitem id="wizard_cari_santri" groups="pesantren_base.group_sekolah_admin" action="odoo_custom_dashboard_master.action_owl_wallet_dashboard" name="Santri" web_icon="pesantren_base,static/description/santri.png" sequence="5"/>
 
-        <!-- Data Santri -->
-        <menuitem id="wizard_get_santri" name="Data Santri" parent="wizard_cari_santri" action="action_wizard_get_santri" sequence="5"/>
+        <!-- Santri -->
+        <menuitem id="wizard_get_santri" name="Santri" parent="wizard_cari_santri" action="action_wizard_get_santri" sequence="5"/>
 
         <!-- Register Kartu -->
-        <menuitem id="wizard_register_kartu_santri" name="Register Kartu" action="action_wizard_register_kartu" parent="wizard_cari_santri" sequence="6"/>
+        <menuitem id="wizard_register_kartu_santri" name="Pendaftaran Kartu" action="action_wizard_register_kartu" parent="wizard_cari_santri" sequence="6"/>
 
         <!-- Akun Santri -->
         <menuitem id="wizard_akun_santri" name="Akun Santri" parent="wizard_cari_santri" sequence="7">
@@ -19,8 +19,8 @@
         <!-- Children -->
         <menuitem id="wizard_akun_pencairan_saldo" name="Pencairan Saldo" action="action_wizard_pencairan_saldo" parent="wizard_keuangan_santri" sequence="10"/>
         <menuitem id="wizard_akun_penonaktifan_saldo" name="Penonaktifan Akun" action="action_wizard_penonaktifan_saldo" parent="wizard_pengaturan_akun_santri" sequence="15"/>
-        <menuitem id="wizard_blokir_saldo_santri" name="Blokir Akun" action="action_wizard_blokir_saldo" parent="wizard_pengaturan_akun_santri" sequence="20"/> 
-        <menuitem id="wizard_open_account" name="Aktifkan Akun" action="action_wizard_open_account" parent="wizard_pengaturan_akun_santri" sequence="25"/> 
-        <menuitem id="wizard_open_block" name="Buka Blokir" action="action_wizard_open_block" parent="wizard_pengaturan_akun_santri" sequence="30"/> 
+        <menuitem id="wizard_blokir_saldo_santri" name="Pemblokir Akun" action="action_wizard_blokir_saldo" parent="wizard_pengaturan_akun_santri" sequence="20"/> 
+        <menuitem id="wizard_open_account" name="Pengaktifkan Akun" action="action_wizard_open_account" parent="wizard_pengaturan_akun_santri" sequence="25"/> 
+        <menuitem id="wizard_open_block" name="Pembukaan Blokir" action="action_wizard_open_block" parent="wizard_pengaturan_akun_santri" sequence="30"/> 
     </data>
 </odoo>

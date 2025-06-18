@@ -47,7 +47,7 @@
         </record>
 
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="kategori_mutabaah_menu_act" name="Kategori Mutabaah" parent="pengaturan_kepengasuhan_menu_categ" action="cdn_mutabaah_kategori_action" sequence="11"/>
+        <menuitem id="kategori_mutabaah_menu_act" name="Kategori Mutaba'ah" parent="pengaturan_kepengasuhan_menu_categ" action="cdn_mutabaah_kategori_action" sequence="11"/>
     
         
     

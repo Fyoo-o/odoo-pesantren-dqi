@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <list default_order="id desc" >
                     <field name="name" />
-                    <field name="halaqoh_id" />
+                    <field name="halaqoh_id" string="Halaqah" />
                     <field name="ustadz_id" />
                     <field name="state" />
                 </list>
@@ -40,7 +40,7 @@
 
                         <group string="Absensi">
                             <group>
-                                <field name="halaqoh_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
+                                <field name="halaqoh_id" strig="Halaqah" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
                             </group>
                             <group>
                                 <field name="ustadz_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
@@ -48,7 +48,7 @@
                         </group>
 
                         <notebook>
-                            <page string="Daftar Halaqoh">
+                            <page string="Daftar Halaqah">
                                 <field colspan="4" name="absen_ids" widget="one2many_tree">
                                     <list string="" editable="top">
                                         <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" string="Santri"/>
@@ -104,14 +104,14 @@
 
         <!-- cdn.absen_tahsin_quran action window -->
         <record id="cdn_absen_tahsin_quran_action" model="ir.actions.act_window">
-            <field name="name">Absen Tahsin Al Qur'an</field>
+            <field name="name">Absensi Tahsin Al-Qur'an</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.absen_tahsin_quran</field>
             <field name="view_mode">list,form</field>
         </record>
 
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="cdn_absen_tahsin_quran_menu_act" name="Absen Tahsin" 
+        <menuitem id="cdn_absen_tahsin_quran_menu_act" name="Absensi Tahsin" 
             parent="kepesantrenan_tahsin_menu_categ" action="cdn_absen_tahsin_quran_action" sequence="10"/>
         
     </data>

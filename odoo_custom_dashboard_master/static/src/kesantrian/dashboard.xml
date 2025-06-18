@@ -271,7 +271,7 @@
         </div>
         <div class="col-lg-6 col-md-12 col-sm-12 m-0 p-2">
           <div class="shadow-sm border p-4 bg-white h-100">
-            <h2 class="mb-5">Absen Tahsin per Kehadiran</h2>
+            <h2 class="mb-5">Absensi Tahsin per Kehadiran</h2>
             <ChartRenderer
               type="'donutChart2'"
               period="state.selectedPeriod"
@@ -285,7 +285,7 @@
       <div class="row mx-0 my-3">
         <div class="col-lg-6 col-md-12 col-sm-12 m-0 p-2">
           <div class="shadow-sm border p-4 bg-white h-100">
-            <h2 class="mb-5">Absen Tahfizh per Halaqoh</h2>
+            <h2 class="mb-5">Absen Tahfizh per Halaqah</h2>
             <ChartRenderer
               type="'chart'"
               period="state.selectedPeriod"
@@ -296,7 +296,7 @@
         </div>
         <div class="col-lg-6 col-md-12 col-sm-12 m-0 p-2">
           <div class="shadow-sm border p-4 bg-white h-100">
-            <h2 class="mb-5">Absen Tahsin per Halaqoh</h2>
+            <h2 class="mb-5">Absensi Tahsin per Halaqah</h2>
             <ChartRenderer
               type="'chart2'"
               period="state.selectedPeriod"

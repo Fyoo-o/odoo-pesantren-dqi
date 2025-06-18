@@ -14,7 +14,7 @@
                         <field name="name"/>
                         <field name="namapanggilan" string="Panggilan"/>
                         <field name="ruang_kelas_id"/>
-                        <field name="halaqoh_id"/>
+                        <field name="halaqoh_id" string="Halaqah"/>
                         <!-- <field name="virtual_account"/> -->
                         <field name="va_saku"/>
                         <field name="saldo_uang_saku"/>
@@ -77,7 +77,7 @@
                         </group>
 
                         <notebook>
-                            <page name="info_siswa" string="Informasi Siswa">
+                            <page name="info_siswa" string="Siswa">
                                 <group string="Akademik">
                                     <group>
                                         <field name="nis"/>
@@ -94,12 +94,12 @@
                                         <field name="tingkat" domain="[('jenjang', '=', jenjang)]"
                                         options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
                                         <field name="kewarganegaraan" />
-                                        <field name="halaqoh_id" />
+                                        <field name="halaqoh_id" string="Halaqah" />
                                         <field name="penanggung_jawab_id" />
                                         <field name="pengganti_ids" widget="many2many_tags"/>
                                     </group>
                                 </group>
-                                <group string="Data Santri">
+                                <group string="Santri">
                                     <group>
                                         <field name="panggilan" string="Panggilan"/>
                                         <field name="tgl_lahir"/>

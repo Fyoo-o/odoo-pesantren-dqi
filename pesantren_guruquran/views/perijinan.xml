@@ -3,7 +3,7 @@
     <data>
         <!-- cdn.perijinan action window -->
         <record id="cdn_perijinan_action" model="ir.actions.act_window">
-            <field name="name">Perijinan Santri</field>
+            <field name="name">Perizinan Santri</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.perijinan</field>
             <field name="view_mode">list,form</field>

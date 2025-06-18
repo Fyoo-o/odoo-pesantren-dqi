@@ -14,11 +14,11 @@
                         </group>
                         <group>
                             <field name="kamar" />
-                            <field name="halaqoh" />
+                            <field name="halaqoh" string="Halaqah" />
                             <field name="musyrif" string="Musyrif"/>
                         </group>
                     </group>
-                        <group string="Register Kartu">  
+                        <group string="Pendaftaran Kartu">  
                             <group>
                                 <field name="kartu" string="Kartu Santri Baru"/> 
                             </group>
@@ -40,7 +40,7 @@
             </field>
         </record>
         <record id="action_wizard_register_kartu" model="ir.actions.act_window">
-            <field name="name">Register Kartu</field>
+            <field name="name">Pendaftaran Kartu</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wizard.register.kartu.santri</field>
             <field name="view_mode">form</field>

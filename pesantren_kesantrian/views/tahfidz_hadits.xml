@@ -46,7 +46,7 @@
                             <label for="name" class="oe_edit_only" string="No Referensi"/>
                             <h1><field name="name"/></h1>
                         </div>
-                        <group string="Data Santri">
+                        <group string="Santri">
                             <group>
                                 <field name="tanggal"/>
                                 <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True}"/>

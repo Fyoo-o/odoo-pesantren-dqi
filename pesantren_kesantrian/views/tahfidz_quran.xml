@@ -10,7 +10,7 @@
                     <field name="tanggal" />
                     <field name="sesi_tahfidz_id" />
                     <field name="siswa_id" />
-                    <field name="halaqoh_id" />
+                    <field name="halaqoh_id" string="Halaqah" />
                     <field name="surah_id" />
                     <field name="ayat_awal" />
                     <field name="ayat_akhir" />
@@ -52,7 +52,7 @@
                             </group>
                             <group>
                                 <field name="kamar_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" readonly="1"/>
-                                <field name="halaqoh_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" readonly="1"/>
+                                <field name="halaqoh_id" string="Halaqah" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" readonly="1"/>
                                 <field name="musyrif_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" readonly="1"/>
                             </group>
                         </group>
@@ -162,14 +162,14 @@
 
         <!-- cdn.tahfidz_quran action window -->
         <record id="cdn_tahfidz_quran_action" model="ir.actions.act_window">
-            <field name="name">Tahfidz Al Qur'an</field>
+            <field name="name">Tahfidz Al-Qur'an</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.tahfidz_quran</field>
             <field name="view_mode">list,form,graph,calendar</field>
         </record>
 
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="tahfidz_quran_menu_act" name="Tahfidz Al Qur'an" parent="kepesantrenan_tahfidz_menu_categ"
+        <menuitem id="tahfidz_quran_menu_act" name="Tahfidz Al-Qur'an" parent="kepesantrenan_tahfidz_menu_categ"
          action="cdn_tahfidz_quran_action" sequence="20"/>
     </data>
 </odoo>

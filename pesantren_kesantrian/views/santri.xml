@@ -64,17 +64,17 @@
                     <field name="musyrif_ganti_ids" widget="many2many_tags"/>
                 </xpath>
                 <xpath expr="//field[@name='kewarganegaraan']" position="after">
-                    <field name="halaqoh_id" />
+                    <field name="halaqoh_id" string="Halaqah" />
                     <field name="penanggung_jawab_id" />
                     <field name="pengganti_ids" widget="many2many_tags"/>
                 </xpath>
                 <xpath expr="//notebook" position="inside">
-                    <page string="Tahfidz Al Qur'an" name="tahfidz_quran">
+                    <page string="Tahfidz Al-Qur'an" name="tahfidz_quran">
                         <field name="tahfidz_quran_ids">
                             <list default_order="id desc" editable="bottom">
                                 <field name="tanggal" />
                                 <field name="sesi_tahfidz_id" />
-                                <field name="halaqoh_id" />
+                                <field name="halaqoh_id" string="Halaqah" />
                                 <field name="surah_id" />
                                 <field name="number" />
                                 <field name="ayat_awal" />

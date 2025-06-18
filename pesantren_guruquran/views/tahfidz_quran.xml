@@ -23,7 +23,7 @@
 
         <!-- cdn.tahfidz_quran action window -->
         <record id="cdn_tahfidz_quran_action" model="ir.actions.act_window">
-            <field name="name">Tahfidz Al Qur'an</field>
+            <field name="name">Tahfidz Al-Qur'an</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.tahfidz_quran</field>
             <field name="view_mode">list,form,graph,calendar</field>
@@ -37,7 +37,7 @@
         </record>
 
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="tahfidz_quran_menu_act" name="Tahfidz Al Qur'an" parent="pesantren_guru.kepesantrenan_dqi"
+        <menuitem id="tahfidz_quran_menu_act" name="Tahfidz Al-Qur'an" parent="pesantren_guru.kepesantrenan_dqi"
          action="cdn_tahfidz_quran_action" sequence="20"/>
 
     </data>

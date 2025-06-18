@@ -47,7 +47,7 @@
 
         <!-- cdn.tindakan_hukuman action window -->
         <record id="tindakan_hukuman_action" model="ir.actions.act_window">
-            <field name="name">Tindakan Hukuman</field>
+            <field name="name">Tindakan Disipliner</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.tindakan_hukuman</field>
             <field name="view_mode">list,form</field>
@@ -63,7 +63,7 @@
 
         <menuitem
             id="cdn_tindakan_hukuman_menu"
-            name="Tindakan Hukuman"
+            name="Tindakan Disipliner"
             action="tindakan_hukuman_action"
             parent="pengaturan_pelanggaran_menu_categ"
             sequence="30"/>

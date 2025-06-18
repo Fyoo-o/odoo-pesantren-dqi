@@ -278,7 +278,7 @@
                             <page string="Nilai Seleksi"
                                 invisible="state in 'draft,terdaftar,batal'">
                                 <group string="Detail Penilaian">
-                                    <field name="soal_ids" string="">
+                                    <field name="soal_ids" string=" ">
                                         <list editable="bottom">
                                             <field name="name"
                                                 options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />

@@ -2,15 +2,13 @@
 <odoo>
     <data>
         <!-- Inherit Absen form view siswa - Akses Umum -->
-        <record id="view_inherited_tahfidz_quran_public" model="ir.ui.view">
+        <!-- <record id="view_inherited_tahfidz_quran_public" model="ir.ui.view">
             <field name="name">inherited.tahfidz.quran.form.public</field>
             <field name="model">cdn.siswa</field>
             <field name="inherit_id" ref="pesantren_base.view_cdn_siswa_form" />
             <field name="arch" type="xml">
-                <!-- Inherit the specific page by its name attribute -->
                 <xpath expr="//notebook" position="inside">
                     <page string="KBM" name="kbm_samtri_public">
-                        <!-- You can add other modifications or elements here -->
                         <field name="kbm_id">
                             <list default_order="id desc" create="false">
                                 <field name="name" />
@@ -22,7 +20,7 @@
                     </page>
                 </xpath>
             </field>
-        </record>
+        </record> -->
 
         <!-- cdn.absensi_siswa list view - Akses Umum -->
         <record id="cdn_absensi_siswa_view_tree_public" model="ir.ui.view">

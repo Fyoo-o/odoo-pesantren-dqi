@@ -8,7 +8,7 @@
             <field name="type">list</field>
             <field name="priority" eval="8"/>
             <field name="arch" type="xml">
-                <list string="Ref pendidikan">
+                <list string="Pendidikan">
                     <field name="name" />
                     <field name="keterangan" />
                 </list>
@@ -21,7 +21,7 @@
             <field name="type">form</field>
             <field name="priority" eval="8"/>
             <field name="arch" type="xml">
-                <form string="Ref pendidikan">
+                <form string="Pendidikan">
                     <header>
                     </header>
                     <sheet>
@@ -52,7 +52,7 @@
             <field name="name">cdn_ref_pendidikan</field>
             <field name="model">cdn.ref_pendidikan</field>
             <field name="arch" type="xml">
-                <search string="Ref pendidikan">
+                <search string="Pendidikan">
 
                     <filter string="Nama" name="filter_by_name" domain="[('name','=','')]" />
                     <filter string="Keterangan" name="filter_by_keterangan" domain="[('keterangan','=','')]" />
@@ -68,16 +68,16 @@
  
         <!-- action window -->
         <record id="action_cdn_ref_pendidikan" model="ir.actions.act_window">
-            <field name="name">Tabel Referensi Pendidikan</field>
+            <field name="name">Pendidikan</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.ref_pendidikan</field>
             <field name="view_mode">list,form</field>
             <field name="context">{"search_default_fieldname":1}</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
-                Click to add a new Ref pendidikan
+                Click to add a new Pendidikan
                 </p><p>
-                Click the Create button to add a new Ref pendidikan
+                Click the Create button to add a new Pendidikan
                 </p>
             </field>
         </record>

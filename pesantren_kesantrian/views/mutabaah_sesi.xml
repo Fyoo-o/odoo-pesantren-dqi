@@ -54,7 +54,7 @@
         </record>
 
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="sesi_mutabaah_menu_act" name="Sesi Mutabaah" parent="pengaturan_kepengasuhan_menu_categ" action="cdn_mutabaah_sesi_action" sequence="12"/>
+        <menuitem id="sesi_mutabaah_menu_act" name="Sesi Mutaba'ah" parent="pengaturan_kepengasuhan_menu_categ" action="cdn_mutabaah_sesi_action" sequence="12"/>
     
         
     

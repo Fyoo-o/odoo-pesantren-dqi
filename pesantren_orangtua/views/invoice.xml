@@ -45,7 +45,7 @@
                         </group>
                         <group>
                             <field name="kamar_id" readonly="1"/>
-                            <field name="halaqoh_id" readonly="1"/>
+                            <field name="halaqoh_id" string="Halaqah" readonly="1"/>
                             <field name="musyrif_id" readonly="1"/>
                         </group>
                     </group>

@@ -10,7 +10,7 @@
                     <field name="name"/>
                     <field name="tgl"/>
                     <field name="siswa_id"/>
-                    <field name="halaqoh_id"/>
+                    <field name="halaqoh_id" string="Halaqah"/>
                     <field name="sesi_id"/>
                     <field name="total_skor"/>
                     <field name="state" />
@@ -77,12 +77,12 @@
                             </group>
                             <group>
                                 <field name="kamar_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}"/>
-                                <field name="halaqoh_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}"/>
+                                <field name="halaqoh_id" string="Halaqah" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}"/>
                                 <field name="musyrif_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}"/>
                             </group>
                         </group>
 
-                        <group string="Mutabaah">
+                        <group string="Mutaba'ah">
                             <group>
                                 <field name="tgl" readonly="state =='Done'"/>
                             </group>
@@ -133,7 +133,7 @@
         </record>
         <!-- cdn.mutabaah_harian action window -->
         <record id="cdn_mutabaah_harian_action" model="ir.actions.act_window">
-            <field name="name">Mutabaah Harian</field>
+            <field name="name">Mutaba'ah Harian</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.mutabaah_harian</field>
             <field name="view_mode">list,form</field>
@@ -147,6 +147,6 @@
             </field>
         </record>
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="mutabaah_harian_menu_act" name="Mutabaah Harian" parent="kepesantrenan_kepengasuhan_menu_categ" action="cdn_mutabaah_harian_action" sequence="10"/>
+        <menuitem id="mutabaah_harian_menu_act" name="Mutaba'ah Harian" parent="kepesantrenan_kepengasuhan_menu_categ" action="cdn_mutabaah_harian_action" sequence="10"/>
     </data>
 </odoo>
