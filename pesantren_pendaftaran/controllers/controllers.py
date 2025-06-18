@@ -3208,7 +3208,7 @@ class PortalOrangTua(http.Controller):
             <nav class="navbar navbar-expand-lg" style="height: 65px;">
                 <div class="container-fluid">
                     <a class="navbar-brand ms-5 text-white fw-semibold" href="/psb">
-                        <img src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" alt="1731466812700" width="50" alt="Logo Pesantren">
+                        <img src="https://i.ibb.co.com/1MFsvMq/1731466812700.png" width="50" alt="Logo Pesantren" />
                         Daarul Qur'an Istiqomah
                     </a>
                     <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
