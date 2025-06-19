@@ -998,7 +998,7 @@ class SeleksiPenilaian(models.Model):
     nilai           = fields.Integer(string='Nilai Seleksi', default=0)
     penilaian_id    = fields.Many2one('seleksi.penilaian', string='Penilaian ID')  # Many2one ke penilaian lain
     daftar_soal     = fields.Text(string='Daftar Soal', compute='_compute_daftar_soal', store=True)
-
+ 
     @api.depends('soal_ids')
     def _compute_daftar_soal(self):
         for rec in self:

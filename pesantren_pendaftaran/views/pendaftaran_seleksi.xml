@@ -48,6 +48,44 @@
             <field name="res_model">seleksi.soal</field>
             <field name="view_mode">list,form</field>
         </record>
+
+
+
+        <record id="view_penilaian_seleksi_form" model="ir.ui.view">
+            <field name="name">seleksi.penilaian.form</field>
+            <field name="model">seleksi.penilaian</field>
+            <field name="arch" type="xml">
+                <form string="Soal Seleksi">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" />
+                                <field name="nilai" />
+                            </group>
+
+                            <group>
+                                <field name="penilaian_id" />
+                                <field name="daftar_soal" />
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="Soal Seleksi">
+                                <field name="soal_ids" colspan="4">
+                                    <list editable="bottom">
+                                        <field name="name"/>
+                                        <field name="deskripsi"/>
+                                        <field name="active"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
         <record id="view_penilaian_search" model="ir.ui.view">
             <field name="name">penilaian.search</field>
             <field name="model">seleksi.penilaian</field>

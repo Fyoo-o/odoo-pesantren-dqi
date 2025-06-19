@@ -444,7 +444,7 @@ class generate_invoice(models.TransientModel):
     name                = fields.Float('Harga')
     
     # PERBAIKAN: Ubah domain kelas_id agar konsisten dengan logika bisnis
-    kelas_id            = fields.Many2many('cdn.ruang_kelas', string='Kelas', domain="[('tahunajaran_id','=',tahunajaran_id), ('status','=','konfirm')]")
+    kelas_id            = fields.Many2many('cdn.ruang_kelas', string='Kelas', domain="[('tahunajaran_id','=',angkatan_id), ('aktif_tidak', '=', 'aktif'), ('status','=','konfirm')]")
 
     @api.onchange('komponen_id','name')
     def _onchange_komponen_id(self):
@@ -493,11 +493,12 @@ class generate_invoice(models.TransientModel):
     def _onchange_angkatan_id(self):
         """
         Reset kelas dan siswa ketika angkatan berubah
+        dan update tahunajaran_id agar mengikuti angkatan_id
         """
+        # self.tahunajaran_id = self.angkatan_id.id
         self.kelas_id = [(6, 0, [])]
         self.partner_ids = [(6, 0, [])]
-        
-        # Update domain untuk partner_ids jika diperlukan
+
         return {
             'domain': {
                 'partner_ids': [
@@ -507,6 +508,7 @@ class generate_invoice(models.TransientModel):
                 ]
             }
         }
+
     
     def create_invoice(self):
         if self.period_from.id > self.period_to.id:

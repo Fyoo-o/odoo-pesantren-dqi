@@ -53,7 +53,7 @@
                             <page string="Santri">
                                 <field name="partner_ids" string="Santri">
                                     <list editable="bottom" no_create="1">
-                                        <field name="centang" widget="boolean_toggle"/>
+                                        <field name="centang" string=" " widget="boolean_toggle"/>
                                         <field name="name"/>
                                         <field name="panggilan"/>
                                         <field name="nis"/>
