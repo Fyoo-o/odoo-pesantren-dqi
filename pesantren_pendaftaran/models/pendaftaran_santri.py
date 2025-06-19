@@ -591,14 +591,14 @@ class DataPendaftaran(models.Model):
                     orangtua_vals = {
                         'partner_id': existing_partner.id,
                         'hubungan': 'ayah',
-                        'email': record.email_ayah,
+                        'email': record.email or record.email_ayah,
                     }
                     orangtua = self.env['cdn.orangtua'].sudo().create(orangtua_vals)
                     return orangtua
             else:
                 partner_vals = {
                     'name': record.nama_ayah,
-                    'email': record.email_ayah, 
+                    'email': record.email or record.email_ayah, 
                     'phone': record.telepon_ayah,
                     'city': record.kota_id.name,
                 }
@@ -609,7 +609,7 @@ class DataPendaftaran(models.Model):
                 orangtua_vals = {
                     'partner_id': partner.id,
                     'hubungan': 'ayah',
-                    'email': record.email_ayah,
+                    'email': record.email or record.email_ayah,
                 }
                 orangtua = self.env['cdn.orangtua'].sudo().create(orangtua_vals)
 
