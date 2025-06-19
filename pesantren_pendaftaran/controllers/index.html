@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portal Orang Tua - Daarul Qur'an Istiqomah</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    />
+    <style>
+      body {
+        background-color: black;
+        min-height: 100vh;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .navbar {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .welcome-section {
+        text-align: center;
+        margin: 40px 0;
+        color: white;
+      }
+
+      .welcome-section h2 {
+        font-size: 2.2rem;
+        font-weight: 300;
+        margin-bottom: 10px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .welcome-section .user-name {
+        font-weight: 600;
+        color: #ffd700;
+      }
+
+      /* Progress Card Redesign */
+      .progress-card {
+        background: linear-gradient(145deg, #ffffff, #f8f9fa);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        border: none;
+        overflow: hidden;
+        margin-bottom: 30px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .progress-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+      }
+
+      .progress-card-header {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 25px 30px;
+        border: none;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .progress-card-header::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 200%;
+        background: linear-gradient(
+          45deg,
+          transparent,
+          rgba(255, 255, 255, 0.1),
+          transparent
+        );
+        transform: rotate(45deg);
+        animation: shine 3s infinite;
+      }
+
+      @keyframes shine {
+        0% {
+          transform: translateX(-100%) translateY(-100%) rotate(45deg);
+        }
+        50% {
+          transform: translateX(100%) translateY(100%) rotate(45deg);
+        }
+        100% {
+          transform: translateX(-100%) translateY(-100%) rotate(45deg);
+        }
+      }
+
+      .progress-card-header h4 {
+        margin: 0;
+        font-size: 1.4rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .progress-card-body {
+        padding: 0;
+      }
+
+      .student-card {
+        background: white;
+        margin: 20px;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        border-left: 5px solid #667eea;
+        transition: all 0.3s ease;
+      }
+
+      .student-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+      }
+
+      .student-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+
+      .student-name {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #2c3e50;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .student-name::before {
+        content: "👤";
+        font-size: 1.1rem;
+      }
+
+      .status-badges {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+      }
+
+      .status-badge {
+        padding: 8px 16px;
+        border-radius: 25px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border: none;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .status-badge.active {
+        background: linear-gradient(135deg, #4caf50, #45a049);
+        color: white;
+        box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+      }
+
+      .status-badge.inactive {
+        background: #e9ecef;
+        color: #6c757d;
+      }
+
+      .progress-section {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+
+      .custom-progress {
+        height: 12px;
+        border-radius: 10px;
+        background: #e9ecef;
+        overflow: hidden;
+        position: relative;
+        margin-bottom: 10px;
+      }
+
+      .custom-progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        border-radius: 10px;
+        transition: width 1.5s ease-in-out;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .custom-progress-bar::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.4),
+          transparent
+        );
+        animation: progressShine 2s infinite;
+      }
+
+      @keyframes progressShine {
+        0% {
+          transform: translateX(-100%);
+        }
+        100% {
+          transform: translateX(100%);
+        }
+      }
+
+      .progress-text {
+        font-weight: 600;
+        color: #495057;
+        text-align: center;
+      }
+
+      .payment-status {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 20px 0;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+
+      .payment-badge {
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+
+      .payment-badge.success {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+      }
+
+      .payment-badge.warning {
+        background: linear-gradient(135deg, #ffc107, #fd7e14);
+        color: #212529;
+      }
+
+      .payment-badge.danger {
+        background: linear-gradient(135deg, #dc3545, #e83e8c);
+        color: white;
+      }
+
+      .upload-btn {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        color: white;
+        padding: 12px 25px;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .upload-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        color: white;
+      }
+
+      .upload-btn:disabled {
+        background: #6c757d;
+        box-shadow: none;
+        cursor: not-allowed;
+      }
+
+      /* Payment Info Card Redesign */
+      .payment-info-card {
+        background: linear-gradient(145deg, #ffffff, #f8f9fa);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        border: none;
+        overflow: hidden;
+        margin-bottom: 30px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .payment-info-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+      }
+
+      .payment-info-header {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        padding: 25px 30px;
+        border: none;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .payment-info-header::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 200%;
+        background: linear-gradient(
+          45deg,
+          transparent,
+          rgba(255, 255, 255, 0.1),
+          transparent
+        );
+        transform: rotate(45deg);
+        animation: shine 3s infinite;
+      }
+
+      .payment-info-header h4 {
+        margin: 0;
+        font-size: 1.4rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .payment-details {
+        padding: 30px;
+      }
+
+      .cost-breakdown {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 25px;
+        border-left: 5px solid #28a745;
+      }
+
+      .cost-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #dee2e6;
+      }
+
+      .cost-item:last-child {
+        border-bottom: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: #28a745;
+      }
+
+      .student-cost-info {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        border-left: 4px solid #667eea;
+      }
+
+      .total-payment {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        margin: 25px 0;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+      }
+
+      .instructions-section {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 25px;
+        margin-top: 25px;
+      }
+
+      .instruction-method {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      }
+
+      .instruction-method h6 {
+        color: #667eea;
+        font-weight: 600;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .instruction-list {
+        list-style: none;
+        padding: 0;
+      }
+
+      .instruction-list li {
+        padding: 8px 0;
+        position: relative;
+        padding-left: 25px;
+      }
+
+      .instruction-list li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: #28a745;
+        font-weight: bold;
+      }
+
+      .bank-info {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        margin-top: 20px;
+        box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+      }
+
+      .bank-info h6 {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 600;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .student-info {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .payment-status {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .welcome-section h2 {
+          font-size: 1.8rem;
+        }
+
+        .progress-card-header,
+        .payment-info-header {
+          padding: 20px;
+        }
+
+        .student-card,
+        .payment-details {
+          padding: 20px;
+        }
+      }
+
+      /* Animation untuk loading */
+      .fade-in {
+        animation: fadeIn 0.8s ease-in-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sample content untuk demonstrasi -->
+    <div class="container my-5">
+      <div class="welcome-section fade-in">
+        <h2>
+          Selamat Datang Bapak/Ibu, <span class="user-name">Ahmad Fajar</span>
+        </h2>
+      </div>
+
+      <!-- Progres PSB Anak Anda - REDESIGNED -->
+      <div class="progress-card fade-in">
+        <div class="progress-card-header">
+          <h4><i class="fas fa-chart-line"></i> Progres PSB Anak Anda</h4>
+        </div>
+        <div class="progress-card-body">
+          <div class="student-card">
+            <div class="student-info">
+              <div class="student-name">Faiz Ahmad</div>
+              <div class="upload-btn-container">
+                <button
+                  class="btn upload-btn"
+                  data-bs-toggle="modal"
+                  data-bs-target="#uploadModal"
+                >
+                  <i class="fas fa-upload me-2"></i>Upload Bukti
+                </button>
+              </div>
+            </div>
+
+            <div class="status-badges">
+              <span class="status-badge inactive">Batal</span>
+              <span class="status-badge active">Draft</span>
+              <span class="status-badge inactive">Terdaftar</span>
+              <span class="status-badge inactive">Seleksi</span>
+              <span class="status-badge inactive">Diterima</span>
+              <span class="status-badge inactive">Ditolak</span>
+            </div>
+
+            <div class="progress-section">
+              <div class="custom-progress">
+                <div class="custom-progress-bar" style="width: 25%"></div>
+              </div>
+              <div class="progress-text">Pendaftaran: 25%</div>
+            </div>
+
+            <div class="payment-status">
+              <span class="payment-badge danger">Belum Bayar</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Informasi Pembayaran PSB - REDESIGNED -->
+      <div class="payment-info-card fade-in">
+        <div class="payment-info-header">
+          <h4><i class="fas fa-credit-card"></i> Informasi Pembayaran PSB</h4>
+        </div>
+        <div class="payment-details">
+          <div class="row">
+            <div class="col-lg-6">
+              <h5 class="mb-4">
+                <i class="fas fa-money-bill-wave me-2"></i>Biaya PSB:
+              </h5>
+
+              <div class="student-cost-info">
+                <h6><i class="fas fa-user-graduate me-2"></i>Faiz Ahmad</h6>
+                <p class="mb-2"><strong>Jenjang:</strong> SMA / MA</p>
+                <div class="cost-item">
+                  <span>Biaya Pendaftaran</span>
+                  <strong>Rp 300.000 (Belum Bayar)</strong>
+                </div>
+              </div>
+
+              <div class="total-payment">
+                <h6><i class="fas fa-calculator me-2"></i>Total Bayar</h6>
+                <h4>Rp 300.000</h4>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="instructions-section">
+                <h5 class="mb-4">
+                  <i class="fas fa-info-circle me-2"></i>Instruksi Pembayaran:
+                </h5>
+
+                <div class="instruction-method">
+                  <h6>
+                    <i class="fas fa-mobile-alt"></i>Melalui Mobile Bank BSI:
+                  </h6>
+                  <ul class="instruction-list">
+                    <li>Login ke aplikasi BSI Mobile</li>
+                    <li>Pilih menu Transfer</li>
+                    <li>Masukkan nomor rekening tujuan</li>
+                    <li>Masukkan jumlah pembayaran</li>
+                    <li>Tambahkan catatan (opsional) jika diperlukan</li>
+                    <li>
+                      Pembayaran berhasil dan Anda akan menerima bukti transaksi
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="instruction-method">
+                  <h6>
+                    <i class="fas fa-credit-card"></i>Melalui ATM Bank BSI:
+                  </h6>
+                  <ul class="instruction-list">
+                    <li>Masukkan kartu ATM dan PIN</li>
+                    <li>Pilih menu Transfer</li>
+                    <li>Pilih tujuan transfer</li>
+                    <li>Masukkan nomor rekening tujuan</li>
+                    <li>Verifikasi pembayaran dan lanjutkan</li>
+                    <li>
+                      Pembayaran berhasil dan Anda menerima bukti pembayaran
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="bank-info">
+                  <h6>
+                    <i class="fas fa-university me-2"></i>Rekening: BSI
+                    7181863913
+                  </h6>
+                  <p class="mb-0">
+                    Silakan melakukan pembayaran melalui transfer bank ke
+                    rekening yang tertera
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Upload -->
+    <div
+      class="modal fade"
+      id="uploadModal"
+      tabindex="-1"
+      aria-labelledby="uploadModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="uploadModalLabel">
+              <i class="fas fa-upload me-2"></i>Upload Bukti Pembayaran
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form
+              action="/upload_bukti_pembayaran"
+              method="post"
+              enctype="multipart/form-data"
+            >
+              <div class="mb-3">
+                <label for="buktiPembayaran" class="form-label">
+                  <i class="fas fa-file-image me-2"></i>Pilih File Bukti
+                  Pembayaran
+                </label>
+                <input
+                  type="file"
+                  class="form-control"
+                  id="buktiPembayaran"
+                  name="bukti_pembayaran"
+                  required
+                />
+                <div class="form-text">
+                  Format yang didukung: JPG, PNG, PDF (Max: 2MB)
+                </div>
+              </div>
+              <button type="submit" class="btn upload-btn w-100">
+                <i class="fas fa-cloud-upload-alt me-2"></i>Upload Bukti
+                Pembayaran
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Animation on page load
+      document.addEventListener("DOMContentLoaded", function () {
+        // Add stagger animation to cards
+        const cards = document.querySelectorAll(".fade-in");
+        cards.forEach((card, index) => {
+          card.style.animationDelay = `${index * 0.2}s`;
+        });
+
+        // Progress bar animation
+        setTimeout(() => {
+          const progressBar = document.querySelector(".custom-progress-bar");
+          if (progressBar) {
+            progressBar.style.width = progressBar.style.width || "25%";
+          }
+        }, 1000);
+      });
+    </script>
+  </body>
+</html>

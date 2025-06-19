@@ -2901,9 +2901,96 @@ class PortalOrangTua(http.Controller):
         }
 
         # Membuat HTML dinamis untuk setiap record
+        # rows_html = ''
+        # for rec in records:
+        #     csrf_token = request.csrf_token()  # Ambil CSRF token
+        #     # Tentukan status pembayaran dan kelas badge
+        #     status_text = (
+        #         'Menunggu Validasi'
+        #         if rec.bukti_pembayaran
+        #         else rec.status_pembayaran.replace('belumbayar', 'Belum Bayar').replace('sudahbayar', 'Sudah Bayar')
+        #     )
+
+        #     badge_class = (
+        #         'success'
+        #         if rec.status_pembayaran == 'sudahbayar'
+        #         else 'warning' if rec.bukti_pembayaran
+        #         else 'danger'
+        #     )
+
+        #     is_disabled = 'disabled' if rec.status_pembayaran == 'sudahbayar' else ''
+        #     state_html = ''
+        #     # Buat HTML untuk status pendaftaran siswa
+        #     for state_key, state_label in state_list:
+        #         tooltip_message = state_tooltip_messages.get(state_key, "Tidak ada informasi status.")
+        #         if state_key == rec.state:
+        #             state_html += f'<span class="badge me-1 mb-2 text-bg-primary" title="Ini adalah status pendaftaran saat ini dari anak anda. {tooltip_message}" data-bs-toggle="tooltip" data-bs-placement="bottom">{state_label}</span>'
+        #         else:
+        #             state_html += f'<span class="badge text-bg-secondary me-1 mb-2 inactive" title="{tooltip_message}" data-bs-toggle="tooltip" data-bs-placement="bottom">{state_label}</span>'
+            
+        #     # Progress bar untuk pendaftaran
+        #     if rec.state == "ditolak":
+        #         progress_html = ''
+        #     else:
+        #         progress_html = f"""
+        #         <div class="progress" style="height: 20px;">
+        #             <div class="progress-bar" role="progressbar" style="width: {state_progress.get(rec.state, 0)}%" 
+        #                 aria-valuenow="{state_progress.get(rec.state, 0)}" aria-valuemin="0" aria-valuemax="100">
+        #             </div>
+        #         </div>
+        #         Pendaftaran: {state_progress.get(rec.state, 0)}%
+        #         """
+
+        #     # Menambahkan HTML untuk satu baris data siswa
+        #     rows_html += f"""
+        #     <tr>
+        #         <td><span class="text-capitalize">{rec.partner_id.name}</span></td>
+        #         <td>
+        #             <div class="d-flex justify-content-center">
+        #                 <div class="mb-2">
+        #                     {state_html}
+        #                 </div>
+        #             </div>
+        #             {progress_html}
+        #         </td>
+        #         <td>
+        #             <span class="badge text-bg-{badge_class}">{status_text}</span>
+        #         </td>
+        #         <td>
+        #             <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#uploadModal-{rec.id}" {is_disabled}>
+        #             Upload Bukti
+        #             </button>
+                    
+        #             <!-- Modal -->
+        #             <div class="modal fade" id="uploadModal-{rec.id}" tabindex="-1" aria-labelledby="uploadModalLabel-{rec.id}" aria-hidden="true">
+        #                 <div class="modal-dialog">
+        #                     <div class="modal-content">
+        #                         <div class="modal-header">
+        #                             <h5 class="modal-title" id="uploadModalLabel-{rec.id}">Upload Bukti Pembayaran</h5>
+        #                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        #                         </div>
+        #                         <div class="modal-body">
+        #                             <form action="/upload_bukti_pembayaran" method="post" enctype="multipart/form-data">
+        #                                 <input type="hidden" name="csrf_token" value="{csrf_token}">
+        #                                 <input type="hidden" name="record_id" value="{rec.id}">
+        #                                 <div class="mb-3">
+        #                                     <label for="buktiPembayaran-{rec.id}" class="form-label">Pilih File</label>
+        #                                     <input type="file" class="form-control" id="buktiPembayaran-{rec.id}" name="bukti_pembayaran" required>
+        #                                 </div>
+        #                                 <button type="submit" class="btn btn-success">Upload</button>
+        #                             </form>
+        #                         </div>
+        #                     </div>
+        #                 </div>
+        #             </div>
+        #         </td>
+        #     </tr>
+        #     """
+
         rows_html = ''
         for rec in records:
-            csrf_token = request.csrf_token()  # Ambil CSRF token
+            csrf_token = request.csrf_token()
+            
             # Tentukan status pembayaran dan kelas badge
             status_text = (
                 'Menunggu Validasi'
@@ -2919,95 +3006,102 @@ class PortalOrangTua(http.Controller):
             )
 
             is_disabled = 'disabled' if rec.status_pembayaran == 'sudahbayar' else ''
-            state_html = ''
+            
             # Buat HTML untuk status pendaftaran siswa
+            state_html = ''
             for state_key, state_label in state_list:
                 tooltip_message = state_tooltip_messages.get(state_key, "Tidak ada informasi status.")
                 if state_key == rec.state:
-                    state_html += f'<span class="badge me-1 mb-2 text-bg-primary" title="Ini adalah status pendaftaran saat ini dari anak anda. {tooltip_message}" data-bs-toggle="tooltip" data-bs-placement="bottom">{state_label}</span>'
+                    state_html += f'<span class="badge me-1 mb-2 badge-active" title="Ini adalah status pendaftaran saat ini dari anak anda. {tooltip_message}" data-bs-toggle="tooltip" data-bs-placement="bottom">{state_label}</span>'
                 else:
-                    state_html += f'<span class="badge text-bg-secondary me-1 mb-2 inactive" title="{tooltip_message}" data-bs-toggle="tooltip" data-bs-placement="bottom">{state_label}</span>'
+                    state_html += f'<span class="badge badge-inactive me-1 mb-2" title="{tooltip_message}" data-bs-toggle="tooltip" data-bs-placement="bottom">{state_label}</span>'
             
             # Progress bar untuk pendaftaran
             if rec.state == "ditolak":
                 progress_html = ''
             else:
+                progress_percentage = state_progress.get(rec.state, 0)
                 progress_html = f"""
-                <div class="progress" style="height: 20px;">
-                    <div class="progress-bar" role="progressbar" style="width: {state_progress.get(rec.state, 0)}%" 
-                        aria-valuenow="{state_progress.get(rec.state, 0)}" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-container mb-3">
+                    <div class="progress-bar-custom">
+                        <div class="progress-fill" style="width: {progress_percentage}%"></div>
                     </div>
+                    <span class="progress-text">Pendaftaran: {progress_percentage}%</span>
                 </div>
-                Pendaftaran: {state_progress.get(rec.state, 0)}%
                 """
 
-            # Menambahkan HTML untuk satu baris data siswa
+            # Card untuk setiap siswa
             rows_html += f"""
-            <tr>
-                <td><span class="text-capitalize">{rec.partner_id.name}</span></td>
-                <td>
-                    <div class="d-flex justify-content-center">
-                        <div class="mb-2">
-                            {state_html}
-                        </div>
+            <div class="student-card">
+                <div class="student-card-header">
+                    <div class="student-info">
+                        <i class="fas fa-user-graduate student-icon"></i>
+                        <span class="student-name">{rec.partner_id.name}</span>
                     </div>
-                    {progress_html}
-                </td>
-                <td>
-                    <span class="badge text-bg-{badge_class}">{status_text}</span>
-                </td>
-                <td>
-                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#uploadModal-{rec.id}" {is_disabled}>
-                    Upload Bukti
+                    <button class="btn btn-upload {is_disabled}" data-bs-toggle="modal" data-bs-target="#uploadModal-{{rec.id}}" {{is_disabled}}>
+                        <i class="fas fa-upload me-2"></i>Upload Bukti
                     </button>
+                </div>
+                
+                <div class="student-card-body">
+                    <div class="status-badges">
+                        {state_html}
+                    </div>
                     
-                    <!-- Modal -->
-                    <div class="modal fade" id="uploadModal-{rec.id}" tabindex="-1" aria-labelledby="uploadModalLabel-{rec.id}" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="uploadModalLabel-{rec.id}">Upload Bukti Pembayaran</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form action="/upload_bukti_pembayaran" method="post" enctype="multipart/form-data">
-                                        <input type="hidden" name="csrf_token" value="{csrf_token}">
-                                        <input type="hidden" name="record_id" value="{rec.id}">
-                                        <div class="mb-3">
-                                            <label for="buktiPembayaran-{rec.id}" class="form-label">Pilih File</label>
-                                            <input type="file" class="form-control" id="buktiPembayaran-{rec.id}" name="bukti_pembayaran" required>
-                                        </div>
-                                        <button type="submit" class="btn btn-success">Upload</button>
-                                    </form>
-                                </div>
+                    {progress_html}
+                    
+                    <div class="payment-status">
+                        <span class="badge payment-badge payment-{badge_class}">{status_text}</span>
+                    </div>
+                </div>
+                
+                <!-- Modal tetap sama -->
+                <div class="modal fade" id="uploadModal-{rec.id}" tabindex="-1" aria-labelledby="uploadModalLabel-{{rec.id}}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="uploadModalLabel-{rec.id}">Upload Bukti Pembayaran</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="/upload_bukti_pembayaran" method="post" enctype="multipart/form-data">
+                                    <input type="hidden" name="csrf_token" value="{csrf_token}">
+                                    <input type="hidden" name="record_id" value="{rec.id}">
+                                    <div class="mb-3">
+                                        <label for="buktiPembayaran-{rec.id}" class="form-label">Pilih File</label>
+                                        <input type="file" class="form-control" id="buktiPembayaran-{{rec.id}}" name="bukti_pembayaran" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-success">Upload</button>
+                                </form>
                             </div>
                         </div>
                     </div>
-                </td>
-            </tr>
+                </div>
+            </div>
             """
 
-        next_rows = ""
-        for data in records:
-            # Filter biaya_ids berdasarkan kondisi
-            filtered_biaya = [
-                biaya for biaya in data.jenjang_id.rincian_ids
-                if (data.is_alumni and biaya.is_alumni) or (data.is_pindahan_sd and biaya.is_pindahan_sd) or (not data.is_alumni and not data.is_pindahan_sd and not biaya.is_alumni and not biaya.is_pindahan_sd)
-            ]
 
-            biaya_details = ""
-            if data.status_pembayaran == 'sudahbayar':  # Cek apakah sudah bayar
-                for biaya in filtered_biaya:
-                    # Buat URL untuk unduh file
-                    download_url = f"/download/biaya/{biaya.id}"
-                    
-                    # Tambahkan detail biaya dengan tautan unduhan
-                    biaya_details += f"""
-                    <div class="d-flex justify-content-between mb-3">
-                        <p class="fw-semibold">({biaya.name})</p>
-                        <a href="{download_url}" class="btn btn-secondary">Unduh Rincian Biaya Masuk</a>
-                    </div>
-                    """
+            next_rows = ""
+            for data in records:
+                # Filter biaya_ids berdasarkan kondisi
+                filtered_biaya = [
+                    biaya for biaya in data.jenjang_id.rincian_ids
+                    if (data.is_alumni and biaya.is_alumni) or (data.is_pindahan_sd and biaya.is_pindahan_sd) or (not data.is_alumni and not data.is_pindahan_sd and not biaya.is_alumni and not biaya.is_pindahan_sd)
+                ]
+
+                biaya_details = ""
+                if data.status_pembayaran == 'sudahbayar':  # Cek apakah sudah bayar
+                    for biaya in filtered_biaya:
+                        # Buat URL untuk unduh file
+                        download_url = f"/download/biaya/{biaya.id}"
+                        
+                        # Tambahkan detail biaya dengan tautan unduhan
+                        biaya_details += f"""
+                        <div class="d-flex justify-content-between mb-3">
+                            <p class="fw-semibold">({biaya.name})</p>
+                            <a href="{download_url}" class="btn btn-secondary">Unduh Rincian Biaya Masuk</a>
+                        </div>
+                        """
 
             # Tentukan status pembayaran
             if data.status_pembayaran == 'belumbayar':
@@ -3145,11 +3239,11 @@ class PortalOrangTua(http.Controller):
                     }}
 
                     .card-header {{
-                    background-color: #9fc912;
+                    background-color: #4CAF50;
                     color: white;
                     font-size: 1.2rem;
                     font-weight: bold;
-                }}
+                    }}
 
                 .card-body {{
                     background-color: white;
@@ -3198,6 +3292,243 @@ class PortalOrangTua(http.Controller):
                         left: 10px;
                         font-weight: bold;
                     }}
+                }}
+                .student-card {{
+                    background: rgba(255, 255, 255, 0.95);
+                    border-radius: 15px;
+                    padding: 20px;
+                    margin-bottom: 20px;
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                    border-left: 5px solid #4CAF50;
+                }}
+
+                .student-card-header {{
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 15px;
+                }}
+
+                .student-info {{
+                    display: flex;
+                    align-items: center;
+                }}
+
+                .student-icon {{
+                    color: #4CAF50;
+                    font-size: 20px;
+                    margin-right: 10px;
+                }}
+
+                .student-name {{
+                    font-size: 18px;
+                    font-weight: 600;
+                    color: #333;
+                    text-transform: capitalize;
+                }}
+
+                .btn-upload {{
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    border: none;
+                    color: white;
+                    padding: 8px 16px;
+                    border-radius: 20px;
+                    font-size: 14px;
+                    transition: all 0.3s ease;
+                }}
+
+                .btn-upload:hover:not(.disabled) {{
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+                }}
+
+                .btn-upload.disabled {{
+                    background: #6c757d;
+                    cursor: not-allowed;
+                }}
+
+                .student-card-body {{
+                    border-top: 1px solid #eee;
+                    padding-top: 15px;
+                }}
+
+                .status-badges {{
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 8px;
+                    margin-bottom: 15px;
+                }}
+
+                .badge-active {{
+                    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+                    color: white;
+                    padding: 6px 12px;
+                    border-radius: 15px;
+                    font-size: 12px;
+                    font-weight: 500;
+                }}
+
+                .badge-inactive {{
+                    background: #e9ecef;
+                    color: #6c757d;
+                    padding: 6px 12px;
+                    border-radius: 15px;
+                    font-size: 12px;
+                    font-weight: 500;
+                }}
+
+                .progress-container {{
+                    margin-bottom: 15px;
+                }}
+
+                .progress-bar-custom {{
+                    width: 100%;
+                    height: 12px;
+                    background-color: #e9ecef;
+                    border-radius: 10px;
+                    overflow: hidden;
+                    position: relative;
+                }}
+
+                .progress-fill {{
+                    height: 100%;
+                    background: linear-gradient(90deg, #4CAF50 0%, #45a049 100%);
+                    border-radius: 10px;
+                    transition: width 0.8s ease-in-out;
+                }}
+
+                .progress-text {{
+                    font-size: 13px;
+                    color: #666;
+                    margin-top: 5px;
+                    display: block;
+                }}
+
+                .payment-status {{
+                    display: flex;
+                    justify-content: flex-start;
+                }}
+
+                .payment-badge {{
+                    padding: 8px 16px;
+                    border-radius: 20px;
+                    font-size: 13px;
+                    font-weight: 500;
+                }}
+
+                .payment-success {{
+                    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+                    color: white;
+                }}
+
+                .payment-warning {{
+                    background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+                    color: #212529;
+                }}
+
+                .payment-danger {{
+                    background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+                    color: white;
+                }}
+                .instructions-section {{
+                    background: #f8f9fa;
+                    border-radius: 12px;
+                    padding: 20px;
+                    margin-top: 20px;
+                }}
+
+                .instructions-title {{
+                    color: #333;
+                    font-weight: 600;
+                    margin-bottom: 15px;
+                    display: flex;
+                    align-items: center;
+                }}
+
+                .instructions-title i {{
+                    color: #4CAF50;
+                    margin-right: 8px;
+                }}
+
+                .payment-method {{
+                    background: white;
+                    border-radius: 8px;
+                    padding: 15px;
+                    margin-bottom: 15px;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+                }}
+
+                .payment-method-title {{
+                    color: #4CAF50;
+                    font-weight: 600;
+                    margin-bottom: 10px;
+                    display: flex;
+                    align-items: center;
+                }}
+
+                .payment-method-title i {{
+                    margin-right: 8px;
+                }}
+
+                .payment-method ul {{
+                    margin: 0;
+                    padding-left: 20px;
+                }}
+
+                .payment-method li {{
+                    margin-bottom: 5px;
+                    color: #666;
+                    font-size: 14px;
+                }}
+
+                .account-info {{
+                    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+                    color: white;
+                    padding: 20px;
+                    border-radius: 12px;
+                    text-align: center;
+                    margin-top: 20px;
+                    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2);
+                }}
+
+                .account-info i {{
+                    font-size: 2rem;
+                    margin-bottom: 10px;
+                    display: block;
+                }}
+
+                .account-info p {{
+                    margin: 0;
+                    font-size: 1.1rem;
+                    font-weight: 600;
+                }}
+
+                .account-info small {{
+                    opacity: 0.9;
+                    display: block;
+                    margin-top: 5px;
+                }}
+
+                /* Responsive Design */
+                @media (max-width: 768px) {{
+                    .student-card-header {{
+                        flex-direction: column;
+                        gap: 10px;
+                        align-items: flex-start;
+                    }}
+                    
+                    .btn-upload {{
+                        align-self: flex-end;
+                    }}
+                    
+                    .status-badges {{
+                        justify-content: center;
+                    }}
+                }}
+
+                /* Remove table styling untuk section progress */
+                .progress-section .table {{
+                    display: none;
                 }}
 
                 </style>
@@ -3254,7 +3585,7 @@ class PortalOrangTua(http.Controller):
             <div class="offcanvas offcanvas-end background" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 <a class="navbar-brand mt-1 text-white fw-semibold" href="/psb" style="display: flex; flex-direction: column; align-items: center;">
-                    <img src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" alt="1731466812700" width="50" alt="">
+                    <img src="https://i.ibb.co.com/1MFsvMq/1731466812700.png" width="50" alt="Logo Pesantren" />
                     Daarul Qur'an Istiqomah
                 </a>
                 <div class="offcanvas-body">
@@ -3298,24 +3629,12 @@ class PortalOrangTua(http.Controller):
                 <h2 class="text-center mb-4 text-white">Selamat Datang Bapak/Ibu, <span class="text-capitalize">{display_name}</span></h2>
 
                 <!-- Progres PSB Anak -->
-                <div class="card mb-4">
+                <div class="card mb-4 progress-section">
                     <div class="card-header">
-                        Progres PSB Anak Anda
+                        <i class="fas fa-chart-line me-2"></i>Progres PSB Anak Anda
                     </div>
                     <div class="card-body">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Nama Siswa</th>
-                                    <th>Status Pendaftaran</th>
-                                    <th>Status Pembayaran</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {rows_html}
-                            </tbody>
-                        </table>
+                        {rows_html}
                     </div>
                 </div>
 
@@ -3333,29 +3652,55 @@ class PortalOrangTua(http.Controller):
                                     <h6><strong>Total Bayar : Rp {str(f"{sum(int(data.biaya) if data.status_pembayaran == 'belumbayar' else 0 for data in records):,}").replace(',', '.')}</strong></h6>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <h5>Instruksi Pembayaran:</h5>
-                                <span>Melalui Mobile Bank BSI:</span>
+                           <div class="col-lg-6">
+                            <div class="instructions-section">
+                            <h5 class="instructions-title">
+                                <i class="fas fa-info-circle"></i>
+                                Instruksi Pembayaran:
+                            </h5>
+
+                            <div class="payment-method">
+                                <div class="payment-method-title">
+                                <i class="fas fa-mobile-alt"></i>
+                                Melalui Mobile Bank BSI:
+                                </div>
                                 <ul>
                                 <li>Login ke aplikasi BSI Mobile.</li>
                                 <li>Pilih menu Transfer.</li>
                                 <li>Masukkan nomor rekening tujuan.</li>
                                 <li>Masukkan jumlah pembayaran.</li>
                                 <li>Tambahkan catatan (opsional) jika diperlukan.</li>
-                                <li>Pembayaran berhasil dan Anda akan menerima bukti transaksi.</li>
+                                <li>
+                                    Pembayaran berhasil dan Anda akan menerima bukti transaksi.
+                                </li>
                                 </ul>
-                                <span>Melalui ATM Bank BSI:</span>
+                            </div>
+
+                            <div class="payment-method">
+                                <div class="payment-method-title">
+                                <i class="fas fa-credit-card"></i>
+                                Melalui ATM Bank BSI:
+                                </div>
                                 <ul>
                                 <li>Masukkan kartu ATM dan PIN.</li>
                                 <li>Pilih menu Transfer.</li>
-                                <li>Pilih tujuan transfer:</li>
+                                <li>Pilih tujuan transfer.</li>
                                 <li>Masukkan nomor rekening tujuan.</li>
                                 <li>Verifikasi pembayaran dan lanjutkan.</li>
                                 <li>Pembayaran berhasil dan Anda menerima bukti pembayaran.</li>
                                 </ul>
-                                <p>Silakan melakukan pembayaran melalui transfer bank ke rekening yang tertera di bawah ini.</p>
-                                <p><strong>Rekening: BSI {no_rekening}</strong></p>
                             </div>
+
+                            <div class="account-info">
+                                <i class="fas fa-university"></i>
+                                <p>Rekening: BSI {no_rekening}</p>
+                                <small
+                                >Silakan melakukan pembayaran melalui transfer bank ke rekening
+                                yang tertera</small
+                                >
+                            </div>
+                            </div>
+                        </div>
                         </div>
                     </div>
                 </div>
@@ -3468,6 +3813,8 @@ class PortalOrangTua(http.Controller):
             </html>
         """
         return request.make_response(html_content, headers=[('Content-Type', 'text/html')])
+
+
 
 class PesantrenLogin(http.Controller):
     @http.route('/login', type='http', auth='public')

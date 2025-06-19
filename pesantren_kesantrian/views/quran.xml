@@ -27,24 +27,33 @@
           <sheet>
 
             <group>
-              <!-- Add your fields here -->
-              <field name="name"/>
-              <field name="number"/>
-              <field name="id_name"/>
-              <field name="id_translation"/>
-              <field name="revelation_type"/>
-              <field name="jml_ayat"/>
-              <field name="ayat_ids" readonly="1" noupdate="1">
-                <list>
-                  <field name="name"/>
-                  <field name="juz" />
-                  <field name="manzil" />
-                  <field name="ruku" />
-                  <field name="hizb" />
-                  <field name="page" />
-                </list>
-              </field>
+              <group>
+                <field name="id_name"/>
+                <field name="id_translation"/>
+                <field name="revelation_type"/>
+              </group>
+
+              <group>
+                <field name="name"/>
+                <field name="number"/>
+                <field name="jml_ayat"/>
+              </group>
             </group>
+
+            <notebook>
+              <page string="Ayat">
+                <field name="ayat_ids" string=" " readonly="1" noupdate="1">
+                  <list>
+                    <field name="name"/>
+                    <field name="juz" />
+                    <field name="manzil" />
+                    <field name="ruku" />
+                    <field name="hizb" />
+                    <field name="page" />
+                  </list>
+                </field>
+              </page>
+            </notebook>
           </sheet>
         </form>
       </field>
