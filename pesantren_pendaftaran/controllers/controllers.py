@@ -3038,7 +3038,7 @@ class PortalOrangTua(http.Controller):
                         <i class="fas fa-user-graduate student-icon"></i>
                         <span class="student-name">{rec.partner_id.name}</span>
                     </div>
-                    <button class="btn btn-upload {is_disabled}" data-bs-toggle="modal" data-bs-target="#uploadModal-{{rec.id}}" {{is_disabled}}>
+                    <button class="btn btn-upload {is_disabled}" data-bs-toggle="modal" data-bs-target="#uploadModal-{rec.id}" {is_disabled}>
                         <i class="fas fa-upload me-2"></i>Upload Bukti
                     </button>
                 </div>
@@ -3099,29 +3099,48 @@ class PortalOrangTua(http.Controller):
                         biaya_details += f"""
                         <div class="d-flex justify-content-between mb-3">
                             <p class="fw-semibold">({biaya.name})</p>
-                            <a href="{download_url}" class="btn btn-secondary">Unduh Rincian Biaya Masuk</a>
+                            <a href="{download_url}" class="btn btn-secondary btn-sm">Unduh Rincian</a>
                         </div>
                         """
 
-            # Tentukan status pembayaran
-            if data.status_pembayaran == 'belumbayar':
-                status_pembayaran = f"Rp {int(data.biaya):,}".replace(',', '.') + " (Belum Bayar)"
-            elif data.status_pembayaran == 'sudahbayar':
-                status_pembayaran = "Rp 0 (Sudah Bayar)"
-            elif data.state == 'ditolak':
-                status_pembayaran = "Pendaftaran Dibatalkan"
-            else:
-                status_pembayaran = ""
+                # Tentukan status pembayaran dan styling
+                if data.status_pembayaran == 'belumbayar':
+                    status_pembayaran = f"Rp {int(data.biaya):,}".replace(',', '.') + " (Belum Bayar)"
+                    status_class = "status-belum-bayar"
+                elif data.status_pembayaran == 'sudahbayar':
+                    status_pembayaran = "Rp 0 (Sudah Bayar)"
+                    status_class = "status-sudah-bayar"
+                elif data.state == 'ditolak':
+                    status_pembayaran = "Pendaftaran Dibatalkan"
+                    status_class = "status-dibatalkan"
+                else:
+                    status_pembayaran = ""
+                    status_class = ""
 
-            # Buat HTML untuk setiap record
-            next_rows += f"""
-            <div class="mb-1" style="border-bottom: 1px solid black;">
-                <h6>- {data.partner_id.name}</h6>
-                <p>Jenjang : {data.jenjang.replace('sdmi', 'SD / MI').replace('smpmts', 'SMP / MTS').replace('smama', 'SMA / MA').replace('paud', 'PAUD').replace('tk', 'TK')}</p>
-                <div>{biaya_details}</div>
-                <p><strong>{status_pembayaran}</strong></p>
-            </div>
-            """
+                # Buat HTML untuk setiap record dengan desain card modern
+                next_rows += f"""
+                <div class="biaya-card mb-3">
+                    <div class="biaya-card-header">
+                        <div class="student-info-biaya">
+                            <i class="fas fa-user-graduate student-icon-biaya"></i>
+                            <span class="student-name-biaya">{data.partner_id.name}</span>
+                        </div>
+                    </div>
+                    <div class="biaya-card-body">
+                        <div class="jenjang-info">
+                            <span class="jenjang-label">Jenjang:</span>
+                            <span class="jenjang-value">{data.jenjang.replace('sdmi', 'SD / MI').replace('smpmts', 'SMP / MTS').replace('smama', 'SMA / MA').replace('paud', 'PAUD').replace('tk', 'TK')}</span>
+                        </div>
+                        
+                        {biaya_details}
+                        
+                        <div class="biaya-info">
+                            <span class="biaya-label">Biaya Pendaftaran</span>
+                            <span class="biaya-amount {status_class}">{status_pembayaran}</span>
+                        </div>
+                    </div>
+                </div>
+                """
 
         # Membuat HTML dinamis
         html_content = f"""
@@ -3238,7 +3257,8 @@ class PortalOrangTua(http.Controller):
                         }}
                     }}
 
-                    .card-header {{
+
+                .card-header {{
                     background-color: #4CAF50;
                     color: white;
                     font-size: 1.2rem;
@@ -3328,7 +3348,7 @@ class PortalOrangTua(http.Controller):
                 }}
 
                 .btn-upload {{
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
                     border: none;
                     color: white;
                     padding: 8px 16px;
@@ -3531,6 +3551,156 @@ class PortalOrangTua(http.Controller):
                     display: none;
                 }}
 
+                .biaya-card {{
+                    background: rgba(255, 255, 255, 0.95);
+                    border-radius: 15px;
+                    padding: 20px;
+                    margin-bottom: 15px;
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                    border-left: 5px solid #4CAF50;
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+                }}
+
+                .biaya-card:hover {{
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+                }}
+
+                .biaya-card-header {{
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 15px;
+                    padding-bottom: 10px;
+                    border-bottom: 1px solid #eee;
+                }}
+
+                .student-info-biaya {{
+                    display: flex;
+                    align-items: center;
+                }}
+
+                .student-icon-biaya {{
+                    color: #4CAF50;
+                    font-size: 18px;
+                    margin-right: 10px;
+                }}
+
+                .student-name-biaya {{
+                    font-size: 18px;
+                    font-weight: 600;
+                    color: #333;
+                    text-transform: capitalize;
+                }}
+
+                .biaya-card-body {{
+                    space-y: 10px;
+                }}
+
+                .jenjang-info {{
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 15px;
+                    padding: 10px;
+                    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                    border-radius: 8px;
+                }}
+
+                .jenjang-label {{
+                    font-weight: 500;
+                    color: #666;
+                    font-size: 14px;
+                }}
+
+                .jenjang-value {{
+                    font-weight: 600;
+                    color: #333;
+                    font-size: 14px;
+                }}
+
+                .biaya-info {{
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    padding: 15px;
+                    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                    border-radius: 10px;
+                    margin-top: 15px;
+                }}
+
+                .biaya-label {{
+                    color: #666;
+                    font-size: 14px;
+                    font-weight: 500;
+                    margin-bottom: 5px;
+                }}
+
+                .biaya-amount {{
+                    font-size: 18px;
+                    font-weight: 700;
+                    color: white;
+                }}
+
+                .status-belum-bayar {{
+                    color: #dc2626 !important;
+                }}
+
+                .status-sudah-bayar {{
+                    color: #51cf66 !important;
+                }}
+
+                .status-dibatalkan {{
+                    color: #ffd43b !important;
+                }}
+
+                /* Total Bayar Card */
+                .total-bayar-card {{
+                    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+                    border-radius: 15px;
+                    padding: 20px;
+                    text-align: center;
+                    color: white;
+                    margin-top: 20px;
+                    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+                }}
+
+                .total-bayar-icon {{
+                    font-size: 2rem;
+                    margin-bottom: 10px;
+                    display: block;
+                }}
+
+                .total-bayar-label {{
+                    font-size: 16px;
+                    font-weight: 500;
+                    margin-bottom: 5px;
+                    opacity: 0.9;
+                }}
+
+                .total-bayar-amount {{
+                    font-size: 24px;
+                    font-weight: 700;
+                    margin: 0;
+                }}
+
+                /* Responsive Design */
+                @media (max-width: 768px) {{
+                    .jenjang-info {{
+                        flex-direction: column;
+                        text-align: center;
+                        gap: 5px;
+                    }}
+                    
+                    .biaya-amount {{
+                        font-size: 16px;
+                    }}
+                    
+                    .total-bayar-amount {{
+                        font-size: 20px;
+                    }}
+                }}
+
+
                 </style>
                 
             </head>
@@ -3626,7 +3796,7 @@ class PortalOrangTua(http.Controller):
             </div>
 
             <div class="container my-5">
-                <h2 class="text-center mb-4 text-white">Selamat Datang Bapak/Ibu, <span class="text-capitalize">{display_name}</span></h2>
+                <h2 class="text-center mb-4 text-white">Selamat Datang Bapak/Ibu,<span class="text-capitalize"> {display_name}</span></h2>
 
                 <!-- Progres PSB Anak -->
                 <div class="card mb-4 progress-section">
@@ -3646,10 +3816,18 @@ class PortalOrangTua(http.Controller):
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <h5 class="mb-3">Biaya PSB:</h5>
-                                {next_rows}
-                                <div class="mt-3 mb-3">
-                                    <h6><strong>Total Bayar : Rp {str(f"{sum(int(data.biaya) if data.status_pembayaran == 'belumbayar' else 0 for data in records):,}").replace(',', '.')}</strong></h6>
+                                <h5 class="mb-4">
+                                    <i class="fas fa-money-bill-wave me-2" style="color: #4CAF50;"></i>
+                                    Biaya PSB:
+                                </h5>
+                                <div class="biaya-container">
+                                    {next_rows}
+                                </div>
+                                
+                                <div class="total-bayar-card">
+                                    <i class="fas fa-calculator total-bayar-icon"></i>
+                                    <div class="total-bayar-label">Total Bayar</div>
+                                    <p class="total-bayar-amount">Rp {str(f"{sum(int(data.biaya) if data.status_pembayaran == 'belumbayar' else 0 for data in records):,}").replace(',', '.')}</p>
                                 </div>
                             </div>
                            <div class="col-lg-6">
