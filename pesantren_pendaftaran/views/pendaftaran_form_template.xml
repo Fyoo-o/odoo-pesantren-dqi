@@ -1026,7 +1026,7 @@
                   <div class="col-md-4">
                     <div class="mb-3">
                       <label for="wali_tgl_lahir" class="form-label">Tgl Lahir</label>
-                      <input type="text" name="wali_tgl_lahir" id="wali_tgl_lahir" placeholder="dd / mm / yyyy" required="false" autocomplete="off" class="form-control" onpaste="return false" onkeydown="return /[0-9\/]/.test(event.key) || event.key === 'ArrowLeft' || event.key === 'ArrowRight'" onkeypress="return /[0-9\/]/.test(event.key)" maxlength="10" oncontextmenu="return false" />
+                      <input type="text" name="wali_tgl_lahir" id="wali_tgl_lahir" placeholder="dd / mm / yyyy" autocomplete="off" class="form-control" onpaste="return false" onkeydown="return /[0-9\/]/.test(event.key) || event.key === 'ArrowLeft' || event.key === 'ArrowRight'" onkeypress="return /[0-9\/]/.test(event.key)" maxlength="10" oncontextmenu="return false" />
                       <div class="invalid-feedback">
                         Masukkan tanggal lahir wali.
                       </div>
