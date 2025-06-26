@@ -11,7 +11,7 @@ import tempfile
 import os
 import json
 from .nobox import Nobox
-
+from .nobox_config import nobox_config
 
 
 # class PsbController(http.Controller):
@@ -1864,8 +1864,8 @@ Terima kasih!
             """
             
             # Mengambil informasi untuk login ke API Nobox
-            username = "ponpesdqi@gmail.com"  # Ganti dengan username yang sesuai
-            password = "dqimedia123"  # Ganti dengan password yang sesuai
+            username = nobox_config.NOBOX_USERNAME 
+            password = nobox_config.NOBOX_PASSWORD 
 
             # Kirim pesan menggunakan Nobox API
             try:
