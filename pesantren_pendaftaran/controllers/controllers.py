@@ -11,7 +11,7 @@ import tempfile
 import os
 import json
 from .nobox import Nobox
-from .nobox_config import nobox_config
+from . import nobox_config
 
 
 # class PsbController(http.Controller):
