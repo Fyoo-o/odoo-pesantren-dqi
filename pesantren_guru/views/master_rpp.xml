@@ -29,7 +29,7 @@
               <!-- Add your fields here<field name="name"/> -->
               <field name="name"/>
               <field name="jenjang"/>
-              <field name="matpel_id"/>
+              <field name="matpel_id" domain="[('jenjang', '=', jenjang)]"/>
               <field name="tingkat_id"
                     domain="[('jenjang', '=', jenjang)]"
                     options="{

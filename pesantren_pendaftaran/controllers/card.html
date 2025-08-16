@@ -1,0 +1,76 @@
+<div class="payment-info-card">
+  <div class="payment-info-header">
+    <i class="fas fa-credit-card"></i>
+    Informasi Pembayaran PSB
+  </div>
+  <div class="payment-info-body">
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="cost-section">
+          <h5 class="mb-3" style="color: #333; font-weight: 600">
+            <i class="fas fa-money-bill-wave me-2" style="color: #4caf50"></i>
+            Biaya PSB:
+          </h5>
+          {next_rows}
+          <div class="total-payment">
+            <h6>
+              <i class="fas fa-calculator me-2"></i>
+              Total Bayar: Rp {str(f"{sum(int(data.biaya) if
+              data.status_pembayaran == 'belumbayar' else 0 for data in
+              records):,}").replace(',', '.')}
+            </h6>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="instructions-section">
+          <h5 class="instructions-title">
+            <i class="fas fa-info-circle"></i>
+            Instruksi Pembayaran:
+          </h5>
+
+          <div class="payment-method">
+            <div class="payment-method-title">
+              <i class="fas fa-mobile-alt"></i>
+              Melalui Mobile Bank BSI:
+            </div>
+            <ul>
+              <li>Login ke aplikasi BSI Mobile.</li>
+              <li>Pilih menu Transfer.</li>
+              <li>Masukkan nomor rekening tujuan.</li>
+              <li>Masukkan jumlah pembayaran.</li>
+              <li>Tambahkan catatan (opsional) jika diperlukan.</li>
+              <li>
+                Pembayaran berhasil dan Anda akan menerima bukti transaksi.
+              </li>
+            </ul>
+          </div>
+
+          <div class="payment-method">
+            <div class="payment-method-title">
+              <i class="fas fa-credit-card"></i>
+              Melalui ATM Bank BSI:
+            </div>
+            <ul>
+              <li>Masukkan kartu ATM dan PIN.</li>
+              <li>Pilih menu Transfer.</li>
+              <li>Pilih tujuan transfer.</li>
+              <li>Masukkan nomor rekening tujuan.</li>
+              <li>Verifikasi pembayaran dan lanjutkan.</li>
+              <li>Pembayaran berhasil dan Anda menerima bukti pembayaran.</li>
+            </ul>
+          </div>
+
+          <div class="account-info">
+            <i class="fas fa-university"></i>
+            <p>Rekening: BSI {no_rekening}</p>
+            <small
+              >Silakan melakukan pembayaran melalui transfer bank ke rekening
+              yang tertera</small
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

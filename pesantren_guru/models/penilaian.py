@@ -1,6 +1,6 @@
 from email import message
 from email.policy import default
-from odoo import api, fields, models
+from odoo import api, fields, models, exceptions, _
 
 class Penilaian(models.Model):
     _name               = 'cdn.penilaian'
@@ -17,10 +17,20 @@ class Penilaian(models.Model):
             domain.append(('id','=',False))
         return domain
 
-    name                = fields.Char(string='Nama', required=True, compute='_compute_name', default=False)
+    name                = fields.Char(string='Nama', compute='_compute_name', default=False)
+    tingkat_id = fields.Many2one('cdn.tingkat', string='Tingkat', store=True, compute='_compute_tingkat_id')
     kelas_id            = fields.Many2one(comodel_name='cdn.ruang_kelas', string='Kelas', required=True)
     mapel_id            = fields.Many2one(comodel_name='cdn.mata_pelajaran', string='Mapel', required=True)
-    guru_id             = fields.Many2one(comodel_name='hr.employee', string='Guru', required=True, domain=_domain_guru)
+    guru_id = fields.Many2one(
+        'hr.employee',
+        string='Guru',
+        required=True,
+        domain=_domain_guru,
+        default=lambda self: self.env['hr.employee'].search([
+            ('user_id', '=', self.env.uid),
+            ('jns_pegawai', '=', 'guru')
+        ], limit=1)
+    )
     semester            = fields.Selection(selection=[('1', 'Ganjil'), ('2', 'Genap')], string='Semester', required=True)
     tipe                = fields.Selection(string='Tipe', selection=[
                             ('Ulangan','Ulangan'), 
@@ -30,7 +40,32 @@ class Penilaian(models.Model):
                             ('Ujian Nasional','Ujian Nasional')], required=True)
     state               = fields.Selection(string='Status', selection=[('draft', 'Draft'), ('done', 'Done')], default='draft')
     penilaian_ids       = fields.One2many(comodel_name='cdn.penilaian_lines', inverse_name='penilaian_id', string='Penilaian')
-    # onchange
+    
+    @api.depends('kelas_id')
+    def _compute_tingkat_id(self):
+        for rec in self:
+            rec.tingkat_id = rec.kelas_id.tingkat if rec.kelas_id else False
+    # onchange    
+    @api.onchange('kelas_id')
+    def _onchange_kelas_id(self):
+        """Jika kelas dipilih, filter guru_id sesuai guru login"""
+        if not self.env.user.has_group('pesantren_guru.group_guru_manager'):
+            guru_login = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
+            if guru_login:
+                self.guru_id = guru_login
+
+    @api.onchange('kelas_id', 'guru_id')
+    def _onchange_kelas_guru(self):
+        """Filter mapel hanya sesuai tingkat kelas dan guru"""
+        domain_mapel = []
+        if self.tingkat_id and self.guru_id:
+            domain_mapel = [
+                ('tingkat_id', '=', self.tingkat_id.id),
+                ('guru_ids', 'in', [self.guru_id.id])  # hanya mapel yang diajar guru
+            ]
+        return {'domain': {'mapel_id': domain_mapel}}                
+                
+
     @api.onchange('kelas_id','tipe')
     def _onchange_kelas_id(self):
         lines = [(5, 0, 0)]
@@ -55,7 +90,35 @@ class Penilaian(models.Model):
     @api.depends('tipe')
     def _compute_name(self):
         for rec in self:
-            rec.name = '%s' % (rec.tipe)
+            rec.name = f"{rec.tipe}" if rec.tipe else "Penilaian"
+    
+    def _check_mapel_guru_kelas(self):
+        """Validasi backend supaya tetap aman walaupun user modifikasi via devtools"""
+        for rec in self:
+            if not rec.kelas_id.tingkat:
+                raise exceptions.ValidationError(_("Kelas belum memiliki tingkat."))
+            if rec.mapel_id.tingkat_id != rec.kelas_id.tingkat:
+                raise exceptions.ValidationError(_("Mata pelajaran tidak sesuai dengan tingkat kelas."))
+            if rec.guru_id not in rec.mapel_id.guru_ids:
+                raise exceptions.ValidationError(_("Guru ini tidak mengajar mata pelajaran tersebut."))
+        
+    @api.model
+    def create(self, vals):
+        if not vals.get('guru_id'):
+            guru = self.env['hr.employee'].search([
+                ('user_id', '=', self.env.uid),
+                ('jns_pegawai', '=', 'guru')
+            ], limit=1)
+            if guru:
+                vals['guru_id'] = guru.id
+        rec = super().create(vals)
+        rec._check_mapel_guru_kelas()
+        return rec
+
+    def write(self, vals):
+        res = super().write(vals)
+        self._check_mapel_guru_kelas()
+        return res
 
     # action buttons
     def action_draft(self):

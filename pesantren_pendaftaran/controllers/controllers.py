@@ -11,47 +11,7 @@ import tempfile
 import os
 import json
 from .nobox import Nobox
-from . import nobox_config
 
-
-# class PsbController(http.Controller):
-#     @http.route('/psb/statistics', type='http', auth='public', methods=['POST'], csrf=False)
-#     def get_statistics(self):
-#         Pendaftaran = request.env['ubig.pendaftaran'].sudo()
-#         data = Pendaftaran.get_psb_statistics()
-
-#         if request.httprequest.headers.get('Content-Type') == 'application/json':
-#             # Permintaan JSON
-#             return json.dumps(data)
-#         else:
-#             # Permintaan HTTP biasa
-#             return request.make_response(
-#                 json.dumps(data),
-#                 headers={'Content-Type': 'application/json'}
-#             )
-        
-#     @http.route('/pendaftaran/check', type='http', auth='public', methods=['POST'], csrf=False)
-#     def check_kuota(self):
-#         Pendaftaran = request.env['ubig.pendaftaran'].sudo()
-#         total_pendaftar = Pendaftaran.search_count([])
-
-#         # Mengambil nilai kuota pendaftaran dari ir.config_parameter
-#         config_param = request.env['ir.config_parameter'].sudo()
-#         kuota_pendaftaran = int(config_param.get_param('pesantren_pendaftaran.kuota_pendaftaran', default=0))
-
-#         data = {
-#             'is_full': total_pendaftar >= kuota_pendaftaran # True jika kuota penuh
-#         }
-
-#         if request.httprequest.headers.get('Content-Type') == 'application/json':
-#             # Permintaan JSON
-#             return json.dumps(data)
-#         else:
-#             # Permintaan HTTP biasa
-#             return request.make_response(
-#                 json.dumps(data),
-#                 headers={'Content-Type': 'application/json'}
-#             )
 
 
 class PesantrenBeranda(http.Controller):
@@ -82,7 +42,7 @@ class PesantrenBeranda(http.Controller):
         ]))
 
          # Ambil nilai dari field konfigurasi
-        config_obj = http.request.env['ir.config_parameter'].sudo()
+        config_obj = http.request.env['ir.config_parameter'].sudo() 
 
         tgl_mulai_pendaftaran = config_obj.get_param('pesantren_pendaftaran.tgl_mulai_pendaftaran')
         tgl_akhir_pendaftaran = config_obj.get_param('pesantren_pendaftaran.tgl_akhir_pendaftaran')
@@ -167,9 +127,10 @@ class PesantrenBeranda(http.Controller):
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
                 integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+            
             </head>
             <style>
-            .bg-body-grenyellow {{ background: linear-gradient(to right, #009688 40%, #ccff33 130%); }}
+            .bg-body-grenyellow {{ background: white; }}
 
             .rounded-90 {{ border-radius: 0 0 25% 0; }}
 
@@ -315,11 +276,11 @@ class PesantrenBeranda(http.Controller):
 
             </style>
 
-            <body>
+            <body style="background-color: white; height:100vh;">
             <!-- Navbar -->
             <nav class="navbar navbar-expand-lg bg-body-grenyellow shadow sticky-top">
             <div class="container d-flex">
-                <a class="navbar-brand d-flex text-white fw-bold" href="#">
+                <a class="navbar-brand d-flex  fw-bold" href="#">
                 <img src="https://i.ibb.co.com/1MFsvMq/1731466812700.png" alt="Icon Daarul Qur’an Istiqomah" class="me-2 d-md-block d-none" width="40" height="40">
                 <span class="d-md-block d-none h3">
                     PSB Daarul Qur’an Istiqomah
@@ -629,38 +590,38 @@ class PesantrenBeranda(http.Controller):
             </div>
             <!-- Informasi Pelayanan Pendaftaran end-->
 
-            <!-- Footer -->
-            <footer class="footer py-4">
-                <div class="container">
-                <div class="row text-white">
-                    <div class="col-md-4">
-                    <h5>Pondok Pesantren Daarul Qur’an Istiqomah</h5>
-                    <p>
-                        {alamat_lengkap} <br>
-                        Telp. (0888-307-7077)
-                    </p>
-                    </div>
-                    <div class="col-md-4">
-                    <h5>Social</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="https://www.facebook.com/daquistiqomah?mibextid=ZbWKwL" class="text-white"><i class="bi bi-facebook"></i> Facebook</a></li>
-                        <li><a href="https://www.instagram.com/dqimedia?igsh=NTVwdWlwd3o5MTF1" class="text-white"><i class="bi bi-instagram"></i> Instagram</a></li>
-                        <li><a href="https://youtube.com/@dqimedia?si=6_A8Vr3nysaegI7B" class="text-white"><i class="bi bi-youtube"></i> Youtube</a></li>
-                    </ul>
-                    </div>
-                    <div class="col-md-4">
-                    <h5><i class="bi bi-telephone"></i> Pusat Layanan Informasi</h5>
-                    <p>
-                        0822 5207 9785
-                    </p>
-                    </div>
-                </div>
-                <div class="text-center text-white mt-4">
-                    <hr class="border-white">
-                    <p>©Copyright 2024 - Daarul Qur’an Istiqomah</p>
-                </div>
-                </div>
-            </footer>
+            # <!-- Footer -->
+            # <footer class="footer py-4">
+            #     <div class="container">
+            #     <div class="row ">
+            #         <div class="col-md-4">
+            #         <h5>Pondok Pesantren Daarul Qur’an Istiqomah</h5>
+            #         <p>
+            #             {alamat_lengkap} <br>
+            #             Telp. (0888-307-7077)
+            #         </p>
+            #         </div>
+            #         <div class="col-md-4">
+            #         <h5>Social</h5>
+            #         <ul class="list-unstyled">
+            #             <li><a href="https://www.facebook.com/daquistiqomah?mibextid=ZbWKwL" class=""><i class="bi bi-facebook"></i> Facebook</a></li>
+            #             <li><a href="https://www.instagram.com/dqimedia?igsh=NTVwdWlwd3o5MTF1" class=""><i class="bi bi-instagram"></i> Instagram</a></li>
+            #             <li><a href="https://youtube.com/@dqimedia?si=6_A8Vr3nysaegI7B" class=""><i class="bi bi-youtube"></i> Youtube</a></li>
+            #         </ul>
+            #         </div>
+            #         <div class="col-md-4">
+            #         <h5><i class="bi bi-telephone"></i> Pusat Layanan Informasi</h5>
+            #         <p>
+            #             0822 5207 9785
+            #         </p>
+            #         </div>
+            #     </div>
+            #     <div class="text-center  mt-4">
+            #         <hr class="border-white">
+            #         <p>©Copyright 2024 - Daarul Qur’an Istiqomah</p>
+            #     </div>
+            #     </div>
+            # </footer>
             
             <!-- Footer end -->
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
@@ -759,6 +720,7 @@ function animateCount(elementId, targetValue) {{
         """
         return request.make_response(html_content, headers=[('Content-Type', 'text/html')])
 
+
 class PesantrenPendaftaran(http.Controller):
     @http.route('/psb', auth='public')
     def index(self, **kw):
@@ -825,7 +787,7 @@ class PesantrenPendaftaran(http.Controller):
 
         html_response = f"""
             <!DOCTYPE html>
-<html lang="en">
+            <html lang="en">
             <head>
             <!-- Primary Meta Tags --> 
             <title>PSB Daarul Qur`an Istiqomah</title> 
@@ -852,27 +814,43 @@ class PesantrenPendaftaran(http.Controller):
                 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
                 <link href=" https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css " rel="stylesheet">
+                <link rel="preconnect" href="https://fonts.googleapis.com"/>
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin"/>
+                <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap" rel="stylesheet"/>
+                <link rel="preconnect" href="https://fonts.googleapis.com"/>
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin"/>
+                <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap" rel="stylesheet"/>
                 <style>
 
                     body {{
-                        background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+                        background: #f5f5f4 !important;
+                        min-height: 120vh;
+                        display: flex;
+                        flex-direction: column;
+                        font-family: "poppins";
                     }}
 
-                    .offcanvas.offcanvas-end {{
-                        
-                        width: 250px; /* Lebar kustom untuk offcanvas */
-                    }}
+                   .offcanvas.offcanvas-end {{
+                        width: 280px;
+                        background: white !important;
+                   }}
+                    
+                     .offcanvas-header .btn-close{{ 
+                        display: flex;
+                        justify-content: center;
+                      }}
                     
                     .offcanvas .nav-link {{
-                        color: #ffffff; /* teks warna putih */
+                        color: black;
+                        padding: 0.75rem 1rem;
+                        margin-bottom: 0.5rem;
+                        border-radius: 4px;
                     }}
                     
-                    .offcanvas .btn-close {{
-                        position: absolute;
-                        top: 10px;
-                        right: 10px;
-                        filter: invert(1);
+                    .offcanvas .nav-link:hover {{
+                        background-color: rgba(255,255,255,0.2);
                     }}
+                    
 
                     .judul {{
                         height: 81px;
@@ -885,7 +863,7 @@ class PesantrenPendaftaran(http.Controller):
                     }}
 
                     .background {{
-					    background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+					    background: white !important;
 					}}
 
 					a.effect {{
@@ -913,7 +891,7 @@ class PesantrenPendaftaran(http.Controller):
                         background-color: #ffffff;
                         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
                         border-radius: 5px;
-                        min-width: 150px;
+                        min-width: 180px;
                         z-index: 1;
                         overflow: hidden;
                     }}
@@ -944,6 +922,281 @@ class PesantrenPendaftaran(http.Controller):
                         background-color: #f5407d !important;
                     }}
 
+                    .info-card {{
+                        background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+                        border: none;
+                        border-radius: 20px;
+                        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+                        overflow: hidden;
+                        position: relative;
+                        width: 280px;
+                        min-height: 400px;
+                    }}
+
+                    .info-card::before {{
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        height: 4px;
+                        background: linear-gradient(90deg, #e91e63, #9c27b0);
+                        border-radius: 20px 20px 0 0;
+                    }}
+
+                    .info-card:hover {{
+                        transform: translateY(-8px);
+                        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+                    }}
+
+                    .card-header {{
+                        background: transparent;
+                        border: none;
+                        padding: 25px 20px 15px;
+                        text-align: center;
+                    }}
+
+                    .card-category {{
+                        font-size: 12px;
+                        font-weight: 500;
+                        text-transform: uppercase;
+                        letter-spacing: 1px;
+                        color: #6c757d;
+                        margin-bottom: 15px;
+                    }}
+
+                    .icon-wrapper {{
+                        width: 80px;
+                        height: 80px;
+                        margin: 0 auto 20px;
+                        background: linear-gradient(135deg, #e91e63, #f06292);
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        position: relative;
+                        transition: all 0.3s ease;
+                    }}
+
+                    .info-card:hover .icon-wrapper {{
+                        transform: scale(1.1);
+                        box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
+                    }}
+
+                    .icon-wrapper i {{
+                        font-size: 2rem;
+                        color: white;
+                    }}
+
+                    .card-title {{
+                        font-size: 1.25rem;
+                        font-weight: 600;
+                        color: #2c3e50;
+                        margin-bottom: 15px;
+                        line-height: 1.3;
+                        min-height: 60px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        text-align: center;
+                    }}
+
+                    .card-description {{
+                        color: #6c757d;
+                        font-size: 14px;
+                        line-height: 1.6;
+                        margin-bottom: 25px;
+                        min-height: 80px;
+                        display: flex;
+                        align-items: center;
+                        text-align: center;
+                        padding: 0 15px;
+                    }}
+
+                    .detail-btn {{
+                        background: linear-gradient(135deg, #059669, #34d399);
+                        border: none;
+                        padding: 12px 30px;
+                        border-radius: 25px;
+                        color: white;
+                        font-weight: 500;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                        transition: all 0.3s ease;
+                        text-decoration: none;
+                        display: inline-block;
+                        position: relative;
+                        overflow: hidden;
+                    }}
+
+                    .detail-btn::before {{
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: -100%;
+                        width: 100%;
+                        height: 100%;
+                        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+                        transition: left 0.5s;
+                    }}
+
+                    .detail-btn:hover::before {{
+                        left: 100%;
+                    }}
+
+                    .detail-btn:hover {{
+                        transform: translateY(-2px);
+                        box-shadow: 0 8px 25px rgba(5, 150, 105, 0.3);
+                        color: white;
+                    }}
+
+                    /* Modal Styling */
+                    .modal-content {{
+                        border: none;
+                        border-radius: 20px;
+                        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+                        overflow: hidden;
+                    }}
+
+                    .modal-header {{
+                        background: linear-gradient(135deg, #059669, #34d399);
+                        color: white;
+                        border: none;
+                        padding: 25px 30px;
+                        position: relative;
+                    }}
+
+                    .modal-header::after {{
+                        content: '';
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        right: 0;
+                        height: 3px;
+                        background: linear-gradient(90deg, #e91e63, #9c27b0);
+                    }}
+
+                    .modal-title {{
+                        font-weight: 600;
+                        font-size: 1.3rem;
+                    }}
+
+                    .modal-body {{
+                        padding: 30px;
+                        background: #fafbfc;
+                    }}
+
+                    .section-title {{
+                        font-weight: 600;
+                        color: #2c3e50;
+                        margin-bottom: 15px;
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                    }}
+
+                    .section-title::before {{
+                        content: '';
+                        width: 4px;
+                        height: 20px;
+                        background: linear-gradient(135deg, #e91e63, #9c27b0);
+                        border-radius: 2px;
+                    }}
+
+                    .info-section {{
+                        background: white;
+                        border-radius: 15px;
+                        padding: 20px;
+                        margin-bottom: 20px;
+                        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+                        border-left: 4px solid #059669;
+                    }}
+
+                    .info-section img {{
+                        border-radius: 10px;
+                        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                        transition: transform 0.3s ease;
+                    }}
+
+                    .info-section img:hover {{
+                        transform: scale(1.05);
+                    }}
+
+                    .info-list {{
+                        color: #6c757d;
+                        line-height: 1.8;
+                    }}
+
+                    .info-list li {{
+                        margin-bottom: 8px;
+                        position: relative;
+                        padding-left: 10px;
+                    }}
+
+                    .info-list li::before {{
+                        content: '•';
+                        color: #059669;
+                        font-weight: bold;
+                        position: absolute;
+                        left: 0;
+                    }}
+
+                    .highlight-text {{
+                        background: linear-gradient(135deg, #e91e63, #f06292);
+                        -webkit-background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                        background-clip: text;
+                        font-weight: 600;
+                    }}
+
+                    .note-section {{
+                        background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+                        border: 1px solid #f6d55c;
+                        border-radius: 10px;
+                        padding: 15px;
+                        margin-top: 20px;
+                    }}
+
+                    .note-section p {{
+                        margin: 0;
+                        color: #856404;
+                        font-style: italic;
+                    }}
+
+                    /* Animation */
+                    @keyframes fadeInUp {{
+                        from {{
+                            opacity: 0;
+                            transform: translateY(30px);
+                        }}
+                        to {{
+                            opacity: 1;
+                            transform: translateY(0);
+                        }}
+                    }}
+
+                    .info-card {{
+                        animation: fadeInUp 0.6s ease forwards;
+                    }}
+
+                    .info-card:nth-child(2) {{ animation-delay: 0.1s; }}
+                    .info-card:nth-child(3) {{ animation-delay: 0.2s; }}
+                    .info-card:nth-child(4) {{ animation-delay: 0.3s; }}
+
+                    /* Responsive */
+                    @media (max-width: 768px) {{
+                        .info-card {{
+                            width: 100%;
+                            max-width: 350px;
+                            margin: 0 auto 20px;
+                        }}
+                        
+                        .modal-body {{
+                            padding: 20px;
+                        }}
+                    }}
+
                     /* Animasi fade-in */
                     @keyframes fadeIn {{
                         from {{
@@ -956,13 +1209,15 @@ class PesantrenPendaftaran(http.Controller):
                         }}
                     }}
 
+                    .nav-link{{
+                        color:black !important;
+                    }}
                 </style>
             </head>
-            <body>
-
-            <nav class="navbar navbar-expand-lg" style="height: 65px;">
+            <body style="background-color:#f5f5f4 !important; height: 100vh;">
+            <nav class="navbar navbar-expand-lg" style="height: 65px;background-color:white;">
                 <div class="container-fluid">
-                     <a class="navbar-brand ms-5 text-white fw-semibold" href="/psb">
+                     <a class="navbar-brand ms-5  fw-semibold" href="/psb">
                     	<img src="https://i.ibb.co.com/1MFsvMq/1731466812700.png" alt="1731466812700" width="50" alt="Logo Pesantren">       Daarul Qur'an Istiqomah
                 	</a>
                     <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
@@ -971,26 +1226,26 @@ class PesantrenPendaftaran(http.Controller):
                     <div class="collapse navbar-collapse" id="navbarNav">
                         <ul class="navbar-nav ms-auto">
                             <li class="nav-item me-3">
-                                <a class="nav-link text-white" href="/psb"><i class="fa-solid fa-house me-2"></i>Beranda</a>
+                                <a class="nav-link " href="/psb"><i class="fa-solid fa-house me-2" style="color:black !important;"></i>Beranda</a>
                             </li>
-                            {f'<li class="nav-item me-3">'
-                            f'<a class="nav-link text-white" href="/pendaftaran" {"data-bs-toggle='modal' data-bs-target='#modalPendaftaranTutup'" if not is_halaman_pendaftaran else ""}>'
-                            f'<i class="fa-solid fa-note-sticky me-2"></i>Pendaftaran</a>'
+                            {f'<li class="nav-item me-3">'  
+                            f'<a class="nav-link " href="/pendaftaran" {"data-bs-toggle='modal' data-bs-target='#modalPendaftaranTutup'" if not is_halaman_pendaftaran else ""}>'
+                            f'<i class="fa-solid fa-note-sticky me-2" style="color:black !important;"></i>Pendaftaran</a>'
                             f'</li>'}
                             <li class="nav-item dropdown">
                                 <a href="#" class="dropdown-link nav-link"
-                                    style="color: white !important;">
+                                    style="color: black !important;">
                                     <i class="fa-solid fa-fingerprint me-2"></i>Login</a>
                                 <div class="dropdown-content">
-                                    <a href="/login">Login PSB</a>
-                                    <a href="/web/login">Login Orang Tua</a>
+                                    <a href="/login" style="color:black;">Login PSB</a>
+                                    <a href="/web/login" style="color:black;">Login Orang Tua</a>
                                 </div>
                             </li>
                             <li class="nav-item me-3">
-                                <a class="nav-link text-white" href="/bantuan"><i class="fa-solid fa-lock me-2"></i>Bantuan</a>
+                                <a class="nav-link " href="/bantuan"><i class="fa-solid fa-lock me-2" style="color:black;"></i>Bantuan</a>
                             </li>
                             {f'<li class="nav-item dropdown">'
-                            f'<a href="#" class="dropdown-link nav-link text-white"><i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>'
+                            f'<a href="#" class="dropdown-link nav-link "><i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>'
                             f'<div class="dropdown-content">'
                             f'<a href="/pengumuman/sd-mi">SD / MI</a>'
                             f'<a href="/pengumuman/smp-mts">SMP / MTS</a>'
@@ -1002,308 +1257,347 @@ class PesantrenPendaftaran(http.Controller):
                 </div>
             </nav>
 
-            <div class="offcanvas offcanvas-end background" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                <a class="navbar-brand mt-1 text-white fw-semibold" href="/psb" style="display: flex; flex-direction: column; align-items: center;">
-                    <img src="https://i.ibb.co.com/1MFsvMq/1731466812700.png" alt="Icon Daarul Qur’an Istiqomah" class="me-2 d-md-block d-none" width="40" height="40">
-                    Daarul Qur'an Istiqomah
-                </a>
-                <div class="offcanvas-body">
-                    <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                        <li class="nav-item me-3">
-                            <a class="nav-link text-white" href="/psb"><i class="fa-solid fa-house me-2"></i>Beranda</a>
-                        </li>
-                        {f'<li class="nav-item me-3">'
-                        f'<a class="nav-link text-white" href="/pendaftaran" {"data-bs-toggle='modal' data-bs-target='#modalPendaftaranTutup'" if not is_halaman_pendaftaran else ""}>'
-                        f'<i class="fa-solid fa-note-sticky me-2"></i>Pendaftaran</a>'
-                        f'</li>'}
-                        <li class="nav-item dropdown">
-                            <a href="#" class="dropdown-link nav-link"
-                                style="color: white !important;">
-                                <i class="fa-solid fa-fingerprint me-2"></i>Login</a>
-                            <div class="dropdown-content">
-                                <a href="/login">Login PSB</a>
-                                <a href="/web/login">Login Orang Tua</a>
-                            </div>
-                        </li>
-                        <li class="nav-item me-3">
-                            <a class="nav-link text-white" href="/bantuan"><i class="fa-solid fa-lock me-2"></i>Bantuan</a>
-                        </li>
-                        {f'<li class="nav-item dropdown">'
-                        f'<a href="#" class="dropdown-link nav-link text-white"><i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>'
-                        f'<div class="dropdown-content">'
-                        f'<a href="/pengumuman/sd-mi">SD / MI</a>'
-                        f'<a href="/pengumuman/smp-mts">SMP / MTS</a>'
-                        f'<a href="/pengumuman/sma-ma">SMA / MA</a>'
-                        f'</div>'
-                        f'</li>' if is_halaman_pengumuman else ''}
-                    </ul>
-                </div>
+           <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel" style="background-color: white !important;">
+            <div class="offcanvas-header">
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <a class="navbar-brand mt-4 text-center" href="/psb">
+                <img class="w-25 h-auto" src="https://i.ibb.co.com/1MFsvMq/1731466812700.png" alt="Logo Pesantren" />
+                <span class="d-block mt-2">Daarul Qur'an Istiqomah</span>
+            </a>
+            <div class="offcanvas-body">
+                <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="/psb" style="color: black;">
+                    <i class="fa-solid fa-house me-2"></i>Beranda
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/pendaftaran" style="color: black;">
+                    <i class="fa-solid fa-note-sticky me-2"></i>Pendaftaran
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a href="#" class="dropdown-link nav-link" style="color: black;">
+                    <i class="fa-solid fa-fingerprint me-2" ></i>Login
+                    </a>
+                    <div class="dropdown-content">
+                    <a href="/login" style="color: black;">Login PSB</a>
+                    <a href="/web/login" style="color: black;">Login Orang Tua</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/bantuan" style="color: black;">
+                    <i class="fa-solid fa-lock me-2"></i>Bantuan
+                    </a>
+                </li>
+                <t t-if="is_halaman_pengumuman">
+                    <li class="nav-item dropdown">
+                    <a href="#" class="dropdown-link nav-link">
+                        <i class="fa-solid fa-bullhorn me-2"></i>Pengumuman
+                    </a>
+                    <div class="dropdown-content">
+                        <a href="/pengumuman/sd-mi">SD / MI</a>
+                        <a href="/pengumuman/smp-mts">SMP / MTS</a>
+                        <a href="/pengumuman/sma-ma">SMA / MA</a>
+                    </div>
+                    </li>
+                </t>
+                </ul>
+            </div>
             </div>
 
             <div style="display: flex; justify-content: center;" class="mt-5">
-                <div class="text-center text-white">
+                <div class="text-center ">
                     <h4 class="fs-2 fw-semibold mb-2">Aplikasi penerimaan santri baru</h4>
                     <span>Daarul Qur'an Istiqomah Tanah Laut Kalimantan Selatan</span> <br><br>
                     {f'<div class="nav-item d-flex justify-content-center align-items-center">'
-                            f'<a class="nav-link text-white" style="background-color: #e91e63; color: white; text-decoration: none; padding: 8px 16px; border-radius: 5px; font-size: 14px; width: 50%;" class=" id="daftar" href="/pendaftaran" {"data-bs-toggle='modal' data-bs-target='#modalPendaftaranTutup'" if not is_halaman_pendaftaran else ""}>'
+                            f'<a class="nav-link " style="background-color: #059669; color: white !important; text-decoration: none; padding: 8px 16px; border-radius: 5px; font-size: 14px; width: 50%;" class=" id="daftar" href="/pendaftaran" {"data-bs-toggle='modal' data-bs-target='#modalPendaftaranTutup'" if not is_halaman_pendaftaran else ""}>'
                             f'<i class="fa-solid fa-note-sticky d-none"></i>Daftar Sekarang !</a>'
                     f'</div>'}
                 </div>
             </div>
 
-            <div class="container mt-5 mb-5">
-                <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
-                    <div class="bg-white shadow-lg rounded p-3" style="width: 270px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;">
-                        <span class="text-uppercase text-secondary mb-3">Program Pendidikan</span>
-                        <div>
-                            <i class="fa-solid fa-graduation-cap fs-1 border rounded-circle p-5" style="color: #e91e63 !important;"></i>
+        
+            
+              <div class="mt-5 mb-5" style="height:80vh; padding-top:10rem;padding-bottom:10rem;">
+                <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px;">
+                    <!-- Program Pendidikan Card -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-category">Program Pendidikan</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                            </div>
+                            <div class="card-title">Jenjang Pendidikan</div>
                         </div>
-                        <span class="text-uppercase text-center fs-3 judul">Jenjang Pendidikan</span>
-                        <div class="text-center mb-4 teks-judul">
-                            <span class="text-secondary" style="font-size: 14px;">1. Paud baby Qu (KB dan TK)</span>
-                            <span class="text-secondary" style="font-size: 14px;">2. SD Tahfizh bilingual</span>
-                            <span class="text-secondary" style="font-size: 14px;">3. SMP Tahfizh bilingual</span>
-                            <span class="text-secondary" style="font-size: 14px;">4. MA Tahfizh bilingual</span>
+                        <div class="card-description">
+                            <div>
+                                1. Paud baby Qu (KB dan TK)<br>
+                                2. SD Tahfizh bilingual<br>
+                                3. SMP Tahfizh bilingual<br>
+                                4. MA Tahfizh bilingual
+                            </div>
                         </div>
-                        <div class="text-uppercase">
-                            <a href="" data-bs-toggle="modal" data-bs-target="#detailProgramPendidikan" class="effect" style="background-color: #9F1FB2 !important; padding: 10px 20px; border-radius: 20px; text-decoration: none; color: white;">Detail</a>
-                        </div>
-                    </div>
-                    <div class="bg-white shadow-lg rounded p-3" style="width: 270px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;">
-                        <span class="text-uppercase text-secondary mb-3">Jadwal Kegiatan</span>
-                        <div>
-                            <i class="fa-regular fa-calendar fs-1 border rounded-circle p-5" style="color: #e91e63 !important;"></i>
-                        </div>
-                        <span class="text-uppercase fs-3 judul">Jadwal Kegiatan</span>
-                        <div class="text-center mb-4 teks-judul">
-                            <span class="text-secondary" style="font-size: 14px;">Jadwal kegiatan PSB dan Kuota Test </span>
-                        </div>
-                        <div class="text-uppercase">
-                            <a href="" data-bs-toggle="modal" data-bs-target="#detailJadwalKegiatan" class="effect" style="background-color: #9F1FB2 !important; padding: 10px 20px; border-radius: 20px; text-decoration: none; color: white;">Detail</a>
+                        <div class="text-center pb-4">
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#detailProgramPendidikan" class="detail-btn">
+                                Detail
+                            </a>
                         </div>
                     </div>
-                    <div class="bg-white shadow-lg rounded p-3" style="width: 270px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;">
-                        <span class="text-uppercase text-secondary mb-3">Persyaratan</span>
-                        <div>
-                            <i class="fa-solid fa-clipboard-list fs-1 border rounded-circle p-5" style="color: #e91e63 !important;"></i>
+
+                    <!-- Jadwal Kegiatan Card -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-category">Jadwal Kegiatan</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-regular fa-calendar"></i>
+                            </div>
+                            <div class="card-title">Jadwal Kegiatan</div>
                         </div>
-                        <span class="text-uppercase fs-3 text-center judul">Syarat pendaftaran</span>
-                        <div class="text-center mb-4 teks-judul">
-                            <span class="text-secondary" style="font-size: 14px;">Persyaratan Pendaftaran dapat dilihat disini</span>
+                        <div class="card-description">
+                            <div>
+                                Jadwal kegiatan PSB dan Kuota Test untuk tahun akademik baru
+                            </div>
                         </div>
-                        <div class="text-uppercase">
-                            <a href="" data-bs-toggle="modal" data-bs-target="#detailPersyaratan" class="effect" style="background-color: #9F1FB2 !important; padding: 10px 20px; border-radius: 20px; text-decoration: none; color: white;">Detail</a>
+                        <div class="text-center pb-4">
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#detailJadwalKegiatan" class="detail-btn">
+                                Detail
+                            </a>
                         </div>
                     </div>
-                    <div class="bg-white shadow-lg rounded p-3" style="width: 270px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;">
-                        <span class="text-uppercase text-secondary mb-3">Bantuan</span>
-                        <div>
-                            <i class="fa-solid fa-lock fs-1 border rounded-circle p-5" style="color: #e91e63 !important;"></i>
+
+                    <!-- Persyaratan Card -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-category">Persyaratan</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-clipboard-list"></i>
+                            </div>
+                            <div class="card-title">Syarat Pendaftaran</div>
                         </div>
-                        <span class="text-uppercase fs-3 judul">Hubungi Kami</span>
-                        <div class="text-center mb-4 teks-judul">
-                            <span class="text-secondary" style="font-size: 14px;">Jika memerlukan bantuan : Telp / WA : 0853-9051-1124 </span>
+                        <div class="card-description">
+                            <div>
+                                Persyaratan lengkap untuk pendaftaran santri baru dapat dilihat di sini
+                            </div>
                         </div>
-                        <div class="text-uppercase">
-                            <a href="/bantuan" class="effect" style="background-color: #9F1FB2 !important; padding: 10px 20px; border-radius: 20px; text-decoration: none; color: white;">Detail</a>
+                        <div class="text-center pb-4">
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#detailPersyaratan" class="detail-btn">
+                                Detail
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Bantuan Card -->
+                    <div class="info-card">
+                        <div class="card-header">
+                            <div class="card-category">Bantuan</div>
+                            <div class="icon-wrapper">
+                                <i class="fa-solid fa-headset"></i>
+                            </div>
+                            <div class="card-title">Hubungi Kami</div>
+                        </div>
+                        <div class="card-description">
+                            <div>
+                                Jika memerlukan bantuan:<br>
+                                <strong>Telp / WA: 0853-9051-1124</strong>
+                            </div>
+                        </div>
+                        <div class="text-center pb-4">
+                            <a href="/bantuan" class="detail-btn">
+                                Detail
+                            </a>
                         </div>
                     </div>
                 </div>
-                
+            </div>
+            
+           
+
+
+            <!-- Modal Program Pendidikan -->
+            <div class="modal fade" id="detailProgramPendidikan" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">
+                                <i class="fa-solid fa-graduation-cap me-2"></i>
+                                Pendaftaran Santri Baru
+                            </h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="info-section">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        <div class="section-title">PEMBUKAAN PROGRAM PENDIDIKAN (Putra dan Putri)</div>
+                                        <ul class="info-list">                                   
+                                            <li>KB (2 - 3 tahun)</li>
+                                            <li>TK (4 - 5 tahun)</li>
+                                            <li>SD Tahfizh Bilingual</li>
+                                            <li>SMP Tahfizh bilingual</li>
+                                            <li>MA Tahfizh bilingual</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        <img src="https://i.ibb.co.com/wRNC9B0/img1.jpg" alt="Gambar Pondok" width="150" class="rounded">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="info-section">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        <div class="section-title">PELAKSANAAN TEST MASUK</div>
+                                        <p class="info-list">
+                                            Seluruh test dilaksanakan dalam <span class="highlight-text">2 Gelombang</span><br>
+                                            Test dilaksanakan secara <span class="highlight-text">OFFLINE</span>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        <img src="https://i.ibb.co.com/hW8F8Qs/img2.jpg" alt="Gambar Pondok" width="150" class="rounded">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="info-section">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        <div class="section-title">MATERI UJIAN SELEKSI</div>
+                                        <ul class="info-list">
+                                            <li>Membaca Al Qur'an dan Tulis Arab</li>
+                                            <li>Tes wawancara anak dan wawancara orangtua</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        <img src="https://i.ibb.co.com/jZznN6Q/img3.jpg" alt="Gambar Pondok" width="150" class="rounded">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <footer class="text-white p-2" style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+            <!-- Modal Jadwal Kegiatan -->
+            <div class="modal fade" id="detailJadwalKegiatan" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">
+                                <i class="fa-regular fa-calendar me-2"></i>
+                                Jadwal Pelaksanaan PSB
+                            </h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="info-section">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        <div class="section-title">1. Pendaftaran Online</div>
+                                        <p class="info-list">
+                                            Pendaftaran dilaksanakan pada:<br>
+                                            <span class="highlight-text">Gel 1:</span> {tgl_mulai_pendaftaran_formatted} - {tgl_akhir_pendaftaran_formatted}<br>
+                                            <span class="highlight-text">Gel 2:</span> {tgl_mulai_pendaftaran_formatted} - {tgl_akhir_pendaftaran_formatted}<br>
+                                            melalui website <a href="/pendaftaran" class="text-decoration-none" style="color: #059669; font-weight: 600;">https://aplikasi.dqi.ac.id/psb</a>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        <img src="https://i.ibb.co.com/KKKwWG1/img4.jpg" alt="Gambar Pondok" width="150" class="rounded">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="info-section">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        <div class="section-title">2. Pelaksanaan Test Masuk</div>
+                                        <p class="info-list">
+                                            <span class="highlight-text">Gel 1:</span> {tgl_mulai_seleksi_formatted} - {tgl_akhir_seleksi_formatted}<br>
+                                            <span class="highlight-text">Gel 2:</span> {tgl_mulai_seleksi_formatted} - {tgl_akhir_seleksi_formatted}
+                                        </p>
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        <img src="https://i.ibb.co.com/s9g5nM2/img5.jpg" alt="Gambar Pondok" width="150" class="rounded">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="info-section">
+                                <div class="section-title">4. Pengumuman Hasil Seleksi</div>
+                                <p class="info-list">
+                                    <span class="highlight-text">Gel 1:</span> {tgl_pengumuman_hasil_seleksi_formatted}<br>
+                                    <span class="highlight-text">Gel 2:</span> {tgl_pengumuman_hasil_seleksi_formatted}
+                                </p>
+                            </div>
+
+                            <div class="note-section">
+                                <p><strong>Catatan:</strong> Seluruh kegiatan akan mengikuti protokol kesehatan sesuai ketentuan dari pemerintah.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Persyaratan -->
+            <div class="modal fade" id="detailPersyaratan" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">
+                                <i class="fa-solid fa-clipboard-list me-2"></i>
+                                Persyaratan Test Masuk
+                            </h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">b
+                            <div class="info-section">
+                                <div class="section-title">SYARAT UTAMA PENDAFTARAN</div>
+                                <ol class="info-list" style="padding-left: 20px;">
+                                    <li>Mengisi formulir online secara lengkap dan benar melalui laman <span class="highlight-text">https://dqi.ac.id/psb</span></li>
+                                    <li>Membayar biaya pendaftaran untuk program <span class="highlight-text">Paud baby Qu KB A & B (usia 2-3th)</span> sebesar <strong>Rp.350.000</strong></li>
+                                    <li>Membayar biaya pendaftaran untuk program <span class="highlight-text">TK</span> sebesar <strong>Rp.300.000</strong></li>
+                                    <li>Membayar biaya pendaftaran untuk program <span class="highlight-text">SD Tahfizh bilingual</span> sebesar <strong>Rp.300.000</strong></li>
+                                    <li>Membayar biaya pendaftaran untuk program <span class="highlight-text">SMP Tahfizh bilingual</span> sebesar <strong>Rp.300.000</strong></li>
+                                    <li>Membayar biaya pendaftaran untuk program <span class="highlight-text">MA Tahfizh bilingual</span> sebesar <strong>Rp.300.000</strong></li>
+                                    <li>
+                                        <strong>Syarat Pendaftaran:</strong>
+                                        <ul class="info-list mt-2" style="margin-left: 20px;">
+                                            <li>Fotocopy Akta Kelahiran 2 lembar</li>
+                                            <li>Fotocopy KK 1 lembar</li>
+                                            <li>Fotocopy KTP Orangtua (Masing-masing 1 lembar)</li>
+                                            <li>Fotocopy Raport Semester akhir (menyusul)</li>
+                                            <li>Pas Foto berwarna ukuran 3x4 4 lembar</li>
+                                            <li>Pas Foto Orangtua masing-masing 1 lembar (Khusus Pendaftar KB dan TK)</li>
+                                            <li>Berkas dimasukkan dalam Map warna hijau dan diberi nama serta lembaga pendidikan</li>
+                                        </ul>
+                                    </li>
+                                </ol>
+                            </div>
+
+                            <div class="note-section">
+                                <p><strong>Penting:</strong> Seluruh persyaratan yang harus di upload/diunggah ke website pendaftaran harus sesuai format yang ditentukan.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="position:absolute left-0 bottom-0;">
+             <footer style="display: flex; justify-content: space-between; flex-wrap: wrap;">
             	<div class="ms-5">
             		<ul style="list-style-type: none; display: flex; text-transform: uppercase; font-size: 13px;" class="fw-semibold">
-            			<li><a href="/psb" class="me-4" style="text-decoration: none; color: white;">Home</a></li>
-            			<li><a href="/beranda" class="me-4" style="text-decoration: none; color: white;" target="_blank">Info Pondok</a></li>
-            			<li><a href="https://drive.google.com/drive/mobile/folders/1EYat5411joyoOmH_DkJ3g2DeJKgyyuBQ?usp=share_link&fbclid=IwY2xjawGflGlleHRuA2FlbQIxMQABHTusVv9hD3VRDSLW9-671QhOL86e3KMv30smsAYW0DHkkWf7zwPlcBlbeA_aem_XXofAY-ay0syx043L5BLvw" class="me-4" style="text-decoration: none; color: white;" target="_blank">Brosur</a></li>
-            			<li><a href="" class="me-4" style="text-decoration: none; color: white;">Panduan</a></li>
+            			<li><a href="/psb" class="me-4" style="text-decoration: none; color: black;">Home</a></li>
+            			<li><a href="/beranda" class="me-4" style="text-decoration: none; color: black;" target="_blank">Info Pondok</a></li>
+            			<li><a href="https://drive.google.com/drive/mobile/folders/1EYat5411joyoOmH_DkJ3g2DeJKgyyuBQ?usp=share_link&fbclid=IwY2xjawGflGlleHRuA2FlbQIxMQABHTusVv9hD3VRDSLW9-671QhOL86e3KMv30smsAYW0DHkkWf7zwPlcBlbeA_aem_XXofAY-ay0syx043L5BLvw" class="me-4" style="text-decoration: none; color:black;" target="_blank">Brosur</a></li>
+            			<li><a href="" class="me-4" style="text-decoration: none; color: black;">Panduan</a></li>
             		</ul>
             	</div>
             	<div class="me-5">
             		<p class="text-center mt-1">© 2024 TIM IT PPIB</p>
             	</div>
             </footer>
-
-
-            <div class="modal fade" id="detailProgramPendidikan" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5 text-secondary" id="exampleModalLabel">Pendaftaran Santri Baru</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-<div class="modal-body">
-                    <div class="row mb-3">
-                        <div class="col-md-8">
-                            <div>
-                                <span class="fw-semibold">PEMBUKAAN PROGRAM PENDIDIKAN (Putra dan Putri)</span>
-                                <ul class="text-secondary">                                   
-                                    <li>KB (2 - 3tahun)</li>
-                                    <li>TK ( 4 - 5tahun)</li>
-                                    <li>SD Tahfizh Bilinglual</li>
-                                    <li>SMP Tahfizh bilingual</li>
-                                    <li>MA Tahfizh bilingual</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <img src="https://i.ibb.co.com/wRNC9B0/img1.jpg" alt="Gambar Pondok" width="150"
-                                class="rounded">
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-8">
-                            <div>
-                                <span class="fw-semibold">PELAKSANAAN TEST MASUK</span>
-                                <p class="text-secondary">Seluruh test dilaksanakan dalam 2 Gelombang <br>
-                                    Test
-                                    dilaksanakan secara OFFLINE</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <img src="https://i.ibb.co.com/hW8F8Qs/img2.jpg" alt="Gambar Pondok" width="150"
-                                class="rounded">
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-8">
-                            <div>
-                                <span class="fw-semibold">MATERI UJIAN SELEKSI</span>
-                                <ul>
-                                    <li>Membaca Al Qur’an dan Tulis Arab</li>
-                                    <li>Tes wawancara anak dan wawancara orangtua</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <img src="https://i.ibb.co.com/jZznN6Q/img3.jpg" alt="Gambar Pondok" width="150"
-                                class="rounded">
-                        </div>
-                    </div>
-                </div>
-                </div>
             </div>
-            </div>
-
-<div class="modal fade" id="detailJadwalKegiatan" tabindex="-1" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5 text-secondary" id="exampleModalLabel">Jadwal Pelaksanaan PSB</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row mb-3">
-                        <div class="col-md-8">
-                            <div>
-                                <span class="fw-semibold">1. Pendaftaran Online</span>
-                                <p class="text-secondary">Pendaftaran dilaksanakan pada: <br>
-                                        Gel 1: {tgl_mulai_pendaftaran_formatted} - {tgl_akhir_pendaftaran_formatted} <br>
-                                        Gel 2: {tgl_mulai_pendaftaran_formatted} - {tgl_akhir_pendaftaran_formatted} <br> melalui website <a href="/pendaftaran"
-                                    class="text-decoration-none text-primary">https://aplikasi.dqi.ac.id/psb</a></p>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <img src="https://i.ibb.co.com/KKKwWG1/img4.jpg" alt="Gambar Pondok" width="150"
-                                class="rounded">
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-8">
-                            <div>
-                                <span class="fw-semibold">2. Pelaksanaan Test Masuk</span>
-                                <p class="text-secondary">Gel 1: {tgl_mulai_seleksi_formatted} - {tgl_akhir_seleksi_formatted} <br> Gel 2: {tgl_mulai_seleksi_formatted} - {tgl_akhir_seleksi_formatted}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <img src="https://i.ibb.co.com/s9g5nM2/img5.jpg" alt="Gambar Pondok" width="150"
-                                class="rounded">
-                        </div>
-                    </div>
-                    <div>
-                        <span class="fw-semibold">4. Pengumuman Hasil Seleksi</span>
-                        <p class="text-secondary">Gel 1: {tgl_pengumuman_hasil_seleksi_formatted} <br>
-                                                Gel 2: {tgl_pengumuman_hasil_seleksi_formatted}
-                        </p>
-                    </div>
-                    <div>
-                        <p class="text-secondary">Catatan : Seluruh kegiatan akan mengikuti protokol kesehatan sesuai
-                            ketentuan dari pemerintah.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="detailPersyaratan" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5 text-secondary" id="exampleModalLabel">Persyaratan Test Masuk</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <div>
-                                <span class="fw-semibold">SYARAT UTAMA PENDAFTARAN :</span>
-                                <ol class="text-secondary">
-                                    <li>Mengisi formulir online secara lengkap dan benar melalui laman https://dqi.ac.id/psb</li>
-                                    <li>Membayar biaya pendaftran untuk program Paud baby Qu KB A & B(usia 2 - 3th) sebesar Rp.350.000</li>
-                                    <li>Membayar biaya pendaftran untuk program TK sebesar Rp.300.000</li>
-                                    <li>Membayar biaya pendaftran untuk program SD Tahfizh bilingual sebesar Rp.300.000</li>
-                                    <li>Membayar biaya pendaftran untuk program SMP Tahfizh bilingual sebesar Rp.300.000</li>
-                                    <li>Membayar biaya pendaftran untuk program MA Tahfizh bilingual sebesar Rp.300.000</li>
-                                    <li>
-                                        Syarat Pendaftaran :
-                                        <ul type="disc" class="text-secondary">
-                                            <li>Fotocopy Akta Kelahiran 2 lembar</li>
-                                            <li>Fotocopy KK 1 lembar</li>
-                                            <li>Fotocopy KTP Orangtua (Masing-masing 1 lembar)</li>
-                                            <li>Fotocopy Raport Semester akhir (menyusul)</li>
-                                            <li>Pas Foto berwarna ukuran 3x4 4lembar</li>
-                                            <li>Pas Foto Orangtua masing-masing 1lembar (Khusus Pendaftar KB dan TK)</li>
-                                            <li>Berkas dimasukkan dalam Map warna hijau dan diberi nama serta lembaga pendidikan</li>
-                                        </ul>
-                                    </li>
-                                </ol>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <p class="text-secondary">Seluruh persyaratan yang harus di upload / diunggah ke website
-                            pendaftaran
-                            harus sesuai format yang ditentukan</p>
-                    </div>
-                </div>
-                </div>
-            </div>
-            </div>
-
-
-                        <!-- Modal -->
-            <div class="modal fade" id="modalPendaftaranTutup" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Pendaftaran ditutup!</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Mohon maaf, pendaftaran telah ditutup.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                </div>
-                </div>
-            </div>
-            </div>
-
-
 
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
             <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -1316,7 +1610,7 @@ class PesantrenPendaftaran(http.Controller):
 
 
         return request.make_response(html_response)
-    
+        
 class UbigPendaftaranController(http.Controller):
     @http.route('/pendaftaran', type='http', auth='public')
     def pendaftaran_form(self, **kwargs):
@@ -1336,7 +1630,7 @@ class UbigPendaftaranController(http.Controller):
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
         body {{
-            background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+            background: white !important;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -1358,7 +1652,7 @@ class UbigPendaftaranController(http.Controller):
         }}
 
         .background {{
-            background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+            background: white !important;
         }}
 
         .dropdown {{
@@ -1375,7 +1669,7 @@ class UbigPendaftaranController(http.Controller):
             top: 100%;
             right: 0;
             background-color: #ffffff;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            box-shadow:  0 4px 6px -1px rgba(0, 0, 0, 0.2);
             border-radius: 5px;
             min-width: 150px;
             z-index: 1;
@@ -1444,7 +1738,7 @@ class UbigPendaftaranController(http.Controller):
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg" style="height: 65px;">
         <div class="container-fluid">
-            <a class="navbar-brand ms-5 text-white fw-semibold" href="/psb">
+            <a class="navbar-brand ms-5  fw-semibold" href="/psb" style="color: black;">
                 <img src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" width="50" alt="Logo Pesantren">
                 Daarul Qur'an Istiqomah
             </a>
@@ -1454,18 +1748,18 @@ class UbigPendaftaranController(http.Controller):
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item me-3">
-                        <a class="nav-link text-white" href="/psb"><i class="fa-solid fa-house me-2"></i>Beranda</a>
+                        <a class="nav-link " href="/psb"><i class="fa-solid fa-house me-2" style="color: black;"></i>Beranda</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a href="#" class="dropdown-link nav-link" style="color: white !important;">
+                        <a href="#" class="dropdown-link nav-link" style="color: black;">
                             <i class="fa-solid fa-fingerprint me-2"></i>Login</a>
                         <div class="dropdown-content">
-                            <a href="/login">Login PSB</a>
-                            <a href="/web/login">Login Orang Tua</a>
+                            <a href="/login" style="color: black;">Login PSB</a>
+                            <a href="/web/login" style="color: black;">Login Orang Tua</a>
                         </div>
                     </li>
                     <li class="nav-item me-3">
-                        <a class="nav-link text-white" href="/bantuan"><i class="fa-solid fa-lock me-2"></i>Bantuan</a>
+                        <a class="nav-link " href="/bantuan"><i class="fa-solid fa-lock me-2" style="color: black;"></i>Bantuan</a>
                     </li>
                 </ul>
             </div>
@@ -1475,25 +1769,25 @@ class UbigPendaftaranController(http.Controller):
     <!-- Offcanvas Menu -->
     <div class="offcanvas offcanvas-end background" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        <a class="navbar-brand mt-1 text-white fw-semibold" href="/psb" style="display: flex; flex-direction: column; align-items: center;">
+        <a class="navbar-brand mt-1  fw-semibold" href="/psb" style="display: flex; flex-direction: column; align-items: center;">
             <img src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" width="50" alt="Logo Pesantren">
             Daarul Qur'an Istiqomah
         </a>
         <div class="offcanvas-body">
             <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
                 <li class="nav-item me-3">
-                    <a class="nav-link text-white" href="/psb"><i class="fa-solid fa-house me-2"></i>Beranda</a>
+                    <a class="nav-link " href="/psb"><i class="fa-solid fa-house me-2" style="color: black;"></i>Beranda</a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a href="#" class="dropdown-link nav-link" style="color: white !important;">
+                    <a href="#" class="dropdown-link nav-link" style="color: black;">
                         <i class="fa-solid fa-fingerprint me-2"></i>Login</a>
-                    <div class="dropdown-content">
+                    <div class="dropdown-content" style="color: black;">
                         <a href="/login">Login PSB</a>
                         <a href="/web/login">Login Orang Tua</a>
                     </div>
                 </li>
                 <li class="nav-item me-3">
-                    <a class="nav-link text-white" href="/bantuan"><i class="fa-solid fa-lock me-2"></i>Bantuan</a>
+                    <a class="nav-link " href="/bantuan"><i class="fa-solid fa-lock me-2" style="color: black;"></i>Bantuan</a>
                 </li>
             </ul>
         </div>
@@ -1512,7 +1806,7 @@ class UbigPendaftaranController(http.Controller):
     </div>
 
     <!-- Footer -->
-    <footer class="text-white p-2" style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+    <footer class=" p-2" style="display: flex; justify-content: space-between; flex-wrap: wrap;">
         <div class="ms-5">
             <ul style="list-style-type: none; display: flex; text-transform: uppercase; font-size: 13px;" class="fw-semibold">
                 <li><a href="/psb" class="me-4" style="text-decoration: none; color: white;">Home</a></li>
@@ -1858,14 +2152,14 @@ Pendaftaran telah berhasil! Berikut adalah informasi login Anda:
 - No. Rekening: {no_rekening}
 - Jumlah: {biaya_formatted}
 
-Untuk mengakses akun Anda, silakan klik link berikut: _https://aplikasi.dqi.ac.id/login_
+Untuk mengakses akun Anda, silakan klik link berikut: https://aplikasi.dqi.ac.id/login
 
 Terima kasih!
             """
             
             # Mengambil informasi untuk login ke API Nobox
-            username = nobox_config.NOBOX_USERNAME 
-            password = nobox_config.NOBOX_PASSWORD 
+            username = "ponpesdqi@gmail.com"  # Ganti dengan username yang sesuai
+            password = "dqimedia123"  # Ganti dengan password yang sesuai
 
             # Kirim pesan menggunakan Nobox API
             try:
@@ -1997,7 +2291,7 @@ Terima kasih!
                             </div>
                             <!-- Footer -->
                             <div style="background-color: #f1f1f1; text-align: center; padding: 10px;">
-                                <p style="font-size: 12px; color: #888888; margin: 0;">
+                                <p style="font-size: 12px; color: #888888; margin: 0; color: black;">
                                     &copy; {thn_sekarang} Pesantren Tahfizh Daarul Qur'an Istiqomah. All rights reserved.
                                 </p>
                             </div>
@@ -2049,32 +2343,28 @@ class PesantrenCetakPembayaran(http.Controller):
 class PesantrenPsbBantuan(http.Controller):
     @http.route('/bantuan', auth='public')
     def index(self, **kw):
-
         # Ambil nilai dari field konfigurasi
         config_obj = http.request.env['ir.config_parameter'].sudo()
-
         is_halaman_pengumuman = config_obj.get_param('pesantren_pendaftaran.is_halaman_pengumuman')
         is_halaman_pendaftaran = config_obj.get_param('pesantren_pendaftaran.is_halaman_pendaftaran')
 
         html_response = f"""
-                <html lang="en">
+            <html lang="en">
             <head>
             <!-- Primary Meta Tags --> 
             <title>PSB Daarul Qur`an Istiqomah</title> 
             <meta name="title" content="PSB Daarul Qur`an Istiqomah" /> 
             <meta name="description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
- 
             <!-- Open Graph / Facebook --> 
             <meta property="og:type" content="website" /> 
             <meta property="og:url" content="https://aplikasi.dqi.ac.id/pendaftaran" /> 
-            <meta property="og:title" content="PSB Daarul Qur`an Istiqomah" /> 
+            <meta property="og:title" content="PSB Darul Qur`an Istiqomah" /> 
             <meta property="og:description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
             <meta property="og:image" content="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" /> 
- 
             <!-- Twitter --> 
             <meta property="twitter:card" content="summary_large_image" /> 
             <meta property="twitter:url" content="https://aplikasi.dqi.ac.id/pendaftaran" /> 
-            <meta property="twitter:title" content="PSB Daarul Qur`an Istiqomah" /> 
+            <meta property="twitter:title" content="PSB Darul Qur`an Istiqomah" /> 
             <meta property="twitter:description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" /> 
             <meta property="twitter:image" content="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" />
                 <meta charset="UTF-8">
@@ -2083,22 +2373,30 @@ class PesantrenPsbBantuan(http.Controller):
                 <link rel="icon" type="image/x-icon" href="/pesantren_pendaftaran/static/img/favicon.ico?v=1">
                 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-                <link href=" https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css " rel="stylesheet">
-
+                <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css" rel="stylesheet">
+                <link rel="preconnect" href="https://fonts.googleapis.com"/>
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin"/>
+                <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap" rel="stylesheet"/>
 
                 <style>
-
                     body {{
-                        background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+                        background: #f5f5f4 !important;
+                        font-family: "Poppins";
+                        min-height: 100vh;
+                        display: flex;
+                        flex-direction: column;
                     }}
 
                     .offcanvas.offcanvas-end {{
-                        
-                        width: 250px; /* Lebar kustom untuk offcanvas */
+                        width: 250px;
                     }}
                     
                     .offcanvas .nav-link {{
-                        color: #ffffff; /* teks warna putih */
+                        color: black;
+                    }}
+
+                    .nav-link {{
+                        color: black !important;
                     }}
                     
                     .offcanvas .btn-close {{
@@ -2141,17 +2439,17 @@ class PesantrenPsbBantuan(http.Controller):
                         border-radius: 50%;
                         color: #fff;
                         font-size: 18px;
-                        box-shadow: 0px 3px 20px rgba(0, 0, 0, 0.5);
+                        box-shadow: 0 4px 6px -1px #cbd5e1;
                     }}
 
                     .timeline-icon::after {{
                         content: "";
                         position: absolute;
                         top: 50%;
-                        left: 84%;  /* Mengarahkan panah ke ikon */
+                        left: 84%;
                         border-width: 15px;
                         border-style: solid;
-                        border-color: transparent transparent transparent white;  /* Panah segitiga mengarah ke ikon */
+                        border-color: transparent transparent transparent white;
                         transform: translateY(-50%) rotate(180deg);
                     }}
 
@@ -2173,7 +2471,7 @@ class PesantrenPsbBantuan(http.Controller):
                     }}
 
                     .background {{
-                        background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+                        background: white !important;
                     }}
 
                     a.effect {{
@@ -2218,33 +2516,94 @@ class PesantrenPsbBantuan(http.Controller):
                         background-color: #f1f1f1;
                     }}
 
-                    /* Menampilkan dropdown saat hover */
                     .dropdown:hover .dropdown-content {{
                         display: block;
                         animation: fadeIn 0.3s;
                     }}
 
-                    /* Animasi fade-in */
                     @keyframes fadeIn {{
-                        from {{
-                        opacity: 0;
-                        transform: translateY(-10px);
+                        from {{ opacity: 0; transform: translateY(-10px); }}
+                        to {{ opacity: 1; transform: translateY(0); }}
+                    }}
+
+                    /* Media Queries untuk Responsivitas */
+                    @media (max-width: 768px) {{
+                        .offcanvas.offcanvas-end {{
+                            width: 50%;
                         }}
-                        to {{
-                        opacity: 1;
-                        transform: translateY(0);
+
+                        .timeline::before {{
+                            left: 10px;
+                        }}
+
+                        .timeline-item {{
+                            margin-left: 30px;
+                        }}
+
+                        .timeline-icon {{
+                            left: -43px;
+                            width: 30px;
+                            height: 30px;
+                            font-size: 14px;
+                        }}
+
+                        .timeline-content {{
+                            padding: 10px;
+                            font-size: 14px;
+                        }}
+
+                        .navbar-brand img {{
+                            width: 40px;
+                        }}
+
+                        .navbar-brand {{
+                            font-size: 1rem;
+                        }}
+
+                        .container {{
+                            padding: 10px;
+                        }}
+
+                        footer {{
+                            flex-direction: column;
+                            text-align: center;
+                            padding: 10px;
+                        }}
+
+                        footer ul {{
+                            justify-content: center;
+                            margin-bottom: 10px;
+                        }}
+
+                        .navbar-nav .nav-item {{
+                            margin: 5px 0;
                         }}
                     }}
 
+                    @media (max-width: 576px) {{
+                        .timeline-item {{
+                            margin-left: 20px;
+                        }}
+
+                        .timeline-icon {{
+                            left: -33px;
+                            width: 25px;
+                            height: 25px;
+                            font-size: 12px;
+                        }}
+
+                        .timeline-content {{
+                            padding: 8px;
+                            font-size: 12px;
+                        }}
+                    }}
                 </style>
-                
             </head>
             <body>
-
-            <nav class="navbar navbar-expand-lg" style="height: 65px;">
+            <nav class="navbar navbar-expand-lg" style="height: 65px; background-color: white;">
                 <div class="container-fluid">
-                    <a class="navbar-brand ms-5 text-white fw-semibold" href="/psb">
-                        <img src="https://i.ibb.co.com/1MFsvMq/1731466812700.png" alt="1731466812700" width="50" alt="Logo Pesantren">
+                    <a class="navbar-brand ms-5 fw-semibold" href="/psb">
+                        <img src="https://i.ibb.co.com/1MFsvMq/1731466812700.png" alt="Logo Pesantren" width="50">
                         Daarul Qur'an Istiqomah
                     </a>
                     <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
@@ -2253,161 +2612,157 @@ class PesantrenPsbBantuan(http.Controller):
                     <div class="collapse navbar-collapse" id="navbarNav">
                         <ul class="navbar-nav ms-auto">
                             <li class="nav-item me-3">
-                                <a class="nav-link text-white" style="color: white !important;" href="/psb"><i class="fa-solid fa-house me-2"></i>Beranda</a>
+                                <a class="nav-link effect" style="color: black !important;" href="/psb"><i class="fa-solid fa-house me-2"></i>Beranda</a>
                             </li>
                             {f'<li class="nav-item me-3">'
-                            f'<a class="nav-link text-white" href="/pendaftaran" {"data-bs-toggle='modal' data-bs-target='#modalPendaftaranTutup'" if not is_halaman_pendaftaran else ""}>'
-                            f'<i class="fa-solid fa-note-sticky me-2"></i>Pendaftaran</a>'
+                            f'<a class="nav-link effect" href="/pendaftaran" {"data-bs-toggle=\'modal\' data-bs-target=\'#modalPendaftaranTutup\'" if not is_halaman_pendaftaran else ""}>'
+                            f'<i class="fa-solid fa-note-sticky me-2" style="color: black;"></i>Pendaftaran</a>'
                             f'</li>'}
                             <li class="nav-item dropdown">
-                                <a href="#" class="dropdown-link nav-link"
-                                    style="color: white !important;">
+                                <a href="#" class="dropdown-link nav-link effect" style="color: black;">
                                     <i class="fa-solid fa-fingerprint me-2"></i>Login</a>
                                 <div class="dropdown-content">
-                                    <a href="/login">Login PSB</a>
-                                    <a href="/web/login">Login Orang Tua</a>
+                                    <a href="/login" style="color: black;">Login PSB</a>
+                                    <a href="/web/login" style="color: black;">Login Orang Tua</a>
                                 </div>
                             </li>
                             <li class="nav-item me-3">
-                                <a class="nav-link text-white" href="/bantuan"><i class="fa-solid fa-lock me-2"></i>Bantuan</a>
+                                <a class="nav-link effect" href="/bantuan"><i class="fa-solid fa-lock me-2" style="color: black;"></i>Bantuan</a>
                             </li>
                             {f'<li class="nav-item dropdown">'
-                            f'<a href="#" class="dropdown-link nav-link text-white"><i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>'
+                            f'<a href="#" class="dropdown-link nav-link effect"><i class="fa-solid fa-bullhorn me-2" style="color: black;"></i>Pengumuman</a>'
                             f'<div class="dropdown-content">'
                             f'<a href="/pengumuman/sd-mi">SD / MI</a>'
                             f'<a href="/pengumuman/smp-mts">SMP / MTS</a>'
                             f'<a href="/pengumuman/sma-ma">SMA / MA</a>'
                             f'</div>'
                             f'</li>' if is_halaman_pengumuman else ''}
-                            </ul>
+                        </ul>
                     </div>
                 </div>
             </nav>
 
             <div class="offcanvas offcanvas-end background" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                <a class="navbar-brand mt-1 text-white fw-semibold" href="/psb" style="display: flex; flex-direction: column; align-items: center;">
-                    <img src="https://i.ibb.co.com/1MFsvMq/1731466812700.png" alt="1731466812700" width="50" alt="">
+                <a class="navbar-brand mt-1 fw-semibold" href="/psb" style="display: flex; flex-direction: column; align-items: center;">
+                    <img src="https://i.ibb.co.com/1MFsvMq/1731466812700.png" alt="Logo Pesantren" width="50">
                     Daarul Qur'an Istiqomah
                 </a>
                 <div class="offcanvas-body">
                     <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
                         <li class="nav-item me-3">
-                            <a class="nav-link text-white" style="color: white !important;" href="/psb"><i class="fa-solid fa-house me-2"></i>Beranda</a>
+                            <a class="nav-link effect" style="color: black !important;" href="/psb"><i class="fa-solid fa-house me-2"></i>Beranda</a>
                         </li>
                         {f'<li class="nav-item me-3">'
-                        f'<a class="nav-link text-white" href="/pendaftaran" {"data-bs-toggle='modal' data-bs-target='#modalPendaftaranTutup'" if not is_halaman_pendaftaran else ""}>'
+                        f'<a class="nav-link effect" href="/pendaftaran" {"data-bs-toggle=\'modal\' data-bs-target=\'#modalPendaftaranTutup\'" if not is_halaman_pendaftaran else ""}>'
                         f'<i class="fa-solid fa-note-sticky me-2"></i>Pendaftaran</a>'
                         f'</li>'}
                         <li class="nav-item dropdown">
-                            <a href="#" class="dropdown-link nav-link"
-                                style="color: white !important;">
+                            <a href="#" class="dropdown-link nav-link effect" style="color: black !important;">
                                 <i class="fa-solid fa-fingerprint me-2"></i>Login</a>
                             <div class="dropdown-content">
-                                <a href="/login">Login PSB</a>
-                                <a href="/web/login">Login Orang Tua</a>
+                                <a href="/login" style="color: black;">Login PSB</a>
+                                <a href="/web/login" style="color: black;">Login Orang Tua</a>
                             </div>
                         </li>
                         <li class="nav-item me-3">
-                            <a class="nav-link text-white" href="/bantuan"><i class="fa-solid fa-lock me-2"></i>Bantuan</a>
+                            <a class="nav-link effect" href="/bantuan"><i class="fa-solid fa-lock me-2"></i>Bantuan</a>
                         </li>
                         {f'<li class="nav-item dropdown">'
-                        f'<a href="#" class="dropdown-link nav-link text-white"><i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>'
+                        f'<a href="#" class="dropdown-link nav-link effect" style="color: black;"><i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>'
                         f'<div class="dropdown-content">'
                         f'<a href="/pengumuman/sd-mi">SD / MI</a>'
                         f'<a href="/pengumuman/smp-mts">SMP / MTS</a>'
                         f'<a href="/pengumuman/sma-ma">SMA / MA</a>'
                         f'</div>'
                         f'</li>' if is_halaman_pengumuman else ''}
-                        </ul>
                     </ul>
                 </div>
             </div>
 
-            <div class="container mt-5 mb-5">
-            <div class="row">
-                <!-- Timeline -->
-                <div class="col-lg-6 mb-5">
-                <div class="timeline">
-                    <!-- Panduan Pendaftaran Online -->
-                    <div class="timeline-item">
-                    <div class="timeline-icon bg-danger">
-                        <i class="fa-solid fa-briefcase text-white"></i>
-                    </div>
-                    <div class="timeline-content bg-white rounded p-3">
-                        <span class="badge text-bg-danger text-uppercase mb-2">Panduan Pendaftaran Online</span>
-                        <p>Panduan pendaftaran online dapat didownload dengan klik link di bawah ini :</p>
-                        <div class="ratio ratio-16x9 my-4">
-                        <iframe src="https://www.youtube.com/embed/N7eYT3LQ7tQ" title="YouTube video player" allowfullscreen></iframe>
+            <div class="container mt-5 mb-5" style="background-color: #f5f5f4;">
+                <div class="row">
+                    <!-- Timeline -->
+                    <div class="col-12 col-lg-6 mb-5">
+                        <div class="timeline">
+                            <!-- Panduan Pendaftaran Online -->
+                            <div class="timeline-item">
+                                <div class="timeline-icon bg-danger">
+                                    <i class="fa-solid fa-briefcase"></i>
+                                </div>
+                                <div class="timeline-content bg-white rounded p-3">
+                                    <span class="badge text-bg-danger text-uppercase mb-2">Panduan Pendaftaran Online</span>
+                                    <p>Panduan pendaftaran online dapat didownload dengan klik link di bawah ini :</p>
+                                    <div class="ratio ratio-16x9 my-4">
+                                        <iframe src="https://www.youtube.com/embed/N7eYT3LQ7tQ" title="YouTube video player" allowfullscreen></iframe>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Alur Pendaftaran Santri Baru -->
+                            <div class="timeline-item">
+                                <div class="timeline-icon bg-success">
+                                    <i class="fa-solid fa-puzzle-piece"></i>
+                                </div>
+                                <div class="timeline-content bg-white rounded p-3">
+                                    <span class="badge text-bg-success text-uppercase mb-3">Alur Pendaftaran Santri Baru</span>
+                                    <ul>
+                                        <li>Buka website <a href="/psb" class="text-decoration-none" style="color: purple;">https://aplikasi.dqi.ac.id/psb</a></li>
+                                        <li>Klik menu daftar dan isikan data yang tersedia.</li>
+                                        <li>Login di <a href="/login" class="text-decoration-none" style="color: purple;">https://aplikasi.dqi.ac.id/login</a></li>
+                                        <li>Upload berkas yang dipersyaratkan dan bukti pembayaran.</li>
+                                        <li>Tunggu verifikasi maksimal 3 hari.</li>
+                                        <li>Ikuti tes seleksi Offline.</li>
+                                        <li>Lihat hasil tes di <a href="/" class="text-decoration-none" style="color: purple;">https://aplikasi.dqi.ac.id/psb</a></li>
+                                        <li>Setelah pembayaran daftar ulang, tunggu pengumuman serah terima santri baru.</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Video Profil -->
+                            <div class="timeline-item">
+                                <div class="timeline-icon bg-info">
+                                    <i class="fa-solid fa-fingerprint"></i>
+                                </div>
+                                <div class="timeline-content bg-white rounded p-3">
+                                    <span class="badge text-bg-info text-white text-uppercase">Video Profil Ponpes Daarul Qur'an Istiqomah</span>
+                                    <div class="ratio ratio-16x9 my-4">
+                                        <iframe width="437" height="315" src="https://www.youtube.com/embed/OiPEDy0Sv1U" title="" frameborder="0" allowfullscreen></iframe>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    </div>
 
-                    <!-- Alur Pendaftaran Santri Baru -->
-                    <div class="timeline-item">
-                    <div class="timeline-icon bg-success">
-                        <i class="fa-solid fa-puzzle-piece text-white"></i>
-                    </div>
-                    <div class="timeline-content bg-white rounded p-3">
-                        <span class="badge text-bg-success text-uppercase mb-3">Alur Pendaftaran Santri Baru</span>
-                        <ul>
-                        <li>Buka website <a href="/psb" class="text-decoration-none" style="color: purple;">https://aplikasi.dqi.ac.id/psb</a></li>
-                        <li>Klik menu daftar dan isikan data yang tersedia.</li>
-                        <li>Login di <a href="/login" class="text-decoration-none" style="color: purple;">https://aplikasi.dqi.ac.id/login</a></li>
-                        <li>Upload berkas yang dipersyaratkan dan bukti pembayaran.</li>
-                        <li>Tunggu verifikasi maksimal 3 hari.</li>
-                        <li>Ikuti tes seleksi Offline.</li>
-                        <li>Lihat hasil tes di <a href="/" class="text-decoration-none" style="color: purple;">https://aplikasi.dqi.ac.id/psb</a></li>
-                        <li>Setelah pembayaran daftar ulang, tunggu pengumuman serah terima santri baru.</li>
-                        </ul>
-                    </div>
-                    </div>
-
-                    <!-- Video Profil -->
-                    <div class="timeline-item">
-                    <div class="timeline-icon bg-info">
-                        <i class="fa-solid fa-fingerprint text-white"></i>
-                    </div>
-                    <div class="timeline-content bg-white rounded p-3">
-                        <span class="badge text-bg-info text-white text-uppercase">Video Profil Ponpes Daarul Qur'an Istiqomah</span>
-                        <div class="ratio ratio-16x9 my-4">
-                        <iframe width="437" height="315" src="https://www.youtube.com/embed/OiPEDy0Sv1U" title="" frameborder="0" allowfullscreen></iframe>
+                    <!-- Informasi Kontak -->
+                    <div class="col-12 col-lg-6">
+                        <div class="bg-white rounded p-3 text-center">
+                            <span style="font-size: 60px; font-weight: bold;">"</span>
+                            <div class="text-secondary mb-4">
+                                <span>Pondok Pesantren Daarul Qur'an Istiqomah</span><br>
+                                <span>Jl. Ambawang, RT.03/RW.01, Karang Taruna, Kec. Pelaihari, Kabupaten Tanah Laut, Kalimantan Selatan 70815</span><br>
+                                <span>Telp/Whatsapp: <a href="https://api.whatsapp.com/send?phone=%2B6282252079785" class="text-decoration-none" style="color: purple;">0822-5207-9785</a></span><br>
+                            </div>
+                            <div class="text-secondary mb-4">
+                                <span>Informasi PSB & Konsultasi Pendidikan:</span><br>
+                                <a href="#" class="text-decoration-none" style="color: purple;">0853-9051-1124</a><br>
+                            </div>
+                            <h5>Media Sosial Kami</h5>
+                            <span class="text-uppercase" style="color: purple;">Instagram : @daqubanat_</span><br>
+                            <span class="text-uppercase" style="color: purple;">Facebook  : @Daarul Quran Istiqomah</span><br>
+                            <span class="text-uppercase" style="color: purple;">Youtube   : @dqimedia</span><br>
                         </div>
                     </div>
-                    </div>
-                </div>
-                </div>
-
-                <!-- Informasi Kontak -->
-                <div class="col-lg-6">
-                <div class="bg-white rounded p-3 text-center">
-                    <span style="font-size: 60px; font-weight: bold;">"</span>
-                    <div class="text-secondary mb-4">
-                    <span>Pondok Pesantren Daarul Qur'an Istiqomah</span><br>
-                    <span>Jl. Ambawang, RT.03/RW.01, Karang Taruna, Kec. Pelaihari, Kabupaten Tanah Laut, Kalimantan Selatan 70815 </span><br>
-                    <span>Telp/Whatsapp: <a href="https://api.whatsapp.com/send?phone=%2B6282252079785" class="text-decoration-none" style="color: purple;">0822-5207-9785</a></span><br>
-                    </div>
-                    <div class="text-secondary mb-4">
-                    <span>Informasi PSB & Konsultasi Pendidikan:</span><br>
-                    <a href="#" class="text-decoration-none" style="color: purple;">0853-9051-1124</a><br>
-                    </div>
-                    <h5>Media Sosial Kami</h5>
-                    <span class="text-uppercase" style="color: purple;">Instagram : @daqubanat_</span><br>
-                    <span class="text-uppercase" style="color: purple;">Facebook  : @Daarul Quran Istiqomah</span><br>
-                    <span class="text-uppercase" style="color: purple;">Youtube   : @dqimedia</span><br>
-                </div>
                 </div>
             </div>
-            </div>
 
-            <footer class="text-white p-2" style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+            <footer class="p-2 mt-auto" style="background-color: #f5f5f4; display: flex; justify-content: space-between; flex-wrap: wrap;">
                 <div class="ms-5">
                     <ul style="list-style-type: none; display: flex; text-transform: uppercase; font-size: 13px;" class="fw-semibold">
-                        <li><a href="/psb" class="me-4" style="text-decoration: none; color: white;">Home</a></li>
-                        <li><a href="/beranda" class="me-4" style="text-decoration: none; color: white;" target="_blank">Info Pondok</a></li>
-                        <li><a href="https://drive.google.com/drive/mobile/folders/1EYat5411joyoOmH_DkJ3g2DeJKgyyuBQ?usp=share_link&fbclid=IwY2xjawGflGlleHRuA2FlbQIxMQABHTusVv9hD3VRDSLW9-671QhOL86e3KMv30smsAYW0DHkkWf7zwPlcBlbeA_aem_XXofAY-ay0syx043L5BLvw" class="me-4" style="text-decoration: none; color: white;" target="_blank">Brosur</a></li>
-                        <li><a href="" class="me-4" style="text-decoration: none; color: white;">Panduan</a></li>
-                    </ul>
+                        <li><a href="/psb" class="me-4 effect" style="text-decoration: none; color: black !important;">Home</a></li>
+                        <li><a href="/beranda" class="me-4 effect" style="text-decoration: none; color: black !important;" target="_blank">Info Pondok</a></li>
+                        <li><a href="https://drive.google.com/drive/mobile/folders/1EYat5411joyoOmH_DkJ3g2DeJKgyyuBQ?usp=share_link&fbclid=IwY2xjawGflGlleHRuA2FlbQIxMQABHTusVv9hD3VRDSLW9-671QhOL86e3KMv30smsAYW0DHkkWf7zwPlcBlbeA_aem_XXofAY-ay0syx043L5BLvw" class="me-4 effect" style="text-decoration: none; color: black !important;" target="_blank">Brosur</a></li>
+                        <li><a href="#" class="me-4 effect" style="text-decoration: none; color: black !important;">Panduan</a></li>
                     </ul>
                 </div>
                 <div class="me-5">
@@ -2417,47 +2772,27 @@ class PesantrenPsbBantuan(http.Controller):
 
             <!-- Modal -->
             <div class="modal fade" id="modalPendaftaranTutup" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Pendaftaran ditutup!</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Mohon maaf, pendaftaran telah ditutup karena kuota telah terpenuhi.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                </div>
-                </div>
-            </div>
-            </div>
-
-            <!-- Modal -->
-            <div class="modal fade" id="modalPendaftaranTutup" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Pendaftaran ditutup!</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Mohon maaf, pendaftaran telah ditutup.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                </div>
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Pendaftaran ditutup!</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Mohon maaf, pendaftaran telah ditutup karena kuota telah terpenuhi.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-            </div>
-
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
             <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-            <script src=" https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js "></script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
             </body>
             </html>
         """
-
         return request.make_response(html_response)
 
 class PendaftaranSeleksiSdMi(http.Controller):
@@ -2569,276 +2904,6 @@ class RefDataController(http.Controller):
             )
 
 
-# class ViewKartuSantri(http.Controller):
-#     @http.route('/kartusantri', type='http', auth='user', methods=['GET'])
-#     def index(self, santri_id, **kwargsj):
-
-#         # Ambil data santri berdasarkan ID
-#         santri = request.env['cdn.siswa'].sudo().browse(int(santri_id))
-#         if not santri.exists():
-#             return request.not_found()
-
-#         html_response = f"""
-#                     <html lang="en">
-
-#                         <head>
-#                             <meta charset="UTF-8">
-#                             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-#                             <title>Kartu Santri</title>
-#                             <link rel="stylesheet" href="styles.css">
-#                         </head>
-#                         <style>
-#                             @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500&display=swap');
-
-#                             .card-number {{
-#                                 font-family: 'Roboto Mono', monospace;
-#                                 /* Monospace font mirip ATM */
-#                                 font-size: 17.5px;
-#                                 /* Ukuran font */
-#                                 letter-spacing: 3px;
-#                                 font-weight: bold;
-#                                 padding: 10px 0px;
-#                                 display: inline-block;
-#                                 width: fit-content;
-#                                 /* Sesuaikan lebar */
-#                             }}
-
-#                             * {{
-#                                 margin: 0;
-#                                 padding: 0;
-#                                 box-sizing: border-box;
-#                             }}
-
-#                             body {{
-#                                 font-family: Arial, sans-serif;
-#                                 background-color: #eaf2f7;
-#                                 display: flex;
-#                                 justify-content: center;
-#                                 align-items: center;
-#                                 height: 100vh;
-#                             }}
-
-#                             .card-container {{
-#                                 display: flex;
-#                                 justify-content: space-between;
-#                                 align-items: center;
-#                                 flex-direction: column-reverse;
-#                                 gap: 10px;
-#                             }}
-
-#                             .card {{
-#                                 width: 450px;
-#                                 height: 260px;
-#                                 border-radius: 10px;
-#                                 box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-#                                 position: relative;
-#                                 overflow: hidden;
-#                             }}
-
-#                             .front {{
-#                                 background: linear-gradient(to top right, #339966 0%, #00cc66 100%);
-#                                 color: white;
-#                                 display: flex;
-#                                 flex-direction: column;
-#                                 justify-content: space-between;
-#                                 padding: 15px;
-#                             }}
-
-#                             .back .card-header {{
-#                                 font-size: 20px;
-#                                 font-weight: bold;
-#                                 display: flex;
-#                                 align-items: center;
-#                                 gap: 5px;
-#                             }}
-
-#                             .front .subtitle {{
-#                                 font-size: 14px;
-#                                 margin-top: 5px;
-#                             }}
-
-#                             /* 
-#                             .front .barcode {{
-#                                 width: 100%;
-#                             }} */
-
-#                             .front .barcode img {{
-#                                 width: 15rem;
-#                                 height: 5rem;
-#                                 background-color: #eaf2f7;
-#                                 border-radius: 5px;
-#                             }}
-
-#                             .back {{
-#                                 background: linear-gradient(to top right, #339966 0%, #00cc66 100%);
-#                                 color: white;
-#                                 display: flex;
-#                                 flex-direction: column;
-#                                 justify-content: space-between;
-#                                 padding: 15px;
-#                             }}
-
-#                             .back .card-header {{
-#                                 font-size: 20px;
-#                                 font-weight: bold;
-#                             }}
-
-#                             .back .card-info {{
-#                                 margin-top: 10px;
-#                             }}
-
-#                             .back .id {{
-#                                 font-size: 16px;
-#                                 font-weight: bold;
-#                             }}
-
-#                             .back .info {{
-#                                 font-size: 14px;
-#                             }}
-
-#                             .back .qr-code img {{
-#                                 margin-top: 20px;
-#                                 height: 140px;
-#                                 width: 120px;
-#                                 background-color: #eaf2f7;
-#                                 border-radius: 10px;
-#                                 z-index: 10;
-#                                 display: flex;
-#                                 flex-direction: column;
-#                                 position: relative;
-#                             }}
-
-
-#                             .title {{
-#                                 font-size: 17px;
-#                             }}
-
-#                             .right-s {{
-#                                 position: absolute;
-#                                 rotate: -40deg;
-#                                 right: 0px;
-#                                 bottom: 5rem;
-#                                 display: flex;
-#                                 z-index: 4;
-#                             }}
-
-#                             .sprite {{
-#                                 position: relative;
-#                                 background-color: #ffb901;
-#                                 height: 400px;
-#                                 width: 20px;
-#                             }}
-
-#                             .site {{
-#                                 position: relative;
-#                                 background-color: #0000cc;
-#                                 z-index: 3;
-#                                 height: 400px;
-#                                 width: 120px;
-#                             }}
-
-#                             .icon-card {{
-#                                 position: absolute;
-#                                 z-index: 100;
-#                                 right: 1rem;
-#                                 top: 10px;
-#                                 width: 2.5rem;
-#                                 height: 2.5rem;
-#                             }}
-
-#                             .banner {{
-#                                 border-radius: 50%;
-#                                 position: absolute;
-#                                 background-image: url('https://i.ibb.co.com/wRNC9B0/img1.jpg');
-#                                 width: 12rem;
-#                                 height: 12rem;
-#                                 background-position: center;
-#                                 background-repeat: no-repeat;
-#                                 background-size: auto;
-#                                 right: -4.7rem;
-#                                 top: 13.5%;
-#                                 box-shadow: #000000ad 3px 4px 30px;
-#                             }}
-#                         </style>
-
-#                         <body>
-#                             <div class="card-container">
-#                                 <!-- Kartu Santri Depan -->
-#                                 <div class="card front">
-#                                     <div style="display: flex; align-items: center; gap: 5px;">
-#                                         <img src="credit-card.png" style="width: 2rem; " alt="">
-#                                         <p>Universal Big Data</p>
-#                                     </div>
-#                                     <div class="card-header">
-#                                         <div>
-#                                             <h1 class="title" style="font-size: 1.7rem;">Kartu Santri</h1>
-#                                             <h3 class="subtitle" style="font-size: 1.4rem;">Daarul Qu`ran Istiqomah</h3>
-#                                         </div>
-#                                     </div>
-#                                     <div class="barcode">
-#                                         <img src="credit-card.png" alt="Barcode">
-#                                         <p>Jln. Kenanga no 5 perempatan pasar</p>
-#                                     </div>
-#                                     <div class="banner"></div>
-#                                 </div>
-
-#                                 <!-- Kartu Santri Belakang -->
-#                                 <div class="card back">
-#                                     <div class="card-header">
-#                                         <img src="credit-card.png" class="icon-card" alt="">
-#                                         <div class="right-s">
-#                                             <div class="sprite"></div>
-#                                             <div class="site"></div>
-#                                         </div>
-#                                         <img src="../dqi.png" width="45px" height="45px" alt="img">
-#                                         <div>
-#                                             <span class="title">Kartu Santri</span>
-#                                             <br>
-#                                             <span class="subtitle">Daarul Qu`ran Istiqomah</span>
-#                                         </div>
-#                                     </div>
-#                                     <div style="display: flex; align-items: end; justify-content: space-between;">
-#                                         <div class="card-info">
-#                                             <p class="card-number">1234.5678.1234.5678</p>
-#                                             <p class="info">Nama: {santri.name}</p>
-#                                             <p class="info">Telp: {santri.phone}</p>
-#                                             <p class="info">Alamat: {santri.street}</p>
-#                                         </div>
-#                                         <div class="qr-code">
-#                                             <img src="qr-code.png" alt="QR Code">
-#                                             <p style="font-weight: bold; text-align: center; margin-top: 5px;">
-#                                                 DQI 14
-#                                             </p>
-#                                         </div>
-#                                     </div>
-#                                 </div>
-#                             </div>
-#                         </body>
-
-#                         </html>
-        
-#                 """
-
-#         return request.make_response(html_response)
-
-# class PortalOrangTua(http.Controller):
-    # @http.route('/validate_kode_akses', type='http', auth='public', methods=['POST'], csrf=False)
-    # def validate_kode_akses(self, **kwargs):
-    #     try:
-    #         # Parse JSON dari body request
-    #         data = json.loads(request.httprequest.data)
-    #         kode_akses = data.get('kode_akses')
-
-    #         # Cari kode akses di model Odoo
-    #         record = request.env['ubig.pendaftaran'].sudo().search([('kode_akses', '=', kode_akses)], limit=1)
-    #         if record:
-    #             return request.make_response(json.dumps({'success': True, 'message': 'Kode akses valid!'}), 
-    #                     headers=[('Content-Type', 'application/json')])
-    #         return request.make_response(json.dumps({'success': False, 'message': 'Kode akses tidak ditemukan.'}),
-    #                     headers=[('Content-Type', 'application/json')])
-    #     except Exception as e:
-    #         return request.make_response(json.dumps({'success': False, 'message': str(e)}),
-    #                     headers=[('Content-Type', 'application/json')])
 
 
 class PortalOrangTua(http.Controller):
@@ -2899,93 +2964,6 @@ class PortalOrangTua(http.Controller):
             'diterima': "Status ini menunjukkan bahwa pendaftaran telah diterima, dan peserta memenuhi syarat.",
             'ditolak': "Status ini menunjukkan bahwa pendaftaran ditolak karena tidak memenuhi kriteria atau persyaratan.",
         }
-
-        # Membuat HTML dinamis untuk setiap record
-        # rows_html = ''
-        # for rec in records:
-        #     csrf_token = request.csrf_token()  # Ambil CSRF token
-        #     # Tentukan status pembayaran dan kelas badge
-        #     status_text = (
-        #         'Menunggu Validasi'
-        #         if rec.bukti_pembayaran
-        #         else rec.status_pembayaran.replace('belumbayar', 'Belum Bayar').replace('sudahbayar', 'Sudah Bayar')
-        #     )
-
-        #     badge_class = (
-        #         'success'
-        #         if rec.status_pembayaran == 'sudahbayar'
-        #         else 'warning' if rec.bukti_pembayaran
-        #         else 'danger'
-        #     )
-
-        #     is_disabled = 'disabled' if rec.status_pembayaran == 'sudahbayar' else ''
-        #     state_html = ''
-        #     # Buat HTML untuk status pendaftaran siswa
-        #     for state_key, state_label in state_list:
-        #         tooltip_message = state_tooltip_messages.get(state_key, "Tidak ada informasi status.")
-        #         if state_key == rec.state:
-        #             state_html += f'<span class="badge me-1 mb-2 text-bg-primary" title="Ini adalah status pendaftaran saat ini dari anak anda. {tooltip_message}" data-bs-toggle="tooltip" data-bs-placement="bottom">{state_label}</span>'
-        #         else:
-        #             state_html += f'<span class="badge text-bg-secondary me-1 mb-2 inactive" title="{tooltip_message}" data-bs-toggle="tooltip" data-bs-placement="bottom">{state_label}</span>'
-            
-        #     # Progress bar untuk pendaftaran
-        #     if rec.state == "ditolak":
-        #         progress_html = ''
-        #     else:
-        #         progress_html = f"""
-        #         <div class="progress" style="height: 20px;">
-        #             <div class="progress-bar" role="progressbar" style="width: {state_progress.get(rec.state, 0)}%" 
-        #                 aria-valuenow="{state_progress.get(rec.state, 0)}" aria-valuemin="0" aria-valuemax="100">
-        #             </div>
-        #         </div>
-        #         Pendaftaran: {state_progress.get(rec.state, 0)}%
-        #         """
-
-        #     # Menambahkan HTML untuk satu baris data siswa
-        #     rows_html += f"""
-        #     <tr>
-        #         <td><span class="text-capitalize">{rec.partner_id.name}</span></td>
-        #         <td>
-        #             <div class="d-flex justify-content-center">
-        #                 <div class="mb-2">
-        #                     {state_html}
-        #                 </div>
-        #             </div>
-        #             {progress_html}
-        #         </td>
-        #         <td>
-        #             <span class="badge text-bg-{badge_class}">{status_text}</span>
-        #         </td>
-        #         <td>
-        #             <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#uploadModal-{rec.id}" {is_disabled}>
-        #             Upload Bukti
-        #             </button>
-                    
-        #             <!-- Modal -->
-        #             <div class="modal fade" id="uploadModal-{rec.id}" tabindex="-1" aria-labelledby="uploadModalLabel-{rec.id}" aria-hidden="true">
-        #                 <div class="modal-dialog">
-        #                     <div class="modal-content">
-        #                         <div class="modal-header">
-        #                             <h5 class="modal-title" id="uploadModalLabel-{rec.id}">Upload Bukti Pembayaran</h5>
-        #                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        #                         </div>
-        #                         <div class="modal-body">
-        #                             <form action="/upload_bukti_pembayaran" method="post" enctype="multipart/form-data">
-        #                                 <input type="hidden" name="csrf_token" value="{csrf_token}">
-        #                                 <input type="hidden" name="record_id" value="{rec.id}">
-        #                                 <div class="mb-3">
-        #                                     <label for="buktiPembayaran-{rec.id}" class="form-label">Pilih File</label>
-        #                                     <input type="file" class="form-control" id="buktiPembayaran-{rec.id}" name="bukti_pembayaran" required>
-        #                                 </div>
-        #                                 <button type="submit" class="btn btn-success">Upload</button>
-        #                             </form>
-        #                         </div>
-        #                     </div>
-        #                 </div>
-        #             </div>
-        #         </td>
-        #     </tr>
-        #     """
 
         rows_html = ''
         for rec in records:
@@ -3174,7 +3152,7 @@ class PortalOrangTua(http.Controller):
                 <style>
 
                     body {{
-                        background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+                        background: white !important;
                     }}
 
                     .offcanvas.offcanvas-end {{
@@ -3183,7 +3161,7 @@ class PortalOrangTua(http.Controller):
                     }}
                     
                     .offcanvas .nav-link {{
-                        color: #ffffff; /* teks warna putih */
+                        color: black; /* teks warna putih */
                     }}
                     
                     .offcanvas .btn-close {{
@@ -3194,7 +3172,7 @@ class PortalOrangTua(http.Controller):
                     }}
 
                     .background {{
-                        background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+                        background: white !important;
                     }}
 
                     a.effect {{
@@ -3348,7 +3326,7 @@ class PortalOrangTua(http.Controller):
                 }}
 
                 .btn-upload {{
-                    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+                    background: white;
                     border: none;
                     color: white;
                     padding: 8px 16px;
@@ -3708,7 +3686,7 @@ class PortalOrangTua(http.Controller):
 
             <nav class="navbar navbar-expand-lg" style="height: 65px;">
                 <div class="container-fluid">
-                    <a class="navbar-brand ms-5 text-white fw-semibold" href="/psb">
+                    <a class="navbar-brand ms-5  fw-semibold" href="/psb">
                         <img src="https://i.ibb.co.com/1MFsvMq/1731466812700.png" width="50" alt="Logo Pesantren" />
                         Daarul Qur'an Istiqomah
                     </a>
@@ -3718,15 +3696,15 @@ class PortalOrangTua(http.Controller):
                     <div class="collapse navbar-collapse" id="navbarNav">
                         <ul class="navbar-nav ms-auto">
                             <li class="nav-item me-3">
-                                <a class="nav-link text-white" style="color: white !important;" href="/psb"><i class="fa-solid fa-house me-2"></i>Beranda</a>
+                                <a class="nav-link " style="color: black !important;" href="/psb"><i class="fa-solid fa-house me-2"></i>Beranda</a>
                             </li>
                             {f'<li class="nav-item me-3">'
-                            f'<a class="nav-link text-white" href="/pendaftaran" {"data-bs-toggle='modal' data-bs-target='#modalPendaftaranTutup'" if not is_halaman_pendaftaran else ""}>'
+                            f'<a class="nav-link " href="/pendaftaran" {"data-bs-toggle='modal' data-bs-target='#modalPendaftaranTutup'" if not is_halaman_pendaftaran else ""}>'
                             f'<i class="fa-solid fa-note-sticky me-2"></i>Pendaftaran</a>'
                             f'</li>'}
                             <li class="nav-item dropdown">
                                 <a href="#" class="dropdown-link nav-link"
-                                    style="color: white !important;">
+                                    style="color: black !important;">
                                     <i class="fa-solid fa-fingerprint me-2"></i>Login</a>
                                 <div class="dropdown-content">
                                     <a href="/login">Login PSB</a>
@@ -3734,10 +3712,10 @@ class PortalOrangTua(http.Controller):
                                 </div>
                             </li>
                             <li class="nav-item me-3">
-                                <a class="nav-link text-white" href="/bantuan"><i class="fa-solid fa-lock me-2"></i>Bantuan</a>
+                                <a class="nav-link " href="/bantuan"><i class="fa-solid fa-lock me-2"></i>Bantuan</a>
                             </li>
                             {f'<li class="nav-item dropdown">'
-                            f'<a href="#" class="dropdown-link nav-link text-white"><i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>'
+                            f'<a href="#" class="dropdown-link nav-link "><i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>'
                             f'<div class="dropdown-content">'
                             f'<a href="/pengumuman/sd-mi">SD / MI</a>'
                             f'<a href="/pengumuman/smp-mts">SMP / MTS</a>'
@@ -3745,7 +3723,7 @@ class PortalOrangTua(http.Controller):
                             f'</div>'
                             f'</li>' if is_halaman_pengumuman else ''}
                             <li class="nav-item me-3">
-                                <a class="nav-link text-white log" href="/logout"><i class="fa-solid fa-right-from-bracket me-2"></i>Keluar</a>
+                                <a class="nav-link  log" href="/logout"><i class="fa-solid fa-right-from-bracket me-2"></i>Keluar</a>
                             </li>
                             </ul>
                     </div>
@@ -3754,22 +3732,22 @@ class PortalOrangTua(http.Controller):
 
             <div class="offcanvas offcanvas-end background" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                <a class="navbar-brand mt-1 text-white fw-semibold" href="/psb" style="display: flex; flex-direction: column; align-items: center;">
+                <a class="navbar-brand mt-1  fw-semibold" href="/psb" style="display: flex; flex-direction: column; align-items: center;">
                     <img src="https://i.ibb.co.com/1MFsvMq/1731466812700.png" width="50" alt="Logo Pesantren" />
                     Daarul Qur'an Istiqomah
                 </a>
                 <div class="offcanvas-body">
                     <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
                         <li class="nav-item me-3">
-                            <a class="nav-link text-white" style="color: white !important;" href="/psb"><i class="fa-solid fa-house me-2"></i>Beranda</a>
+                            <a class="nav-link " style="color: black !important;" href="/psb"><i class="fa-solid fa-house me-2"></i>Beranda</a>
                         </li>
                         {f'<li class="nav-item me-3">'
-                        f'<a class="nav-link text-white" href="/pendaftaran" {"data-bs-toggle='modal' data-bs-target='#modalPendaftaranTutup'" if not is_halaman_pendaftaran else ""}>'
+                        f'<a class="nav-link " href="/pendaftaran" {"data-bs-toggle='modal' data-bs-target='#modalPendaftaranTutup'" if not is_halaman_pendaftaran else ""}>'
                         f'<i class="fa-solid fa-note-sticky me-2"></i>Pendaftaran</a>'
                         f'</li>'}
                         <li class="nav-item dropdown">
                             <a href="#" class="dropdown-link nav-link"
-                                style="color: white !important;">
+                                style="color: black !important;">
                                 <i class="fa-solid fa-fingerprint me-2"></i>Login</a>
                             <div class="dropdown-content">
                                 <a href="/login">Login PSB</a>
@@ -3777,10 +3755,10 @@ class PortalOrangTua(http.Controller):
                             </div>
                         </li>
                         <li class="nav-item me-3">
-                            <a class="nav-link text-white" href="/bantuan"><i class="fa-solid fa-lock me-2"></i>Bantuan</a>
+                            <a class="nav-link " href="/bantuan"><i class="fa-solid fa-lock me-2"></i>Bantuan</a>
                         </li>
                         {f'<li class="nav-item dropdown">'
-                        f'<a href="#" class="dropdown-link nav-link text-white"><i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>'
+                        f'<a href="#" class="dropdown-link nav-link "><i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>'
                         f'<div class="dropdown-content">'
                         f'<a href="/pengumuman/sd-mi">SD / MI</a>'
                         f'<a href="/pengumuman/smp-mts">SMP / MTS</a>'
@@ -3788,7 +3766,7 @@ class PortalOrangTua(http.Controller):
                         f'</div>'
                         f'</li>' if is_halaman_pengumuman else ''}
                         <li class="nav-item me-3">
-                            <a class="nav-link text-white log" href="/logout"><i class="fa-solid fa-right-from-bracket me-2"></i>Keluar</a>
+                            <a class="nav-link  log" href="/logout"><i class="fa-solid fa-right-from-bracket me-2"></i>Keluar</a>
                         </li>
                         </ul>
                     </ul>
@@ -3796,7 +3774,7 @@ class PortalOrangTua(http.Controller):
             </div>
 
             <div class="container my-5">
-                <h2 class="text-center mb-4 text-white">Selamat Datang Bapak/Ibu,<span class="text-capitalize"> {display_name}</span></h2>
+                <h2 class="text-center mb-4 ">Selamat Datang Bapak/Ibu,<span class="text-capitalize"> {display_name}</span></h2>
 
                 <!-- Progres PSB Anak -->
                 <div class="card mb-4 progress-section">
@@ -3914,7 +3892,7 @@ class PortalOrangTua(http.Controller):
                 </div> -->
             </div>
 
-            <footer class="text-white p-2" style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+            <footer class=" p-2" style="display: flex; justify-content: space-between; flex-wrap: wrap;">
                 <div class="ms-5">
                     <ul style="list-style-type: none; display: flex; text-transform: uppercase; font-size: 13px;" class="fw-semibold">
                         <li><a href="/psb" class="me-4" style="text-decoration: none; color: white;">Home</a></li>

@@ -38,7 +38,7 @@
 
             <!-- <button string="Perawatan" name="action_rawat" type="object" class="btn-primary" state="rawat" invisible="state not in ('periksa','pengobatan')" groups="pesantren_kesantrian.group_kesantrian_kesehatan,
                             pesantren_kesantrian.group_kesantrian_manager" /> -->
-            <button string="Pasien Sembuh" name="action_sembuh" type="object" class="btn-primary" state="sembuh" invisible="state not in ('pengobatan')" groups="pesantren_kesantrian.group_kesantrian_kesehatan,
+            <button string="Santri Sembuh" name="action_sembuh" type="object" class="btn-primary" state="sembuh" invisible="state not in ('pengobatan')" groups="pesantren_kesantrian.group_kesantrian_kesehatan,
                             pesantren_kesantrian.group_kesantrian_manager" />
             <!-- <button string="Batal" name="action_batal" type="object" class="btn-primary" state="batal" invisible="state not in ('pengobatan')" groups="pesantren_kesantrian.group_kesantrian_kesehatan,
                             pesantren_kesantrian.group_kesantrian_manager" /> -->

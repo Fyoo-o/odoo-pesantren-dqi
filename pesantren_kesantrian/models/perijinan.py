@@ -1,5 +1,5 @@
 from odoo import api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from dateutil.relativedelta import relativedelta
 from datetime import datetime, timedelta
 import logging
@@ -21,6 +21,7 @@ class Perijinan(models.Model):
             'Rejected': [('readonly', True)],
             'Permission': [('readonly', True)],
             'Return': [('readonly', True)],
+            'Overdue': [('readonly', True)],
         }, default=lambda self: fields.Datetime.now())
 
     tgl_kembali = fields.Datetime(string='Tgl Kembali', required=True,
@@ -31,6 +32,7 @@ class Perijinan(models.Model):
             'Rejected': [('readonly', True)],
             'Permission': [('readonly', True)],
             'Return': [('readonly', True)],
+            'Overdue': [('readonly', True)],
         },  default=lambda self: fields.Datetime.now() + relativedelta(days=1))
     waktu_keluar = fields.Datetime(string='Waktu Keluar', readonly=True)
     waktu_kembali = fields.Datetime(string='Waktu Kembali', readonly=True)
@@ -43,6 +45,7 @@ class Perijinan(models.Model):
             'Rejected': [('readonly', True)],
             'Permission': [('readonly', True)],
             'Return': [('readonly', True)],
+            'Overdue': [('readonly', True)],
         }) 
     siswa_id = fields.Many2one('cdn.siswa', string='Santri', required=True,
         states={
@@ -52,6 +55,7 @@ class Perijinan(models.Model):
             'Rejected': [('readonly', True)],
             'Permission': [('readonly', True)],
             'Return': [('readonly', True)],
+            'Overdue': [('readonly', True)],
         }, ondelete='cascade')
     barcode = fields.Char(string='Kartu Santri', states= {
         'Draft': [('readonly', False)],
@@ -60,6 +64,7 @@ class Perijinan(models.Model):
         'Rejected': [('readonly', True)],
         'Permission': [('readonly', True)],
         'Return': [('readonly', True)],
+        'Overdue': [('readonly', True)],
     })
     kelas_id = fields.Many2one('cdn.ruang_kelas', string='Kelas',related='siswa_id.ruang_kelas_id', readonly=True)
     kamar_id = fields.Many2one('cdn.kamar_santri', string='Kamar', related='siswa_id.kamar_id', readonly=True)
@@ -72,6 +77,7 @@ class Perijinan(models.Model):
         'Rejected': [('readonly', True)],
         'Permission': [('readonly', True)],
         'Return': [('readonly', True)],
+        'Overdue': [('readonly', True)],
     })
 
     catatan = fields.Text(string='Catatan', readonly=False,
@@ -82,6 +88,7 @@ class Perijinan(models.Model):
             'Rejected': [('readonly', True)],
             'Permission': [('readonly', True)],
             'Return': [('readonly', True)],
+            'Overdue': [('readonly', True)],
         }) 
     
     catatan_keamanan = fields.Text(string='Catatan', readonly=False, 
@@ -92,6 +99,7 @@ class Perijinan(models.Model):
             'Rejected': [('readonly', False)],
             'Permission': [('readonly', False)],
             'Return': [('readonly', False)],
+            'Overdue': [('readonly', True)],
         })
     
     keperluan = fields.Many2one('master.keterangan',string='Keperluan', required=True ,states={
@@ -101,6 +109,7 @@ class Perijinan(models.Model):
             'Rejected': [('readonly', True)],
             'Permission': [('readonly', True)],
             'Return': [('readonly', True)],
+            'Overdue': [('readonly', True)],
         }, tracking=True )
 
 
@@ -132,6 +141,7 @@ class Perijinan(models.Model):
         ('Rejected', 'Ditolak'),
         ('Permission', 'Ijin Keluar'),
         ('Return', 'Kembali'),
+        ('Overdue', 'Terlambat'),
     ], string='Status', default='Draft',
         track_visibility='onchange')
     
@@ -142,6 +152,13 @@ class Perijinan(models.Model):
         readonly=True, 
         store=True
     )   
+
+    show_button_santri_masuk = fields.Boolean(compute='_compute_show_button_santri_masuk', store=False)
+
+    @api.depends('state')
+    def _compute_show_button_santri_masuk(self):
+        for record in self:
+            record.show_button_santri_masuk = record.state in ['Permission', 'Overdue']
 
     def action_save_record(self):
         self.state = 'Draft'
@@ -176,49 +193,6 @@ class Perijinan(models.Model):
         else:
             self.barcode = False
             self.siswa_id = False
-
-
-    # @api.depends('tgl_ijin', 'tgl_kembali')
-    # def _compute_lama_ijin(self):
-    #     for record in self:
-    #         if record.tgl_ijin and record.tgl_kembali:
-    #             record.lama_ijin = (record.tgl_kembali - record.tgl_ijin).days
-
-    # @api.depends('waktu_kembali')
-    # def _compute_jatuh_tempo(self):
-    #     print('compute jatuh tempo')
-    #     for record in self:
-    #         if record.waktu_kembali:
-    #             kembali = record.waktu_kembali.date()
-    #             print('waktu kembali')
-    #             print(record.tgl_kembali,kembali,(kembali - record.tgl_kembali).days)
-    #             if record.tgl_kembali < kembali:
-    #                 record.jatuh_tempo = (kembali- record.tgl_kembali).days
-    #             else:
-    #                 record.jatuh_tempo = 0
-
-    #             record.cek_terlambat = True if record.jatuh_tempo > 0 else False
-
-    # @api.depends('waktu_kembali')
-    # def _compute_jatuh_tempo(self):
-    #     for record in self:
-    #         if record.waktu_kembali:
-    #             kembali = record.waktu_kembali.date()
-    #             tgl_kembali_date = record.tgl_kembali.date()
-
-    #             selisih_hari = (kembali - tgl_kembali_date).days
-    #             _logger.info("tgl_kembali: %s, waktu_kembali: %s, selisih hari: %s", tgl_kembali_date, kembali, selisih_hari)
-
-    #             if tgl_kembali_date < kembali:
-    #                 record.jatuh_tempo = selisih_hari
-    #             else:
-    #                 record.jatuh_tempo = 0
-
-    #             record.cek_terlambat = record.jatuh_tempo > 0
-    #         else:
-    #             record.jatuh_tempo = 0
-    #             record.cek_terlambat = False
-
 
     @api.onchange('waktu_kembali')
     def _onchange_waktu_kembali(self):
@@ -273,6 +247,21 @@ class Perijinan(models.Model):
         self.state = 'Check'
     def action_approved(self):
         self.state = 'Approved'
+        
+        # Cari user orang tua dari siswa terkait
+        parent_user = self.env['res.users'].search([
+            ('partner_id.child_ids', 'in', self.siswa_id.partner_id.id),
+            ('groups_id', 'in', self.env.ref('pesantren_kesantrian.group_kesantrian_orang_tua').id),
+        ], limit=1)
+
+        if parent_user:
+            self.message_post(
+                body=f"Izin santri atas nama <b>{self.siswa_id.name}</b> telah <b>disetujui</b>.",
+                partner_ids=[parent_user.partner_id.id],
+                message_type='notification',
+                subtype_xmlid='mail.mt_note',
+            )
+
     def action_rejected(self):
         self.state = 'Rejected'
     def action_permission(self):
@@ -285,94 +274,92 @@ class Perijinan(models.Model):
         if not self.waktu_keluar:
             self.tgl_kembali = self.tgl_ijin
 
+    def _validate_tanggal_izin_kembali(self, vals=None):
+        for record in self:
+            tgl_ijin = vals.get('tgl_ijin') if vals and 'tgl_ijin' in vals else record.tgl_ijin
+            tgl_kembali = vals.get('tgl_kembali') if vals and 'tgl_kembali' in vals else record.tgl_kembali
+
+            # Jika string, konversi ke datetime
+            if isinstance(tgl_ijin, str):
+                tgl_ijin = fields.Datetime.from_string(tgl_ijin)
+            if isinstance(tgl_kembali, str):
+                tgl_kembali = fields.Datetime.from_string(tgl_kembali)
+
+            if tgl_ijin and tgl_kembali and tgl_ijin > tgl_kembali:
+                raise ValidationError("Tanggal kembali tidak boleh sebelum tanggal izin!.")
+
+
+    def _validate_duplicate_tanggal_izin(self, vals=None):
+        for record in self:
+            # Ambil tgl_ijin dan siswa_id dari vals atau record
+            tgl_ijin = vals.get('tgl_ijin') if vals and 'tgl_ijin' in vals else record.tgl_ijin
+            siswa_id = vals.get('siswa_id') if vals and 'siswa_id' in vals else record.siswa_id.id
+
+            # Jika tgl_ijin dalam bentuk string, konversi ke datetime
+            if isinstance(tgl_ijin, str):
+                try:
+                    tgl_ijin = fields.Datetime.from_string(tgl_ijin)
+                except Exception:
+                    continue  # Lewati jika parsing gagal
+
+            if not siswa_id or not tgl_ijin:
+                continue  # Data tidak lengkap
+
+            domain = [
+                ('siswa_id', '=', siswa_id),
+                ('tgl_ijin', '>=', tgl_ijin - timedelta(hours=1)),
+                ('tgl_ijin', '<=', tgl_ijin + timedelta(hours=1)),
+                ('id', '!=', record.id),
+            ]
+
+            duplicate = self.env['cdn.perijinan'].search(domain, limit=1)
+            if duplicate:
+                raise ValidationError(
+                    f"Santri sudah memiliki izin lain dalam rentang waktu ±1 jam dari {tgl_ijin.strftime('%d-%m-%Y %H:%M')}."
+                )
 
     @api.model
     def create(self, vals):
         vals['name'] = self.env['ir.sequence'].next_by_code('cdn.perijinan')
-        return super(Perijinan, self).create(vals)
+        temp_record = super(Perijinan, self).create(vals)
+        temp_record._validate_duplicate_tanggal_izin(vals)
+        temp_record._validate_tanggal_izin_kembali(vals)
+        return temp_record
 
-    # @api.model
-    # def _search(self, domain, offset=0, limit=None, order=None, count=False):
-    #     # Handle empty domain
-    #     if not domain:
-    #         return super(Perijinan, self)._search(domain, offset=offset, limit=limit, order=order, )
-        
-    #     # Periksa domain untuk mencegah error
-    #     if isinstance(domain, list):
 
-    #         new_domain = []
-    #         for item in domain:
-    #             if isinstance(item, (list, tuple)) and len(item) == 3:
-    #                 field, operator, value = item
-                    
-    #                 # Handle selection fields untuk pencarian label dan bukan hanya value
-    #                 if field == 'state' and operator == 'ilike' and value:
-    #                     if 'pengajuan' in value.lower():
-    #                         new_domain.append(('state', '=', 'Draft'))
-    #                     elif 'diperiksa' in value.lower() or 'periksa' in value.lower():
-    #                         new_domain.append(('state', '=', 'Check'))
-    #                     elif 'disetujui' in value.lower() or 'setuju' in value.lower():
-    #                         new_domain.append(('state', '=', 'Approved'))
-    #                     elif 'ditolak' in value.lower() or 'tolak' in value.lower():
-    #                         new_domain.append(('state', '=', 'Rejected'))
-    #                     elif 'keluar' in value.lower():
-    #                         new_domain.append(('state', '=', 'Permission'))
-    #                     elif 'kembali' in value.lower() or 'masuk' in value.lower():
-    #                         new_domain.append(('state', '=', 'Return'))
-    #                     else: 
-    #                         new_domain.append(item)
-                            
-    #                 # Handle tanggal
-    #                 elif field in ['tgl_ijin'] and operator == 'ilike' and value:
-    #                     try:
-    #                         # Coba parsing format tanggal yang umum
-    #                         date_formats = ['%d/%m/%Y', '%Y-%m-%d', '%d-%m-%Y', '%d.%m.%Y']
-    #                         parsed_date = None
-                            
-    #                         for fmt in date_formats:
-    #                             try:
-    #                                 parsed_date = datetime.strptime(value, fmt)
-    #                                 break
-    #                             except ValueError:
-    #                                 continue
-                            
-    #                         if parsed_date:
-    #                             start_date = datetime.combine(parsed_date.date(), datetime.min.time())
-    #                             end_date = datetime.combine(parsed_date.date(), datetime.max.time())
-    #                             new_domain.append('&')
-    #                             new_domain.append((field, '>=', start_date))
-    #                             new_domain.append((field, '<=', end_date))
-    #                         else:
-    #                             # Jika tidak bisa diparsing sebagai tanggal, gunakan pencarian biasa
-    #                             new_domain.append(item)
-    #                     except Exception:
-    #                         # Fallback ke pencarian biasa jika ada error
-    #                         new_domain.append(item)
-                    
-    #                 else:
-    #                     new_domain.append(item)
-    #             else:
-    #                 new_domain.append(item)
-            
-    #         domain = new_domain
+    def write(self, vals):
+        for record in self:
+            record._validate_duplicate_tanggal_izin(vals)
+            record._validate_tanggal_izin_kembali(vals)
+        return super(Perijinan, self).write(vals)
 
-    #         # Filter hanya domain valid (list/tuple dengan panjang 3)
-    #         valid_domain = []
-    #         or_count = 0
+    @api.model
+    def cron_check_santri_terlambat(self):
+        """Scheduled task to check if any students have not returned on time"""
+        now = fields.Datetime.now()
+        perijinan_terlambat = self.search([
+            ('state', '=', 'Permission'),             # Masih dalam status "izin keluar"
+            ('tgl_kembali', '<', now),                # Sudah melewati batas waktu kembali
+            ('waktu_kembali', '=', False)             # Belum kembali
+        ])
+
+        admin_users = self.env.ref('base.group_system').users  # Ganti dengan group keamanan jika ada
+
+        for rec in perijinan_terlambat:
+            # Tandai terlambat
+            rec.cek_terlambat = True
+            rec.write({
+            'cek_terlambat': True,
+            'state': 'Overdue'
+            })
+            # Kirim notifikasi ke semua admin
+            for user in admin_users:
+                rec.message_post(
+                    body=f"Santri {rec.siswa_id.name} belum kembali sesuai jadwal!\n"
+                         f"Rencana Kembali: {rec.tgl_kembali.strftime('%d-%m-%Y %H:%M')}",
+                    partner_ids=[user.partner_id.id],
+                    message_type='notification',
+                    subtype_xmlid='mail.mt_note',
+                )
             
-    #         for item in domain:
-    #             if isinstance(item, (list, tuple)) and len(item) == 3:
-    #                 valid_domain.append(item)
-    #             elif isinstance(item, str) and item in ['&', '|', '!']:
-    #                 if item == '|':
-    #                     or_count += 1
-    #                 valid_domain.append(item)
             
-    #         # Ensure proper balancing for OR operators
-    #         if or_count > 0 and len(valid_domain) < (or_count * 2 + 1):
-    #             # Domain is invalid, fall back to simple name search
-    #             return super(Perijinan, self)._search([('name', 'ilike', '')], offset=offset, limit=limit, order=order, )
-            
-    #         domain = valid_domain if valid_domain else domain
-        
-    #     return super(Perijinan, self)._search(domain, offset=offset, limit=limit, order=order, )

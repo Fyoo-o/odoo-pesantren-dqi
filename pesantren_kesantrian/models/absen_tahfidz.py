@@ -8,25 +8,20 @@ class AbsenTahfidzQuran(models.Model):
     #get domain 
     def _domain_halaqoh_id(self):
         tahun_ajaran = self.env.user.company_id.tahun_ajaran_aktif.id
+
+        # Jika user adalah Manager Kesantrian -> lihat semua halaqoh di tahun ajaran aktif
         if self.env.user.has_group('pesantren_kesantrian.group_kesantrian_manager'):
             return [
-                ('id','!=',False),
                 ('fiscalyear_id', '=', tahun_ajaran)
             ]
+
+        # Jika bukan manager -> halaqoh di tahun ajaran aktif yang user ini sebagai pengganti
         return [
-            '|',
-                '&',
-                ('penanggung_jawab_id.user_id', '=', self.env.user.id),
-                ('fiscalyear_id', '=', tahun_ajaran),
-                '&',
-                ('pengganti_ids.user_id', '=', self.env.user.id),
-                ('fiscalyear_id', '=', tahun_ajaran)
+            ('fiscalyear_id', '=', tahun_ajaran),
         ]
-    
+
     def _get_domain_guru(self):
         return [
-            '&',
-            ('user_id', '=', self.env.user.id),
             ('jns_pegawai', '=', 'guru')
         ]
 
@@ -45,7 +40,7 @@ class AbsenTahfidzQuran(models.Model):
     sesi_id         = fields.Many2one('cdn.sesi_tahfidz', string='Sesi', required=True, states={'Done': [('readonly', True)]})
     keterangan      = fields.Text(string='Keterangan', states={'Done': [('readonly', True)]})
     absen_ids       = fields.One2many('cdn.absen_tahfidz_quran_line', 'absen_id', string='Absen', states={'Done': [('readonly', True)]})
-    state           = fields.Selection([
+    state = fields.Selection([
         ('Draft', 'Draft'),
         ('Proses', 'Proses'),
         ('Done','Selesai'),
@@ -59,7 +54,7 @@ class AbsenTahfidzQuran(models.Model):
                 surah, ayat_awal = None, None
                 last_tahfidz = self.env['cdn.tahfidz_quran'].search([
                     ('siswa_id', '=', absen.siswa_id.id),
-                    ('state', '=', 'done'),
+                    ('state', '=', 'Done'),
                 ], order='id desc', limit=1)
                 if last_tahfidz:
                     if not last_tahfidz.surah_id.number == 114 and last_tahfidz.ayat_akhir.name == last_tahfidz.surah_id.jml_ayat:
@@ -74,7 +69,7 @@ class AbsenTahfidzQuran(models.Model):
                     'halaqoh_id': self.halaqoh_id.id,
                     'ustadz_id': self.ustadz_id.id,
                     'sesi_tahfidz_id': self.sesi_id.id,
-                    'state': 'draft',
+                    'state': 'Draft',
                     'surah_id': surah,
                     'ayat_awal': ayat_awal,
                 }

@@ -14,14 +14,11 @@
                
                 <xpath expr="//button[@name='action_approved']" position="replace">
                     <button string="Ijin Diterima" type="object" name="action_approved" groups="pesantren_musyrif.group_musyrif_staff" invisible="state != 'Check'" />
-
                 </xpath>
-        
+
                 <xpath expr="//button[@name='action_rejected']" position="replace">
                     <button string="Ijin Ditolak" type="object" name="action_rejected" groups="pesantren_musyrif.group_musyrif_staff" invisible="state != 'Check'" />
                 </xpath>
-
- 
             </field>
         </record>
 
@@ -36,7 +33,7 @@
                             '|', ('name', 'ilike', self),
                             '|', ('tgl_ijin', 'ilike', self),
                             '|', ('siswa_id', 'ilike', self),
-                            '|', ('siswa_id.barcode_santri', 'ilike', self),
+                            '|', ('siswa_id.barcode_santri', 'ilike'    , self),
                             '|', ('kamar_id', 'ilike', self),
                             '|', ('halaqoh_id', 'ilike', self),
                             '|', ('musyrif_id', 'ilike', self),
@@ -59,13 +56,6 @@
                     <filter string="Ditolak" name="rejected" domain="[('state' ,'=', 'Rejected')]" />
                     <filter string="Santri Ijin" name="permission" domain="[('state' ,'=', 'Permission')]" />
                     <filter string="Kembali" name="return" domain="[('state' ,'=', 'Return')]" />
-                                            
-                    <!-- <filter string="Status Ijin" domain="[]" name="group_by_state" context="{'group_by':'state'}"/> -->
-
-                    <!-- group by siswa -->
-                    <!-- <group string="Siswa" colspan="4">
-                        <field name="siswa_id" />
-                    </group> -->
                     <group>
                         <filter string="Status Ijin" domain="[]" name="group_state" context="{'group_by':'state'}"/>
                     </group>

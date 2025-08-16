@@ -2,7 +2,7 @@ from odoo import api, fields, models
 import logging
 _logger = logging.getLogger(__name__)
 
-class AbsenesiSiswa(models.Model):
+class AbsensiSiswa(models.Model):
     _name               = 'cdn.absensi_siswa'
     _inherit            = ['mail.thread', 'mail.activity.mixin']
     _description        = 'Data Absensi Siswa'
@@ -45,7 +45,7 @@ class AbsenesiSiswa(models.Model):
     tahunajaran_id      = fields.Many2one(comodel_name='cdn.ref_tahunajaran', string='Tahun Ajaran', related='kelas_id.tahunajaran_id', readonly=True, store=True)
     semester            = fields.Selection(selection=[('1', 'Ganjil'), ('2', 'Genap')], string='Semester', readonly=True, store=True)
     guru_id             = fields.Many2one(comodel_name='hr.employee', string='Guru', required=True, 
-                        domain=_get_domain_guru, default=_get_default_guru)
+                         default=_get_default_guru)#domain=_get_domain_guru,    
     pertemuan_ke        = fields.Integer(string='Pertemuan Ke', readonly=True, compute='_compute_pertemuan_ke', store=True)
     mapel_id            = fields.Many2one(comodel_name='cdn.mata_pelajaran', string='Mata pelajaran', required=True)
     rpp_id              = fields.Many2one(comodel_name='cdn.master_rpp', string='RPP')
@@ -54,7 +54,7 @@ class AbsenesiSiswa(models.Model):
     materi              = fields.Text(string='Materi', required=True)
     state               = fields.Selection(selection=[('draft', 'Draft'), ('done', 'Done')], string='State', default='draft')
     absensi_ids         = fields.One2many(comodel_name='cdn.absensi_siswa_lines', inverse_name='absensi_id', string='Absensi Siswa')
-
+    
     # action
     def action_draft(self):
         self.state = 'draft'
@@ -142,6 +142,16 @@ class AbsenesiSiswa(models.Model):
                 }
             else:
                 return {}
+
+    @api.onchange('kelas_id', 'tanggal')  
+    def _onchange_guru_domain(self):
+        return {
+            'domain': {
+                'guru_id': [('jns_pegawai','=','guru')],
+            }
+        }
+        
+
 
 
 # class AbsensiSiswaLine(models.Model):

@@ -66,15 +66,15 @@
                             <group>
                                 <field name="hari" />
                                 <field name="jampelajaran_id"
-                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
-                                    
+                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" /> 
                             </group>
-                            <group>
-                                <field name="mapel_id"
-                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
-                                <field name="guru_id"
-                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
-                            </group>
+                               <group>
+                                    <field name="mapel_id"
+                                        domain="[('tingkat_id', '=', tingkat_id)]"
+                                        options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
+                                    <field name="guru_id"
+                                        options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
+                                </group>
                         </group>
                         <notebook>
                             <page string="Absensi Santri">
@@ -132,7 +132,7 @@
             <field name="view_mode">list,form</field>
             <field name="domain">
                 [
-                ('guru_id.user_id','=',uid)
+                ('state', 'in', ['draft', 'done'])
                 ]
             </field>
         </record>

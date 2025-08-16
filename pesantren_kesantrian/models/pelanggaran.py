@@ -181,6 +181,27 @@ class Pelanggaran(models.Model):
     def action_set_to_draft(self):
         self.state = 'draft'
 
+    @api.onchange('kategori')
+    def _onchange_kategori(self):
+        mapping = {
+            'ringan': 'Ringan',
+            'sedang': 'Sedang',
+            'berat': 'Berat',
+            'sangat_berat': 'Dikeluarkan'
+        }
+        if self.kategori:
+            return {
+                'domain': {
+                    'tindakan_id': [('level_pelanggaran', '=', mapping.get(self.kategori))]
+                }
+            }
+        else:
+            # Kalau kategori belum dipilih, tampilkan semua
+            return {
+                'domain': {
+                    'tindakan_id': []
+                }
+            }
 
     # @api.model
     # def _search(self, domain, offset=0, limit=None, order=None, count=False):

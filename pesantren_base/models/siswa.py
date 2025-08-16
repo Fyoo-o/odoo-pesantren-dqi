@@ -27,9 +27,13 @@ class siswa(models.Model):
 
     partner_id          = fields.Many2one('res.partner', 'Partner', ondelete="cascade")
     active_id           = fields.Many2one('res.partner', string='Customer Active', compute="_compute_partner_id")
+    qr_code_image       = fields.Binary("QR Code", attachment=True)
 
     jenjang             = fields.Selection(selection=[('paud','PAUD'),('tk','TK/RA'),('sd','SD/MI'),('smp','SMP/MTS'),('sma','SMA/MA/SMK'), ('nonformal', 'Nonformal')],  string="Jenjang", related="ruang_kelas_id.name.jenjang", readonly=False, store=True, help="")
     nama_sekolah        = fields.Selection(selection='_get_pilihan_nama_sekolah',string="Nama Sekolah",store=True,tracking=True)
+    kamar_id            = fields.Many2one('cdn.kamar_santri', string='Nama Kamar')
+    ruang_kelas_id      = fields.Many2one('cdn.ruang_kelas', string="Ruang Kelas")
+
 
     @api.model
     def _get_pilihan_nama_sekolah(self):
@@ -530,3 +534,21 @@ class siswa(models.Model):
         # Gabungkan domain tambahan jika ada
         recs = self.search(domain + args, limit=limit)
         return recs.name_get()
+    
+    def action_generate_qr(self):
+        for siswa in self:
+            qr_data = f"NIS: {siswa.nis}\nNama: {siswa.name}\nKamar: {siswa.kamar_id.kamar_id.name}\nKelas: {siswa.ruang_kelas_id.name.name}"
+
+            qr = qrcode.QRCode(
+                version=1,
+                box_size=10,
+                border=4,
+            )
+            qr.add_data(qr_data)
+            qr.make(fit=True)
+
+            img = qr.make_image(fill_color="black", back_color="white")
+            buffer = BytesIO()
+            img.save(buffer, format='PNG')
+
+            siswa.qr_code_image = base64.b64encode(buffer.getvalue())

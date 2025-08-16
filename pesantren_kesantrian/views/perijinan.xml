@@ -15,8 +15,15 @@
                     <field name="musyrif_id" />
                     <field name="keperluan" />
                     <field name="lama_ijin" />
-                    <field name="state" />
                     <field name="penjemput" />
+                    <field name="state" widget="badge"
+                    decoration-muted="state == 'Draft'"
+                    decoration-info="state == 'Check'"
+                    decoration-success="state == 'Approved'"
+                    decoration-danger="state == 'Rejected' or state=='Overdue'"
+                    decoration-warning="state == 'Permission'"
+                    decoration-primary="state == 'Return'" />
+
                 </list>
             </field>
         </record>
@@ -29,7 +36,7 @@
                 <form string="Perizinan Santri" duplicate="0">
                     <header>
                         <!-- <button name="action_save_record" type="object" string="Simpan" class="oe_highlight" groups="pesantren_kesantrian.group_kesantrian_staff"/> -->
-                        <button string="Ijin Diperiksa" type="object" name="action_checked" groups="pesantren_kesantrian.group_kesantrian_staff" invisible="state != 'Draf'" />
+                        <button string="Ijin Diperiksa" type="object" name="action_checked" groups="pesantren_kesantrian.group_kesantrian_manager" invisible="state != 'Draft'" />
 
                         <button string="Ijin Disetujui" type="object" name="action_approved" groups="pesantren_kesantrian.group_kesantrian_manager" invisible="state != 'Check'" />
 
@@ -38,11 +45,11 @@
                         <button string="Santri Keluar" type="object" name="action_permission" groups="pesantren_kesantrian.group_kesantrian_manager,
                                 pesantren_kesantrian.group_kesantrian_keamanan" invisible="state != 'Approved'"/>
                         <button string="Santri Masuk" type="object" name="action_return" groups="pesantren_kesantrian.group_kesantrian_manager,
-                                pesantren_kesantrian.group_kesantrian_keamanan" invisible="state != 'Permission'"/>
+                                pesantren_kesantrian.group_kesantrian_keamanan" invisible="not show_button_santri_masuk"/>
 
-                        <button name="action_save_record" type="object" string="Simpan" class="oe_highlight" group="pesantren_kesantrian.group_kesantrian_orang_tua" invisible="state != 'Draft'"/>
+                        <button name="action_save_record" type="object" string="Simpan" class="oe_highlight" groups="pesantren_kesantrian.group_kesantrian_orang_tua" invisible="state != 'Draft'"/>
 
-                        <field name="state" widget="statusbar" statusbar_visible="Draft,Check,Approved,Permission" />
+                        <field name="state" widget="statusbar" statusbar_visible="Draft,Check,Approved,Permission,Overdue" />
                     </header>
                     <sheet>
                         <group string="Santri">
@@ -114,7 +121,8 @@
                             '|', ('keperluan', 'ilike', self),
                             '|', ('lama_ijin', 'ilike', self),
                             '|', ('penjemput', 'ilike', self),
-                            ('state', 'ilike', self),
+                            ('state', 'ilike', self)
+                            
                         ]"
                     />
                     <separator/>
@@ -140,16 +148,6 @@
             </field>
         </record>
 
-        <!-- cdn.perijinan graph view -->
-        <!-- <record id="cdn_perijinan_view_graph" model="ir.ui.view">
-            <field name="name">cdn.perijinan.view.graph</field>
-            <field name="model">cdn.perijinan</field>
-            <field name="arch" type="xml">
-                <graph>
-                    <field name="siswa_id" />
-                </graph>
-            </field>
-        </record> -->
 
         <!-- cdn.perijinan action window -->
         <record id="cdn_perijinan_action" model="ir.actions.act_window">

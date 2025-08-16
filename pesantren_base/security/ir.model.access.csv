@@ -89,3 +89,4 @@ access_cdn_kenaikan_kelas,access_cdn_kenaikan_kelas,model_cdn_kenaikan_kelas,pes
 
 access_kenaikan_kelas_line_user,access.kenaikan.kelas.line.user,model_cdn_kenaikan_kelas_line,base.group_user,1,1,1,0
 access_kenaikan_kelas_line_manager,access.kenaikan.kelas.line.manager,model_cdn_kenaikan_kelas_line,base.group_system,1,1,1,1
+access_cdn_komponen_biaya_manager,cdn_komponen_biaya_manager,model_cdn_komponen_biaya,,1,1,1,1

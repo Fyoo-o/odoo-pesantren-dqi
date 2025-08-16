@@ -81,6 +81,7 @@
                                 <field name="kecamatan_id" domain="[('kota_id','=',kota_id)]" />
                                 <field name="kota_id" domain="[('propinsi_id','=',propinsi_id)]" />
                                 <field name="propinsi_id"/>
+                                <field name="qr_code_image" widget="image" class="oe_avatar" options="{'preview_image': 'qr_code_image'}" string="QR Code" style="width: 120px; height: 120px;"/>
                             </group>
                             <!-- <field name="tinggal_di"/> -->
                         </group>
@@ -303,7 +304,6 @@
                     <field name="ruang_kelas_id" select="True"/>
                     <group string="Group By..">
                         <filter string="Jenjang" domain="[]" name="group_by_jenjang" context="{'group_by':'jenjang'}"/>
-                        <filter string="Nama Sekolah" domain="[]" name="group_by_nama_sekolah" context="{'group_by':'nama_sekolah'}"/>
                         <filter string="Ayah pekerjaan" domain="[]" name="group_by_ayah_pekerjaan_id" context="{'group_by':'ayah_pekerjaan_id'}"/>
                         <filter string="Ayah pendidikan" domain="[]" name="group_by_ayah_pendidikan_id" context="{'group_by':'ayah_pendidikan_id'}"/>
                         <filter string="Ibu pekerjaan" domain="[]" name="group_by_ibu_pekerjaan_id" context="{'group_by':'ibu_pekerjaan_id'}"/>
