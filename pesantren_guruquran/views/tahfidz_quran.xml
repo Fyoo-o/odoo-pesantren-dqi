@@ -29,9 +29,7 @@
             <field name="view_mode">list,form,graph,calendar</field>
             <field name="domain">
                 [
-                    '|',
-                    ('halaqoh_id.penanggung_jawab_id.user_id','=',uid),
-                    ('halaqoh_id.pengganti_ids.user_id','=',uid)
+                
                 ]
             </field>
         </record>

@@ -1,546 +1,400 @@
 /** @odoo-module */
 
 import { useService } from "@web/core/utils/hooks";
-const { Component, useRef, onWillStart, onMounted, onWillUnmount, useState } =
-  owl;
+const { Component, useRef, onWillStart, onMounted, onWillUnmount, useState, onWillUpdateProps } = owl;
 import { session } from "@web/session";
 
+// Fungsi animasi nilai
+function animateValue(element, start, end, duration) {
+  let startTimestamp = null;
+  const step = (timestamp) => {
+    if (!startTimestamp) startTimestamp = timestamp;
+    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+    const value = Math.floor(progress * (end - start) + start);
+    element.textContent = value.toLocaleString();
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    }
+  };
+  requestAnimationFrame(step);
+}
+
 export class GuruKpiCard extends Component {
+  static props = {
+    startDate: { type: String, optional: true },
+    endDate: { type: String, optional: true },
+  };
+
   setup() {
     this.orm = useService("orm");
     this.actionService = useService("action");
-    this.refreshInterval = null;
     this.loadingOverlayRef = useRef("loadingOverlay");
-    this.default_period = "thisMonth";
+
+    // Gunakan useState agar reaktif
     this.state = useState({
       kpiData: [],
-      startDate: null,
-      endDate: null,
+      startDate: this.props.startDate || null,
+      endDate: this.props.endDate || null,
+      isLoading: false,
     });
 
-    this.refreshInterval = null;
     this.countdownInterval = null;
+    this.refreshInterval = null;
     this.countdownTime = 10;
     this.isCountingDown = false;
 
-    // Setup for component lifecycle events
-    onWillStart(async () => {
-      try {
+    // Tangkap perubahan props (dari parent component)
+    onWillUpdateProps(async (nextProps) => {
+      if (nextProps.startDate !== this.props.startDate || nextProps.endDate !== this.props.endDate) {
+        this.state.startDate = nextProps.startDate || null;
+        this.state.endDate = nextProps.endDate || null;
         await this.updateKpiData();
-      } catch (error) {
-        console.error("Failed to update KPI data:", error);
       }
     });
 
-    // Attach event listeners after mounting
+    onWillStart(async () => {
+      // Set default: bulan ini jika tidak ada props
+      if (!this.state.startDate || !this.state.endDate) {
+        const today = new Date();
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+        const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        this.state.startDate = this.formatDate(firstDay);
+        this.state.endDate = this.formatDate(lastDay);
+      }
+      await this.updateKpiData();
+    });
+
     onMounted(() => {
       this.attachEventListeners();
+      // Set default periode di UI
       const periodSelection = document.getElementById("periodSelection");
       if (periodSelection) {
-        periodSelection.value = "thisMonth"; // Pilih default "Bulan Ini"
+        periodSelection.value = "thisMonth";
       }
     });
 
-    // Cleanup interval on component unmount
     onWillUnmount(() => {
-      if (this.countdownInterval) {
-        clearInterval(this.countdownInterval);
+      this.clearIntervals();
+      if (this.loadingOverlay && document.body.contains(this.loadingOverlay)) {
+        document.body.removeChild(this.loadingOverlay);
+        this.loadingOverlay = null;
       }
     });
+  }
+
+  // Helper: Format Date ke YYYY-MM-DD
+  formatDate(date) {
+    return date.toISOString().split("T")[0];
   }
 
   // Loading Overlay
   showLoading() {
     if (!this.loadingOverlay) {
       this.loadingOverlay = document.createElement("div");
-      this.loadingOverlay.innerHTML = ` <div class="musyrif-loading-overlay" style="
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: rgba(0, 0, 0, 0.3);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 9999;
-        ">
-          <div class="loading-spinner">
-            <i class="fas fa-sync-alt fa-spin fa-3x text-white"></i>
-          </div>
-        </div>`;
+      this.loadingOverlay.innerHTML = `
+                <div class="musyrif-loading-overlay" style="
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.3);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 9999;
+                ">
+                    <div class="loading-spinner">
+                        <i class="fas fa-sync-alt fa-spin fa-3x text-white"></i>
+                    </div>
+                </div>`;
       document.body.appendChild(this.loadingOverlay);
     }
-    if (this.loadingOverlay) {
-      this.loadingOverlay.style.display = "flex";
-    }
+    this.loadingOverlay.style.display = "flex";
     this.state.isLoading = true;
   }
+
   hideLoading() {
     if (this.loadingOverlay) {
       this.loadingOverlay.style.display = "none";
     }
-
     this.state.isLoading = false;
   }
 
-  // FUNC COUNTDOWN
+  // Countdown
   toggleCountdown() {
     if (this.isCountingDown) {
-      // Jika sedang countdown, hentikan
       this.clearIntervals();
-      document.getElementById("timerCountdown").textContent = "";
-      const clockElement = document.getElementById("timerIcon");
-      if (clockElement) {
-        clockElement.classList.add("fas", "fa-clock");
-      }
+      const countdown = document.getElementById("timerCountdown");
+      const icon = document.getElementById("timerIcon");
+      if (countdown) countdown.textContent = "";
+      if (icon) icon.className = "fas fa-clock";
     } else {
-      // Jika tidak sedang countdown, mulai baru
-      this.isCountingDown = true; // Set flag sebelum memulai countdown
       this.startCountdown();
-      const clockElement = document.getElementById("timerIcon");
-      if (clockElement) {
-        clockElement.classList.remove("fas", "fa-clock");
-      }
+      const icon = document.getElementById("timerIcon");
+      if (icon) icon.className = "fas fa-stop";
     }
+    this.isCountingDown = !this.isCountingDown;
   }
 
   clearIntervals() {
-    if (this.countdownInterval) {
-      clearInterval(this.countdownInterval);
-      this.countdownInterval = null;
-    }
-    if (this.refreshInterval) {
-      clearInterval(this.refreshInterval);
-      this.refreshInterval = null;
-    }
-    this.countdownTime = 10; // Reset countdown time
-    this.isCountingDown = false; // Reset flag
+    if (this.countdownInterval) clearInterval(this.countdownInterval);
+    if (this.refreshInterval) clearInterval(this.refreshInterval);
+    this.countdownInterval = null;
+    this.refreshInterval = null;
   }
 
   startCountdown() {
-    // Reset dan inisialisasi ulang
     this.countdownTime = 10;
-    this.clearIntervals(); // Bersihkan interval yang mungkin masih berjalan
+    this.clearIntervals();
+
     this.updateCountdownDisplay();
 
-    // Mulai interval baru
     this.countdownInterval = setInterval(() => {
       this.countdownTime--;
-
       if (this.countdownTime < 0) {
         this.countdownTime = 10;
-        if (this.state.startDate2 && this.state.endDate2) {
-          const startDate = this.state.startDate2;
-          const endDate = this.state.endDate2;
-          this.refreshChart(startDate, endDate);
-        } else {
-          this.refreshChart();
-        }
+        this.refreshChart();
       }
-
       this.updateCountdownDisplay();
     }, 1000);
-
-    // Set flag bahwa countdown sedang berjalan
-    this.isCountingDown = true;
   }
 
   updateCountdownDisplay() {
-    const countdownElement = document.getElementById("timerCountdown");
-    const timerIcon = document.getElementById("timerIcon");
-
-    if (countdownElement) {
-      countdownElement.textContent = this.countdownTime;
-    }
+    const el = document.getElementById("timerCountdown");
+    if (el) el.textContent = this.countdownTime;
   }
 
   refreshChart() {
-    // Logika refresh chart
-    console.log("Refreshing Card...");
-    // Contoh penggunaan data fetching ulang
+    console.log("🔁 Memperbarui data KPI...");
     this.updateKpiData();
   }
 
   async updateKpiData() {
     this.showLoading();
     try {
-      const domain1 = [];
-      const domain2 = [];
-      const domain3 = [];
-      const domain = [];
-      if (this.state.startDate) {
-        domain.push(["name", ">=", this.state.startDate]);
-        domain1.push(["name", ">=", this.state.startDate]);
-        domain2.push(["name", ">=", this.state.startDate]);
-        domain3.push(["name", ">=", this.state.startDate]);
+      const { startDate, endDate } = this.state;
+
+      console.log("🔍 Filtering with:", { startDate, endDate });
+
+      const domainAbsenSiswa = [["kehadiran", "!=", false]]; // Hindari null
+      const domainAbsenTahfidz = [["kehadiran", "!=", false]];
+      const domainAbsenTahsin = [["kehadiran", "!=", false]];
+      const domainAbsenEkskul = [["kehadiran", "!=", false]];
+
+      if (startDate) {
+        // Coba ganti ke create_date jika tanggal tidak ada
+        domainAbsenSiswa.push(["create_date", ">=", startDate + " 00:00:00"]);
+        domainAbsenTahfidz.push(["create_date", ">=", startDate + " 00:00:00"]);
+        domainAbsenTahsin.push(["create_date", ">=", startDate + " 00:00:00"]);
+        domainAbsenEkskul.push(["create_date", ">=", startDate + " 00:00:00"]);
       }
-      if (this.state.endDate) {
-        domain.push(["name", "<=", this.state.endDate]);
-        domain1.push(["name", "<=", this.state.endDate]);
-        domain2.push(["name", "<=", this.state.endDate]);
-        domain3.push(["name", "<=", this.state.endDate]);
+      if (endDate) {
+        domainAbsenSiswa.push(["create_date", "<=", endDate + " 23:59:59"]);
+        domainAbsenTahfidz.push(["create_date", "<=", endDate + " 23:59:59"]);
+        domainAbsenTahsin.push(["create_date", "<=", endDate + " 23:59:59"]);
+        domainAbsenEkskul.push(["create_date", "<=", endDate + " 23:59:59"]);
       }
 
-      domain.push(["penanggung_jawab_id", "=", session.partner_display_name]);
-      domain1.push(["guru_id", "=", session.partner_display_name]);
-      domain2.push(["guru_id", "=", session.partner_display_name]);
+      // Debug: Tampilkan domain
+      console.log("Domain Absen Siswa:", domainAbsenSiswa);
 
-      let absensiTahfidz = await this.orm.call(
-        "cdn.absen_tahfidz_quran",
-        "search_read",
-        [domain, ["name", "absen_ids"]]
+
+      const [absensiSantri = 0, absensiTahfidz = 0, absensiTahsin = 0] = await Promise.all([
+        this.orm.call("cdn.absensi_siswa_lines", "search_count", [domainAbsenSiswa]).catch(e => {
+          console.error("Error count absensi_siswa_lines:", e);
+          return 0;
+        }),
+        this.orm.call("cdn.absen_tahfidz_quran_line", "search_count", [domainAbsenTahfidz]).catch(e => {
+          console.error("Error count absen_tahfidz_quran_line:", e);
+          return 0;
+        }),
+        this.orm.call("cdn.absen_tahsin_quran_line", "search_count", [domainAbsenTahsin]).catch(e => {
+          console.error("Error count absen_tahsin_quran_line:", e);
+          return 0;
+        }),
+      ]);
+      const absensiEkskul = await this.orm.call(
+        "cdn.absen_ekskul_line",
+        "search_count",
+        [domainAbsenEkskul]
       );
 
-      let absensiSantri = await this.orm.call(
-        "cdn.absensi_siswa",
-        "search_read",
-        [domain2, ["id", "kelas_id", "tanggal"]]
-      );
-
-      let absensiTahsin = await this.orm.call(
-        "cdn.absen_tahsin_quran",
-        "search_read",
-        [domain, ["name", "absen_ids"]]
-      );
-
-      let absensiEkskul = await this.orm.call(
-        "cdn.absensi_ekskul",
-        "search_read",
-        [domain3, ["id", "name"]]
-      );
-
-      let absenTahfidz = absensiTahfidz.length;
-      let absenSantri = absensiSantri.length;
-      let absenTahsin = absensiTahsin.length;
-      let absenEkskul = absensiEkskul.length;
+      console.log("✅ Hasil count:", { absensiSantri, absensiTahfidz, absensiTahsin, absensiEkskul });
 
       this.state.kpiData = [
         {
-          name: "Absen Santri",
-          value: absenSantri,
+          name: "Absen Siswa",
+          value: absensiSantri,
           icon: "fa-user-check",
-          res_model: "cdn.absensi_santri",
-          domain: domain2,
+          res_model: "cdn.absensi_siswa_lines",
+          domain: domainAbsenSiswa,
         },
         {
           name: "Absen Tahfidz",
-          value: absenTahfidz,
+          value: absensiTahfidz,
           icon: "fa-quran",
-          res_model: "cdn.absen_tahfidz_quran",
-          domain: domain,
+          res_model: "cdn.absen_tahfidz_quran_line",
+          domain: domainAbsenTahfidz,
         },
         {
           name: "Absen Tahsin",
-          value: absenTahsin,
+          value: absensiTahsin,
           icon: "fa-book",
-          res_model: "cdn.absen_tahsin_quran",
-          domain: domain,
+          res_model: "cdn.absen_tahsin_quran_line",
+          domain: domainAbsenTahsin,
         },
         {
           name: "Absen Ekskul",
-          value: absenEkskul,
+          value: absensiEkskul,
           icon: "fa-chalkboard-teacher",
-          res_model: "cdn.absensi_ekskul",
-          domain: domain3,
+          res_model: "cdn.absen_ekskul_line",
+          domain: domainAbsenEkskul,
         },
       ];
 
+      // Animasi
       this.state.kpiData.forEach((kpi, index) => {
-        const kpiElement = document.querySelector(`.kpi-value-${index}`);
-        if (kpiElement) {
-          animateValue(kpiElement, 0, kpi.value, 1000);
+        const el = document.querySelector(`.kpi-value-${index}`);
+        if (el) {
+          animateValue(el, 0, kpi.value, 1000);
         }
       });
+
     } catch (error) {
-      console.error("Error fetching KPI data:", error);
+      console.error("❌ Error fetching KPI ", error);
+      // Tetap tampilkan nilai jika sudah dihitung
     } finally {
       this.hideLoading();
     }
   }
 
   attachEventListeners() {
+    // Listener untuk card KPI
     const kpiCards = document.querySelectorAll(".kpi-card");
-    var timerButton = document.getElementById("timerButton");
-    if (timerButton) {
-      timerButton.addEventListener("click", this.toggleCountdown.bind(this));
-    } else {
-      console.error("Timer button element not found");
-    }
     kpiCards.forEach((card) => {
-      card.addEventListener("click", (evt) => {
-        this.handleKpiCardClick(evt);
-      });
+      card.addEventListener("click", (evt) => this.handleKpiCardClick(evt));
     });
 
-    // Add change listeners to date inputs
+    // Timer Button
+    const timerButton = document.getElementById("timerButton");
+    if (timerButton) {
+      timerButton.addEventListener("click", this.toggleCountdown.bind(this));
+    }
+
+    // Input Tanggal
     const startDateInput = document.getElementById("startDate");
     const endDateInput = document.getElementById("endDate");
-    const periodSelection = document.getElementById("periodSelection");
 
     if (startDateInput && endDateInput) {
-      startDateInput.addEventListener("change", (event) => {
-        this.state.startDate = event.target.value || null;
+      const handleChange = () => {
+        this.state.startDate = startDateInput.value || null;
+        this.state.endDate = endDateInput.value || null;
         this.updateKpiData();
-      });
-      endDateInput.addEventListener("change", (event) => {
-        this.state.endDate = event.target.value || null;
-        this.updateKpiData();
-      });
+      };
+      startDateInput.addEventListener("change", handleChange);
+      endDateInput.addEventListener("change", handleChange);
     }
-    const today = new Date();
-    let startDate;
-    let endDate;
-    // Add change listener to period selection dropdown
+
+    // Pemilihan Periode
+    const periodSelection = document.getElementById("periodSelection");
     if (periodSelection) {
-      this.showLoading();
-      try {
-        const handlePeriodChange = () => {
-          switch (periodSelection.value) {
-            case "today":
-              // Hari Ini
-              startDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth(),
-                  today.getUTCDate(),
-                  0,
-                  0,
-                  0,
-                  1
-                )
-              );
-              endDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth(),
-                  today.getUTCDate(),
-                  23,
-                  59,
-                  59,
-                  999
-                )
-              );
-              break;
-            case "yesterday":
-              // Kemarin
-              startDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth(),
-                  today.getUTCDate() - 1,
-                  0,
-                  0,
-                  0,
-                  1
-                )
-              );
-              endDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth(),
-                  today.getUTCDate() - 1,
-                  23,
-                  59,
-                  59,
-                  999
-                )
-              );
-              break;
-            case "thisWeek":
-              // Minggu Ini
-              const startOfWeek = today.getUTCDate() - today.getUTCDay(); // Set ke hari Minggu
-              startDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth(),
-                  startOfWeek,
-                  0,
-                  0,
-                  0,
-                  1
-                )
-              );
-              endDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth(),
-                  startOfWeek + 6,
-                  23,
-                  59,
-                  59,
-                  999
-                )
-              );
-              break;
-            case "lastWeek":
-              // Minggu Lalu
-              const lastWeekStart = today.getUTCDate() - today.getUTCDay() - 7; // Minggu sebelumnya
-              startDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth(),
-                  lastWeekStart,
-                  0,
-                  0,
-                  0,
-                  1
-                )
-              );
-              endDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth(),
-                  lastWeekStart + 6,
-                  23,
-                  59,
-                  59,
-                  999
-                )
-              );
-              break;
-            case "thisMonth":
-              // Bulan Ini
-              startDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth(),
-                  1,
-                  0,
-                  0,
-                  0,
-                  1
-                )
-              );
-              endDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth() + 1,
-                  0,
-                  23,
-                  59,
-                  59,
-                  999
-                )
-              );
-              break;
-            case "lastMonth":
-              // Bulan Lalu
-              startDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth() - 1,
-                  1,
-                  0,
-                  0,
-                  0,
-                  1
-                )
-              );
-              endDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth(),
-                  0,
-                  23,
-                  59,
-                  59,
-                  999
-                )
-              );
-              break;
-            case "thisYear":
-              // Tahun Ini
-              startDate = new Date(
-                Date.UTC(today.getUTCFullYear(), 0, 1, 0, 0, 0, 1)
-              );
-              endDate = new Date(
-                Date.UTC(today.getUTCFullYear(), 11, 31, 23, 59, 59, 999)
-              );
-              break;
-            case "lastYear":
-              // Tahun Lalu
-              startDate = new Date(
-                Date.UTC(today.getUTCFullYear() - 1, 0, 1, 0, 0, 0, 1)
-              );
-              endDate = new Date(
-                Date.UTC(today.getUTCFullYear() - 1, 11, 31, 23, 59, 59, 999)
-              );
-              break;
-            default:
-              // Default ke Bulan Ini jika tidak ada yang cocok
-              startDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth(),
-                  1,
-                  0,
-                  0,
-                  0,
-                  1
-                )
-              );
-              endDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth() + 1,
-                  0,
-                  23,
-                  59,
-                  59,
-                  999
-                )
-              );
-          }
+      const handlePeriodChange = () => {
+        const today = new Date();
+        let start, end;
 
-          // Update the input fields and the state
-          if (startDate && endDate) {
-            this.state.startDate = startDate.toISOString().split("T")[0];
-            this.state.endDate = endDate.toISOString().split("T")[0];
-            startDateInput.value = this.state.startDate;
-            endDateInput.value = this.state.endDate;
+        switch (periodSelection.value) {
+          case "today":
+            start = new Date(today.setHours(0, 0, 0, 0));
+            end = new Date(today.setHours(23, 59, 59, 999));
+            break;
+          case "yesterday":
+            start = new Date(today);
+            start.setDate(today.getDate() - 1);
+            start.setHours(0, 0, 0, 0);
+            end = new Date(start);
+            end.setHours(23, 59, 59, 999);
+            break;
+          case "thisWeek":
+            start = new Date(today);
+            start.setDate(today.getDate() - today.getDay());
+            start.setHours(0, 0, 0, 0);
+            end = new Date(start);
+            end.setDate(start.getDate() + 6);
+            end.setHours(23, 59, 59, 999);
+            break;
+          case "lastWeek":
+            start = new Date(today);
+            start.setDate(today.getDate() - today.getDay() - 7);
+            start.setHours(0, 0, 0, 0);
+            end = new Date(start);
+            end.setDate(start.getDate() + 6);
+            end.setHours(23, 59, 59, 999);
+            break;
+          case "thisMonth":
+            start = new Date(today.getFullYear(), today.getMonth(), 1);
+            end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            end.setHours(23, 59, 59, 999);
+            break;
+          case "lastMonth":
+            start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+            end = new Date(today.getFullYear(), today.getMonth(), 0);
+            end.setHours(23, 59, 59, 999);
+            break;
+          case "thisYear":
+            start = new Date(today.getFullYear(), 0, 1);
+            end = new Date(today.getFullYear(), 11, 31);
+            end.setHours(23, 59, 59, 999);
+            break;
+          case "lastYear":
+            start = new Date(today.getFullYear() - 1, 0, 1);
+            end = new Date(today.getFullYear() - 1, 11, 31);
+            end.setHours(23, 59, 59, 999);
+            break;
+          default:
+            start = new Date(today.getFullYear(), today.getMonth(), 1);
+            end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            end.setHours(23, 59, 59, 999);
+        }
 
-            this.updateKpiData();
-          }
-        };
+        const formatDate = (date) => date.toISOString().split("T")[0];
+        const formattedStart = formatDate(start);
+        const formattedEnd = formatDate(end);
 
-        // Attach the listener for future changes
-        periodSelection.addEventListener("change", handlePeriodChange);
+        this.state.startDate = formattedStart;
+        this.state.endDate = formattedEnd;
 
-        // Trigger the function immediately to apply the default filter on load
-        handlePeriodChange();
-      } catch {
-        console.log("Terjadi Error");
-      } finally {
-        this.hideLoading();
-      }
-      // Set a default value for periodSelection (e.g., 'month')
+        if (startDateInput && endDateInput) {
+          startDateInput.value = formattedStart;
+          endDateInput.value = formattedEnd;
+        }
 
-      // Define the change event listener
+        this.updateKpiData();
+      };
+
+      periodSelection.addEventListener("change", handlePeriodChange);
+      handlePeriodChange(); // Set default
     }
   }
 
   async handleKpiCardClick(evt) {
     this.clearIntervals();
-    document.getElementById("timerIcon").className = "fas fa-clock";
-    document.getElementById("timerCountdown").textContent = "";
-    this.clearIntervals();
-    this.updateCountdownDisplay();
+    const timerIcon = document.getElementById("timerIcon");
+    const timerCountdown = document.getElementById("timerCountdown");
+    if (timerIcon) timerIcon.className = "fas fa-clock";
+    if (timerCountdown) timerCountdown.textContent = "";
+
     const cardName = evt.currentTarget.dataset.name;
     const cardData = this.state.kpiData.find((kpi) => kpi.name === cardName);
     if (cardData) {
-      const { res_model, domain } = cardData;
       await this.actionService.doAction({
         name: `${cardName} Details`,
         type: "ir.actions.act_window",
-        res_model: res_model,
-        view_mode: "list",
+        res_model: cardData.res_model,
         views: [[false, "list"]],
         target: "current",
-        domain: domain,
+        domain: cardData.domain,
       });
-    } else {
-      console.error(`No data found for KPI card: ${cardName}`);
     }
   }
 }

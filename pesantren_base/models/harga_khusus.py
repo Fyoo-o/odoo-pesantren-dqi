@@ -131,7 +131,29 @@ class account_move_line_inherit(models.Model):
     _inherit = 'account.move.line'
 
     discount_amount = fields.Float(string='Discount Nominal')
-    
+
+    @api.onchange('product_id')
+    def _onchange_diskon_siswa(self):
+        siswa = self.move_id.siswa_id
+        komponen = self.product_id
+
+        if siswa and komponen:
+            harga_khusus = self.env['cdn.harga_khusus'].search([
+                ('siswa_id', '=', siswa.id),
+                ('name.product_id', '=', komponen.id),
+                ('state', '=', 'berlaku')
+            ], limit=1)
+
+            if harga_khusus:
+                harga_asli = self.price_unit
+                if harga_khusus.disc_persen:
+                    self.price_unit = harga_asli * (1 - (harga_khusus.disc_persen / 100))
+                    self.discount_amount = harga_asli - self.price_unit
+                elif harga_khusus.disc_amount:
+                    self.price_unit = max(harga_asli - harga_khusus.disc_amount, 0)
+                    self.discount_amount = harga_khusus.disc_amount
+
+
     
     # @api.onchange('komponen_id')
     # def onchange_komponen_id(self):

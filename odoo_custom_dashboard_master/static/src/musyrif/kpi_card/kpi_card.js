@@ -4,7 +4,7 @@ import { useService } from "@web/core/utils/hooks";
 import { session } from "@web/session";
 
 export class MusyrifKpiCard extends Component {
-    
+
     setup() {
         this.orm = useService('orm');
         this.actionService = useService('action');
@@ -25,7 +25,7 @@ export class MusyrifKpiCard extends Component {
         // Set default dates if not provided
         const today = new Date();
         const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
-        
+
         this.defaultStartDate = firstDayOfYear.toISOString().split('T')[0];
         this.defaultEndDate = today.toISOString().split('T')[0];
 
@@ -34,7 +34,7 @@ export class MusyrifKpiCard extends Component {
         }
 
         onWillUpdateProps(async (nextProps) => {
-            if (nextProps.startDate !== this.props.startDate || 
+            if (nextProps.startDate !== this.props.startDate ||
                 nextProps.endDate !== this.props.endDate) {
                 this.state.currentStartDate = nextProps.startDate;
                 this.state.currentEndDate = nextProps.endDate;
@@ -44,7 +44,7 @@ export class MusyrifKpiCard extends Component {
         });
 
         onMounted(() => {
-            // Attach event listener to the main dashboard timer button
+            // Attach event listener to the timer button
             const timerButton = document.getElementById("timerButton");
             if (timerButton) {
                 timerButton.addEventListener("click", () => this.handleTimerClick());
@@ -76,7 +76,7 @@ export class MusyrifKpiCard extends Component {
 
     async checkModelAccess() {
         try {
-            const models = ['cdn.siswa', 'cdn.perijinan', 'cdn.pelanggaran'];
+            const models = ['cdn.siswa', 'cdn.perijinan', 'cdn.pelanggaran', 'cdn.kesehatan'];
             for (const model of models) {
                 const access = await this.orm.call(
                     'ir.model.access',
@@ -84,6 +84,7 @@ export class MusyrifKpiCard extends Component {
                     [model, 'read'],
                     { context: this.env.context }
                 );
+                // Jika tidak punya akses, error akan dilempar
             }
         } catch (error) {
             console.error('Error checking model access:', error);
@@ -123,7 +124,7 @@ export class MusyrifKpiCard extends Component {
     updateTimerUI(stopped = false) {
         const timerIcon = document.getElementById("timerIcon");
         const timerCountdown = document.getElementById("timerCountdown");
-        
+
         if (timerIcon) {
             timerIcon.className = stopped ? "fas fa-stopwatch" : "fas fa-stop d-none";
         }
@@ -140,7 +141,6 @@ export class MusyrifKpiCard extends Component {
         this.state.animations = {};
     }
 
-    // New method to start KPI animations
     startKpiAnimations() {
         this.state.kpiData.forEach((kpi, index) => {
             const countElement = document.getElementById(`counter-${index}`);
@@ -152,7 +152,7 @@ export class MusyrifKpiCard extends Component {
 
     animateNumber(element, start, end, duration = 500) {
         if (!element) return;
-        
+
         const range = end - start;
         const minFrame = 16;
         const steps = Math.max(Math.floor(duration / minFrame), 1);
@@ -160,7 +160,6 @@ export class MusyrifKpiCard extends Component {
         let current = start;
         let step = 0;
 
-        // Clear any existing animation
         const animationKey = element.id;
         if (this.state.animations[animationKey]) {
             cancelAnimationFrame(this.state.animations[animationKey]);
@@ -169,7 +168,7 @@ export class MusyrifKpiCard extends Component {
         const animate = () => {
             step++;
             current += increment;
-            
+
             if (step <= steps) {
                 element.textContent = Math.round(current).toLocaleString();
                 this.state.animations[animationKey] = requestAnimationFrame(animate);
@@ -184,57 +183,60 @@ export class MusyrifKpiCard extends Component {
 
     async fetchData(startDate, endDate) {
         try {
+            // Gunakan default jika tidak ada tanggal
             startDate = startDate || this.defaultStartDate;
             endDate = endDate || this.defaultEndDate;
-    
-            const baseMusyrifDomain = [["musyrif_id", "ilike", session.partner_display_name]];
+
+            // Hanya filter berdasarkan tanggal, tanpa filter musyrif_id
             const dateDomain = [
                 ['create_date', '>=', startDate],
-                ['create_date', '<=', endDate],
-                ...baseMusyrifDomain
+                ['create_date', '<=', endDate]
             ];
-    
+
             let siswaData = [], perijinanData = [], pelanggaranData = [], kesehatanData = [];
-    
-            // Fetch all siswa data without date filter
+
+            // Ambil semua siswa tanpa filter
             try {
                 siswaData = await this.orm.call(
-                    'cdn.siswa', 
-                    'search_read', 
-                    [baseMusyrifDomain, ['id', 'complete_name', 'jns_kelamin', 'tahfidz_quran_count', 'create_date']],
+                    'cdn.siswa',
+                    'search_read',
+                    [[], ['id', 'complete_name', 'jns_kelamin', 'tahfidz_quran_count', 'create_date']],
                     { context: this.env.context }
                 );
             } catch (error) {
                 console.warn('Error fetching siswa data:', error);
             }
-    
-            // Fetch filtered data for other models
+
+            // Perijinan: hanya Draft dalam rentang tanggal
             try {
                 perijinanData = await this.orm.call(
-                    'cdn.perijinan', 
-                    'search_read', 
-                    [[...dateDomain, ['state', '=', 'Draft']], ['create_date', 'tgl_ijin', 'siswa_id']],
+                    'cdn.perijinan',
+                    'search_read',
+                    [[...dateDomain, ['state', '=', 'Draft']],
+                    ['create_date', 'tgl_ijin', 'siswa_id']],
                     { context: this.env.context }
                 );
             } catch (error) {
                 console.warn('Error fetching perijinan data:', error);
             }
-    
+
+            // Pelanggaran: semua pelanggaran dalam rentang tanggal
             try {
                 pelanggaranData = await this.orm.call(
-                    'cdn.pelanggaran', 
-                    'search_read', 
-                    [[...dateDomain], ['tgl_pelanggaran', 'siswa_id', 'pelanggaran_id']],
+                    'cdn.pelanggaran',
+                    'search_read',
+                    [dateDomain, ['tgl_pelanggaran', 'siswa_id', 'pelanggaran_id']],
                     { context: this.env.context }
                 );
             } catch (error) {
                 console.warn('Error fetching pelanggaran data:', error);
             }
 
+            // Kesehatan: status tertentu dalam rentang tanggal
             try {
                 kesehatanData = await this.orm.call(
-                    'cdn.kesehatan', 
-                    'search_read', 
+                    'cdn.kesehatan',
+                    'search_read',
                     [[
                         ...dateDomain,
                         ['state', 'in', ['periksa', 'pengobatan', 'rawat']]
@@ -243,14 +245,14 @@ export class MusyrifKpiCard extends Component {
                 );
             } catch (error) {
                 console.warn('Error fetching kesehatan data:', error);
-            }            
-            
+            }
+
             const totalSiswa = siswaData?.length || 0;
             const totalPerijinan = perijinanData?.length || 0;
             const totalPelanggaran = pelanggaranData?.length || 0;
             const totalKesehatan = kesehatanData?.length || 0;
 
-            // Update KPI data with modified domains
+            // Update KPI data tanpa filter musyrif_id
             this.state.kpiData = [
                 {
                     name: 'Santri',
@@ -258,7 +260,7 @@ export class MusyrifKpiCard extends Component {
                     icon: 'fa-user-graduate',
                     color: '#00e396',
                     res_model: 'cdn.siswa',
-                    domain: baseMusyrifDomain, // Use base domain without date filter for siswa
+                    domain: [], // Semua siswa
                 },
                 {
                     name: 'Pengajuan Izin Santri',
@@ -274,7 +276,7 @@ export class MusyrifKpiCard extends Component {
                     icon: 'fa-circle-exclamation',
                     color: '#00e396',
                     res_model: 'cdn.pelanggaran',
-                    domain: [...dateDomain],
+                    domain: dateDomain,
                 },
                 {
                     name: 'Santri yang Sakit',
@@ -288,11 +290,12 @@ export class MusyrifKpiCard extends Component {
                     ],
                 },
             ];
-    
+
+            // Jalankan animasi jika ada data
             if (this.state.kpiData.some(kpi => kpi.value > 0)) {
                 this.startKpiAnimations();
             }
-                
+
         } catch (error) {
             console.error('Error in fetchData:', error);
         }
@@ -302,22 +305,6 @@ export class MusyrifKpiCard extends Component {
         const startDate = this.state.isFiltered ? this.state.currentStartDate : this.defaultStartDate;
         const endDate = this.state.isFiltered ? this.state.currentEndDate : this.defaultEndDate;
         await this.fetchData(startDate, endDate);
-    }
-
-    attachEventListeners() {
-        // Attach existing listeners
-        const kpiCards = document.querySelectorAll('.kpi-card');
-        kpiCards.forEach(card => {
-            card.addEventListener('click', (evt) => {
-                this.handleKpiCardClick(evt);
-            });
-        });
-
-        // Add timer button listener
-        const timerButton = document.getElementById("kpiTimerButton");
-        if (timerButton) {
-            timerButton.addEventListener("click", this.toggleCountdown.bind(this));
-        }
     }
 
     handleKpiCardClick(evt) {

@@ -138,7 +138,7 @@ export class GuruList extends Component {
         ["state", "=", "done"],
         ["siswa_id", "!=", false],
         ["jml_baris", ">", 0],
-        ["penanggung_jawab_id", "=", session.partner_display_name],
+        // ["penanggung_jawab_id", "=", session.partner_display_name],
       ];
 
       if (this.state.startDate) {
@@ -799,7 +799,7 @@ export class EkskulList extends Component {
   async fetchAllProducts() {
     try {
       const filterDomain = [];
-      filterDomain.push(["guru", "=", session.partner_display_name]);
+      // filterDomain.push(["guru", "=", session.partner_display_name]);
 
       if (this.state.startDate) {
         filterDomain.push(["tanggal", ">=", this.state.startDate]);

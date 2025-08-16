@@ -15,7 +15,7 @@
         # 'views/dashboard_guruquran.xml',
         'views/dashboard_pos.xml',
         'views/dashboard_sekolah.xml',
-        'views/dashboard_karyawan.xml',
+        'views/dashboard_karyawan.xml', 
         'views/dashboard_perekrutan.xml',
         'views/dashboard_guru.xml',
         'views/dashboard_penagihan.xml',

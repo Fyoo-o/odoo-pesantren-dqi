@@ -34,7 +34,7 @@
                                 <field name="guru_id"
                                     readonly="state == 'confirm'"
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
-                                <field name="kelas_id"
+                                <field name="kelas_id" 
                                     readonly=" state == 'confirm'"
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
                                 <field name="mapel_id"
@@ -80,11 +80,7 @@
             <field name="res_model">cdn.penilaian_akhir_guru</field>
             <field name="view_mode">list,form</field>
             <field name="domain">
-            [
-                '|',
-                ('guru_id.user_id','=',uid),
-                ('penilaian_ids.siswa_id.ruang_kelas_id.walikelas_id.user_id','=',uid)
-            ]
+            [('guru_id.user_id', '=', uid)]
             </field>
         </record>
         <!-- This Menu Item must have a parent and an action -->

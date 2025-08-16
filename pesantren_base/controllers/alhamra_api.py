@@ -34,7 +34,7 @@ API_ALHAMRA = [ # * API Untuk Alhamra Mobile
         'read_fields':['id','name','tanggal','hari','jampelajaran_id','start_time','end_time','kelas_id','tingkat_id','walikelas_id','tahunajaran_id','semester','guru_id','pertemuan_ke','mapel_id','rpp_id','dokumen','tema','materi','state','absensi_ids'],
     },
     {
-        'name': 'cdn.absensi_siswa_lines',
+        'name': '_siswa_lines',
         'allowed_methods':['search_read'],
         'read_fields':['id','absensi_id','mapel_id','tanggal','kelas_id','siswa_id','name','nis','kehadiran']
     },

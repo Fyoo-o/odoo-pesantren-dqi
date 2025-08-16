@@ -8,25 +8,12 @@ class AbsenTahsinQuran(models.Model):
     #get domain 
     def _get_halaqoh(self):
         tahun_ajaran = self.env.user.company_id.tahun_ajaran_aktif.id
-        if self.env.user.has_group('pesantren_kesantrian.group_kesantrian_manager'):
-            return [
-                ('id','!=',False),
-                ('fiscalyear_id', '=', tahun_ajaran)
-            ]
         return [
-            '|',
-                '&',
-                ('penanggung_jawab_id.user_id', '=', self.env.user.id),
-                ('fiscalyear_id', '=', tahun_ajaran),
-                '&',
-                ('pengganti_ids.user_id', '=', self.env.user.id),
-                ('fiscalyear_id', '=', tahun_ajaran)
+            ('fiscalyear_id', '=', tahun_ajaran)
         ]
 
     def _get_domain_guru(self):
         return [
-            '&',
-            ('user_id', '=', self.env.user.id),
             ('jns_pegawai', '=', 'guru')
         ]
 

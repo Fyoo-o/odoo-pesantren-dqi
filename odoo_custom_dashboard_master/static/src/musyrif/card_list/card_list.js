@@ -40,19 +40,19 @@ export class MusyrifPerijinanCardList extends Component {
     try {
       this.state.isLoading = true;
 
-      // Get data for the last 7 days
+      // Ambil data 7 hari terakhir
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
       const sevenDaysAgoDB = sevenDaysAgo.toISOString().split("T")[0];
 
-      // Base domain for 7-day data
+      // 🔹 Domain: Hapus filter musyrif_id → semua data ditampilkan
       const sevenDayDomain = [
         ["state", "in", ["Draft", "Check"]],
         ["tgl_ijin", ">=", sevenDaysAgoDB],
-        ["musyrif_id", "ilike", session.partner_display_name],
+        // Tidak ada filter musyrif_id
       ];
 
-      // Fetch 7-day data
+      // Ambil data 7 hari terakhir (semua musyrif)
       const sevenDayPerijinan = await this.orm.searchRead(
         "cdn.perijinan",
         sevenDayDomain,
@@ -76,12 +76,13 @@ export class MusyrifPerijinanCardList extends Component {
         }
       );
 
-      // Store 7-day data
+      // Simpan data 7 hari
       this.state.sevenDayData = sevenDayPerijinan;
 
-      // Handle filtered data if dates are provided
+      // Data gabungan: 7 hari + filter rentang tanggal (jika ada)
       let filteredData = [...this.state.sevenDayData];
 
+      // Jika ada filter tanggal, ambil data tambahan
       if (this.state.currentStartDate || this.state.currentEndDate) {
         const filterDomain = [["state", "in", ["Draft", "Check", "Rejected"]]];
 
@@ -91,6 +92,9 @@ export class MusyrifPerijinanCardList extends Component {
         if (this.state.currentEndDate) {
           filterDomain.push(["tgl_ijin", "<=", this.state.currentEndDate]);
         }
+
+        // 🔹 Hapus filter musyrif_id di sini juga
+        // Tidak menambahkan ["musyrif_id", ...]
 
         const filteredPerijinan = await this.orm.searchRead(
           "cdn.perijinan",
@@ -115,25 +119,18 @@ export class MusyrifPerijinanCardList extends Component {
           }
         );
 
-        // Merge filtered data with 7-day data
+        // Gabungkan data tanpa duplikasi
         const allIds = new Set();
-        filteredData = [...filteredData, ...filteredPerijinan].filter(
-          (item) => {
-            if (!allIds.has(item.id)) {
-              allIds.add(item.id);
-              return true;
-            }
-            return false;
+        filteredData = [...filteredData, ...filteredPerijinan].filter((item) => {
+          if (!allIds.has(item.id)) {
+            allIds.add(item.id);
+            return true;
           }
-        );
+          return false;
+        });
       }
 
-      if (!filteredData || filteredData.length === 0) {
-        this.state.hasData = false;
-        this.state.perijinans = [];
-        return;
-      }
-
+      // Format data untuk UI
       this.state.perijinans = filteredData.map((p) => ({
         id: p.id,
         name: p.name,
@@ -145,14 +142,14 @@ export class MusyrifPerijinanCardList extends Component {
           typeof p.keperluan === "string" && p.keperluan.includes(",")
             ? p.keperluan.split(",")[1].trim()
             : Array.isArray(p.keperluan) && p.keperluan[1]
-            ? p.keperluan[1]
-            : p.keperluan,
+              ? p.keperluan[1]
+              : p.keperluan || "N/A",
         state: p.state,
         kelas: p.kelas_id ? p.kelas_id[1] : "N/A",
         kamar: p.kamar_id ? p.kamar_id[1] : "N/A",
         halaqoh: p.halaqoh_id ? p.halaqoh_id[1] : "N/A",
-        musyrif: p.musyrif_id ? p.musyrif_id[1] : "N/A",
-        catatan: p.catatan || "",
+        musyrif: p.musyrif_id ? p.musyrif_id[1] : "Semua Musyrif",
+        catatan: p.catatan || "-",
         lama_ijin: p.lama_ijin || 0,
       }));
 
@@ -166,37 +163,12 @@ export class MusyrifPerijinanCardList extends Component {
     }
   }
 
-  // async handleApprove(perijinanId,student_name) {
-  //     try {
-  //         // Popup konfirmasi
-  //         const userConfirmed = await this.showConfirmationPopup(
-  //             "Konfirmasi Persetujuan",
-  //             'Apakah Anda yakin ingin menyetujui perijinan atas nama '+student_name+' ini?'
-  //         );
-
-  //         if (userConfirmed) {
-  //             // Jika user menekan tombol "Ya"
-  //             await this.orm.call(
-  //                 'cdn.perijinan',
-  //                 'action_approved',
-  //                 [perijinanId]
-  //             );
-  //             await this.fetchPerijinanSantri();
-  //         }
-  //     } catch (error) {
-  //         console.error("Error approving perijinan:", error);
-  //     }
-  // }
-
+  // Fungsi approve dengan SweetAlert
   async handleApprove(perijinanId, student_name) {
     try {
-      // Popup konfirmasi dengan SweetAlert2
       const result = await Swal.fire({
         title: "Konfirmasi Persetujuan",
-        text:
-          "Apakah Anda yakin ingin menyetujui perijinan atas nama " +
-          student_name +
-          " ini?",
+        text: `Apakah Anda yakin ingin menyetujui perijinan atas nama ${student_name} ini?`,
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Ya, Setujui",
@@ -204,42 +176,24 @@ export class MusyrifPerijinanCardList extends Component {
       });
 
       if (result.isConfirmed) {
-        // Jika user menekan tombol "Ya"
         await this.orm.call("cdn.perijinan", "action_approved", [perijinanId]);
         await this.fetchPerijinanSantri();
-        Swal.fire("Berhasil!", "Perijinan telah disetujui.", "success").then(
-          () => {
-            location.reload(); // Reload halaman setelah konfirmasi berhasil
-          }
-        );
+        Swal.fire("Berhasil!", "Perijinan telah disetujui.", "success").then(() => {
+          location.reload(); // Reload untuk memastikan UI segar
+        });
       }
     } catch (error) {
       console.error("Error approving perijinan:", error);
-      Swal.fire(
-        "Error!",
-        "Terjadi kesalahan saat menyetujui perijinan.",
-        "error"
-      );
+      Swal.fire("Error!", "Terjadi kesalahan saat menyetujui perijinan.", "error");
     }
   }
 
-  // Fungsi untuk popup konfirmasi
-  async showConfirmationPopup(title, message) {
-    return new Promise((resolve) => {
-      const confirmed = window.confirm(`${title}\n\n${message}`);
-      resolve(confirmed);
-    });
-  }
-
+  // Fungsi reject dengan SweetAlert
   async handleReject(perijinanId, student_name) {
     try {
-      // Popup konfirmasi dengan SweetAlert2
       const result = await Swal.fire({
         title: "Konfirmasi Penolakan",
-        text:
-          "Apakah Anda yakin ingin menolak perijinan atas nama " +
-          student_name +
-          " ini?",
+        text: `Apakah Anda yakin ingin menolak perijinan atas nama ${student_name} ini?`,
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Ya, Tolak",
@@ -247,14 +201,11 @@ export class MusyrifPerijinanCardList extends Component {
       });
 
       if (result.isConfirmed) {
-        // Jika user menekan tombol "Ya"
         await this.orm.call("cdn.perijinan", "action_rejected", [perijinanId]);
         await this.fetchPerijinanSantri();
-        Swal.fire("Berhasil!", "Perijinan telah ditolak.", "success").then(
-          () => {
-            location.reload(); // Reload halaman setelah konfirmasi berhasil
-          }
-        );
+        Swal.fire("Berhasil!", "Perijinan telah ditolak.", "success").then(() => {
+          location.reload();
+        });
       }
     } catch (error) {
       console.error("Error rejecting perijinan:", error);

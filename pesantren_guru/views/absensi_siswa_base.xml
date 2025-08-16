@@ -1,26 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <odoo>
     <data>
-        <!-- Inherit Absen form view siswa - Akses Umum -->
-        <!-- <record id="view_inherited_tahfidz_quran_public" model="ir.ui.view">
-            <field name="name">inherited.tahfidz.quran.form.public</field>
-            <field name="model">cdn.siswa</field>
-            <field name="inherit_id" ref="pesantren_base.view_cdn_siswa_form" />
-            <field name="arch" type="xml">
-                <xpath expr="//notebook" position="inside">
-                    <page string="KBM" name="kbm_samtri_public">
-                        <field name="kbm_id">
-                            <list default_order="id desc" create="false">
-                                <field name="name" />
-                                <field name="tanggal" />
-                                <field name="kelas_id" />
-                                <field name="mapel_id" />
-                            </list>
-                        </field>
-                    </page>
-                </xpath>
-            </field>
-        </record> -->
 
         <!-- cdn.absensi_siswa list view - Akses Umum -->
         <record id="cdn_absensi_siswa_view_tree_public" model="ir.ui.view">
@@ -38,6 +18,8 @@
                 </list>
             </field>
         </record>
+
+        
 
         <!-- cdn.absensi_siswa form view - Akses Umum (Read Only) -->
         <record id="cdn_absensi_siswa_view_form_public" model="ir.ui.view">

@@ -28,7 +28,7 @@ class Penugasan(models.Model):
                     ('done', 'Selesai'),
                   ], default='draft', string='Status')
   tugas_line_ids = fields.One2many(comodel_name='cdn.tugas_line', inverse_name='penugasan_id', string='Tugas Line')
-  tingkat_id     = fields.Many2one('cdn.tingkat', string='Kelas', related='kelas_id.tingkat')
+  tingkat_id     = fields.Many2one('cdn.tingkat', string='Kelas', related='kelas_id.tingkat', store=True)
   matpel_id      = fields.Many2one(comodel_name='cdn.mata_pelajaran', string='Mata Pelajaran', required=True)
   guru_id        = fields.Many2one(comodel_name='hr.employee', string='Guru', domain=_domain_guru)
   
@@ -62,6 +62,36 @@ class Penugasan(models.Model):
       else:
         return {
         }
+        
+  @api.onchange('matpel_id')
+  def _onchange_matpel_id(self):
+      if self.matpel_id:
+          # Ambil domain guru dari hak akses
+          base_domain = self._domain_guru()
+
+          # Ambil guru dari mata pelajaran
+          guru_ids = self.matpel_id.guru_ids.ids
+          domain_mapel = [('id', 'in', guru_ids)]
+
+          # Gabungkan kedua domain
+          final_domain = base_domain + domain_mapel
+
+          # Isi otomatis guru_id
+          if guru_ids:
+              # Kalau hanya 1 guru → langsung isi
+              if len(guru_ids) == 1:
+                  self.guru_id = guru_ids[0]
+              # Kalau mau isi otomatis guru pertama walau > 1
+              elif not self.guru_id:
+                  self.guru_id = guru_ids[0]
+          else:
+              self.guru_id = False
+
+          return {'domain': {'guru_id': final_domain}}
+      else:
+          self.guru_id = False
+          return {'domain': {'guru_id': self._domain_guru()}}
+        
 
   
   class TugasLine(models.Model):

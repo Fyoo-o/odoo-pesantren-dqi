@@ -21,15 +21,19 @@
         <meta property="twitter:title" content="PSB Daarul Qur`an Istiqomah" />
         <meta property="twitter:description" content="Pendaftaran Santri Baru PP Daarul Qur`an Istiqomah Tahun pelajaran 2025-2026 Telah dibuka. segera daftarkan anak anda sekarang" />
         <meta property="twitter:image" content="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" />
+        <link rel="preconnect" href="https://fonts.googleapis.com"/>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin"/>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap" rel="stylesheet"/>
       </head>
       <link rel="icon" type="image/x-icon" href="/pesantren_pendaftaran/static/img/favicon.ico?v=1" />
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
       <style>
         .main-container {
-          background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+          background: #f5f5f4 !important;
           min-height: 100vh;
           display: flex;
           flex-direction: column;
+          font-family: "poppins";
         }
         
         /* Improved Navbar Styling */
@@ -56,7 +60,7 @@
           padding: 0.5rem 1rem;
           transition: all 0.3s ease;
           border-radius: 4px;
-          color: white;
+          color: black;
         }
         
         .nav-link:hover {
@@ -67,7 +71,7 @@
         /* Offcanvas Improvements */
         .offcanvas.offcanvas-end {
           width: 280px;
-          background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+          background: white !important;
         }
         
         .offcanvas .navbar-nav {
@@ -85,12 +89,14 @@
           background-color: rgba(255,255,255,0.2);
         }
         
-        .offcanvas .btn-close {
+        <!-- .offcanvas .btn-close {
           position: absolute;
           top: 1rem;
           right: 1rem;
           filter: invert(1);
-        }
+          color: black;
+          background-color: black;
+        } -->
         
         /* Card Styling */
         .login-card {
@@ -125,7 +131,7 @@
           font-weight: 600;
           font-size: 1.75rem;
           margin-bottom: 0.5rem;
-        }
+        } 
         
         /* Form Styling */
         .form-label {
@@ -352,11 +358,11 @@
       </style>
       <div class="main-container">
         <!-- Navigation Bar -->
-        <nav class="navbar navbar-expand-lg">
+        <nav class="navbar navbar-expand-lg" style="color: black; background-color: white;">
           <div class="container">
-            <a class="navbar-brand" href="/psb">
+            <a class="navbar-brand" href="/psb" style="color: black;">
               <img src="https://i.ibb.co.com/1MFsvMq/1731466812700.png" alt="Logo Pesantren" />
-              <span class="mx-2">Daarul Qur'an Istiqomah</span>
+              <span class="mx-2" style="color: black;">Daarul Qur'an Istiqomah</span>
             </a>
             <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
               <span class="navbar-toggler-icon"></span>
@@ -364,32 +370,32 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                  <a class="nav-link" href="/psb">
+                  <a class="nav-link" href="/psb" style="color: black;">
                     <i class="fa-solid fa-house me-2"></i>Beranda
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="/pendaftaran">
+                  <a class="nav-link" href="/pendaftaran" style="color: black;">
                     <i class="fa-solid fa-note-sticky me-2"></i>Pendaftaran
                   </a>
                 </li>
                 <li class="nav-item dropdown">
-                  <a href="#" class="dropdown-link nav-link">
+                  <a href="#" class="dropdown-link nav-link" style="color: black;">
                     <i class="fa-solid fa-fingerprint me-2"></i>Login
                   </a>
                   <div class="dropdown-content">
-                    <a href="/login">Login PSB</a>
-                    <a href="/web/login">Login Orang Tua</a>
+                    <a href="/login" style="color: black;">Login PSB</a>
+                    <a href="/web/login" style="color: black;">Login Orang Tua</a>
                   </div>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="/bantuan">
+                  <a class="nav-link" href="/bantuan" style="color: black !important;">
                     <i class="fa-solid fa-lock me-2"></i>Bantuan
                   </a>
                 </li>
                 <t t-if="is_halaman_pengumuman">
                   <li class="nav-item dropdown">
-                    <a href="#" class="dropdown-link nav-link">
+                    <a href="#" class="dropdown-link nav-link" style="color: black;">
                       <i class="fa-solid fa-bullhorn me-2"></i>Pengumuman
                     </a>
                     <div class="dropdown-content">
@@ -405,8 +411,8 @@
         </nav>
 
         <!-- Offcanvas Menu -->
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel" style="background-color: white !important;">
+          <button type="button" class="btn-close " data-bs-dismiss="offcanvas" aria-label="Close"></button>
           <a class="navbar-brand mt-4 text-center" href="/psb">
             <img class="w-25 h-auto" src="https://i.ibb.co.com/1MFsvMq/1731466812700.png" alt="Logo Pesantren" />
             <span class="d-block mt-2">Daarul Qur'an Istiqomah</span>
@@ -414,26 +420,26 @@
           <div class="offcanvas-body">
             <ul class="navbar-nav">
               <li class="nav-item">
-                <a class="nav-link" href="/psb">
+                <a class="nav-link" href="/psb" style="color: black;">
                   <i class="fa-solid fa-house me-2"></i>Beranda
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/pendaftaran">
+                <a class="nav-link" href="/pendaftaran" style="color: black;">
                   <i class="fa-solid fa-note-sticky me-2"></i>Pendaftaran
                 </a>
               </li>
               <li class="nav-item dropdown">
-                <a href="#" class="dropdown-link nav-link">
-                  <i class="fa-solid fa-fingerprint me-2"></i>Login
+                <a href="#" class="dropdown-link nav-link" style="color: black;">
+                  <i class="fa-solid fa-fingerprint me-2" ></i>Login
                 </a>
                 <div class="dropdown-content">
-                  <a href="/login">Login PSB</a>
-                  <a href="/web/login">Login Orang Tua</a>
+                  <a href="/login" style="color: black;">Login PSB</a>
+                  <a href="/web/login" style="color: black;">Login Orang Tua</a>
                 </div>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/bantuan">
+                <a class="nav-link" href="/bantuan" style="color: black;">
                   <i class="fa-solid fa-lock me-2"></i>Bantuan
                 </a>
               </li>
@@ -520,7 +526,7 @@
               </div>
               
               <!-- Submit Button -->
-              <button type="submit" class="login-btn">
+              <button type="submit" class="login-btn" style=" background-color: #059669 !important;"> 
                 <i class="fa-solid fa-right-to-bracket me-2"></i>Login
               </button>
             </form>
@@ -529,22 +535,24 @@
 
         <!-- Footer -->
         <footer>
-          <ul>
-            <li>
-              <a href="/psb">Home</a>
-            </li>
-            <li>
-              <a href="/beranda" target="_blank">Info Pondok</a>
-            </li>
-            <li>
-              <a href="https://drive.google.com/drive/mobile/folders/1EYat5411joyoOmH_DkJ3g2DeJKgyyuBQ?usp=share_link&amp;fbclid=IwY2xjawGflGlleHRuA2FlbQIxMQABHTusVv9hD3VRDSLW9-671QhOL86e3KMv30smsAYW0DHkkWf7zwPlcBlbeA_aem_XXofAY-ay0syx043L5BLvw" target="_blank">Brosur</a>
-            </li>
-            <li>
-              <a href="">Panduan</a>
-            </li>
-          </ul>
-          <div>
-            <p class="mb-0">© 2024 TIM IT PPIB</p>
+          <div class="ms-5">
+            <ul class="">
+              <li>
+                <a href="/psb" style="text-decoration: none; color: black;">Home</a>
+              </li>
+              <li>
+                <a href="/beranda" style="text-decoration: none; color: black;" target="_blank">Info Pondok</a>
+              </li>
+              <li>
+                <a href="https://drive.google.com/drive/mobile/folders/1EYat5411joyoOmH_DkJ3g2DeJKgyyuBQ?usp=share_link&amp;fbclid=IwY2xjawGflGlleHRuA2FlbQIxMQABHTusVv9hD3VRDSLW9-671QhOL86e3KMv30smsAYW0DHkkWf7zwPlcBlbeA_aem_XXofAY-ay0syx043L5BLvw" style="text-decoration: none; color: black;" target="_blank">Brosur</a>
+              </li>
+              <li>
+                <a href="" style="text-decoration: none; color: black;">Panduan</a>
+              </li>
+            </ul>
+          </div>
+          <div class="me-5" style="margin-left: auto;">
+            <p class="text-end mt-1 " style="color: black;">© 2024 TIM IT PPIB</p>
           </div>
         </footer>
       </div>

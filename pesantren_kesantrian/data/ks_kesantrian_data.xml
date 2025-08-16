@@ -159,7 +159,7 @@
             <field name="ks_unit_selection">monetary</field>
             <field name="ks_dashboard_item_type">ks_pie_chart</field>
             <field name="ks_company_id" eval="0"/>
-            <field name="ks_domain" eval="state == 'approved')]" />
+            <field name="ks_domain" eval="state == 'approved')" />
             <field name="ks_date_filter_field" eval="
                 ref('pesantren_kesantrian.field_cdn_pelanggaran__tgl_pelanggaran')
             "/>

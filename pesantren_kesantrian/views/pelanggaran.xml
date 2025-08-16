@@ -68,9 +68,8 @@
                         <group>
                             <group string="Tindakan / Hukuman">
                                 <field name="tindakan_id" 
-                                    readonly="state in ['confirmed', 'approved']"
-                                    domain="[('level_pelanggaran','=',kategori)]" 
-                                    options="{'no_create': True}" />
+                                       readonly="state in ['confirmed', 'approved']"
+                                       options="{'no_create': True}" />
                                 <field name="deskripsi_tindakan" readonly="state in ['confirmed', 'approved']" />
                             </group>
 

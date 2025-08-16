@@ -19,13 +19,18 @@ class PenilaianAkhir(models.Model):
                 return term.name.split(' ')[1]
     # domain
     def _get_domain_siswa(self):
-        if self.env.user.has_group('pesantren_guru.group_guru_manager'):
-            return [('id','!=',False)]
-        elif self.env.user.has_group('pesantren_guru.group_guru_staff'):
-            guru = self.env['hr.employee'].search([('user_id', '=', self.env.uid)])
-            ruang_kelas = self.env['cdn.ruang_kelas'].search([('walikelas_id', '=', guru.id)])
-            return [('id','in',ruang_kelas.siswa_ids.ids)]
-        return [('id','=',False)]
+    # Cari dulu employee (guru) yang login
+        guru = self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1)
+        if not guru:
+            return [('id', '=', False)]
+
+        # Cari ruang kelas yang dia walikan
+        ruang_kelas = self.env['cdn.ruang_kelas'].search([('walikelas_id', '=', guru.id)], limit=1)
+        if ruang_kelas:
+            return [('id', 'in', ruang_kelas.siswa_ids.ids)]
+        else:
+            # Jika tidak jadi wali kelas, tidak boleh input apa-apa
+            return [('id', '=', False)]
     def _get_domain_walikelas(self):
         domain = [('jns_pegawai','=','guru')]
         if self.env.user.has_group('pesantren_guru.group_guru_manager'):
@@ -35,6 +40,9 @@ class PenilaianAkhir(models.Model):
         else:
             domain.append(('user_id','=',False))
         return domain
+    def _get_default_walikelas(self):
+        return self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1)
+    
 
     name                = fields.Char(string='Nama', readonly=True, compute='_compute_name')
     siswa_id            = fields.Many2one('cdn.siswa', string='Siswa', required=True, domain=_get_domain_siswa , ondelete='cascade')
@@ -49,7 +57,13 @@ class PenilaianAkhir(models.Model):
                             ('confirm', 'Confirm'), 
                             ('approved', 'Di Setujui')], default='draft')
     tgl_disetujui       = fields.Date(string='Tgl di Setujui', readonly=True)
-    walikelas_id        = fields.Many2one(comodel_name='hr.employee', string='Wali Kelas', required=True, domain=_get_domain_walikelas)
+    walikelas_id = fields.Many2one(
+    comodel_name='hr.employee',
+    string='Wali Kelas',
+    required=True,
+    default=_get_default_walikelas,
+    readonly=True  # Opsional: agar tidak bisa digant   i   
+    )
     
     penilaianakhir_ids  = fields.One2many('cdn.penilaian_akhir_lines', 'penilaianakhir_id', string='Nilai Raport', domain=[('penilaianguru_id.state', '=', 'confirm')])
     ekstrakulikuler_ids = fields.One2many('cdn.penilaian_ekstrakulikuler','penilaianakhir_id',string='Nilai Ekstrakulikuler')

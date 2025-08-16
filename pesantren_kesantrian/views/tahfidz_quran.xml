@@ -165,7 +165,12 @@
             <field name="name">Tahfidz Al-Qur'an</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.tahfidz_quran</field>
-            <field name="view_mode">list,form,graph,calendar</field>
+            <field name="view_mode">list,form,graph,calendar</field>   
+            <field name="domain">
+            [
+            ('state', 'in', ['draft', 'done'])
+            ]
+            </field> 
         </record>
 
         <!-- This Menu Item must have a parent and an action -->

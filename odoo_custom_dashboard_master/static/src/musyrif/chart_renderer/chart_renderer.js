@@ -28,7 +28,7 @@ export class MusyrifChartRenderer extends Component {
     this.actionService = useService("action");
     this.state = {
       chartData: { series: [], labels: [], stateIds: {} },
-      uangSakuData: { dates: [], masuk: [], keluar: [] },
+      uangSakuData: { dates: [], masuk: [], keluar: [], rawData: {} },
       selectedPeriod: this.props.period || "all",
       currentStartDate: this.props.startDate,
       currentEndDate: this.props.endDate,
@@ -76,6 +76,7 @@ export class MusyrifChartRenderer extends Component {
       }
     });
 
+
     onWillStart(async () => {
       this.showLoading();
       try {
@@ -104,14 +105,14 @@ export class MusyrifChartRenderer extends Component {
     });
 
     onWillUnmount(() => {
-      if (this.refreshInterval) {
-        clearInterval(this.refreshInterval);
+      this.cleanup();
+      if (this.loadingOverlay && document.body.contains(this.loadingOverlay)) {
+        document.body.removeChild(this.loadingOverlay);
       }
     });
   }
 
   showLoading() {
-    // Create loading overlay if it doesn't exist
     if (!this.loadingOverlay) {
       this.loadingOverlay = document.createElement("div");
       this.loadingOverlay.innerHTML = `
@@ -134,20 +135,14 @@ export class MusyrifChartRenderer extends Component {
       `;
       document.body.appendChild(this.loadingOverlay);
     }
-    // Ensure loading overlay is visible
-    if (this.loadingOverlay) {
-      this.loadingOverlay.style.display = "flex";
-    }
-
+    this.loadingOverlay.style.display = "flex";
     this.state.isLoading = true;
   }
 
   hideLoading() {
-    // Hide loading overlay
     if (this.loadingOverlay) {
       this.loadingOverlay.style.display = "none";
     }
-
     this.state.isLoading = false;
   }
 
@@ -161,16 +156,24 @@ export class MusyrifChartRenderer extends Component {
       this.areaChartInstance = null;
     }
     this.clearIntervals();
+
+    if (this.loadingOverlay && document.body.contains(this.loadingOverlay)) {
+      document.body.removeChild(this.loadingOverlay);
+      this.loadingOverlay = null;
+    }
   }
 
   toggleCountdown() {
     if (this.isCountingDown) {
       this.clearIntervals();
-      document.getElementById("timerIcon").className = "fas fa-clock";
-      document.getElementById("timerCountdown").textContent = "";
+      const timerIcon = document.getElementById("timerIcon");
+      const timerCountdown = document.getElementById("timerCountdown");
+      if (timerIcon) timerIcon.className = "fas fa-clock";
+      if (timerCountdown) timerCountdown.textContent = "";
     } else {
       this.startCountdown();
-      document.getElementById("timerIcon").className = "fas fa-stop";
+      const timerIcon = document.getElementById("timerIcon");
+      if (timerIcon) timerIcon.className = "fas fa-stop";
     }
     this.isCountingDown = !this.isCountingDown;
   }
@@ -190,19 +193,17 @@ export class MusyrifChartRenderer extends Component {
   }
 
   updateCountdownDisplay() {
-    document.getElementById("timerCountdown").textContent = this.countdownTime;
+    const timerCountdown = document.getElementById("timerCountdown");
+    if (timerCountdown) timerCountdown.textContent = this.countdownTime;
   }
 
   async refreshChart() {
     this.showLoading();
 
-    const startDate = this.state.isFiltered
-      ? this.state.currentStartDate
-      : null;
+    const startDate = this.state.isFiltered ? this.state.currentStartDate : null;
     const endDate = this.state.isFiltered ? this.state.currentEndDate : null;
 
     try {
-      // Fetch both datasets
       await Promise.all([
         this.fetchData(startDate, endDate),
         this.fetchUangSakuData(startDate, endDate),
@@ -210,46 +211,28 @@ export class MusyrifChartRenderer extends Component {
 
       // Update donut chart
       if (this.chartInstance) {
-        this.chartInstance.updateOptions(
-          {
-            series: this.state.chartData.series,
-            labels: this.state.chartData.labels,
-          },
-          true,
-          true
-        );
+        this.chartInstance.updateOptions({
+          series: this.state.chartData.series,
+          labels: this.state.chartData.labels,
+        });
       }
 
       // Update area chart
       if (this.areaChartInstance) {
-        const masuk = this.state.uangSakuData.masuk.map(
-          (value) => Number(value) || 0
-        );
-        const keluar = this.state.uangSakuData.keluar.map(
-          (value) => Number(value) || 0
-        );
+        const masuk = this.state.uangSakuData.masuk.map((v) => Number(v) || 0);
+        const keluar = this.state.uangSakuData.keluar.map((v) => Number(v) || 0);
 
-        this.areaChartInstance.updateOptions(
-          {
-            series: [
-              {
-                name: "Uang Masuk",
-                data: masuk,
-              },
-              {
-                name: "Uang Keluar",
-                data: keluar,
-              },
-            ],
-            xaxis: {
-              categories: this.state.uangSakuData.dates.map((date) =>
-                this.formatDate(date)
-              ),
-            },
+        this.areaChartInstance.updateOptions({
+          series: [
+            { name: "Uang Masuk", data: masuk },
+            { name: "Uang Keluar", data: keluar },
+          ],
+          xaxis: {
+            categories: this.state.uangSakuData.dates.map((date) =>
+              this.formatDate(date)
+            ),
           },
-          true,
-          true
-        );
+        });
       }
     } catch (error) {
       console.error("Error refreshing charts:", error);
@@ -265,7 +248,9 @@ export class MusyrifChartRenderer extends Component {
 
   attachEventListeners() {
     const timerButton = document.getElementById("timerButton");
-    timerButton.addEventListener("click", this.toggleCountdown.bind(this));
+    if (timerButton) {
+      timerButton.addEventListener("click", this.toggleCountdown.bind(this));
+    }
 
     const startDateInput = document.querySelector('input[name="start_date"]');
     const endDateInput = document.querySelector('input[name="end_date"]');
@@ -321,38 +306,26 @@ export class MusyrifChartRenderer extends Component {
   formatDate(dateString) {
     const date = new Date(dateString);
     const months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "Mei",
-      "Jun",
-      "Jul",
-      "Agu",
-      "Sep",
-      "Okt",
-      "Nov",
-      "Des",
+      "Jan", "Feb", "Mar", "Apr", "Mei", "Jun",
+      "Jul", "Agu", "Sep", "Okt", "Nov", "Des"
     ];
     const day = String(date.getDate()).padStart(2, "0");
     const month = months[date.getMonth()];
     const year = date.getFullYear();
-
     return `${day} ${month} ${year}`;
   }
 
   getStateColor(state) {
     const colorMap = {
-      Draft: "#16a34a", // Warm orange for pending/draft#f59e0b
-      Check: "#dc2626", // Blue for in review/check #3b82f6
-      Approved: "#737373", // Green for approved
-      Rejected: "#3b82f6", // Red for rejected
+      Draft: "#16a34a",
+      Check: "#dc2626",
+      Approved: "#737373",
+      Rejected: "#3b82f6",
     };
-    return colorMap[state] || "#cbd5e1"; // Default gray if state not found
+    return colorMap[state] || "#cbd5e1";
   }
 
   getChartConfig() {
-    // Get unique states and their corresponding colors
     const states = ["Draft", "Check", "Approved", "Rejected"];
     const colors = states.map((state) => this.getStateColor(state));
 
@@ -360,21 +333,14 @@ export class MusyrifChartRenderer extends Component {
       chart: {
         type: "donut",
         height: "80%",
-        // width: "100%",
         fontFamily: "Inter, sans-serif",
         background: "transparent",
         animations: {
           enabled: true,
           easing: "easeinout",
           speed: 800,
-          animateGradually: {
-            enabled: true,
-            delay: 150,
-          },
-          dynamicAnimation: {
-            enabled: true,
-            speed: 350,
-          },
+          animateGradually: { enabled: true, delay: 150 },
+          dynamicAnimation: { enabled: true, speed: 350 },
         },
         events: {
           dataPointSelection: (event, chartContext, config) => {
@@ -386,306 +352,92 @@ export class MusyrifChartRenderer extends Component {
 
             if (!associatedIds || associatedIds.length === 0) return;
 
-            const actionConfig = {
+            this.actionService.doAction({
               type: "ir.actions.act_window",
               target: "current",
               name: "Perijinan",
               res_model: "cdn.perijinan",
               view_mode: "list,form",
-              views: [
-                [false, "list"],
-                [false, "form"],
-              ],
+              views: [[false, "list"], [false, "form"]],
               domain: [["id", "in", associatedIds]],
-            };
-
-            this.actionService.doAction(actionConfig);
+            });
           },
         },
       },
-      series: [], // Will be populated with data
-      labels: states.map((state) => this.getStateLabel(state)), // Use the mapped labels
-      colors: colors, // Use our custom color array
+      series: [],
+      labels: states.map((state) => this.getStateLabel(state)),
+      colors: colors,
       plotOptions: {
         pie: {
           donut: {
             size: "65%",
-            height: "100%",
-            width: "100%", // Add explicit width
             labels: {
               show: true,
-              name: {
-                show: true,
-                fontSize: "22px",
-                fontFamily: "Inter, sans-serif",
-                offsetY: -10,
-                color: "#1f2937",
-              },
-              value: {
-                show: true,
-                fontSize: "16px",
-                fontFamily: "Inter, sans-serif",
-                color: "#1f2937",
-                formatter: function (val) {
-                  return `${val} Siswa`;
-                },
-              },
+              name: { show: true, fontSize: "22px", offsetY: -10, color: "#1f2937" },
+              value: { show: true, fontSize: "16px", color: "#1f2937", formatter: (val) => `${val} Siswa` },
               total: {
                 show: true,
-                fontSize: "16px",
-                fontFamily: "Inter, sans-serif",
-                color: "#1f2937",
                 label: "Total Siswa",
-                formatter: function (w) {
-                  return `${w.globals.seriesTotals.reduce(
-                    (a, b) => a + b,
-                    0
-                  )} Siswa`;
-                },
+                formatter: (w) => `${w.globals.seriesTotals.reduce((a, b) => a + b, 0)} Siswa`,
               },
             },
           },
         },
       },
-      states: {
-        hover: {
-          filter: {
-            type: "none",
-          },
-        },
-        active: {
-          filter: {
-            type: "none",
-          },
-        },
-      },
-      stroke: {
-        width: 0,
-      },
-      legend: {
-        position: "bottom",
-        horizontalAlign: "center",
-        fontSize: "14px",
-        fontFamily: "Inter, sans-serif",
-        labels: {
-          colors: "#1f2937",
-        },
-        markers: {
-          width: 10,
-          height: 10,
-          radius: 6,
-        },
-        itemMargin: {
-          horizontal: 15,
-          vertical: 8,
-        },
-        onItemClick: {
-          toggleDataSeries: false,
-        },
-        onItemHover: {
-          highlightDataSeries: false,
-        },
-      },
-      dataLabels: {
-        enabled: false,
-      },
-      tooltip: {
-        enabled: true,
-        theme: "dark",
-        style: {
-          fontSize: "14px",
-          fontFamily: "Inter, sans-serif",
-        },
-        y: {
-          formatter: function (value) {
-            return `${value} Siswa`;
-          },
-          title: {
-            formatter: function (seriesName) {
-              return seriesName;
-            },
-          },
-        },
-      },
-      responsive: [
-        {
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: "100%",
-              height: "100%",
-            },
-            legend: {
-              position: "bottom",
-            },
-          },
-        },
-      ],
+      stroke: { width: 0 },
+      legend: { position: "bottom", horizontalAlign: "center", fontSize: "14px" },
+      tooltip: { enabled: true, y: { formatter: (value) => `${value} Siswa` } },
       noData: {
         text: "Tidak ada data",
-        align: "center",
-        verticalAlign: "middle",
-        style: {
-          color: "#1f2937",
-          fontSize: "16px",
-          fontFamily: "Inter",
-        },
+        style: { fontSize: "16px", fontFamily: "Inter" },
       },
     };
   }
 
   getAreaChartConfig() {
-    const self = this;
-
     return {
       chart: {
         type: "area",
         height: "100%",
-        width: "100%",
         stacked: true,
-        toolbar: {
-          show: false,
-        },
-        zoom: {
-          enabled: false,
-        },
+        toolbar: { show: false },
         events: {
-          click: function (event, chartContext, config) {
-            // Validate click event data
-            if (
-              !config ||
-              config.dataPointIndex === undefined ||
-              config.dataPointIndex < 0
-            ) {
-              console.warn("Invalid click event data");
-              return;
-            }
+          click: (event, chartContext, config) => {
+            if (config.dataPointIndex === undefined) return;
+            const date = this.state.uangSakuData.dates[config.dataPointIndex];
+            if (!date) return;
 
-            // Validate state data
-            if (
-              !self.state.uangSakuData ||
-              !Array.isArray(self.state.uangSakuData.dates)
-            ) {
-              console.error("Invalid state data structure");
-              return;
-            }
+            const start = new Date(date);
+            start.setHours(0, 0, 0, 0);
+            const end = new Date(date);
+            end.setHours(23, 59, 59, 999);
 
-            try {
-              const selectedDate =
-                self.state.uangSakuData.dates[config.dataPointIndex];
-              if (!selectedDate) {
-                console.warn("Selected date not found");
-                return;
-              }
+            const domain = [
+              ["tgl_transaksi", ">=", start.toISOString().split(".")[0]],
+              ["tgl_transaksi", "<=", end.toISOString().split(".")[0]],
+              ["jns_transaksi", "=", config.seriesIndex === 0 ? "masuk" : "keluar"],
+            ];
 
-              // Create date range for the selected date
-              const startDate = new Date(selectedDate);
-              startDate.setHours(0, 0, 0, 0);
-              const endDate = new Date(selectedDate);
-              endDate.setHours(23, 59, 59, 999);
-
-              // Format dates for domain
-              const formattedStartDate = startDate.toISOString().split(".")[0];
-              const formattedEndDate = endDate.toISOString().split(".")[0];
-
-              // Determine transaction type based on series index
-              const transactionType =
-                config.seriesIndex === 0 ? "masuk" : "keluar";
-
-              // Build domain query
-              const domain = [
-                ["tgl_transaksi", ">=", formattedStartDate],
-                ["tgl_transaksi", "<=", formattedEndDate],
-                ["jns_transaksi", "=", transactionType],
-              ];
-
-              // Execute action if service is available
-              if (!self.actionService) {
-                console.error("Action service not initialized");
-                return;
-              }
-
-              self.actionService
-                .doAction({
-                  type: "ir.actions.act_window",
-                  name: `Data Uang ${
-                    transactionType === "masuk" ? "Masuk" : "Keluar"
-                  }`,
-                  res_model: "cdn.uang_saku",
-                  view_mode: "list,form",
-                  views: [
-                    [false, "list"],
-                    [false, "form"],
-                  ],
-                  target: "current",
-                  domain: domain,
-                  context: {
-                    create: false,
-                    search_default_group_by_tgl_transaksi: 1,
-                  },
-                  flags: {
-                    actionViewsInitialized: true,
-                  },
-                })
-                .catch((error) => {
-                  console.error("Failed to execute action:", error);
-                });
-            } catch (error) {
-              console.error("Error handling chart click:", error);
-            }
-          },
-        },
-      },
-      plotOptions: {
-        area: {
-          fillTo: "end",
-          opacity: 1,
-          dataLabels: {
-            enabled: false,
+            this.actionService.doAction({
+              type: "ir.actions.act_window",
+              name: `Data Uang ${config.seriesIndex === 0 ? "Masuk" : "Keluar"}`,
+              res_model: "cdn.uang_saku",
+              view_mode: "list,form",
+              views: [[false, "list"], [false, "form"]],
+              target: "current",
+              domain: domain,
+              context: { create: false },
+            });
           },
         },
       },
       colors: ["#16a34a", "#dc2626"],
-      dataLabels: {
-        enabled: false,
-      },
-      stroke: {
-        curve: "smooth",
-        width: 2,
-      },
-      markers: {
-        size: 6,
-        strokeWidth: 2,
-        fillOpacity: 1,
-        strokeOpacity: 1,
-        hover: {
-          size: 8,
-        },
-      },
       series: [
-        {
-          name: "Uang Masuk",
-          data: self.state.uangSakuData?.masuk || [],
-        },
-        {
-          name: "Uang Keluar",
-          data: self.state.uangSakuData?.keluar || [],
-        },
+        { name: "Uang Masuk", data: this.state.uangSakuData.masuk || [] },
+        { name: "Uang Keluar", data: this.state.uangSakuData.keluar || [] },
       ],
       xaxis: {
-        type: "category",
-        categories: (self.state.uangSakuData?.dates || []).map((date) =>
-          self.formatDate(date)
-        ),
-        labels: {
-          rotate: 0,
-          style: {
-            fontSize: "12px",
-          },
-        },
-        tooltip: {
-          enabled: true,
-        },
+        categories: (this.state.uangSakuData.dates || []).map((d) => this.formatDate(d)),
       },
       yaxis: {
         labels: {
@@ -697,9 +449,9 @@ export class MusyrifChartRenderer extends Component {
             }).format(value),
         },
       },
+      fill: { type: "gradient", gradient: { opacityFrom: 0.6, opacityTo: 0.3 } },
       tooltip: {
         shared: true,
-        intersect: false,
         y: {
           formatter: (value) =>
             new Intl.NumberFormat("id-ID", {
@@ -709,55 +461,27 @@ export class MusyrifChartRenderer extends Component {
             }).format(value),
         },
       },
-      fill: {
-        type: "gradient",
-        gradient: {
-          opacityFrom: 0.6,
-          opacityTo: 0.3,
-          stops: [0, 90, 100],
-        },
-      },
-      legend: {
-        position: "bottom",
-        horizontalAlign: "center",
-      },
-      noData: {
-        text: "Tidak ada data",
-        align: "center",
-        verticalAlign: "middle",
-        style: {
-          color: "#1f2937",
-          fontSize: "16px",
-          fontFamily: "Inter",
-        },
-      },
+      noData: { text: "Tidak ada data" },
     };
   }
 
-  async fetchData(startDate = null, endDate = null, silent = false) {
-    const domain = [
-      ["musyrif_id", "ilike", session.partner_display_name],
-      ["state", "not in", ["Return", "Permission"]],
-    ];
+  // ================== FETCH DATA TANPA FILTER USER ==================
+
+  async fetchData(startDate = null, endDate = null) {
+    // Hapus filter musyrif_id → semua data perijinan ditampilkan
+    let domain = [["state", "not in", ["Return", "Permission"]]];
     if (startDate) domain.push(["create_date", ">=", startDate]);
     if (endDate) domain.push(["create_date", "<=", endDate]);
 
     try {
       const data = await this.orm.call("cdn.perijinan", "search_read", [
         domain,
-        ["state", "musyrif_id"],
+        ["state", "id"],
       ]);
 
-      if (!data || data.length === 0) {
-        console.warn("No data found.");
-        this.state.chartData = { series: [], labels: [], stateIds: {} }; // Reset chart data
-        this.renderChart(); // Render chart ulang untuk memastikan noData ditampilkan
-        return;
-      }
-
-      // Process data
       const stateGroups = {};
       const stateIds = {};
+
       data.forEach((record) => {
         const state = this.getStateLabel(record.state);
         if (!stateGroups[state]) {
@@ -774,21 +498,20 @@ export class MusyrifChartRenderer extends Component {
         stateIds,
       };
 
-      this.renderChart(); // Update chart setelah data berhasil di-fetch
+      this.renderChart();
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching perijinan data:", error);
     }
   }
 
   async fetchUangSakuData(startDate = null, endDate = null) {
-    let domain = [["musyrif_id", "ilike", session.partner_display_name]];
-
+    // Hapus filter musyrif_id → semua data uang saku ditampilkan
+    let domain = [];
     if (startDate) {
       const start = new Date(startDate);
       start.setHours(0, 0, 0, 0);
       domain.push(["tgl_transaksi", ">=", start.toISOString().split(".")[0]]);
     }
-
     if (endDate) {
       const end = new Date(endDate);
       end.setHours(23, 59, 59, 999);
@@ -796,256 +519,80 @@ export class MusyrifChartRenderer extends Component {
     }
 
     try {
-      // Fetch all data regardless of state
       const data = await this.orm.call("cdn.uang_saku", "search_read", [
         domain,
-        ["tgl_transaksi", "amount_in", "amount_out", "jns_transaksi", "state"],
+        ["tgl_transaksi", "amount_in", "amount_out", "jns_transaksi", "id"],
       ]);
 
-      if (!data || data.length === 0) {
-        this.state.uangSakuData = {
-          dates: [],
-          masuk: [],
-          keluar: [],
-          rawData: {}, // Add raw data storage
-        };
-
-        if (this.areaChartInstance) {
-          this.areaChartInstance.updateOptions(
-            {
-              series: [
-                {
-                  name: "Uang Masuk",
-                  data: [],
-                },
-                {
-                  name: "Uang Keluar",
-                  data: [],
-                },
-              ],
-              xaxis: {
-                categories: [],
-              },
-            },
-            true,
-            true
-          );
-        }
-        return;
-      }
-
-      // Process data for area chart
-      const processedData = data.reduce(
+      const processed = data.reduce(
         (acc, record) => {
-          const date = record.tgl_transaksi
-            ? new Date(record.tgl_transaksi).toISOString().split("T")[0]
-            : null;
+          const date = record.tgl_transaksi?.split("T")[0];
+          if (!date) return acc;
 
-          if (date) {
-            // Initialize date entry if it doesn't exist
-            if (!acc.dates.includes(date)) {
-              acc.dates.push(date);
-              acc.masuk.push(0);
-              acc.keluar.push(0);
-              acc.rawData[date] = []; // Initialize array for raw data
-            }
+          if (!acc.dates.includes(date)) {
+            acc.dates.push(date);
+            acc.masuk.push(0);
+            acc.keluar.push(0);
+            acc.rawData[date] = [];
+          }
 
-            // Store raw record data for click handling
-            acc.rawData[date].push(record);
+          const idx = acc.dates.indexOf(date);
+          acc.rawData[date].push(record);
 
-            // Process amounts regardless of state
-            const index = acc.dates.indexOf(date);
-            if (record.jns_transaksi === "masuk" && record.amount_in) {
-              acc.masuk[index] += Number(record.amount_in) || 0;
-            }
-            if (record.jns_transaksi === "keluar" && record.amount_out) {
-              acc.keluar[index] += Number(record.amount_out) || 0;
-            }
+          if (record.jns_transaksi === "masuk") {
+            acc.masuk[idx] += Number(record.amount_in) || 0;
+          } else if (record.jns_transaksi === "keluar") {
+            acc.keluar[idx] += Number(record.amount_out) || 0;
           }
 
           return acc;
         },
-        {
-          dates: [],
-          masuk: [],
-          keluar: [],
-          rawData: {}, // Add raw data storage
-        }
+        { dates: [], masuk: [], keluar: [], rawData: {} }
       );
 
-      this.state.uangSakuData = processedData;
+      this.state.uangSakuData = processed;
 
-      // Update chart with click handler
       if (this.areaChartInstance) {
-        this.areaChartInstance.updateOptions(
-          {
-            series: [
-              {
-                name: "Uang Masuk",
-                data: processedData.masuk,
-              },
-              {
-                name: "Uang Keluar",
-                data: processedData.keluar,
-              },
-            ],
-            xaxis: {
-              categories: processedData.dates.map((date) =>
-                this.formatDate(date)
-              ),
-            },
-            chart: {
-              events: {
-                dataPointSelection: (event, chartContext, config) => {
-                  const date = processedData.dates[config.dataPointIndex];
-                  const records = processedData.rawData[date];
-
-                  
-                  this.handleChartPointClick(records);
-                },
-              },
-            },
-          },
-          true,
-          true
-        );
+        this.areaChartInstance.updateOptions({
+          series: [
+            { name: "Uang Masuk", data: processed.masuk },
+            { name: "Uang Keluar", data: processed.keluar },
+          ],
+          xaxis: { categories: processed.dates.map((d) => this.formatDate(d)) },
+        });
       }
     } catch (error) {
       console.error("Error fetching uang saku data:", error);
     }
   }
 
-  handleChartPointClick(records) {
-    if (!records || records.length === 0) return;
-
-    // Update the state with all records
-    this.state.selectedRecords = records.map((record) => ({
-      ...record,
-      formattedDate: this.formatDate(record.tgl_transaksi),
-      amount:
-        record.jns_transaksi === "masuk" ? record.amount_in : record.amount_out,
-    }));
-
-    // If you're using a modal to display the records
-    if (this.modalRef) {
-      this.modalRef.show();
-    }
-
-    this.render();
-  }
-
-  renderAreaChart() {
-    if (!this.areaChartRef.el) return;
-
-    if (this.areaChartInstance) {
-      this.areaChartInstance.destroy();
-    }
-
-    // Ensure the container has dimensions
-    this.areaChartRef.el.style.minHeight = "350px";
-    this.areaChartRef.el.style.width = "100%";
-
-    const config = this.getAreaChartConfig();
-
-    // Add default dimensions if data is empty
-    if (!this.state.uangSakuData.dates.length) {
-      config.chart.height = 350;
-      config.chart.width = "100%";
-    }
-
-    try {
-      this.areaChartInstance = new ApexCharts(this.areaChartRef.el, config);
-      this.areaChartInstance.render();
-    } catch (error) {
-      console.error("Error rendering area chart:", error);
-    }
-  }
-
-  getStateLabel(state) {
-    const stateMap = {
-      Draft: "Pengajuan",
-      Check: "Diperiksa",
-      Approved: "Disetujui",
-      Rejected: "Ditolak",
-    };
-    return stateMap[state] || state;
-  }
-
-  updateChart() {
-    if (this.chartInstance) {
-      this.chartInstance.updateOptions({
-        xaxis: {
-          categories: this.state.chartData.labels,
-        },
-        series: this.state.chartData.series,
-      });
-    }
-
-    if (this.areaChartInstance) {
-      this.chartInstance.updateOptions({
-        xaxis: {
-          categories: this.state.chartData.labels,
-        },
-        series: this.state.chartData.series,
-      });
-    }
-  }
-
-  renderAreaChart() {
-    if (!this.areaChartRef.el) return;
-
-    if (this.areaChartInstance) {
-      this.areaChartInstance.destroy();
-    }
-
-    const config = this.getAreaChartConfig();
-
-    try {
-      this.areaChartInstance = new ApexCharts(this.areaChartRef.el, config);
-      this.areaChartInstance.render();
-    } catch (error) {
-      console.error("Error rendering area chart:", error);
-    }
-  }
-
   renderChart() {
     if (!this.chartRef.el) return;
-
-    if (this.chartInstance) {
-      this.chartInstance.destroy();
-      this.chartInstance = null;
-    }
+    if (this.chartInstance) this.chartInstance.destroy();
 
     const hasData = this.state.chartData.series.length > 0;
-
     const config = {
       ...this.getChartConfig(),
       series: hasData ? this.state.chartData.series : [],
       labels: hasData ? this.state.chartData.labels : [],
     };
 
-    try {
-      this.chartInstance = new ApexCharts(this.chartRef.el, config);
-      this.chartInstance.render();
+    this.chartInstance = new ApexCharts(this.chartRef.el, config);
+    this.chartInstance.render();
+  }
 
-      // Jika tidak ada data, panggil fungsi noData
-      if (!hasData) {
-        this.chartInstance.updateOptions({
-          noData: {
-            text: "Tidak ada data",
-            align: "center",
-            verticalAlign: "middle",
-            style: {
-              color: "#1f2937",
-              fontSize: "16px",
-              fontFamily: "Inter",
-            },
-          },
-        });
-      }
-    } catch (error) {
-      console.error("Error rendering chart:", error);
-    }
+  renderAreaChart() {
+    if (!this.areaChartRef.el) return;
+    if (this.areaChartInstance) this.areaChartInstance.destroy();
+
+    const config = this.getAreaChartConfig();
+    this.areaChartInstance = new ApexCharts(this.areaChartRef.el, config);
+    this.areaChartInstance.render();
+  }
+
+  getStateLabel(state) {
+    const map = { Draft: "Pengajuan", Check: "Diperiksa", Approved: "Disetujui", Rejected: "Ditolak" };
+    return map[state] || state;
   }
 }
 

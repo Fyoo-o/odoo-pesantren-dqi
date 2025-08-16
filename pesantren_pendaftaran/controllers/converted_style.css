@@ -1,0 +1,169 @@
+
+.progress-card {{
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: none;
+            overflow: hidden;
+            margin-bottom: 30px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }}
+
+        .progress-card:hover {{
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+        }}
+
+        .progress-card-header {{
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px 30px;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }}
+
+        .progress-card-header::before {{
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }}
+
+        @keyframes shine {{
+            0% {{ transform: translateX(-100%) translateY(-100%) rotate(45deg); }}
+            50% {{ transform: translateX(100%) translateY(100%) rotate(45deg); }}
+            100% {{ transform: translateX(-100%) translateY(-100%) rotate(45deg); }}
+        }}
+
+        .progress-card-header h4 {{
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }}
+
+        .progress-card-body {{
+            padding: 0;
+        }}
+
+        .student-card {{
+            background: white;
+            margin: 20px;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+        }}
+
+        .student-card:hover {{
+            transform: translateX(5px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+        }}
+
+        .student-info {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }}
+
+        .student-name {{
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }}
+
+        .student-name::before {{
+            content: '👤';
+            font-size: 1.1rem;
+        }}
+
+        .status-badges {{
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }}
+
+        .status-badge {{
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }}
+
+        .status-badge.active {{
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+        }}
+
+        .status-badge.inactive {{
+            background: #e9ecef;
+            color: #6c757d;
+        }}
+
+        .progress-section {{
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }}
+
+        .custom-progress {{
+            height: 12px;
+            border-radius: 10px;
+            background: #e9ecef;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 10px;
+        }}
+
+        .custom-progress-bar {{
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 10px;
+            transition: width 1.5s ease-in-out;
+            position: relative;
+            overflow: hidden;
+        }}
+
+        .custom-progress-bar::after {{
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: progressShine 2s infinite;
+        }}
+
+        @keyframes progressShine {{
+            0% {{ transform: translateX(-100%); }}
+            100% {{ transform: translateX(100%); }}
+        }}
+
+        .progress-text {{
+            font-weight: 600;
+            color: #495057;
+            text-align: center;
+        }}

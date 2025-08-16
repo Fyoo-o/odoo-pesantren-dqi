@@ -234,11 +234,11 @@ export class GuruChartRenderer extends Component {
       domain3.push(["guru_id", "=", session.partner_display_name]);
       domain2.push(["tanggal", ">=", startDate]);
       domain2.push(["tanggal", "<=", endDate]);
-      domain2.push([
-        "penanggung_jawab_id",
-        "ilike",
-        session.partner_display_name,
-      ]);
+      // domain2.push([
+      //   "penanggung_jawab_id",
+      //   "ilike",
+      //   session.partner_display_name,
+      // ]);
 
       pie1 = await this.orm.call("cdn.absensi_siswa_lines", "search_read", [
         domain1,
@@ -250,13 +250,13 @@ export class GuruChartRenderer extends Component {
         "search_read",
         [
           domain2,
-          ["name", "halaqoh_id", "tanggal", "kehadiran", "penanggung_jawab_id"],
+          ["name", "halaqoh_id", "tanggal", "kehadiran"],
         ]
       );
 
       pie3 = await this.orm.call("cdn.absen_tahsin_quran_line", "search_read", [
         domain2,
-        ["name", "halaqoh_id", "tanggal", "kehadiran", "penanggung_jawab_id"],
+        ["name", "halaqoh_id", "tanggal", "kehadiran"],
       ]);
 
       await this.processData(pie1, pie2, pie3);
@@ -632,7 +632,7 @@ export class GuruChartRenderer extends Component {
         domainAction.push(
           ["id", "in", associatedIds],
           ["kehadiran", "=", kehadiran],
-          ["guru", "=", session.partner_display_name]
+          // ["guru", "=", session.partner_display_name]
         );
       } else if (this.props.title === "pie2") {
         let kehadiran = originalLabel;
@@ -646,7 +646,7 @@ export class GuruChartRenderer extends Component {
         domainAction.push(
           ["id", "in", associatedIds],
           ["kehadiran", "=", kehadiran],
-          ["penanggung_jawab_id", "=", session.partner_display_name]
+          // ["penanggung_jawab_id", "=", session.partner_display_name]
         );
       }
 
@@ -1012,17 +1012,17 @@ export class GuruChartRenderer extends Component {
 
     const startText = this.state.startDate2
       ? new Date(this.state.startDate2).toLocaleDateString("id-ID", {
-          day: "numeric",
-          month: "short",
-          year: "numeric",
-        })
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      })
       : null;
     const endText = this.state.endDate2
       ? new Date(this.state.endDate2).toLocaleDateString("id-ID", {
-          day: "numeric",
-          month: "short",
-          year: "numeric",
-        })
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      })
       : null;
 
     let dateText;

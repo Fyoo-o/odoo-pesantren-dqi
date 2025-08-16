@@ -15,8 +15,8 @@ class PredikatLines(models.Model):
 
     predikat_id     = fields.Many2one(comodel_name='cdn.predikat', string='Predikat')
     name            = fields.Char(string='Predikat', required=True)
-    min_nilai       = fields.Float(string='Min Nilai', required=True)
-    max_nilai       = fields.Float(string='Max Nilai', required=True)
+    min_nilai       = fields.Integer(string='Min Nilai', required=True)
+    max_nilai       = fields.Integer(string='Max Nilai', required=True)
 
     @api.onchange('min_nilai', 'max_nilai')
     def _onchange_min_nilai_max_nilai(self):
