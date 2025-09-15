@@ -35,14 +35,14 @@ class PencairanSaldo(models.TransientModel):
         if self.kartu_santri:
             santri = self.env['cdn.siswa'].search([('barcode_santri', '=', self.kartu_santri)], limit=1)
             if not santri:
-                santri = self.env['cdn.siswa'].search([('barcode', '=', self.kartu_santri)]),
+                santri = self.env['cdn.siswa'].search([('barcode', '=', self.kartu_santri)], limit=1)
             
             if santri:
                 self.santri_id = santri.id
             
             else:
                 kartu_sementara = self.kartu_santri
-                self.barcode = False
+                self.kartu_santri = False
                 return {
                     'warning': {
                         'title': 'Perhatian !',

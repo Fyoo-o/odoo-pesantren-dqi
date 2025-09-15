@@ -72,8 +72,12 @@ class master_kelas(models.Model):
     jurusan_id          = fields.Many2one(comodel_name='cdn.master_jurusan', string='Jurusan / Peminatan')
     
     nama_kelas          = fields.Char(string="Nama Kelas", required=False)
- 
-    _sql_constraints = [('master_kelas_uniq', 'unique(name)', 'Master Data Kelas harus unik !')]
+
+    @api.constrains('name')
+    def _check_unique_name(self):
+        for record in self:
+            if self.search_count([('name', '=', record.name)]) > 1:
+                raise UserError('Master Data Kelas harus unik!')
 
     def _convert_to_roman(self, number):
         roman =[(1000, 'M'),(900, 'CM'),(500, 'D'),(400, 'CD'),(100, 'C'),(90, 'XC'),(50, 'L'),(40, 'XL'),(10, 'X'),(9, 'IX'),(5, 'V'),(4, 'IV'),(1, 'I')]

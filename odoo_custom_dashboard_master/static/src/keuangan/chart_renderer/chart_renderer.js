@@ -653,8 +653,10 @@ export class KeuanganChartRenderer extends Component {
       const quantity = record.quantity || 1;
       const credit = record.credit || 0;
 
-      if (record.parent_state === "posted") {
-        // Data untuk status Lunas
+        if (record.parent_state === "cancel") {
+            return; // skip tagihan dibatalkan
+        } else if (record.parent_state === "posted") {
+            // Data untuk status Lunas
         lunasData.set(
           productName,
           (lunasData.get(productName) || 0) + quantity
@@ -1142,9 +1144,9 @@ export class KeuanganChartRenderer extends Component {
 
         // Menambahkan kondisi berdasarkan status Lunas/Belum Lunas
         if (seriesName === "Lunas") {
-          domain.push(["parent_state", "=", "posted"]);
+            domain.push(["parent_state", "=", "posted"]);
         } else {
-          domain.push(["parent_state", "in", ["draft", "cancel"]]);
+            domain.push(["parent_state", "in", ["draft"]]);
         }
 
         // Pengecekan tanggal yang lebih aman

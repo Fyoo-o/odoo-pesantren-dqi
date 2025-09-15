@@ -58,6 +58,11 @@ class Halaqoh(models.Model):
         for record in self:
             record.jml_siswa = len(record.siswa_ids)
             
-    _sql_constraints = [
-        ("name_check", "unique(name)", "Nama Halaqoh sudah ada!"),
-    ]
+    # _sql_constraints = [
+    #     ('unique_halaqoh_name', 'unique(name)', 'Nama Halaqoh sudah ada!')
+    # ]
+    @api.constrains('name')
+    def _check_unique_name(self):
+        for rec in self:
+            if self.search_count([('name', '=', rec.name), ('id', '!=', rec.id)]) > 0:
+                raise UserError("Nama Halaqoh sudah ada, silakan gunakan nama lain.")

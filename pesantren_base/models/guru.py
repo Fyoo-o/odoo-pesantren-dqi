@@ -23,4 +23,6 @@ class guru(models.Model):
     pendidikan_id       = fields.Many2one(comodel_name="cdn.ref_pendidikan",  string="Pendidikan",  help="")
     riwayat_pendidikan_ids = fields.One2many(comodel_name="cdn.riwayat_pendidikan",  inverse_name="guru_id",  string="Riwayat Pendidikan",  help="")
 
-    _sql_constraints    = [('nip_uniq', 'unique(nip)', 'Nomor Induk Pegawai (NIP) harus unik !')]
+    _sql_constraints = [
+        ('nip_unique', 'unique(nip)', _('Nomor Induk Pegawai (NIP) harus unik !')),
+    ]

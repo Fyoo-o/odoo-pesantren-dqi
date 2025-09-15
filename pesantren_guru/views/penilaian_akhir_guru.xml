@@ -39,8 +39,9 @@
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
                                 <field name="mapel_id"
                                     readonly="state == 'confirm'"
+                                    domain="[('tingkat_id','=', tingkat_id), ('guru_ids','in',[guru_id])]" 
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
-                            </group>
+                                </group>
                             <group>
                                 <field name="tahunajaran_id"
                                     readonly="state == 'confirm'"
@@ -73,6 +74,19 @@
                 </form>
             </field>
         </record>
+
+        <!-- <record id="view_penilaian_akhir_guru_search" model="ir.ui.view">
+            <field name="name">cdn.penilaian_akhir_guru.search</field>
+            <field name="model">cdn.penilaian_akhir_guru</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="guru_id"/>
+                    <filter string="Penilaian Saya"
+                            name="my_penilaian"
+                            domain="[('guru_id.user_id', '=', uid)]"/>
+                </search>
+            </field>
+        </record> -->
         <!-- cdn.penilaian_akhir_guru action window -->
         <record id="cdn_penialian_akhir_guru_action" model="ir.actions.act_window">
             <field name="name">Penilaian Akhir ( Guru )</field>
@@ -80,7 +94,7 @@
             <field name="res_model">cdn.penilaian_akhir_guru</field>
             <field name="view_mode">list,form</field>
             <field name="domain">
-            [('guru_id.user_id', '=', uid)]
+                [('guru_id.user_id', '=', uid)]
             </field>
         </record>
         <!-- This Menu Item must have a parent and an action -->

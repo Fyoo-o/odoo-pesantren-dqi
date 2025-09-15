@@ -1,12 +1,22 @@
 from odoo import api, fields, models
 from datetime import date
+from odoo.exceptions import UserError
 
 class PenilaianAkhir(models.Model):
     _name               = 'cdn.penilaian_akhir'
     _description        = 'Data Penilain Akhir Evaluasi Untuk Rapor'
-    _sql_constraints    = [
-        ('unique_penilaian_akhir', 'unique(siswa_id, tahunajaran_id, semester)', 'Data Penilaian Akhir sudah ada !')
-    ]
+
+    @api.constrains('siswa_id', 'tahunajaran_id', 'semester')
+    def _check_unique_penilaian_akhir(self):
+        for rec in self:
+            domain = [
+                ('siswa_id', '=', rec.siswa_id.id),
+                ('tahunajaran_id', '=', rec.tahunajaran_id.id),
+                ('semester', '=', rec.semester),
+                ('id', '!=', rec.id)
+            ]
+            if self.search_count(domain):
+                raise UserError('Data Penilaian Akhir sudah ada !')
 
     # default
     def _get_default_semester(self):
@@ -120,7 +130,7 @@ class PenilaianAkhir(models.Model):
     @api.model
     def default_get(self, fields_tree):
         if not self.env.user.company_id.tahun_ajaran_aktif.id:
-            raise models.ValidationError('Tahun ajaran belum di set')
+            raise UserError('Tahun ajaran belum di set')
         return super().default_get(fields_tree)
 class PenilaianAkhirLines(models.Model):
     _name               = 'cdn.penilaian_akhir_lines'

@@ -1,11 +1,16 @@
 from odoo import api, fields, models
 import re
+from odoo.exceptions import UserError
 
 class Guru(models.Model):
     _inherit = 'hr.employee'
-    _sql_constraints = [
-        ('email_uniq', 'unique(work_email)', 'Email sudah ada!'),
-    ]
+    @api.constrains('work_email')
+    def _check_unique_email(self):
+        for guru in self:
+            if guru.work_email:
+                existing = self.search([('work_email', '=', guru.work_email), ('id', '!=', guru.id)], limit=1)
+                if existing:
+                    raise UserError('Email sudah ada!')
 
     work_email = fields.Char(string='Email', required=True)
 
@@ -66,4 +71,4 @@ class Guru(models.Model):
             if guru.work_email:
                 #regex
                 if not re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', guru.work_email):
-                    raise models.ValidationError('Email tidak valid!')
+                    raise UserError('Email tidak valid!')

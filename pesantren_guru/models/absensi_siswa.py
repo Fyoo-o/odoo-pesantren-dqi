@@ -1,6 +1,7 @@
 from odoo import api, fields, models
 import logging
 _logger = logging.getLogger(__name__)
+from odoo.exceptions import UserError
 
 class AbsensiSiswa(models.Model):
     _name               = 'cdn.absensi_siswa'
@@ -66,9 +67,10 @@ class AbsensiSiswa(models.Model):
         for record in self:
             if record.name:
                 if self.search_count([('name','=',record.name)]) > 1:
-                    raise models.ValidationError('Absensi Siswa sudah ada')
+                    raise UserError('Absensi Siswa sudah ada')
     # compute
     @api.depends('tanggal')
+    
     def _compute_hari(self):
         for record in self:
             record.hari = str(self.tanggal.weekday() + 1)

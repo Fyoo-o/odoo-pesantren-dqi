@@ -265,7 +265,7 @@ export class OrangtuaCardList2 extends Component {
       const siswaData = await this.orm.call("cdn.siswa", "search_read", [
         siswaDomain,
         ["id"],
-      ]);
+      ]); 
 
       siswaIds = siswaData.map((siswa) => siswa.id);
 
@@ -338,7 +338,7 @@ export class OrangtuaCardList2 extends Component {
             date: date,
             surah: record.surah_id ? record.surah_id[1] : "N/A",
             // surah: record.surah_id,
-            ayatAwal: parseInt(record.ayat_awal_name) || 0,
+            ayatAwal: parseInt(record.ayat_awal) || 0,
             ayatAkhir: parseInt(record.ayat_akhir?.[1]) || 0,
             nilai: record.nilai_id ? record.nilai_id[1] : "N/A",
             halaqoh: record.halaqoh_id ? record.halaqoh_id[1] : "N/A",

@@ -78,7 +78,7 @@
         <field name="res_model">cdn.absensi_ekskul</field>
         <field name="view_mode">list,form</field>
         <field name="domain">
-        [('guru.user_id', '=', uid)]         
+        [('guru.user_id', '=', uid)]            
         </field>
     </record>
 

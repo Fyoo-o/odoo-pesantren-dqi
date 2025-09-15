@@ -23,7 +23,7 @@ from odoo import fields, models, api
 from datetime import date, datetime
 from odoo.exceptions import ValidationError
 
-class AccountJournal(models.Model):
+class AccountJournal(models.Model): 
     """Adding fields to account journal"""
     _inherit = "account.journal"
 
@@ -91,7 +91,28 @@ class Donation(models.Model):
         today = fields.Date.today()
         for record in self:
             record.is_active = bool(record.start_date and record.end_date and record.start_date <= today <= record.end_date)
-            
+    
+    @api.onchange('start_date', 'end_date')
+    def _onchange_dates(self):
+        today = fields.Date.today()
+        if self.start_date and self.start_date < today:
+            self.start_date = False
+            return {
+                'warning': {
+                    'title': "Invalid Tanggal",
+                    'message': "Tanggal Mulai tidak boleh kurang dari hari ini.",
+                }
+            }
+
+        if self.start_date and self.end_date and self.start_date >= self.end_date:
+            self.end_date = False
+            return {
+                'warning': {
+                    'title': "Invalid Tanggal",
+                    'message': "Tanggal Mulai harus lebih awal dari Tanggal Berakhir.",
+                }
+            }
+
     # @api.model
     # def update_is_active(self):
     #     """Dijalankan secara otomatis setiap hari untuk memperbarui status is_active."""
@@ -184,7 +205,7 @@ class DonationDetail(models.Model):
     'cdn.donation',
     string='Terkait Sumbangan',
     help='Penggalangan donasi yang terkait dengan detail donasi ini',
-    domain=[('start_date', '<=', fields.Date.today()), ('end_date', '>=', fields.Date.today())]
+    domain="[('start_date', '<=', date), ('end_date', '>=', date)]"
     )
 
     state = fields.Selection(
@@ -227,14 +248,27 @@ class DonationDetail(models.Model):
         for record in self:
             record.state = 'draft'
             
-    @api.constrains('donation_id')
-    def _check_donation_active(self):
-        """Cek apakah donasi masih aktif sebelum menambahkan donasi baru."""
-        for record in self:
-            if record.donation_id and not record.donation_id.is_active:
-                raise ValidationError("Donasi ini sudah tidak aktif. Anda tidak dapat menambahkan donasi baru.")
+    # @api.constrains('donation_id')
+    # def _check_donation_active(self):
+    #     """Cek apakah donasi masih aktif sebelum menambahkan donasi baru."""
+    #     for record in self:
+    #         if record.donation_id and not record.donation_id.is_active:
+    #             raise ValidationError("Donasi ini sudah tidak aktif. Anda tidak dapat menambahkan donasi baru.")
+    @api.onchange('date')
+    def _onchange_date(self):
+        """Update domain donation_id sesuai tanggal donasi"""
+        if self.date:
+            return {
+                'domain': {
+                    'donation_id': [
+                        ('start_date', '<=', self.date),
+                        ('end_date', '>=', self.date),
+                    ]
+                }
+            }
+        return {'domain': {'donation_id': []}}  
+         
 
-    
     # @api.model
     # def _search(self, domain, offset=0, limit=None, order=None, count=False):
     #     # Handle empty domain

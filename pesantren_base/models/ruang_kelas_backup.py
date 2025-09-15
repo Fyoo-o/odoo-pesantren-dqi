@@ -74,10 +74,17 @@ class ruang_kelas(models.Model):
 
     keterangan = fields.Char(string="Keterangan")
 
-    _sql_constraints = [
-        ('ruang_kelas_uniq', 'unique(name, tahunajaran_id)', 
-         'Data Rombongan Belajar dan Tahun Pelajaran harus unik!')
-    ]
+    @api.constrains('name', 'tahunajaran_id')
+    def _check_unique_ruang_kelas(self):
+        for rec in self:
+            domain = [
+                ('name', '=', rec.name.id),
+                ('tahunajaran_id', '=', rec.tahunajaran_id.id),
+                ('id', '!=', rec.id)
+            ]
+            if rec.name and rec.tahunajaran_id and self.search_count(domain):
+                raise UserError('Data Rombongan Belajar dan Tahun Pelajaran harus unik!')
+
 
     @api.onchange('tingkat', 'jurusan_id', 'nama_kelas')
     def _onchange_tingkat_jurusan_nama(self):

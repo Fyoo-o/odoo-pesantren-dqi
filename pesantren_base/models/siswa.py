@@ -383,8 +383,13 @@ class siswa(models.Model):
     # _sql_constraints = [('nis_uniq', 'unique(nis)', 'Data NIS tersebut sudah pernah terdaftar, pastikan NIS harus unik !'),
     #                     ('nisn_uniq', 'unique(nisn)', 'Data NISN tersebut sudah pernah terdaftar, pastikan NISN harus unik !'),
     #                     ('nik_uniq', 'unique(nik)', 'Data NIK tersebut sudah pernah terdaftar, pastikan NIK harus unik !')]
-    _sql_constraints = [('nik_uniq', 'unique(nik)', 'Data NIK tersebut sudah pernah terdaftar, pastikan NIK harus unik !')]
-    
+    @api.constrains('nik')
+    def _check_nik_unique(self):
+        for record in self:
+            if record.nik:
+                exists = self.search([('nik', '=', record.nik), ('id', '!=', record.id)], limit=1)
+                if exists:
+                    raise UserError('Data NIK tersebut sudah pernah terdaftar, pastikan NIK harus unik!')
     # @api.model
     # def create(self, vals):
     #     # Update barcode_santri in res.partner before creation

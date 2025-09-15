@@ -30,7 +30,11 @@ class ref_tahunajaran(models.Model):
     keterangan          = fields.Char( string="Keterangan",  help="")
     biaya_ids           = fields.One2many(comodel_name="cdn.biaya_tahunajaran",  inverse_name="tahunajaran_id",  string="Biaya",  help="")
 
-    _sql_constraints    = [('tahun_ajaran_uniq', 'unique(name)', 'Nama Tahun Ajaran tersebut sudah terdaftar, Pastikan harus unik !')]
+    @api.constrains('name')
+    def _check_unique_tahun_ajaran(self):
+        for record in self:
+            if self.search_count([('name', '=', record.name)]) > 1:
+                raise UserError('Nama Tahun Ajaran tersebut sudah terdaftar, Pastikan harus unik !')
 
     def term_create(self):
         num = 0

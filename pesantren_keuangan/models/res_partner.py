@@ -2,6 +2,7 @@ from odoo import api, fields, models
 import datetime
 import random
 import logging
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -46,7 +47,7 @@ class ResPartner(models.Model):
         """
         for partner in self:
             if not partner.nis:
-                raise ValueError(f"NIS tidak ditemukan untuk partner {partner.name}.")
+                raise UserError(f"NIS untuk {partner.name} belum dibuat.")
             
             partner.virtual_account = partner._generate_virtual_account(partner.nis)
             partner.va_saku = partner._generate_va_uangsaku(partner.nis)

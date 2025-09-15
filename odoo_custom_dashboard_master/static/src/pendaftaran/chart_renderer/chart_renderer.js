@@ -793,8 +793,8 @@ export class PendaftaranChartRenderer extends Component {
               name: headerName,
               type: "ir.actions.act_window",
               res_model: resModel,
-              view_mode: "list",
-              views: [[false, "list"]],
+              view_mode: "list,form",
+              views: [[false, "list"], [false, "form"]],
               target: "current",
               domain: domainAction,
               // domain: [

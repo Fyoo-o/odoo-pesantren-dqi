@@ -1,13 +1,16 @@
 from odoo import api, fields, models
+from odoo.exceptions import UserError
 
 
 class AsetPesantren(models.Model):
     _name = 'cdn.aset_pesantren'
     _description = 'Model untuk mencatat daftar fasilitas pesantren'
     # constraints
-    _sql_constraints = [
-        ('name_uniq', 'unique(name)', 'Nama Aset Pesantren sudah ada!'),
-    ]
+    @api.constrains('name')
+    def _check_name_unique(self):
+        for record in self:
+            if self.search_count([('name', '=', record.name), ('id', '!=', record.id)]) > 0:
+                raise UserError('Nama Aset Pesantren sudah ada!')
 
     name     = fields.Char(string='Nama Aset', required=True)
     jns_aset = fields.Selection(string='Jenis Aset', selection=[

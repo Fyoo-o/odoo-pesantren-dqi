@@ -24,11 +24,11 @@
             <field name="arch" type="xml">
                 <form string="Absensi Kehadiran Halaqoh">
                 <header>
-                    <field name="state" widget="statusbar" statusbar_visible="Draft,Proses,Done"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,proses,done"/>
                     <button string="Proses" name="action_proses" type="object" class="btn btn-primary"
-                            invisible="state == 'Proses' or state == 'Done'"/>
+                            invisible="state == 'proses' or state == 'done'"/>
                     <button string="Selesai" name="action_confirm" type="object" class="btn btn-primary"
-                            invisible="state == 'Draft' or state == 'Done'"/>
+                            invisible="state == 'draft' or state == 'done'"/>
                 </header>
                     <sheet>
 
@@ -113,7 +113,7 @@
             <field name="view_mode">list,form</field>
             <field name="domain">
             [
-            ('state', 'in', ['Draft', 'Proses', 'Done' ])
+            ('state', 'in', ['draft', 'proses', 'done' ])
             ]
             </field>
         </record>

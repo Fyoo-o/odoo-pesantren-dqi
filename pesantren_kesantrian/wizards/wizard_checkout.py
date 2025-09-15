@@ -90,7 +90,16 @@ class PerijinanCheckOut(models.TransientModel):
         else:
             self.has_permission = 'Benar'
 
-    
+    @api.onchange('tgl_ijin', 'tgl_kembali')
+    def _onchange_tanggal_ijin_kembali(self):
+        if self.tgl_ijin and self.tgl_kembali and self.tgl_ijin > self.tgl_kembali:
+            return {
+                'warning': {
+                    'title': "Perhatian!",
+                    'message': "Tanggal kembali tidak boleh sebelum tanggal izin.",
+                }
+            }
+            
     @api.depends('tgl_ijin', 'tgl_kembali')
     def _compute_lama_ijin(self):
         for record in self:

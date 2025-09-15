@@ -2,25 +2,55 @@
 <odoo>
     <data>
         <!-- cdn.perijinan inherit form view -->
-        <record id="musyrif_cdn_perijinan_inherit_view_form" model="ir.ui.view">
+        <!-- <record id="musyrif_cdn_perijinan_inherit_view_form" model="ir.ui.view">
             <field name="name">musyrif.cdn.perijinan.inherit.view.form</field>
             <field name="model">cdn.perijinan</field>
             <field name="inherit_id" ref="pesantren_kesantrian.cdn_perijinan_view_form"/>
             <field name="arch" type="xml">
-                <!-- Tambahkan Hak Akses button Check/Ijin diperiksa utk Musyrif Staff -->
-                <xpath expr="//button[@name='action_checked']" position="replace">
-                    <button string="Ijin Diperiksa" type="object" name="action_checked" groups="pesantren_musyrif.group_musyrif_staff" invisible="state != 'Draft'" />
-                </xpath>
-               
-                <xpath expr="//button[@name='action_approved']" position="replace">
-                    <button string="Ijin Diterima" type="object" name="action_approved" groups="pesantren_musyrif.group_musyrif_staff" invisible="state != 'Check'" />
-                </xpath>
 
-                <xpath expr="//button[@name='action_rejected']" position="replace">
-                    <button string="Ijin Ditolak" type="object" name="action_rejected" groups="pesantren_musyrif.group_musyrif_staff" invisible="state != 'Check'" />
+                <xpath expr="//header" position="inside">
+                    <button string="Ijin Diperiksa" type="object" name="action_checked"
+                        groups="pesantren_musyrif.group_musyrif_staff"
+                        invisible="state != 'Draft'"/>
+                    <button string="Ijin Diterima" type="object" name="action_approved"
+                        groups="pesantren_musyrif.group_musyrif_staff"
+                        invisible="state != 'Check'"/>
+
+                    <button string="Ijin Ditolak" type="object" name="action_rejected"
+                        groups="pesantren_musyrif.group_musyrif_staff"
+                        invisible="state != 'Check'"/>
+
+                    <button string="Santri Ijin" type="object" name="action_permission"
+                        groups="pesantren_musyrif.group_musyrif_staff"
+                        invisible="state != 'Approved'"/>
+
+                    <button string="Santri Kembali" type="object" name="action_return"
+                        groups="pesantren_musyrif.group_musyrif_staff"
+                        invisible="state not in ['Permission', 'Overdue']"/>
+                    
+                    <button string="Submit Bukti" type="object" name="action_submit_bukti"
+                        groups="pesantren_musyrif.group_musyrif_staff"
+                        invisible="state != 'Overdue' or is_bukti_submitted == True"/>
+
+                    <button string="Verifikasi Bukti" type="object" name="action_verify_by_admin"
+                        groups="base.group_system"
+                        invisible="state != 'Overdue' or is_bukti_submitted == False"/>
+                </xpath>
+                
+                <xpath expr="//sheet" position="inside">
+                    <notebook invisible="state not in ['Overdue', 'Return']">
+                        <page string="Keterangan Terlambat">
+                            <group>
+                                <field name="keterangan_terlambat"/>
+                                <field name="bukti_file" filename="bukti_filename"/>
+                                <field name="bukti_filename" invisible="1"/>
+                                <field name="is_bukti_submitted" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
                 </xpath>
             </field>
-        </record>
+        </record> -->
 
         <!-- cdn.perijinan search view -->
         <record id="cdn_perijinan_view_search" model="ir.ui.view">
@@ -47,8 +77,7 @@
                     <separator/>
 
                     <!-- filter -->
-                    <filter string="Tgl Izin Hari Ini" name="today" domain="[ ('tgl_ijin','=',(context_today().strftime('%Y-%m-%d'))),
-                    ]" />
+                    <filter string="Tgl Izin Hari Ini" name="today" domain="[ ('tgl_ijin','=',(context_today()))]" />
                     <filter string="Lama Ijin Lebih Dari 3 Hari" name="three_days" domain="[('lama_ijin', '>', 3)]" />
                     <filter string="Draft" name="draft" domain="[('state' ,'=', 'Draft')]" />
                     <filter string="Diperiksa" name="check" domain="[('state' ,'=', 'Check')]" />
@@ -56,6 +85,7 @@
                     <filter string="Ditolak" name="rejected" domain="[('state' ,'=', 'Rejected')]" />
                     <filter string="Santri Ijin" name="permission" domain="[('state' ,'=', 'Permission')]" />
                     <filter string="Kembali" name="return" domain="[('state' ,'=', 'Return')]" />
+                    <filter string="Terlambat" name="overdue" domain="[('state','=','Overdue')]"/>
                     <group>
                         <filter string="Status Ijin" domain="[]" name="group_state" context="{'group_by':'state'}"/>
                     </group>
