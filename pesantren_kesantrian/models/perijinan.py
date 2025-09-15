@@ -34,6 +34,7 @@ class Perijinan(models.Model):
             'Return': [('readonly', True)],
             'Overdue': [('readonly', True)],
         },  default=lambda self: fields.Datetime.now() + relativedelta(days=1))
+    
     waktu_keluar = fields.Datetime(string='Waktu Keluar', readonly=True)
     waktu_kembali = fields.Datetime(string='Waktu Kembali', readonly=True)
 
@@ -57,6 +58,7 @@ class Perijinan(models.Model):
             'Return': [('readonly', True)],
             'Overdue': [('readonly', True)],
         }, ondelete='cascade')
+    
     barcode = fields.Char(string='Kartu Santri', states= {
         'Draft': [('readonly', False)],
         'Check': [('readonly', True)],  
@@ -66,10 +68,12 @@ class Perijinan(models.Model):
         'Return': [('readonly', True)],
         'Overdue': [('readonly', True)],
     })
+    
     kelas_id = fields.Many2one('cdn.ruang_kelas', string='Kelas',related='siswa_id.ruang_kelas_id', readonly=True)
     kamar_id = fields.Many2one('cdn.kamar_santri', string='Kamar', related='siswa_id.kamar_id', readonly=True)
     halaqoh_id = fields.Many2one('cdn.halaqoh', string='Halaqoh', related='siswa_id.halaqoh_id', readonly=True)
     musyrif_id = fields.Many2one('hr.employee', string='Musyrif', related='siswa_id.musyrif_id', readonly=True)
+    
     foto_bukti = fields.Binary(string="Foto Bukti", attachment=True, readonly=False,states={
         'Draft': [('readonly', False)],
         'Check': [('readonly', False)],
@@ -112,10 +116,22 @@ class Perijinan(models.Model):
             'Overdue': [('readonly', True)],
         }, tracking=True )
 
+     # --- fields for overdue evidence ---
+    # keterangan_terlambat = fields.Text("Keterangan Terlambat", states={
+    #     # editable hanya saat Overdue (juga bisa diizinkan di Permission jika ingin)
+    #     'Overdue': [('readonly', False)],
+    # })
+    # bukti_file = fields.Binary("Bukti Terlambat", attachment=True, states={
+    #     'Overdue': [('readonly', False)],
+    # })
+    # bukti_filename = fields.Char("Nama File", states={
+    #     'Overdue': [('readonly', False)],
+    # })
+    # is_bukti_submitted = fields.Boolean("Bukti Dikirim", default=False, readonly=True)
 
-    # lama_ijin = fields.Integer(string='Lama Ijin', readonly=True, compute='_compute_lama_ijin', store=True)
-
-    # jatuh_tempo = fields.Integer(string='Terlambat (hari)', readonly=True, compute='_compute_jatuh_tempo', store=True)
+    lama_ijin = fields.Char(string='Lama Ijin', readonly=True, compute='_compute_lama_ijin', store=True)
+    # jatuh_tempo = fields.Char(string='Terlambat', readonly=True, compute='_compute_jatuh_tempo', store=True)
+    # cek_terlambat = fields.Boolean(string='Cek Terlambat', default=False, compute='_compute_jatuh_tempo', store=True)
 
 
     lama_ijin = fields.Char(
@@ -132,7 +148,7 @@ class Perijinan(models.Model):
         store=True
     )
 
-    cek_terlambat = fields.Boolean(string='Cek Terlambat', default=False, compute='_compute_jatuh_tempo', store=True)
+    # cek_terlambat = fields.Boolean(string='Cek Terlambat', default=False, compute='_compute_jatuh_tempo', store=True)
 
     state = fields.Selection([
         ('Draft', 'Pengajuan'),
@@ -158,20 +174,17 @@ class Perijinan(models.Model):
     @api.depends('state')
     def _compute_show_button_santri_masuk(self):
         for record in self:
-            record.show_button_santri_masuk = record.state in ['Permission', 'Overdue']
+            record.show_button_santri_masuk = record.state in ['Permission']
 
     def action_save_record(self):
         self.state = 'Draft'
 
-    
     @api.onchange('siswa_id')
     def _onchange_siswa_id(self):
         if self.siswa_id:
             self.barcode = self.siswa_id.barcode_santri
         else:
-            self.barcode = False
-
-            
+            self.barcode = False   
  
     @api.onchange('barcode')
     def _onchange_barcode(self):
@@ -220,28 +233,41 @@ class Perijinan(models.Model):
                 # Format string untuk menampilkan hari, jam, menit
                 record.lama_ijin = f"{hari} hari {jam} jam {menit} menit"
 
-    @api.depends('waktu_kembali')
+    # @api.depends('waktu_kembali', 'tgl_kembali')
+    # def _compute_jatuh_tempo(self):
+    #     for record in self:
+    #         if record.waktu_kembali:
+    #             # Hitung selisih waktu
+    #             if record.tgl_kembali < record.waktu_kembali and record.tgl_kembali < record.waktu_kembali:
+    #                 delta = record.waktu_kembali - record.tgl_kembali
+                    
+    #                 # Hitung hari, jam, dan menit
+    #                 total_menit = int(delta.total_seconds() / 60)
+    #                 hari = total_menit // (24 * 60)
+    #                 sisa_menit = total_menit % (24 * 60)
+    #                 jam = sisa_menit // 60
+    #                 menit = sisa_menit % 60
+                    
+    #                 # Format string untuk menampilkan hari, jam, menit
+    #                 record.jatuh_tempo = f"{hari} hari {jam} jam {menit} menit"
+    #                 record.cek_terlambat = True
+    #             else:
+    #                 record.jatuh_tempo = "0 hari 0 jam 0 menit"
+    #                 record.cek_terlambat = False
+
+    @api.depends('waktu_kembali', 'tgl_kembali')
     def _compute_jatuh_tempo(self):
         for record in self:
-            if record.waktu_kembali:
-                # Hitung selisih waktu
-                if record.tgl_kembali < record.waktu_kembali:
+            record.jatuh_tempo = "0 hari 0 jam 0 menit"
+            if record.waktu_kembali and record.tgl_kembali:
+                if record.waktu_kembali > record.tgl_kembali:
                     delta = record.waktu_kembali - record.tgl_kembali
-                    
-                    # Hitung hari, jam, dan menit
                     total_menit = int(delta.total_seconds() / 60)
                     hari = total_menit // (24 * 60)
                     sisa_menit = total_menit % (24 * 60)
                     jam = sisa_menit // 60
                     menit = sisa_menit % 60
-                    
-                    # Format string untuk menampilkan hari, jam, menit
                     record.jatuh_tempo = f"{hari} hari {jam} jam {menit} menit"
-                    record.cek_terlambat = True
-                else:
-                    record.jatuh_tempo = "0 hari 0 jam 0 menit"
-                    record.cek_terlambat = False
-
 
     def action_checked(self):
         self.state = 'Check'
@@ -268,11 +294,55 @@ class Perijinan(models.Model):
         self.state = 'Permission'
         self.waktu_keluar = fields.Datetime.now()
     def action_return(self):
-        self.state = 'Return'
-        self.waktu_kembali = fields.Datetime.now()
-        
-        if not self.waktu_keluar:
-            self.tgl_kembali = self.tgl_ijin
+        """Santri kembali ke pesantren"""
+        for rec in self:
+            rec.waktu_kembali = fields.Datetime.now()
+
+            # kalau tidak ada waktu keluar, fallback ke tgl_ijin
+            if not rec.waktu_keluar:
+                rec.tgl_kembali = rec.tgl_ijin
+
+            # langsung set Return, tanpa cek terlambat
+            rec.state = 'Return'
+            # rec.jatuh_tempo = "0 hari 0 jam 0 menit"
+            # rec.cek_terlambat = False
+
+       # action musyrif: upload/submit bukti (set is_bukti_submitted)
+    # def action_submit_bukti(self):
+    #     for rec in self:
+    #         if rec.state != 'Overdue':
+    #             raise UserError(_("Hanya record dengan status Terlambat yang bisa mengunggah bukti."))
+    #         if not rec.keterangan_terlambat or not rec.bukti_file:
+    #             raise UserError(_("Harap lengkapi keterangan dan bukti sebelum mengirim untuk verifikasi admin."))
+    #         rec.is_bukti_submitted = True
+    #         # kirim notifikasi ke admin (ganti group jika anda punya group admin lain)
+    #         try:
+    #             admin_users = self.env.ref('base.group_system').users
+    #         except Exception:
+    #             admin_users = self.env['res.users'].search([])  # fallback
+    #         for user in admin_users:
+    #             rec.message_post(
+    #                 body=f"Musyrif telah mengunggah bukti keterlambatan santri {rec.siswa_id.name}. Mohon verifikasi.",
+    #                 partner_ids=[user.partner_id.id],
+    #                 message_type='notification',
+    #                 subtype_xmlid='mail.mt_note',
+    #             )
+                
+        # action admin: verifikasi bukti -> ubah status ke Return
+    # def action_verify_by_admin(self):
+    #     # hanya admin (group_system) yang bisa verifikasi — ganti sesuai kebutuhan
+    #     if not self.env.user.has_group('base.group_system'):
+    #         raise UserError(_("Hanya admin yang dapat melakukan verifikasi ini."))
+
+    #     for rec in self:
+    #         if rec.state != 'Overdue':
+    #             raise UserError(_("Hanya izin dengan status Terlambat yang dapat diverifikasi."))
+    #         # pastikan bukti dan keterangan ada
+    #         if not rec.keterangan_terlambat or not rec.bukti_file:
+    #             raise UserError(_("Tidak dapat memverifikasi: keterangan atau bukti belum lengkap."))
+    #         # jika sudah lengkap, ubah jadi Return
+    #         rec.state = 'Return'
+    #         rec.message_post(body=f"Admin {self.env.user.name} menyetujui bukti keterlambatan. Status diubah menjadi Kembali.")            
 
     def _validate_tanggal_izin_kembali(self, vals=None):
         for record in self:
@@ -286,7 +356,7 @@ class Perijinan(models.Model):
                 tgl_kembali = fields.Datetime.from_string(tgl_kembali)
 
             if tgl_ijin and tgl_kembali and tgl_ijin > tgl_kembali:
-                raise ValidationError("Tanggal kembali tidak boleh sebelum tanggal izin!.")
+                raise UserError("Tanggal kembali tidak boleh sebelum tanggal izin!.")
 
 
     def _validate_duplicate_tanggal_izin(self, vals=None):
@@ -314,7 +384,7 @@ class Perijinan(models.Model):
 
             duplicate = self.env['cdn.perijinan'].search(domain, limit=1)
             if duplicate:
-                raise ValidationError(
+                raise UserError(
                     f"Santri sudah memiliki izin lain dalam rentang waktu ±1 jam dari {tgl_ijin.strftime('%d-%m-%Y %H:%M')}."
                 )
 
@@ -327,39 +397,52 @@ class Perijinan(models.Model):
         return temp_record
 
 
-    def write(self, vals):
-        for record in self:
-            record._validate_duplicate_tanggal_izin(vals)
-            record._validate_tanggal_izin_kembali(vals)
-        return super(Perijinan, self).write(vals)
+    # def write(self, vals):
+    #     # proteksi: kalau ada permintaan ubah state Overdue -> Return, pastikan user admin & bukti lengkap
+    #     for record in self:
+    #         if 'state' in vals and vals.get('state') == 'Return' and record.state == 'Overdue':
+    #             if not self.env.user.has_group('base.group_system'):
+    #                 raise UserError(_("Hanya admin yang dapat merubah status Terlambat menjadi Kembali."))
+    #             # cek apakah bukti/keterangan disertakan baik di vals atau record
+    #             keterangan = vals.get('keterangan_terlambat', record.keterangan_terlambat)
+    #             bukti = vals.get('bukti_file', record.bukti_file)
+    #             if not keterangan or not bukti:
+    #                 raise UserError(_("Tidak bisa ubah ke Kembali: keterangan atau bukti belum lengkap."))
 
-    @api.model
-    def cron_check_santri_terlambat(self):
-        """Scheduled task to check if any students have not returned on time"""
-        now = fields.Datetime.now()
-        perijinan_terlambat = self.search([
-            ('state', '=', 'Permission'),             # Masih dalam status "izin keluar"
-            ('tgl_kembali', '<', now),                # Sudah melewati batas waktu kembali
-            ('waktu_kembali', '=', False)             # Belum kembali
-        ])
-
-        admin_users = self.env.ref('base.group_system').users  # Ganti dengan group keamanan jika ada
-
-        for rec in perijinan_terlambat:
-            # Tandai terlambat
-            rec.cek_terlambat = True
-            rec.write({
-            'cek_terlambat': True,
-            'state': 'Overdue'
-            })
-            # Kirim notifikasi ke semua admin
-            for user in admin_users:
-                rec.message_post(
-                    body=f"Santri {rec.siswa_id.name} belum kembali sesuai jadwal!\n"
-                         f"Rencana Kembali: {rec.tgl_kembali.strftime('%d-%m-%Y %H:%M')}",
-                    partner_ids=[user.partner_id.id],
-                    message_type='notification',
-                    subtype_xmlid='mail.mt_note',
-                )
+    #         # juga jalankan validasi tanggal yang sudah ada
+    #         if vals:
+    #             record._validate_duplicate_tanggal_izin(vals)
+    #             record._validate_tanggal_izin_kembali(vals)
+    #     return super(Perijinan, self).write(vals)
+    
+    # @api.model
+    # def cron_check_santri_terlambat(self):
+    #     """Scheduled task to check if any students have not returned on time"""
+    #     now = fields.Datetime.now()
+    #     perijinan_terlambat = self.search([
+    #         ('state', '=', 'Permission'),             # Masih dalam status "izin keluar"
+    #         ('tgl_kembali', '<', now),                # Sudah melewati batas waktu kembali
+    #         ('waktu_kembali', '=', False)             # Belum kembali
+    #     ])
+    #     try:
+    #         admin_users = self.env.ref('base.group_system').users  # Ganti dengan group keamanan jika ada
+    #     except Exception:
+    #             admin_users = self.env['res.users'].search([])
+                
+    #     for rec in perijinan_terlambat:
+    #         # Tandai terlambat
+    #         # rec.cek_terlambat = True
+    #         rec.write({
+    #         'cek_terlambat': True,
+    #         'state': 'Overdue'
+    #         })
+    #         # Kirim notifikasi ke semua admin
+    #         for user in admin_users:
+    #             rec.message_post(
+    #                 body=f"Santri {rec.siswa_id.name} belum kembali sesuai jadwal!\nRencana Kembali: {rec.tgl_kembali.strftime('%d-%m-%Y %H:%M')}",
+    #                 partner_ids=[user.partner_id.id],
+    #                 message_type='notification',
+    #                 subtype_xmlid='mail.mt_note',
+    #             )
             
             

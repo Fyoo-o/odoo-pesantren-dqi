@@ -203,7 +203,7 @@ class ruang_kelas(models.Model):
                 ], limit=1)
                 
                 if duplicate:
-                    raise ValidationError(
+                    raise UserError(
                         _("Tidak boleh ada duplikat kelas yang aktif dan terkonfirmasi! "
                           "Kelas '%s' pada tahun ajaran '%s' sudah ada dengan status terkonfirmasi.") % 
                         (record.name.name, record.tahunajaran_id.name)

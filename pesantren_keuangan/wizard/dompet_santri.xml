@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <form string="Konfirmasi PIN Dompet Santri">   
                 <group> 
-                    <field name="santri_pin" />
+                    <field name="santri_pin" password="True" />
                 </group>
                 <footer>
                     <button name="action_confirm_payment" string="Konfirmasi" type="object" class="btn-primary"/>

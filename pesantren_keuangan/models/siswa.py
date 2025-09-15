@@ -70,7 +70,8 @@ class SiswaInherit(models.Model):
             'search_view_id': self.env.ref('pesantren_keuangan.pesantren_tagihan_keuangan_view_search').id,
             'domain': [
                 ('partner_id', '=', self.partner_id.id), 
-                ('move_type', '=', 'out_invoice')
+                ('move_type', '=', 'out_invoice'),
+                ('state', '!=', 'cancel')
             ],
             'context': {
                 'default_move_type': 'out_invoice',

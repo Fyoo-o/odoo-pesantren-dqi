@@ -30,8 +30,16 @@ class Penugasan(models.Model):
   tugas_line_ids = fields.One2many(comodel_name='cdn.tugas_line', inverse_name='penugasan_id', string='Tugas Line')
   tingkat_id     = fields.Many2one('cdn.tingkat', string='Kelas', related='kelas_id.tingkat', store=True)
   matpel_id      = fields.Many2one(comodel_name='cdn.mata_pelajaran', string='Mata Pelajaran', required=True)
-  guru_id        = fields.Many2one(comodel_name='hr.employee', string='Guru', domain=_domain_guru)
-  
+  guru_id = fields.Many2one(
+        'hr.employee',
+        string='Guru',
+        required=True,
+        domain=_domain_guru,
+        default=lambda self: self.env['hr.employee'].search([
+            ('user_id', '=', self.env.uid),
+            ('jns_pegawai', '=', 'guru')
+        ], limit=1)
+    )
   # jadwal_pelajaran_lines_ids = fields.Many2many(comodel_name='cdn.jadwal_pelajaran_lines', string='Jadwal Pelajaran Lines')
   
   def action_proses(self):

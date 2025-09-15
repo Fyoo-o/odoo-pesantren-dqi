@@ -1,5 +1,4 @@
 from odoo import api, fields, models
-from odoo.exceptions import UserError
 import logging
 from odoo.exceptions import ValidationError, UserError
 
@@ -9,7 +8,8 @@ _logger = logging.getLogger(__name__)
 
 class WizardRegisterKartu(models.TransientModel):
     _name = 'wizard.register.kartu.santri'
-
+    _description = 'Wizard Registrasi Kartu Santri (Angka Acak Unik)'
+    
     santri_id        = fields.Many2one('cdn.siswa', string="Santri", required=True)
     musyrif          = fields.Many2one(related='santri_id.musyrif_id', string="Musyrif")
     kelas            = fields.Many2one(related='santri_id.ruang_kelas_id', string="Kelas")

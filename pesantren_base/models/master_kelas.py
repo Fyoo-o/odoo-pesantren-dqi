@@ -24,8 +24,12 @@ class master_kelas(models.Model):
         store=True,
         help="Urutan numerik tingkat untuk sorting (1, 2, 3, dst)"
     )
- 
-    _sql_constraints = [('master_kelas_uniq', 'unique(name)', 'Master Data Kelas harus unik !')]
+
+    @api.constrains('name')
+    def _check_unique_name(self):
+        for record in self:
+            if self.search_count([('name', '=', record.name)]) > 1:
+                raise UserError(_('Master Data Kelas harus unik!'))
 
     # Tambahan: compute method untuk menghitung urutan tingkat
     @api.depends('tingkat', 'jenjang')

@@ -1,11 +1,17 @@
 from email import message
 from email.policy import default
 from odoo import api, fields, models, exceptions, _
-
+from odoo.exceptions import UserError
 class Penilaian(models.Model):
     _name               = 'cdn.penilaian'
     _description        = 'Tabel Data Penilaian Siswa'
     
+    
+    @api.model
+    def _get_action_domain(self):
+        if not self.env.user.has_group('base.group_system'):
+            return [('guru_id.user_id', '=', self.env.uid)]
+        return []
     # domain
     def _domain_guru(self):
         domain = ['&',('jns_pegawai','=','guru')]
@@ -16,16 +22,33 @@ class Penilaian(models.Model):
         else:
             domain.append(('id','=',False))
         return domain
-
+    # def _get_domain_kelas(self):
+    #     guru = self.env['hr.employee'].search([
+    #         ('user_id', '=', self.env.uid),
+    #         ('jns_pegawai', '=', 'guru')
+    #     ], limit=1)
+    #     if not guru:
+    #         return []
+    #     # ambil semua kelas dari jadwal pelajaran line di mana guru ini mengajar
+    #     kelas_ids = self.env['cdn.jadwal_pelajaran_lines'].search([
+    #         ('guru_id', '=', guru.id)
+    #     ]).mapped('kelas_id').ids
+    #     return [('id', 'in', kelas_ids)]
+    
     name                = fields.Char(string='Nama', compute='_compute_name', default=False)
     tingkat_id = fields.Many2one('cdn.tingkat', string='Tingkat', store=True, compute='_compute_tingkat_id')
-    kelas_id            = fields.Many2one(comodel_name='cdn.ruang_kelas', string='Kelas', required=True)
+    kelas_id = fields.Many2one(
+        'cdn.ruang_kelas',
+        string='Kelas',
+        required=True,
+        # domain=_get_domain_kelas
+    )
     mapel_id            = fields.Many2one(comodel_name='cdn.mata_pelajaran', string='Mapel', required=True)
     guru_id = fields.Many2one(
         'hr.employee',
         string='Guru',
         required=True,
-        domain=_domain_guru,
+        # domain=_domain_guru,
         default=lambda self: self.env['hr.employee'].search([
             ('user_id', '=', self.env.uid),
             ('jns_pegawai', '=', 'guru')
@@ -96,19 +119,21 @@ class Penilaian(models.Model):
         """Validasi backend supaya tetap aman walaupun user modifikasi via devtools"""
         for rec in self:
             if not rec.kelas_id.tingkat:
-                raise exceptions.ValidationError(_("Kelas belum memiliki tingkat."))
+                raise UserError(_("Kelas belum memiliki tingkat."))
             if rec.mapel_id.tingkat_id != rec.kelas_id.tingkat:
-                raise exceptions.ValidationError(_("Mata pelajaran tidak sesuai dengan tingkat kelas."))
+                raise UserError(_("Mata pelajaran tidak sesuai dengan tingkat kelas."))
             if rec.guru_id not in rec.mapel_id.guru_ids:
-                raise exceptions.ValidationError(_("Guru ini tidak mengajar mata pelajaran tersebut."))
-        
+                raise UserError(_("Guru ini tidak mengajar mata pelajaran tersebut."))
+            
+  
+    
     @api.model
     def create(self, vals):
         if not vals.get('guru_id'):
             guru = self.env['hr.employee'].search([
                 ('user_id', '=', self.env.uid),
                 ('jns_pegawai', '=', 'guru')
-            ], limit=1)
+            ], limit=1) 
             if guru:
                 vals['guru_id'] = guru.id
         rec = super().create(vals)

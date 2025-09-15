@@ -1,4 +1,5 @@
 from odoo import api, fields, models
+from odoo.exceptions import UserError
 
 
 class BiayaPendidikan(models.Model):
@@ -18,8 +19,21 @@ class BiayaPendidikan(models.Model):
     status          = fields.Selection(string='Status', selection=[('draft', 'Draft'), ('konfirm', 'Terkonfirmasi')], default="draft")
     biaya_ids       = fields.One2many('ubig.biaya_daftarulang',inverse_name="biaya_id", string='Rincian Biaya')
     rincian_ids     = fields.One2many('ubig.rincian_biaya',inverse_name="biaya_id", string='Rincian Biaya')
- 
+    
+    @api.model
+    def create(self, vals):
+        if self.search([('name', '=', vals.get('name')), ('jenjang', '=', vals.get('jenjang'))]):
+            raise UserError('Nama jenjang dengan kombinasi yang sama sudah ada!')
+        return super(Konfigurasi, self).create(vals)
 
+    def write(self, vals):
+        name = vals.get('name', self.name)
+        jenjang = vals.get('jenjang', self.jenjang)
+        domain = [('name', '=', name), ('jenjang', '=', jenjang), ('id', '!=', self.id)]
+        if self.search(domain):
+            raise UserError('Nama jenjang dengan kombinasi yang sama sudah ada!')
+        return super(Konfigurasi, self).write(vals)
+    
     # Action untuk mengubah status ke 'konfirm'
     def konfirmasi(self):
         for record in self:

@@ -16,7 +16,16 @@ class harga_khusus(models.Model):
     disc_persen         = fields.Integer(string='Diskon Persen %', default=0)
     keterangan          = fields.Char(string='Keterangan')
 
-    _sql_constraints    = [('komponen_partner_uniq', 'unique(name, partner_id)', 'Data Komponen Biaya untuk Siswa tersebut sudah pernah dibuat !')]
+    @api.constrains('name', 'partner_id')
+    def _check_unique_komponen_partner(self):
+        for record in self:
+            domain = [
+                ('name', '=', record.name.id),
+                ('partner_id', '=', record.partner_id.id),
+                ('id', '!=', record.id)
+            ]
+            if self.search_count(domain):
+                raise UserError('Data Komponen Biaya untuk Siswa tersebut sudah pernah dibuat!')
 
     @api.depends('name', 'expired_date')  # Pastikan expired_date juga menjadi dependensi
     def _compute_price(self):
@@ -119,7 +128,9 @@ class account_invoice(models.Model):
 
     info_line = fields.Char(compute='_add_line', string='Invoice Line')
 
-    _sql_constraints = [('invoice_uniq', 'unique(komponen_id, partner_id, periode_id)', 'Invoice sudah pernah dibuat !')]
+    _sql_constraints = [
+        ('unique_invoice', 'unique(komponen_id, partner_id, periode_id)', 'Invoice sudah pernah dibuat!')
+    ]
 
     @api.onchange('periode_id')
     def _onchange_periode_id(self):

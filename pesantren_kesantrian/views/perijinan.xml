@@ -35,12 +35,12 @@
             <field name="arch" type="xml">
                 <form string="Perizinan Santri" duplicate="0">
                     <header>
-                        <!-- <button name="action_save_record" type="object" string="Simpan" class="oe_highlight" groups="pesantren_kesantrian.group_kesantrian_staff"/> -->
-                        <button string="Ijin Diperiksa" type="object" name="action_checked" groups="pesantren_kesantrian.group_kesantrian_manager" invisible="state != 'Draft'" />
+                        <!-- <button name="action_save_record" type="object" string="Simpan" class="oe_highlight" groups="pesantren_musyrif.group_musyrif_staff"/> -->
+                        <button string="Ijin Diperiksa" type="object" name="action_checked" groups="pesantren_musyrif.group_musyrif_staff" invisible="state != 'Draft'" />
 
-                        <button string="Ijin Disetujui" type="object" name="action_approved" groups="pesantren_kesantrian.group_kesantrian_manager" invisible="state != 'Check'" />
+                        <button string="Ijin Disetujui" type="object" name="action_approved" groups="pesantren_musyrif.group_musyrif_staff" invisible="state != 'Check'" />
 
-                        <button string="Ijin Ditolak" type="object" name="action_rejected" groups="pesantren_kesantrian.group_kesantrian_manager" invisible="state != 'Check'" />
+                        <button string="Ijin Ditolak" type="object" name="action_rejected" groups="pesantren_musyrif.group_musyrif_staff" invisible="state != 'Check'" />
 
                         <button string="Santri Keluar" type="object" name="action_permission" groups="pesantren_kesantrian.group_kesantrian_manager,
                                 pesantren_kesantrian.group_kesantrian_keamanan" invisible="state != 'Approved'"/>

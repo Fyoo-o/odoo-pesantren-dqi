@@ -121,7 +121,7 @@ class AbsensiEkskul(models.Model):
     def write(self, vals):
         for rec in self:
             if rec.states == 'Done' and any(field in vals for field in ['ekskul_id', 'absen_ids']):
-                raise models.UserError("Tidak dapat mengubah absensi yang sudah Selesai.")
+                raise UserError("Tidak dapat mengubah absensi yang sudah Selesai.")
         return super(AbsensiEkskul, self).write(vals)
 
 

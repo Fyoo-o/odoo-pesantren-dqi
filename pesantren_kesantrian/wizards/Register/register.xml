@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data> 
+    <data>
         <record id="wizard_kartu_register_form" model="ir.ui.view">
             <field name="name">wizard.register.kartu.santri.form</field>
             <field name="model">wizard.register.kartu.santri</field>
@@ -8,37 +8,42 @@
                 <form string="Regrister Kartu Santri">
                     <group string="Santri">
                         <group>
-                            <field name="kartu_lama" />
-                            <field name="santri_id"  options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>  
+                            <field name="kartu_lama"/>
+                            <field name="santri_id" 
+                                   options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"
+                                   on_change="1"/>
                             <field name="kelas"/>
                         </group>
                         <group>
-                            <field name="kamar" />
-                            <field name="halaqoh" string="Halaqah" />
+                            <field name="kamar"/>
+                            <field name="halaqoh" string="Halaqah"/>
                             <field name="musyrif" string="Musyrif"/>
                         </group>
                     </group>
-                        <group string="Pendaftaran Kartu">  
-                            <group>
-                                <field name="kartu" string="Kartu Santri Baru"/> 
-                            </group>
-                            <group>
 
-                            </group>
-                            <group>
-                                <field name="pin" string="Masukkan PIN" password="True"/>
-                            </group>
-                            <group>
-                                <field name="confirm_pin" string="Konfirmasi PIN" password="True"/>
-                            </group>
+                    <group string="Pendaftaran Kartu">
+                        <group>
+                            <field name="kartu" string="Kartu Santri Baru"/>
                         </group>
+                        <group>
+                            <!-- Spacer -->
+                        </group>
+                        <group>
+                            <field name="pin" string="Masukkan PIN" password="True"/>
+                        </group>
+                        <group>
+                            <field name="confirm_pin" string="Konfirmasi PIN" password="True"/>
+                        </group>
+                    </group>
+
                     <footer>
                         <button name="action_save_data" string="Simpan" type="object" class="btn-primary"/>
-                        <button string="Batal" class="btn-secondary" special="cancel" />
+                        <button string="Batal" class="btn-secondary" special="cancel"/>
                     </footer>
                 </form>
             </field>
         </record>
+
         <record id="action_wizard_register_kartu" model="ir.actions.act_window">
             <field name="name">Pendaftaran Kartu</field>
             <field name="type">ir.actions.act_window</field>

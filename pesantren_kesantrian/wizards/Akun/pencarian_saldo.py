@@ -23,6 +23,15 @@ class PencairanSaldo(models.TransientModel):
             if record.santri_id and record.santri_id.partner_id:
                 record.saldo_santri = record.santri_id.partner_id.saldo_uang_saku
                 record.kartu_santri = record.santri_id.barcode_santri
+
+                # 🔒 Kalau saldo 0 beri warning
+                if record.saldo_santri <= 0:
+                    return {
+                        'warning': {
+                            'title': 'Perhatian!',
+                            'message': f"Saldo santri {record.santri_id.name} adalah Rp.0, tidak bisa dilakukan pencairan."
+                        }
+                    }
             else:
                 record.saldo_santri = 0.0
     
@@ -45,7 +54,17 @@ class PencairanSaldo(models.TransientModel):
                         'message': f"Tidak dapat menemukan kartu santri dengan kode {kartu_sementara}"
                     }
                 }
-
+    @api.onchange('nominal_pencairan')
+    def _onchange_nominal_pencairan(self):
+        if self.nominal_pencairan and self.saldo_santri:
+            if self.nominal_pencairan > self.saldo_santri:
+                self.nominal_pencairan = 0
+                return {
+                    'warning': {
+                        'title': "Saldo Tidak Mencukupi",
+                        'message': f"Nominal pencairan melebihi saldo santri (Rp.{self.saldo_santri:,.0f})."
+                    }
+                }
 
     def action_submit(self):
         timestamp = fields.Datetime.now()

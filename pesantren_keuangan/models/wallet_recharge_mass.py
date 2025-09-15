@@ -104,7 +104,7 @@ class WalletRechargeMass(models.TransientModel):
                     )
                     
         if santri_terkena_limit:
-            raise models.UserError(
+            raise UserError(
                 "Santri berikut terkena limit pengisian ulang:\n- " + "\n- ".join(santri_terkena_limit)
             )
 

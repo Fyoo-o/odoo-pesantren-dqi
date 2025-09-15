@@ -15,8 +15,6 @@ class WizardSearchSiswa(models.TransientModel):
     kartu_santri = fields.Char(string="Kartu Santri Baru", required=True)    
     pin          = fields.Char(string="PIN", required=True)
 
-
-
     @api.onchange('kartu_santri')
     def _onchange_kartu_santri(self):
         if self.kartu_santri:

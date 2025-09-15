@@ -73,18 +73,14 @@
         </form>
       </field>
     </record>
-
+    
     <!-- cdn.penugasan action window -->
     <record id="cdn_penugasan_action" model="ir.actions.act_window">
       <field name="name">Penugasan</field>
       <field name="type">ir.actions.act_window</field>
       <field name="res_model">cdn.penugasan</field>
       <field name="view_mode">list,form</field>
-      <field name="domain">
-      [
-          ('guru_id.user_id','=',uid)
-      ]
-      </field>
+      <field name="domain">[('guru_id.user_id', '=', uid)]</field>
     </record>
     
     <!-- This Menu Item must have a parent and an action -->

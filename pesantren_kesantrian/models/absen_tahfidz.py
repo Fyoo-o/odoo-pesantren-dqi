@@ -41,20 +41,20 @@ class AbsenTahfidzQuran(models.Model):
     keterangan      = fields.Text(string='Keterangan', states={'Done': [('readonly', True)]})
     absen_ids       = fields.One2many('cdn.absen_tahfidz_quran_line', 'absen_id', string='Absen', states={'Done': [('readonly', True)]})
     state = fields.Selection([
-        ('Draft', 'Draft'),
-        ('Proses', 'Proses'),
-        ('Done','Selesai'),
-    ], default='Draft', string='Status')
+        ('draft', 'Draft'),
+        ('proses', 'Proses'),
+        ('done','Selesai'),
+    ], default='draft', string='Status')
     penanggung_jawab_id = fields.Many2one('hr.employee', string='Penanggung Jawab', related='halaqoh_id.penanggung_jawab_id', readonly=True, store=True)
 
     def action_proses(self):
-        self.state = 'Proses'
+        self.state = 'proses'
         for absen in self.absen_ids:
             if absen.kehadiran == 'Hadir':
                 surah, ayat_awal = None, None
                 last_tahfidz = self.env['cdn.tahfidz_quran'].search([
                     ('siswa_id', '=', absen.siswa_id.id),
-                    ('state', '=', 'Done'),
+                    ('state', '=', 'done'),
                 ], order='id desc', limit=1)
                 if last_tahfidz:
                     if not last_tahfidz.surah_id.number == 114 and last_tahfidz.ayat_akhir.name == last_tahfidz.surah_id.jml_ayat:
@@ -69,7 +69,7 @@ class AbsenTahfidzQuran(models.Model):
                     'halaqoh_id': self.halaqoh_id.id,
                     'ustadz_id': self.ustadz_id.id,
                     'sesi_tahfidz_id': self.sesi_id.id,
-                    'state': 'Draft',
+                    'state': 'draft',
                     'surah_id': surah,
                     'ayat_awal': ayat_awal,
                 }
@@ -77,7 +77,7 @@ class AbsenTahfidzQuran(models.Model):
 
 
     def action_confirm(self):
-        self.state = 'Done'
+        self.state = 'done'
 
     @staticmethod
     def format_datetime_indonesia(dt):
