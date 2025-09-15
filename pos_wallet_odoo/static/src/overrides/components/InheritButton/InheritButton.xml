@@ -18,20 +18,15 @@
     <t t-name="pos_wallet_odoo.CustomActionpadWidget" t-inherit="point_of_sale.ActionpadWidget" t-inherit-mode="extension">
         <xpath expr="//button[@class='button mobile-more-button btn btn-light btn-lg flex-fill']" position="replace">
             <button class="button mobile-more-button btn btn-light btn-lg flex-fill" t-if="props.onClickMore" t-on-click="props.onClickMore">
-                <span></span>
+                <span>Aktivitas</span>
             </button>
         </xpath>
     </t>
-    <!-- <t t-name="pos_wallet_odoo.CustomControlButtons"
-    t-inherit="point_of_sale.ControlButtons"
-    t-inherit-mode="extension">
-
-        <xpath expr="//button[contains(@class, 'ms-auto')]" position="replace">
-            <button class="btn btn-light btn-lg flex-shrink-0 ms-auto"
-                    t-if="!props.showRemainingButtons and !ui.isSmall and props.onClickMore"
-                    t-on-click="props.onClickMore">
-                Aktivitas
-            </button>
+    <t t-name="pos_wallet_odoo.CustomControlButtons" t-inherit="point_of_sale.ControlButtons" t-inherit-mode="extension">
+        <xpath expr="//button[@class='btn btn-light btn-lg flex-shrink-0 ms-auto']" position="replace">
+            <button class="btn btn-light btn-lg flex-shrink-0 ms-auto" t-if="!props.showRemainingButtons and !ui.isSmall and props.onClickMore" t-on-click="props.onClickMore">
+            Aktivitas
+        </button>
         </xpath>
-    </t> -->
+    </t>
 </templates>
