@@ -132,7 +132,7 @@ export class GuruKpiCard extends Component {
     } else {
       this.startCountdown();
       const icon = document.getElementById("timerIcon");
-      if (icon) icon.className = "fas fa-stop";
+      // if (icon) icon.className = "fas fa-stop";
     }
     this.isCountingDown = !this.isCountingDown;
   }

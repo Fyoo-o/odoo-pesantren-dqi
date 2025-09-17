@@ -161,7 +161,7 @@ export class GuruquranChartRenderer extends Component {
   toggleCountdown() {
     if (this.isCountingDown) {
       this.clearIntervals();
-      document.getElementById("timerIcon").className = "fas fa-stopwatch";
+      document.getElementById("timerIcon").className = "fas fa-clock";
       document.getElementById("timerCountdown").textContent = "";
     } else {
       this.startCountdown();

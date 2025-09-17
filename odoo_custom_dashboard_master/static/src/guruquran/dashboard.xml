@@ -214,7 +214,7 @@
 
                 <!-- Timer Button -->
                 <button id="timerButton" class="btn btn-outline-secondary timerButton">
-                  <i id="timerIcon" class="fas fa-stopwatch"></i>
+                  <i id="timerIcon" class="fas fa-clock"></i>
                   <!-- Icon timer -->
                   <span id="timerCountdown"></span>
                 </button>

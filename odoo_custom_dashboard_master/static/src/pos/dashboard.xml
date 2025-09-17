@@ -109,145 +109,107 @@
                 }
             }
         </style>
-        <div class="container-fluid vh-100 bg-muted mb-2">
-            <div id="overlay" class="hidden"></div>
-            <!-- Header Full Width -->
-            <div class="my-1 mx-2">
-                <div class="col-12">
-                    <div class="py-2">
-                        <div class="d-flex flex-wrap align-items-center justify-content-between">
-                            <div class="d-flex">
-                                <h1 class="text-dark fw-bold ms-1">Dashboard POS</h1>
-                            </div>
-                            <div class="controls-wrapper d-flex align-items-center">
-                                <select id="storeFilter" class="form-select me-2" style="width: 200px;">
-                                    <option value="">Semua Usaha</option>
-                                    <t t-foreach="state.stores" t-as="store" t-key="store.id">
-                                        <option t-att-value="store.id">
-                                            <t t-esc="store.name"/>
-                                        </option>
-                                    </t>
-                                </select>
-                                <div class="button-popup-wrapper">
-                                    <button id="datePickerButton" class="btn btn-outline-secondary me-2">
-                                        <i class="fas fa-calendar-alt me-2"></i>
-                                        <span>Pilih Tanggal</span>
-                                    </button>
-                                    <div id="datePickerContainer" class="popup-container" style="display: none;">
-                                        <div class="date-range">
-                                            <label for="startDate" class="date-label mb-2">Dari</label>
-                                            <input id="startDate" type="date" class="form-control date-input"/>
-                                        </div>
-                                        <div class="date-range">
-                                            <label for="endDate" class="date-label mb-2">Sampai</label>
-                                            <input id="endDate" type="date" class="form-control date-input"/>
-                                        </div>
-                                    </div>
+       <div class="container-fluid vh-100 bg-muted mb-2">
+        <!-- Header -->
+        <div class="my-1 mx-2">
+            <div class="col-12">
+                <div class="py-2 d-flex flex-wrap align-items-center justify-content-between">
+                    <h1 class="text-dark fw-bold ms-1">Dashboard POS</h1>
+
+                    <div class="controls-wrapper d-flex align-items-center">
+                        <select id="storeFilter" class="form-select me-2" style="width:200px" t-on-change="handleStoreChange">
+                            <option value="">Semua Usaha</option>
+                            <t t-foreach="state.stores" t-as="store" t-key="store.id">
+                                <option t-att-value="store.id"><t t-esc="store.name"/></option>
+                            </t>
+                        </select>
+
+                        <div class="button-popup-wrapper">
+                            <button id="datePickerButton" class="btn btn-outline-secondary me-2"
+                                    t-on-click="toggleDatePicker">
+                                <i class="fas fa-calendar-alt me-2"></i>
+                                <span><t t-esc="state.buttonLabel"/></span>
+                            </button>
+
+                            <div id="datePickerContainer" class="popup-container flex-row"
+                                 t-att-style="state.showDatePicker ? 'display:flex' : 'display:none'">
+                                <div class="date-range mb-2 me-2">
+                                    <label for="startDate" class="date-label">Dari</label>
+                                    <input id="startDate" type="date" class="form-control date-input"
+                                           t-model="state.startDate"
+                                           t-on-change="(ev)=>this.onDateChange(ev,'startDate')"/>
                                 </div>
-                                <div class="timer-and-periode">
-                                <select id="periodSelection" class="form-select me-2 periodSelection">
-                                    <option value="">Pilih Periode</option>
-                                    <option value="today">Hari Ini</option>
-                                    <option value="yesterday">Kemarin</option>
-                                    <option value="thisweek">Minggu Ini</option>
-                                    <option value="lastweek">Minggu Lalu</option>
-                                    <option value="month">Bulan Ini</option>
-                                    <option value="lastMonth">Bulan Lalu</option>
-                                    <option value="thisyear">Tahun Ini</option>
-                                    <option value="lastyear">Tahun Lalu</option>
-                                </select>
-                                <button id="timerButton" class="btn btn-outline-secondary timer-button">
-                                    <i id="timerIcon" class="fas fa-clock"></i>
-                                    <span id="timerCountdown"></span>
-                                </button>
-                                <!-- <div class="help-link">
-                                    <a href="https://youtu.be/viwr6v9HHmw" target="_blank" class="ms-2 fa-solid fa-question rounded-circle border"></a>
-                                </div> -->
+                                <div class="date-range ">
+                                    <label for="endDate" class="date-label">Sampai</label>
+                                    <input id="endDate" type="date" class="form-control date-input"
+                                           t-model="state.endDate"
+                                           t-on-change="(ev)=>this.onDateChange(ev,'endDate')"/>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <!-- KPI Cards -->
-            <div class="mx-3 mt-1 mb-2">	
-                <PosKpiCard/>
-            </div>
-            <!-- First Row: Pie1 and Line2 -->
-            <div class="row mx-0 mb-2 g-2 mt-2">
-                <!-- Top Products (Pie1) -->
-                <div class="col-12 col-lg-3">
-                    <div class="chart-container shadow-sm rounded-1 p-4 bg-white h-100 d-flex flex-column">
-                        <h3 class="text-center text-dark mb-2 fs-5">Top Kategori Produk</h3>
-                        <div class="flex-grow-1" style="min-height: 250px;">
-                            <PosChartRenderer type="'pie'" title="'pie1'"/>
-                        </div>
-                    </div>
-                </div>
-                <!-- Margin Chart (Line2) -->
-                <div class="col-12 col-lg-9">
-                    <div class="shadow-sm rounded-1 p-3 bg-white h-100 d-flex flex-column">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h3 class="text-center text-dark mb-0 flex-grow-1 fs-5">Margin</h3>
-                            <select class="form-select w-auto" id="timeFilter2">
-                                <option value="hourly" selected="selected">Hourly</option>
-                                <option value="daily">Daily</option>
-                                <option value="weekly">Weekly</option>
-                                <option value="monthly">Monthly</option>
-                                <option value="yearly">Yearly</option>
+
+                        <!-- Periode / Timer -->
+                        <div class="timer-and-periode ms-2">
+                            <select id="periodSelection" class="form-select me-2 periodSelection"
+        t-on-change="onPeriodChange">
+                                <option value="">Pilih Periode</option>
+                                <option value="today">Hari Ini</option>
+                                <option value="yesterday">Kemarin</option>
+                                <option value="thisweek">Minggu Ini</option>
+                                <option value="lastweek">Minggu Lalu</option>
+                                <option value="month">Bulan Ini</option>
+                                <option value="lastMonth">Bulan Lalu</option>
+                                <option value="thisyear">Tahun Ini</option>
+                                <option value="lastyear">Tahun Lalu</option>
                             </select>
+                            <button id="timerButton" class="btn btn-outline-secondary timer-button">
+                                <i id="timerIcon" class="fas fa-clock"></i>
+                                <span id="timerCountdown"></span>
+                            </button>
                         </div>
-                        <div class="flex-grow-1" style="min-height: 250px;">
-                            <PosChartRenderer type="'line'" title="'line2'"/>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Second Row: Pie2 and Line1 -->
-            <div class="row mx-0 mb-2 g-2">
-                <!-- Top Sales Revenue (Pie2) -->
-                <div class="col-12 col-lg-3">
-                    <div class="chart-container shadow-sm rounded-1 p-4 bg-white h-100 d-flex flex-column">
-                        <h3 class="text-center text-dark mb-2 fs-5">Top Kategori POS</h3>
-                        <div class="flex-grow-1" style="min-height: 250px;">
-                            <PosChartRenderer type="'pie'" title="'pie2'"/>
-                        </div>
-                    </div>
-                </div>
-                <!-- Order dan Pendapatan (Line1) -->
-                <div class="col-12 col-lg-9">
-                    <div class="shadow-sm rounded-1 p-3 bg-white h-100 d-flex flex-column">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h3 class="text-center text-dark mb-0 flex-grow-1 fs-5">Order dan Pendapatan</h3>
-                            <select class="form-select w-auto" id="timeFilter">
-                                <option value="hourly" selected="selected">Hourly</option>
-                                <option value="daily">Daily</option>
-                                <option value="weekly">Weekly</option>
-                                <option value="monthly">Monthly</option>
-                                <option value="yearly">Yearly</option>
-                            </select>
-                        </div>
-                        <div class="flex-grow-1" style="min-height: 250px;">
-                            <PosChartRenderer type="'line'" title="'line1'"/>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Third Row: Card Lists -->
-            <div class="row mx-0 g-2">
-                <!-- Product List -->
-                <div class="col-12 col-lg-6">
-                    <div class="shadow-sm rounded-1 p-2 bg-white" style="min-height: 35vh;">
-                        <PosCardList/>
-                    </div>
-                </div>
-                <!-- Customer List -->
-                <div class="col-12 col-lg-6">
-                    <div class="shadow-sm rounded-1 p-2 bg-white" style="min-height: 35vh;">
-                        <PosCardList1/>
                     </div>
                 </div>
             </div>
         </div>
-    </t>
+
+        <!-- KPI Cards -->
+        <div class="mx-3 mt-1 mb-2">
+            <PosKpiCard/>
+        </div>
+
+        <!-- Charts -->
+        <div class="row mx-0 mb-2 g-2 mt-2">
+            <div class="col-12 col-lg-3">
+                <div class="chart-container shadow-sm rounded-1 p-4 bg-white h-100 d-flex flex-column">
+                    <h3 class="text-center text-dark mb-2 fs-5">Top Kategori Produk</h3>
+                    <div class="flex-grow-1" style="min-height: 250px;">
+                        <PosChartRenderer type="'pie'" title="'pie1'"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-9">
+                <div class="shadow-sm rounded-1 p-3 bg-white h-100 d-flex flex-column">
+                    <h3 class="text-center text-dark mb-0 flex-grow-1 fs-5">Margin</h3>
+                    <div class="flex-grow-1" style="min-height: 250px;">
+                        <PosChartRenderer type="'line'" title="'line2'"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card Lists -->
+        <div class="row mx-0 g-2">
+            <div class="col-12 col-lg-6">
+                <div class="shadow-sm rounded-1 p-2 bg-white" style="min-height: 35vh;">
+                    <PosCardList/>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="shadow-sm rounded-1 p-2 bg-white" style="min-height: 35vh;">
+                    <PosCardList1/>
+                </div>
+            </div>
+        </div>
+    </div>
+</t>
 </templates>
