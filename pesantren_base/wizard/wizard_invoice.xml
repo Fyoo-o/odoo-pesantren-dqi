@@ -67,7 +67,7 @@
             <field name="target">new</field>
         </record>
 
-        <menuitem id="generate_invoice_menu_act" name="Buat Tagihan" parent="tu_aktivitas_tagihan" action="action_generate_invoice" sequence="20"/>
+        <!-- <menuitem id="generate_invoice_menu_act" name="Buat Tagihan" parent="tu_aktivitas_tagihan" action="action_generate_invoice" sequence="20"/> -->
         
     </data>
 </odoo>
