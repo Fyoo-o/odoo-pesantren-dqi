@@ -3,7 +3,7 @@
     <data>
         <record model="ir.ui.view" id="view_wizard_generate_invoice">
             <field name="name">Generate Invoice</field>
-            <field name="model">generate.invoice.santri</field>
+            <field name="model">generate.invoice</field>
             <field name="arch" type="xml">
                 <form string="Buat Tagihan">
 					<group>
@@ -19,24 +19,24 @@
 					<group>
 						<group>
 							<field name="komponen_id"/>
-							<field name="kamar_id" widget="many2many_tags" string="Ruang Kelas"/>
+                            <field name="kelas_id" widget="many2many_tags" string="Kelas"/>
 						</group>
 						<group>
 							<field name="name" widget="integer" string="Biaya"/>
 						</group>
 					</group>
 					<group string="Santri">
-						<field name="partner_ids" colspan="2">
-							<list editable="bottom" create="false">
+						<field name="partner_ids" nolabel="1" colspan="2">
+							<list>
 								<field name="name"/>
 								<field name="nis"/>
-								<field name="kamar_id"/>
+								<field name="ruang_kelas_id" string="Ruang Kelas"/>
 							</list>
 						</field>
 					</group>
 					<footer>
 	                    <button name="create_invoice" string="Buat Tagihan" type="object" class="oe_highlight"/>
-
+                        <!-- atau -->
 	                    <button string="Batal" class="oe_link" special="cancel" />
 	                </footer>
                 </form>
