@@ -196,7 +196,36 @@
                 </div>
             </div>
         </div>
-
+         <!-- Second Row: Pie2 and Line1 -->
+            <div class="row mx-0 mb-2 g-2">
+                <!-- Top Sales Revenue (Pie2) -->
+                <div class="col-12 col-lg-3">
+                    <div class="chart-container shadow-sm rounded-1 p-4 bg-white h-100 d-flex flex-column">
+                        <h3 class="text-center text-dark mb-2 fs-5">Top Kategori POS</h3>
+                        <div class="flex-grow-1" style="min-height: 250px;">
+                            <PosChartRenderer type="'pie'" title="'pie2'"/>
+                        </div>
+                    </div>
+                </div>
+                <!-- Order dan Pendapatan (Line1) -->
+                <div class="col-12 col-lg-9">
+                    <div class="shadow-sm rounded-1 p-3 bg-white h-100 d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h3 class="text-center text-dark mb-0 flex-grow-1 fs-5">Order dan Pendapatan</h3>
+                            <select class="form-select w-auto" id="timeFilter">
+                                <option value="hourly" selected="selected">Hourly</option>
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="yearly">Yearly</option>
+                            </select>
+                        </div>
+                        <div class="flex-grow-1" style="min-height: 250px;">
+                            <PosChartRenderer type="'line'" title="'line1'"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
         <!-- Card Lists -->
         <div class="row mx-0 g-2">
             <div class="col-12 col-lg-6">
