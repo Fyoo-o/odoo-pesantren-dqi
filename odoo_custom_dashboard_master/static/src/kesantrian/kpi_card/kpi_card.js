@@ -118,7 +118,7 @@ export class KpiCard extends Component {
         const timerCountdown = document.getElementById("timerCountdown");
         
         if (timerIcon) {
-            timerIcon.className = stopped ? "fas fa-stopwatch" : "fas fa-stop d-none";
+            timerIcon.className = stopped ? "fas fa-clock" : "fas fa-stop d-none";
         }
         if (timerCountdown) {
             timerCountdown.textContent = stopped ? "" : this.countdownTime;
