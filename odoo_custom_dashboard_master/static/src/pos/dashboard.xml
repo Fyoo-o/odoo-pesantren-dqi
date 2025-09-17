@@ -151,7 +151,7 @@
                         <!-- Periode / Timer -->
                         <div class="timer-and-periode ms-2">
                             <select id="periodSelection" class="form-select me-2 periodSelection"
-        t-on-change="onPeriodChange">
+                                    t-on-change="onPeriodChange">
                                 <option value="">Pilih Periode</option>
                                 <option value="today">Hari Ini</option>
                                 <option value="yesterday">Kemarin</option>
@@ -171,14 +171,14 @@
                 </div>
             </div>
         </div>
-
+         
         <!-- KPI Cards -->
-        <div class="mx-3 mt-1 mb-2">
+        <div class="row mx-0 mt-1 mb-2">
             <PosKpiCard/>
         </div>
 
         <!-- Charts -->
-        <div class="row mx-0 mb-2 g-2 mt-2">
+        <div class="row mb-2 mt-2 g-4">
             <div class="col-12 col-lg-3">
                 <div class="chart-container shadow-sm rounded-1 p-4 bg-white h-100 d-flex flex-column">
                     <h3 class="text-center text-dark mb-2 fs-5">Top Kategori Produk</h3>
@@ -197,7 +197,7 @@
             </div>
         </div>
          <!-- Second Row: Pie2 and Line1 -->
-            <div class="row mx-0 mb-2 g-2">
+            <div class="row mb-2 g-4">
                 <!-- Top Sales Revenue (Pie2) -->
                 <div class="col-12 col-lg-3">
                     <div class="chart-container shadow-sm rounded-1 p-4 bg-white h-100 d-flex flex-column">
@@ -227,7 +227,7 @@
                 </div>
             </div>
         <!-- Card Lists -->
-        <div class="row mx-0 g-2">
+        <div class="row g-4">
             <div class="col-12 col-lg-6">
                 <div class="shadow-sm rounded-1 p-2 bg-white" style="min-height: 35vh;">
                     <PosCardList/>

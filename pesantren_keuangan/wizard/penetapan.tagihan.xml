@@ -107,4 +107,3 @@
         <menuitem id="penetapan_tagihan_menu_act" name="Penetapan Tagihan" parent="keu_tagihan_menu_categ" action="action_penetapan_tagihan_view" sequence="30"/>        
     </data>
 </odoo> -->
-
