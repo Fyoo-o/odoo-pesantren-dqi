@@ -55,24 +55,26 @@
                                 <h2 class="text-dark fw-bold header-text">Dashboard Pembelian</h2>
                             </div>
                             <div class="controls-wrapper d-flex align-items-center">
-                                <div class="button-popup-wrapper date-button">
-                                    <button id="datePickerButton" class="btn btn-outline-secondary me-2 date-button">
-                                        <i class="fas fa-calendar-alt"></i>
-                                        <span id="dateRangeText" class="ms-2">Select Dates</span>
-                                    </button>
-                            
-                                    <!-- Pop-up kontainer untuk rentang tanggal, tersembunyi saat awal -->
-                                    <div id="datePickerContainer" class="popup-container" style="display: none;">
-                                        <div class="date-range d-flex flex-column me-2">
-                                            <label for="startDate" class="date-label text-center">Dari</label>
-                                            <input id="startDate" type="date" class="form-control date-input" />
-                                        </div>
-                                        <div class="date-range d-flex flex-column">
-                                            <label for="endDate" class="date-label text-center">Sampai</label>
-                                            <input id="endDate" type="date" class="form-control date-input" />
+                                    <div class="button-popup-wrapper date-button">
+                                        <button id="datePickerButton"
+                                                class="btn btn-outline-secondary me-2 date-button"
+                                                t-on-click="toggleDatePicker">
+                                            <i class="fas fa-calendar-alt"></i>
+                                            <span id="dateRangeText" class="ms-2">Select Dates</span>
+                                        </button>
+                                
+                                        <!-- Pop-up kontainer untuk rentang tanggal, tersembunyi saat awal -->
+                                        <div id="datePickerContainer" class="popup-container flex-row" t-attf-style="display: #{state.showDatePicker ? 'flex' : 'none'};">
+                                            <div class=" date-range d-flex flex-column me-2">
+                                                <label for="startDate" class="date-label text-center">Dari</label>
+                                                <input id="startDate" type="date" class="form-control date-input" />
+                                            </div>
+                                            <div class="date-range d-flex flex-column">
+                                                <label for="endDate" class="date-label text-center">Sampai</label>
+                                                <input id="endDate" type="date" class="form-control date-input" />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
                             <div class="period-and-timer">
                                 <select id="periodSelection" class="form-control period-selection">

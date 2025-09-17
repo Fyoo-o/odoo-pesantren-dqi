@@ -3,7 +3,7 @@ import { registry } from "@web/core/registry";
 import { OrangtuaChartRenderer } from "./chart_renderer/chart_renderer";
 import { OrangtuaKpiCard } from "./kpi_card/kpi_card";
 import { OrangtuaCardList1, OrangtuaCardList2 } from "./card_list/card_list";
-import { Component, useState, useRef, onMounted, onWillStart } from "@odoo/owl";
+import { Component, useState, useRef, onMounted, onWillUnmount } from "@odoo/owl";
 
 class OwlOrangtuaDashboard extends Component {
   setup() {
@@ -13,6 +13,29 @@ class OwlOrangtuaDashboard extends Component {
       showDatePicker: false,
       selectedPeriod: null,
       isLoading: false,
+    });
+    this._handleClickOutside = (ev) => {
+    const popup = document.querySelector(".popup-container");
+    const button = document.querySelector(".dateButton");
+
+    if (
+      popup &&
+      !popup.contains(ev.target) &&
+      button &&
+      !button.contains(ev.target)
+    ) {
+      this.state.showDatePicker = false;
+    }
+  };
+
+    // pasang listener setelah komponen mount
+    onMounted(() => {
+      document.addEventListener("click", this._handleClickOutside);
+    });
+
+    // lepas listener saat unmount
+    onWillUnmount(() => {
+      document.removeEventListener("click", this._handleClickOutside);
     });
     // this.setPeriod("thisMonth");
     // Initialize with thisMounth period
@@ -24,6 +47,9 @@ class OwlOrangtuaDashboard extends Component {
       // Pastikan setPeriod dipanggil setelah component ter-mount
     });
   }
+
+
+
 
   toggleDatePicker() {
     this.state.showDatePicker = !this.state.showDatePicker;
@@ -37,7 +63,7 @@ class OwlOrangtuaDashboard extends Component {
 
   closeDatePicker() {
     this.state.showDatePicker = false;
-    this.state.tempDateRange = { start: "", end: "" };
+    // this.state.tempDateRange = { start: "", end: "" };
   }
 
   async applyDateRange() {
@@ -55,7 +81,7 @@ class OwlOrangtuaDashboard extends Component {
       };
       this.state.selectedPeriod = "custom";
     }
-    this.closeDatePicker();
+    // this.closeDatePicker();
   }
 
   formatDate(dateString) {

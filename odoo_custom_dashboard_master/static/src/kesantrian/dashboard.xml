@@ -47,8 +47,9 @@
             <div class="d-flex">
               <h2 class="text-primary fw-bold header-text">Dashboard Kesantrian</h2>
             </div>
-              <div class="controls-wrapper d-flex align-items-center mt-1">
-               <!-- Custom Date Range Button -->
+            <div class="controls-wrapper d-flex align-items-center mt-1 position-relative">
+              <!-- Custom Date Range Button -->
+              <div class="button-popup-wrapper">
                 <button
                   class="btn btn-outline-secondary dateButton"
                   t-on-click="toggleDatePicker"
@@ -62,6 +63,36 @@
                   </t>
                   <t t-else=""> </t>
                 </button>
+
+                <!-- Pop-up langsung di bawah button -->
+                <div
+                  t-if="state.showDatePicker"
+                  class="popup-container bg-white p-3 rounded shadow-lg mt-2"
+                  style="z-index:1050;"
+                >
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="date-range d-flex flex-column">
+                      <label class="date-label text-center">Dari</label>
+                      <input
+                        type="date"
+                        class="form-control date-input"
+                        t-model="state.tempDateRange.start"
+                        t-on-change="applyDateRange"
+                      />
+                    </div>
+                    <div class="date-range d-flex flex-column">
+                      <label class="date-label text-center">Sampai</label>
+                      <input
+                        type="date"
+                        class="form-control date-input"
+                        t-model="state.tempDateRange.end"
+                        t-on-change="applyDateRange"
+                      />
+                    </div>
+                  </div>
+                
+                </div>
+              </div>
                 <div class="timerDropdown">
                 <!-- Dropdown Periode -->
                 <div class="dropdown me-3 dropdownButton"> 
@@ -215,41 +246,32 @@
       </div>
 
       <!-- Date Range Picker Popup -->
-      <div
-        t-if="state.showDatePicker"
-        class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
-        style="background: rgba(0, 0, 0, 0.5); z-index: 1050"
-      >
-        <div class="bg-white p-4 rounded shadow-lg">
-          <div class="mb-3">
-            <h5 class="mb-4">Pilih Rentang Tanggal</h5>
-            <div class="mb-3">
-              <label class="form-label">Dari</label>
+      <!-- Ganti blok Date Range Picker Popup -->
+        <!-- <div
+          t-if="state.showDatePicker"
+          class="popup-container position-absolute bg-white p-3 rounded shadow-lg"
+          style="z-index: 1050; top: 60px; right: 20px;"
+        >
+          <div class="d-flex align-items-center gap-3">
+            <div class="date-range d-flex flex-column">
+              <label class="date-label text-center">Dari</label>
               <input
                 type="date"
-                class="form-control"
+                class="form-control date-input"
                 t-model="state.tempDateRange.start"
               />
             </div>
-            <div class="mb-3">
-              <label class="form-label">Sampai</label>
+            <div class="date-range d-flex flex-column">
+              <label class="date-label text-center">Sampai</label>
               <input
                 type="date"
-                class="form-control"
+                class="form-control date-input"
                 t-model="state.tempDateRange.end"
               />
             </div>
           </div>
-          <div class="d-flex justify-content-end gap-2">
-            <button class="btn btn-secondary" t-on-click="closeDatePicker">
-              Batal
-            </button>
-            <button class="btn btn-primary" t-on-click="applyDateRange">
-              Terapkan
-            </button>
-          </div>
-        </div>
-      </div>
+        </div> -->
+
 
       <!-- KPI Cards -->
       <div class="mx-0 my-0">

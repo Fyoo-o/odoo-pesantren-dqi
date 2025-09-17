@@ -5,10 +5,15 @@ import { AbsensiList } from "./card_list/card_list";
 
 // GAREK KPI CARD
 
-const { Component } = owl;
+const { Component, useState } = owl;
 
 export class OwlAbsensiDashboard extends Component {
-  setup() {}
+  setup() {
+    this.state = useState({ showDatePicker: false });
+  }
+  toggleDatePicker() {
+        this.state.showDatePicker = !this.state.showDatePicker;
+    }
 }
 
 OwlAbsensiDashboard.template = "owl.OwlAbsensiDashboard";

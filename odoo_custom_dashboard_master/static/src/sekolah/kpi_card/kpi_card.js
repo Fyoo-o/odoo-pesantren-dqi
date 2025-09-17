@@ -593,8 +593,8 @@ export class SekolahKpiCard extends Component {
         name: `${cardName} Details`,
         type: "ir.actions.act_window",
         res_model: res_model,
-        view_mode: "list",
-        views: [[false, "list"]],
+        view_mode: "list,form",
+        views: [[false, "list"], [false, "form"]],
         target: "current",
         domain: domain,
       });

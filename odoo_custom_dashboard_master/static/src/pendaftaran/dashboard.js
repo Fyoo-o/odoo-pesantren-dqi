@@ -3,10 +3,15 @@ import { PendaftaranKpiCard } from "./kpi_card/kpi_card";
 import { PendaftaranChartRenderer } from "./chart_renderer/chart_renderer";
 import { PendaftaranList } from "./card_list/card_list";
 
-const { Component } = owl;
+const { Component, useState } = owl;
 
 export class OwlPendaftaranDashboard extends Component {
-  setup() {}
+   setup() {
+    this.state = useState({ showDatePicker: false });
+  }
+  toggleDatePicker() {
+        this.state.showDatePicker = !this.state.showDatePicker;
+    }
 }
 
 OwlPendaftaranDashboard.template = "owl.OwlPendaftaranDashboard";

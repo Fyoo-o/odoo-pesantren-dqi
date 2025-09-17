@@ -47,21 +47,49 @@
                   Dashboard Orangtua
                 </h2>
               </div>
-              <div class="controls-wrapper d-flex align-items-center mt-1">
-                <div class="button-popup-wrapper dateButton">
+                <div class="controls-wrapper d-flex align-items-center mt-1 position-relative">
+                <!-- Custom Date Range Button -->
+                <div class="button-popup-wrapper">
                   <button
-                    class="btn btn-outline-secondary dateButton"
-                    t-on-click="toggleDatePicker"
+                  class="btn btn-outline-secondary dateButton"
+                  t-on-click="toggleDatePicker"
                   >
-                    <i class="fas fa-calendar"></i>
-                    <t t-if="state.selectedDateRange">
-                      <span
-                        t-esc="formatDateRange(state.selectedDateRange.start, state.selectedDateRange.end)"
-                        class="ms-2"
-                      />
-                    </t>
-                    <t t-else=""> </t>
+                  <i class="fas fa-calendar"></i>
+                  <t t-if="state.selectedDateRange">
+                    <span
+                    t-esc="formatDateRange(state.selectedDateRange.start, state.selectedDateRange.end)"
+                    class="ms-2"
+                    />
+                  </t>
+                  <t t-else=""> </t>
                   </button>
+                  <!-- Pop-up langsung di bawah button -->
+                  <div
+                  t-if="state.showDatePicker"
+                  class="popup-container bg-white p-3 rounded shadow-lg mt-2"
+                  style="z-index:1050;"
+                  >
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="date-range d-flex flex-column">
+                    <label class="date-label text-center">Dari</label>
+                    <input
+                      type="date"
+                      class="form-control date-input"
+                      t-model="state.tempDateRange.start"
+                      t-on-change="applyDateRange"
+                    />
+                    </div>
+                    <div class="date-range d-flex flex-column">
+                    <label class="date-label text-center">Sampai</label>
+                    <input
+                      type="date"
+                      class="form-control date-input"
+                      t-model="state.tempDateRange.end"
+                      t-on-change="applyDateRange"
+                    />
+                    </div>
+                  </div>
+                  </div>
                 </div>
                 <!-- Dropdown Periode -->
                 <div class="timer-and-dropdown">
@@ -220,7 +248,7 @@
       </div>
 
       <!-- Date Range Picker Popup -->
-      <div
+      <!-- <div
         t-if="state.showDatePicker"
         class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
         style="background: rgba(0, 0, 0, 0.5); z-index: 1050"
@@ -254,7 +282,7 @@
             </button>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <div class="mx-0 my-0">
         <OrangtuaKpiCard
