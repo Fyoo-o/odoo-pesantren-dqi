@@ -8,51 +8,35 @@
                 <form string="Buat Tagihan">
 					<group>
 						<group>
-							<field name="tahunajaran_id" readonly="0"/>
-						</group>
-
-						<group>
-
-						</group>
-					</group>
-
-					<group> 
-						<group>
-							<field name="angkatan_id" string="Santri Angkatan" invisible="1"/>
+							<field name="angkatan_id" string="Santri Angkatan"/>
 							<field name="period_from" domain="[('tahunajaran_id','=', tahunajaran_id)]"/>
 						</group>
 						<group>
+							<field name="tahunajaran_id"/>
 							<field name="period_to" domain="[('tahunajaran_id','=', tahunajaran_id)]"/>
 						</group>
 					</group>
-
 					<group>
 						<group>
 							<field name="komponen_id"/>
+                            <field name="kelas_id" widget="many2many_tags" string="Kelas"/>
 						</group>
-
 						<group>
 							<field name="name" widget="integer" string="Biaya"/>
-
-							<field name="kelas_id" widget="many2many_tags" options="{'no_create': True}" invisible="1"/>
-
 						</group>
 					</group>
-
-					<notebook>
-						<page string="Santri">
-							<field name="partner_ids" nolabel="1" readonly="False">
-								<list editable="bottom" create="false">
-									<field name="name" readonly="True"/>
-									<field name="nis" readonly="True"/>
-									<field name="ruang_kelas_id" readonly="True"/>
-								</list>
-							</field>
-						</page>
-					</notebook>
-
+					<group string="Santri">
+						<field name="partner_ids" nolabel="1" colspan="2">
+							<list>
+								<field name="name"/>
+								<field name="nis"/>
+								<field name="ruang_kelas_id" string="Ruang Kelas"/>
+							</list>
+						</field>
+					</group>
 					<footer>
 	                    <button name="create_invoice" string="Buat Tagihan" type="object" class="oe_highlight"/>
+                        <!-- atau -->
 	                    <button string="Batal" class="oe_link" special="cancel" />
 	                </footer>
                 </form>
