@@ -3,7 +3,7 @@ import { registry } from "@web/core/registry";
 import { MusyrifKpiCard } from "./kpi_card/kpi_card";
 import { MusyrifChartRenderer } from "./chart_renderer/chart_renderer";
 import { MusyrifPerijinanCardList } from "./card_list/card_list";
-import { useState, Component } from "@odoo/owl";
+import { useState, Component, onMounted, onWillUnmount } from "@odoo/owl";
 
 export class OwlMusyrifDashboard extends Component {
   setup() {
@@ -13,6 +13,29 @@ export class OwlMusyrifDashboard extends Component {
       showDatePicker: false,
       selectedPeriod: "thisMonth",
       isLoading: false,
+    });
+    this._handleClickOutside = (ev) => {
+      const popup = document.querySelector(".popup-container");
+      const button = document.querySelector(".dateButton");
+
+      if (
+        popup &&
+        !popup.contains(ev.target) &&
+        button &&
+        !button.contains(ev.target)
+      ) {
+        this.state.showDatePicker = false;
+      }
+    };
+
+    // pasang listener setelah komponen mount
+    onMounted(() => {
+      document.addEventListener("click", this._handleClickOutside);
+    });
+
+    // lepas listener saat unmount
+    onWillUnmount(() => {
+      document.removeEventListener("click", this._handleClickOutside);
     });
 
     // Initialize with thisWeek period
@@ -31,7 +54,7 @@ export class OwlMusyrifDashboard extends Component {
 
   closeDatePicker() {
     this.state.showDatePicker = false;
-    this.state.tempDateRange = { start: "", end: "" };
+    // this.state.tempDateRange = { start: "", end: "" };
   }
 
   async applyDateRange() {
@@ -49,7 +72,7 @@ export class OwlMusyrifDashboard extends Component {
       };
       this.state.selectedPeriod = "custom";
     }
-    this.closeDatePicker();
+    // this.closeDatePicker();
   }
 
   formatDate(dateString) {

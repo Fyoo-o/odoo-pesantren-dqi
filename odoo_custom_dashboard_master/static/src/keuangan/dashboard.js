@@ -1,7 +1,7 @@
 /** @odoo-module */
 import { registry } from "@web/core/registry";
 import { KeuanganChartRenderer } from "./chart_renderer/chart_renderer";
-import { Component, useState, useRef } from "@odoo/owl";
+import { Component, useState, useRef, onMounted, onWillUnmount } from "@odoo/owl";
 
 class OwlKeuanganDashboard extends Component {
   setup() {
@@ -19,7 +19,31 @@ class OwlKeuanganDashboard extends Component {
       selectedPeriod: "thisMonth",
       isLoading: false,
     });
+    this._handleClickOutside = (ev) => {
+      const popup = document.querySelector(".popup-container");
+      const button = document.querySelector(".dateButton");
+
+      if (
+        popup &&
+        !popup.contains(ev.target) &&
+        button &&
+        !button.contains(ev.target)
+      ) {
+        this.state.showDatePicker = false;
+      }
+    };
+
+    // pasang listener setelah komponen mount
+    onMounted(() => {
+      document.addEventListener("click", this._handleClickOutside);
+    });
+
+    // lepas listener saat unmount
+    onWillUnmount(() => {
+      document.removeEventListener("click", this._handleClickOutside);
+    });
   }
+
 
   toggleDatePicker() {
     this.state.showDatePicker = !this.state.showDatePicker;
@@ -33,7 +57,7 @@ class OwlKeuanganDashboard extends Component {
 
   closeDatePicker() {
     this.state.showDatePicker = false;
-    this.state.tempDateRange = { start: "", end: "" };
+    // this.state.tempDateRange = { start: "", end: "" };
   }
 
   async applyDateRange() {
@@ -51,7 +75,7 @@ class OwlKeuanganDashboard extends Component {
       };
       this.state.selectedPeriod = "custom";
     }
-    this.closeDatePicker();
+    // this.closeDatePicker();
   }
 
   formatDate(dateString) {

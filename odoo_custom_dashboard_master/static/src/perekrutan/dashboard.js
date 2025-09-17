@@ -3,10 +3,15 @@ import { PerekrutanChartRenderer } from "./chart_renderer/chart_renderer";
 import { PerekrutanList } from "./card_list/card_list";
 import { PerekrutanKpiCard } from "./kpi_card/kpi_card";
 
-const { Component } = owl;
+const { Component, useState } = owl;
 
 export class OwlPerekrutanDashboard extends Component {
-  setup() {}
+   setup() {
+    this.state = useState({ showDatePicker: false });
+  }
+  toggleDatePicker() {
+        this.state.showDatePicker = !this.state.showDatePicker;
+    }
 }
 
 OwlPerekrutanDashboard.template = "owl.OwlPerekrutanDashboard";

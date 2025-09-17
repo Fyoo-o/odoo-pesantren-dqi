@@ -3,7 +3,7 @@ import { registry } from "@web/core/registry";
 import { KpiCard } from "./kpi_card/kpi_card";
 import { ChartRenderer } from "./chart_renderer/chart_renderer";
 import { PelanggaranCardList, TahfidzCardList } from "./card_list/card_list";
-import { Component, useState, useRef } from "@odoo/owl";
+import { Component, useState, useRef, onMounted, onWillUnmount } from "@odoo/owl";
 
 class OwlKesantrianDashboard extends Component {
   setup() {
@@ -15,8 +15,35 @@ class OwlKesantrianDashboard extends Component {
       isLoading: false,
     });
 
+    
+  // Event handler untuk klik di luar
+  this._handleClickOutside = (ev) => {
+    const popup = document.querySelector(".popup-container");
+    const button = document.querySelector(".dateButton");
+
+    if (
+      popup &&
+      !popup.contains(ev.target) &&
+      button &&
+      !button.contains(ev.target)
+    ) {
+      this.state.showDatePicker = false;
+    }
+  };
+
+  // pasang listener setelah komponen mount
+  onMounted(() => {
+    document.addEventListener("click", this._handleClickOutside);
+  });
+
+  // lepas listener saat unmount
+  onWillUnmount(() => {
+    document.removeEventListener("click", this._handleClickOutside);
+  });
+
+    // Initialize with thisMonth period
     this.setPeriod("thisMonth");
-  }
+  } 
 
   toggleDatePicker() {
     this.state.showDatePicker = !this.state.showDatePicker;
@@ -30,7 +57,7 @@ class OwlKesantrianDashboard extends Component {
 
   closeDatePicker() {
     this.state.showDatePicker = false;
-    this.state.tempDateRange = { start: "", end: "" };
+    // this.state.tempDateRange = { start: "", end: "" };
   }
 
   async applyDateRange() {
@@ -48,7 +75,7 @@ class OwlKesantrianDashboard extends Component {
       };
       this.state.selectedPeriod = "custom";
     }
-    this.closeDatePicker();
+    // this.closeDatePicker();
   }
 
   formatDate(dateString) {

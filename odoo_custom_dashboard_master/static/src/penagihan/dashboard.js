@@ -4,10 +4,15 @@ import { PenagihanChartRenderer } from "./chart_renderer/chart_renderer";
 import { TagihanLunasList } from "./card_list/cart_list";
 import { TagihanBelumLunasList } from "./card_list/cart_list";
 
-const { Component } = owl;
+const { Component,useState } = owl;
 
 export class OwlPenagihanDashboard extends Component {
-  setup() {}
+  setup() {
+    this.state = useState({ showDatePicker: false });
+  }
+  toggleDatePicker() {
+        this.state.showDatePicker = !this.state.showDatePicker;
+    }
 }
 
 OwlPenagihanDashboard.template = "owl.OwlPenagihanDashboard";

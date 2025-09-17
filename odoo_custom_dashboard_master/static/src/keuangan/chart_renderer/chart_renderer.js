@@ -1087,7 +1087,7 @@ export class KeuanganChartRenderer extends Component {
     }
   }
 
-  onChartClick(event, chartContext, config) {
+    onChartClick(event, chartContext, config) {
     const dataPointIndex = config.dataPointIndex;
     const seriesIndex = config.seriesIndex;
 
@@ -1099,11 +1099,8 @@ export class KeuanganChartRenderer extends Component {
     }
 
     const label = this.state.chartData.labels[dataPointIndex];
-    // Pastikan series ada dan memiliki properti name
-    const seriesName =
-      this.state.chartData.series[seriesIndex]?.name || "Unknown";
+    const seriesName = this.state.chartData.series[seriesIndex]?.name || "";
 
-    // Pastikan label ada
     if (!label) {
       console.error("Label not found for dataPointIndex:", dataPointIndex);
       return;
@@ -1122,124 +1119,71 @@ export class KeuanganChartRenderer extends Component {
         [false, "list"],
         [false, "form"],
       ],
+      res_model: "",
+      domain: [],
       context: {},
     };
 
     switch (this.props.title) {
       case "Tagihan Santri": {
         actionConfig.res_model = "account.move.line";
-        const domain = [
-          [
-            "move_id.move_type",
-            "in",
-            ["out_invoice", "out_refund", "in_invoice", "in_refund"],
-          ],
-          ["display_type", "in", ["product"]],
+
+        let domain = [
+          ["move_id.move_type", "in", ["out_invoice", "out_refund"]],
+          ["display_type", "=", "product"],
         ];
 
-        // Hanya tambahkan product_id.name ke domain jika label valid
+        // Filter berdasarkan produk yang diklik
         if (label) {
           domain.push(["product_id.name", "=", label]);
         }
 
-        // Menambahkan kondisi berdasarkan status Lunas/Belum Lunas
+        // Tambahkan filter sesuai status chart
         if (seriesName === "Lunas") {
-            domain.push(["parent_state", "=", "posted"]);
-        } else {
-            domain.push(["parent_state", "in", ["draft"]]);
-        }
-
-        // Pengecekan tanggal yang lebih aman
-        if (this.state?.currentStartDate) {
-          try {
-            const start = new Date(this.state.currentStartDate);
-            if (!isNaN(start.getTime())) {
-              start.setUTCHours(0, 0, 0, 0);
-              domain.push([
-                "date",
-                ">=",
-                start.toISOString().split(".")[0] + "Z",
-              ]);
-            }
-          } catch (e) {
-            console.error("Invalid start date:", e);
-          }
-        }
-
-        if (this.state?.currentEndDate) {
-          try {
-            const end = new Date(this.state.currentEndDate);
-            if (!isNaN(end.getTime())) {
-              end.setUTCHours(23, 59, 59, 999);
-              domain.push([
-                "date",
-                "<=",
-                end.toISOString().split(".")[0] + "Z",
-              ]);
-            }
-          } catch (e) {
-            console.error("Invalid end date:", e);
-          }
+          domain.push(["parent_state", "=", "posted"]);
+        } else if (seriesName === "Belum Lunas") {
+          domain.push(["parent_state", "not in", ["posted", "cancel"]]);
+        } else if (seriesName === "Dibayar") {
+          domain.push(["credit", ">", 0]);
+          domain.push(["parent_state", "=", "posted"]);
+        } else if (seriesName === "Belum Bayar") {
+          domain.push(["credit", ">", 0]);
+          domain.push(["parent_state", "not in", ["posted", "cancel"]]);
         }
 
         actionConfig.domain = domain;
         break;
       }
 
-      case "Uang Saku Masuk":
-      case "Uang Saku Keluar": {
+      case "Uang Saku Masuk": {
         actionConfig.res_model = "cdn.uang_saku";
-        try {
-          const [day, month, year] = label.split("/");
-          if (!day || !month || !year) {
-            console.error("Invalid date format in label:", label);
-            return;
-          }
-
-          const startDate = new Date(year, month - 1, day);
-          const endDate = new Date(year, month - 1, day);
-
-          if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-            console.error("Invalid date created from label:", label);
-            return;
-          }
-
-          startDate.setHours(0, 0, 0, 0);
-          endDate.setHours(23, 59, 59, 999);
-
-          const formattedStartDate = startDate.toISOString().split(".")[0];
-          const formattedEndDate = endDate.toISOString().split(".")[0];
-
-          actionConfig.domain =
-            this.props.title === "Uang Saku Masuk"
-              ? [
-                  ["amount_in", ">", 0],
-                  ["create_date", ">=", formattedStartDate],
-                  ["create_date", "<=", formattedEndDate],
-                ]
-              : [
-                  ["amount_out", ">", 0],
-                  ["create_date", ">=", formattedStartDate],
-                  ["create_date", "<=", formattedEndDate],
-                ];
-        } catch (e) {
-          console.error("Error processing date:", e);
-          return;
+        actionConfig.domain = [["amount_in", ">", 0]];
+        if (label) {
+          actionConfig.domain.push([
+            "create_date",
+            ">=",
+            new Date(label).toISOString(),
+          ]);
         }
         break;
       }
 
-      default:
-        console.error("Unhandled title:", this.props.title);
-        return;
+      case "Uang Saku Keluar": {
+        actionConfig.res_model = "cdn.uang_saku";
+        actionConfig.domain = [["amount_out", ">", 0]];
+        if (label) {
+          actionConfig.domain.push([
+            "create_date",
+            ">=",
+            new Date(label).toISOString(),
+          ]);
+        }
+        break;
+      }
+    }
+      this.actionService.doAction(actionConfig);
     }
 
-    if (this.actionService?.doAction) {
-      this.actionService.doAction(actionConfig);
-    } else {
-      console.error("Action service not available");
-    }
-  }
   toggleZoom = () => {
     console.log("Tombol zoom ditekan");
     const chartWrapper = this.chartRef.el.parentElement;
