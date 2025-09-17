@@ -48,6 +48,7 @@
 					<group>
 						<group>
 							<field name="komponen_id"/>
+                            <field name="kelas_id" widget="many2many_tags" string="Kelas"/>
 						</group>
 						<group>
 							<field name="name" widget="integer" string="Biaya"/>
@@ -58,7 +59,7 @@
 							<list>
 								<field name="name"/>
 								<field name="nis"/>
-								<field name="kamar_id"/>
+								<field name="ruang_kelas_id" string="Ruang Kelas"/>
 							</list>
 						</field>
 					</group>
