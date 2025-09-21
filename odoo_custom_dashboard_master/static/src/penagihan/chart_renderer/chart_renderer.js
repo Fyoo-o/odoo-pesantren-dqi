@@ -709,11 +709,11 @@ export class PenagihanChartRenderer extends Component {
       console.log("Label Yang di klik :", label);
       let nameHeader;
       if (this.props.title === "pie1") {
-        nameHeader = "Absensi";
+        nameHeader = "Tagihan Details";
       } else if (this.props.title === "pie2") {
-        nameHeader = "Data Penugasan";
-      } else if (this.props.title === "pie3") {
-        nameHeader = "Data Penilaian Siswa";
+        nameHeader = "Pembayaran Details";
+      // }  else if (this.props.title === "pie3") { 
+      //   nameHeader = "Data Penilaian Siswa";
       }
       if (
         this.actionService &&
@@ -724,10 +724,10 @@ export class PenagihanChartRenderer extends Component {
             name: nameHeader,
             type: "ir.actions.act_window",
             res_model: resModel,
-            view_mode: "list",
-            views: [[false, "list"]],
+            view_mode: "list,form",
+            views: [[false, "list"], [false, "form"]],
             target: "current",
-            domain: domainAction,
+            domain: domainAction, 
             // domain: [
             //   ["id", "in", associatedIds],
             //   ["payment_state", "=", "not_paid"],

@@ -112,6 +112,7 @@ export class OrangtuaCardList1 extends Component {
         ["siswa_id", "in", siswaIds],
         ["tgl", ">=", this.state.currentStartDate],
         ["tgl", "<=", this.state.currentEndDate],
+        ["state", "=", "Done"],
       ];
 
       // const dateDomain = [];
@@ -232,7 +233,7 @@ export class OrangtuaCardList2 extends Component {
         "cdn.tahfidz_quran",
         [
           ["siswa_id.name", "=", tahfidz.name],
-          ["jml_baris", "=", tahfidz.total_baris],
+          // ["jml_baris", "=", tahfidz.total_baris],
           ["state", "=", "done"],
         ],
         ["id"],
@@ -288,6 +289,7 @@ export class OrangtuaCardList2 extends Component {
         ["siswa_id", "in", siswaIds],
         ["tanggal", ">=", this.state.currentStartDate],
         ["tanggal", "<=", this.state.currentEndDate],
+        ["state", "=", "done"], 
       ];
 
       // if (this.state.currentStartDate && this.state.currentEndDate) {

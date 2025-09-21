@@ -395,11 +395,8 @@ export class KeuanganChartRenderer extends Component {
   processDateData(data, field) {
     return data.reduce((acc, record) => {
       const date = this.parseDate(record.create_date);
-      const dateStr = date.toLocaleDateString("id-ID", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      });
+      // Gunakan format YYYY-MM-DD untuk konsistensi
+      const dateStr = date.toISOString().split('T')[0];
 
       if (!acc[dateStr]) {
         acc[dateStr] = 0;
@@ -469,6 +466,7 @@ export class KeuanganChartRenderer extends Component {
 
   async fetchUangSakuMasukData(startDate = null, endDate = null) {
     try {
+      console.log("Fetching Uang Saku Masuk data...");
       if (this.loading) return;
       this.loading = true;
 
@@ -493,23 +491,23 @@ export class KeuanganChartRenderer extends Component {
         { order: "create_date asc", limit: 1000 }
       );
 
+      console.log("Raw data result:", result);
+
+
       if (!result || result.length === 0) {
+        console.log("No data found for Uang Saku Masuk");
         this.state.chartData = {
           labels: [],
-          series: [
-            {
-              name: "Uang Masuk",
-              type: "area",
-              data: [],
-            },
-          ],
+          series: [{
+            name: "Uang Masuk",
+            type: "area",
+            data: [],
+          }],
         };
-
-        if (this.chartInstance) {
-          this.renderChart();
-        }
       } else {
+        console.log("Processing", result.length, "records");
         this.processUangSakuData(result, "amount_in", "Uang Masuk");
+        console.log("Processed chart data:", this.state.chartData);
       }
 
       this.state.currentViewRange = {
@@ -518,7 +516,7 @@ export class KeuanganChartRenderer extends Component {
         viewType: "masuk",
       };
     } catch (error) {
-      console.error("Error fetching uang saku masuk data:", error);
+      console.error("Error in fetch Uang Saku Masuk Data:", error);
       this.state.chartData = {
         labels: [],
         series: [
@@ -618,22 +616,6 @@ export class KeuanganChartRenderer extends Component {
     date.setDate(0);
     return date.toISOString().split("T")[0]; // Format YYYY-MM-DD
   }
-
-  // isCustomDateRange() {
-  //     if (!this.state.currentViewRange) return false;
-
-  //     const today = new Date();
-  //     const weekAgo = new Date();
-  //     weekAgo.setDate(weekAgo.getDate() - 6);
-
-  //     const currentStartDate = new Date(this.state.currentViewRange.startDate);
-  //     const currentEndDate = new Date(this.state.currentViewRange.endDate);
-
-  //     return !(
-  //         currentStartDate.toISOString().split('T')[0] === weekAgo.toISOString().split('T')[0] &&
-  //         currentEndDate.toISOString().split('T')[0] === today.toISOString().split('T')[0]
-  //     );
-  // }
 
   processTagihanData(data) {
     if (!Array.isArray(data) || data.length === 0) {
@@ -736,48 +718,55 @@ export class KeuanganChartRenderer extends Component {
       console.warn("No data available for chart rendering");
       this.state.chartData = {
         labels: [],
-        series: [
-          {
-            name: label,
-            type: "area",
-            data: [],
-          },
-        ],
+        series: [{
+          name: label,
+          type: "area",
+          data: [],
+        }],
       };
       return;
     }
 
     try {
       const dateData = this.processDateData(data, field);
-      const sortedDates = Object.keys(dateData).sort(
-        (a, b) => new Date(a) - new Date(b)
-      );
+      
+      // Urutkan tanggal secara kronologis
+      const sortedDates = Object.keys(dateData).sort((a, b) => {
+        return new Date(a) - new Date(b);
+      });
 
-      const processedData = sortedDates.map((date) =>
+      const processedData = sortedDates.map((date) => 
         Math.max(0, Number(dateData[date]) || 0)
       );
 
+      // Format label tanggal untuk display (bisa dalam format yang lebih user-friendly)
+      const displayLabels = sortedDates.map(date => {
+        const d = new Date(date);
+        return d.toLocaleDateString('id-ID', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+      });
+
       this.state.chartData = {
-        labels: sortedDates,
-        series: [
-          {
-            name: label,
-            type: "area",
-            data: processedData,
-          },
-        ],
+        labels: displayLabels, // Untuk display di chart
+        originalDates: sortedDates, // Simpan format asli YYYY-MM-DD untuk referensi
+        series: [{
+          name: label,
+          type: "area",
+          data: processedData,
+        }],
       };
     } catch (error) {
       console.error("Error processing Uang Saku data:", error);
       this.state.chartData = {
         labels: [],
-        series: [
-          {
-            name: label,
-            type: "area",
-            data: [],
-          },
-        ],
+        series: [{
+          name: label,
+          type: "area",
+          data: [],
+        }],
       };
     }
   }
@@ -1087,7 +1076,7 @@ export class KeuanganChartRenderer extends Component {
     }
   }
 
-    onChartClick(event, chartContext, config) {
+  onChartClick(event, chartContext, config) {
     const dataPointIndex = config.dataPointIndex;
     const seriesIndex = config.seriesIndex;
 
@@ -1104,10 +1093,6 @@ export class KeuanganChartRenderer extends Component {
     if (!label) {
       console.error("Label not found for dataPointIndex:", dataPointIndex);
       return;
-    }
-
-    if (this.isZoomed) {
-      this.toggleZoom();
     }
 
     let actionConfig = {
@@ -1158,12 +1143,12 @@ export class KeuanganChartRenderer extends Component {
       case "Uang Saku Masuk": {
         actionConfig.res_model = "cdn.uang_saku";
         actionConfig.domain = [["amount_in", ">", 0]];
-        if (label) {
-          actionConfig.domain.push([
-            "create_date",
-            ">=",
-            new Date(label).toISOString(),
-          ]);
+        
+        // Gunakan originalDate yang sudah dalam format YYYY-MM-DD
+        if (this.state.chartData.originalDates && this.state.chartData.originalDates[dataPointIndex]) {
+          const originalDate = this.state.chartData.originalDates[dataPointIndex];
+          actionConfig.domain.push(["create_date", ">=", originalDate]);
+          actionConfig.domain.push(["create_date", "<", this.getNextDay(originalDate)]);
         }
         break;
       }
@@ -1171,18 +1156,31 @@ export class KeuanganChartRenderer extends Component {
       case "Uang Saku Keluar": {
         actionConfig.res_model = "cdn.uang_saku";
         actionConfig.domain = [["amount_out", ">", 0]];
-        if (label) {
-          actionConfig.domain.push([
-            "create_date",
-            ">=",
-            new Date(label).toISOString(),
-          ]);
+        
+        // Gunakan originalDate yang sudah dalam format YYYY-MM-DD
+        if (this.state.chartData.originalDates && this.state.chartData.originalDates[dataPointIndex]) {
+          const originalDate = this.state.chartData.originalDates[dataPointIndex];
+          actionConfig.domain.push(["create_date", ">=", originalDate]);
+          actionConfig.domain.push(["create_date", "<", this.getNextDay(originalDate)]);
         }
         break;
       }
     }
-      this.actionService.doAction(actionConfig);
-    }
+    
+    this.actionService.doAction(actionConfig);
+  }
+
+  // Tambahkan method helper untuk mendapatkan hari berikutnya
+  getNextDay(dateString) {
+      try {
+          const date = new Date(dateString);
+          date.setDate(date.getDate() + 1);
+          return date.toISOString().split('T')[0];
+      } catch (error) {
+          console.error("Error getting next day:", error);
+          return dateString;
+      }
+  }
 
   toggleZoom = () => {
     console.log("Tombol zoom ditekan");
