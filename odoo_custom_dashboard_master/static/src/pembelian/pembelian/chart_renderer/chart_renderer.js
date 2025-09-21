@@ -324,7 +324,7 @@ export class PembelianChartRenderer extends Component {
 
       this.state.datasets = [
         {
-          label: "Total Penugasan",
+          label: "Total",
           data: Object.values(stateCounts).map((item) => item.count),
           backgroundColor: this.state.labels.map((_, index) =>
             this.getDiverseGradientColor(index, this.state.labels.length)
@@ -649,9 +649,9 @@ export class PembelianChartRenderer extends Component {
       console.log("Label Yang di klik :", label);
       let nameHeader;
       if (this.props.title === "pie1") {
-        nameHeader = "Absensi";
+        nameHeader = "Tagihan Pembelian";
       } else if (this.props.title === "pie2") {
-        nameHeader = "Data Penugasan";
+        nameHeader = "Order Pembelian";
       }
       if (
         this.actionService &&

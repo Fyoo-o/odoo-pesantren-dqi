@@ -35,7 +35,7 @@
                                                 <td>
                                                     <t t-esc="product.kelas"/>
                                                 </td>
-                                                 <td>
+                                                 <td style="text-align: right;">
                                                     <t t-esc="product.formatted_saldo"/>
                                                 </td>
                                                 <!-- <td class="text-center">
