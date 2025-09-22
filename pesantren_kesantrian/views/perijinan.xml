@@ -47,7 +47,7 @@
                         <button string="Santri Masuk" type="object" name="action_return" groups="pesantren_kesantrian.group_kesantrian_manager,
                                 pesantren_kesantrian.group_kesantrian_keamanan" invisible="not show_button_santri_masuk"/>
 
-                        <button name="action_save_record" type="object" string="Simpan" class="oe_highlight" groups="pesantren_kesantrian.group_kesantrian_orang_tua" invisible="state != 'Draft'"/>
+                        <button name="action_save_record" type="object" string="Simpan" class="oe_highlight" groups="pesantren_musyrif.group_musyrif_staff" invisible="state != 'Draft'"/>
 
                         <field name="state" widget="statusbar" statusbar_visible="Draft,Check,Approved,Permission,Overdue" />
                     </header>

@@ -225,7 +225,7 @@ class TahfidzQuran(models.Model):
     ayat_awal       = fields.Many2one('cdn.ayat', string='Ayat Awal', states={'done': [('readonly', True)]})
     ayat_awal_name  = fields.Integer(string='Ayat Awal', related='ayat_awal.name', readonly=True)
     ayat_akhir      = fields.Many2one('cdn.ayat', string='Ayat Akhir', states={'done': [('readonly', True)]})
-           = fields.Integer(stjml_barisring='Jumlah Baris', states={'done': [('readonly', True)]})
+    jml_baris       = fields.Integer(string='Jumlah Baris', states={'done': [('readonly', True)]})
     nilai_id        = fields.Many2one('cdn.nilai_tahfidz', string='Nilai', states={'done': [('readonly', True)]})
     keterangan      = fields.Char(string='Keterangan', states={'done': [('readonly', True)]})
     state           = fields.Selection([('draft', 'Draft'),('done', 'Done')], default='draft', string='Status')
