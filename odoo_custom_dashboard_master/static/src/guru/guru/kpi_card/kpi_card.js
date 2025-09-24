@@ -177,10 +177,10 @@ export class GuruKpiCard extends Component {
 
       console.log("🔍 Filtering with:", { startDate, endDate });
 
-      const domainAbsenSiswa = [["kehadiran", "!=", false]]; // Hindari null
-      const domainAbsenTahfidz = [["kehadiran", "!=", false]];
-      const domainAbsenTahsin = [["kehadiran", "!=", false]];
-      const domainAbsenEkskul = [["kehadiran", "!=", false]];
+      const domainAbsenSiswa = [["kehadiran", "!=", false],["absensi_id.guru_id.name", "=", session.partner_display_name]]; // Hindari null
+      const domainAbsenTahfidz = [["kehadiran", "!=", false],["penanggung_jawab_id.name", "=", session.partner_display_name]];
+      const domainAbsenTahsin = [["kehadiran", "!=", false],["penanggung_jawab_id.name", "=", session.partner_display_name]];
+      const domainAbsenEkskul = [["kehadiran", "!=", false],["absen_id.guru.name", "=", session.partner_display_name]];
 
       if (startDate) {
         // Coba ganti ke create_date jika tanggal tidak ada
@@ -198,7 +198,6 @@ export class GuruKpiCard extends Component {
 
       // Debug: Tampilkan domain
       console.log("Domain Absen Siswa:", domainAbsenSiswa);
-
 
       const [absensiSantri = 0, absensiTahfidz = 0, absensiTahsin = 0] = await Promise.all([
         this.orm.call("cdn.absensi_siswa_lines", "search_count", [domainAbsenSiswa]).catch(e => {

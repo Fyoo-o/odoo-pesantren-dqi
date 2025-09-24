@@ -132,12 +132,15 @@
             <field name="view_mode">list,form</field>
             <field name="domain">
                 [
-                ('state', 'in', ['draft', 'done'])
+                    ('state', 'in', ['draft', 'done']),
+                    ('guru_id.user_id', '=', uid)
                 ]
             </field>
         </record>
         <!-- This Menu Item must have a parent and an action -->
+        <!-- <menuitem id="cdn_absensi_siswa_menu_act" name="Absensi Santri"
+            parent="absensi_pengajar" action="cdn_absensi_siswa_action" sequence="10" /> -->
         <menuitem id="cdn_absensi_siswa_menu_act" name="Absensi Santri"
-            parent="absensi_pengajar" action="cdn_absensi_siswa_action" sequence="10" />
+            parent="absensi_pengajar" action="cdn_absensi_siswa_action" sequence="10" groups="pesantren_guru.group_guru_staff"/>
     </data>
 </odoo>

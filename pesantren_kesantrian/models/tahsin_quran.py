@@ -1,5 +1,6 @@
 from odoo import api, fields, models
 from datetime import datetime
+from odoo.exceptions import UserError # type: ignore
 
 class TahsinQuran(models.Model):
     _name           = 'cdn.tahsin_quran'
@@ -59,7 +60,7 @@ class TahsinQuran(models.Model):
         #     raise models.ValidationError('Proses KONFIRMASI harus menyertakan Keterangan Jilid Tahsin dan Nilai-nilainya !')
         # Cek buku tahsin, jilid dan halaman
         if not self.buku_tahsin_id or not self.jilid_tahsin_id or not self.halaman_tahsin:
-            raise models.ValidationError('Proses KONFIRMASI harus menyertakan Buku Tahsin, Jilid dan Halaman !')
+            raise models.UserError('Proses KONFIRMASI harus menyertakan Buku Tahsin, Jilid dan Halaman !')
         self.state = 'done'
     def action_draft(self):
         self.state = 'draft'

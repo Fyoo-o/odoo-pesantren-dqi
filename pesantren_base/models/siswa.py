@@ -211,7 +211,19 @@ class siswa(models.Model):
     bahasa              = fields.Char( string="Bahasa Sehari-hari",  help="")
     hobi                = fields.Many2one(comodel_name='cdn.ref_hobi', string='Hobi')
     cita_cita           = fields.Char(string='Cita-Cita')
-
+    
+    nomor_login         = fields.Char(string="Nomor HP", help="Nomor HP/WhatsApp Untuk Login")
+    password            = fields.Char(string="Kata Sandi", help="Kata Sandi Login")
+    show_password_button = fields.Boolean(compute='_compute_show_password_button')
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('terdaftar', 'Terdaftar'),
+        ('seleksi', 'Seleksi'),
+        ('diterima', 'Diterima'),
+        ('ditolak', 'Ditolak'),
+        ('batal', 'Batal'),
+    ], string='Status', default='draft',
+        track_visibility='onchange')
     status_akun = fields.Selection([
         ('aktif', 'Aktif'),
         ('nonaktif', 'Tidak Aktif'),
@@ -398,7 +410,24 @@ class siswa(models.Model):
     #         partner.write({'barcode_santri': vals['barcode_santri']})
     #     return super(siswa, self).create(vals)
     
-    
+    @api.depends('password')
+    def _compute_show_password_button(self):
+        for rec in self:
+            rec.show_password_button = bool(rec.password)
+
+
+    def action_show_password(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Kata Sandi',
+            'res_model': 'lihat.password.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_password': self.password,
+            }
+        }
 
     def write(self, vals):
         # Update barcode_santri in res.partner on record update

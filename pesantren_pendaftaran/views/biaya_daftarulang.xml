@@ -35,9 +35,9 @@
                             <!--/button-->
                         </div>
                         <div class="oe_title">
-                            <label for="name" class="oe_edit_only" string="Biaya daftarulang Name" />
+                            <label for="name" class="oe_edit_only" string="Nama Biaya Per Tahun Ajaran" />
                             <h1>
-                                <field name="name" />
+                                <field name="name"/>
                             </h1>
                         </div>
                         <group>
@@ -64,7 +64,7 @@
             <field name="name">ubig_biaya_daftarulang</field>
             <field name="model">ubig.biaya_daftarulang</field>
             <field name="arch" type="xml">
-                <search string="Biaya daftarulang">
+                <search string="Biaya daftar ulang">
 
                     <filter string="Name" name="filter_by_name" domain="[('name','=','')]" />
                     <field name="name" select="True" />
@@ -90,10 +90,10 @@
             <field name="context">{"search_default_group_by_daftarulang_id":1}</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
-                    Click to add a new Biaya daftarulang
+                    Click to add a new Biaya daftar ulang
                 </p>
                 <p>
-                    Click the Create button to add a new Biaya daftarulang
+                    Click the Create button to add a new Biaya daftar ulang
                 </p>
             </field>
         </record>

@@ -818,7 +818,7 @@
         }
 
         //   console.log("Date Domain:", dateDomain);
-        domainLunas.push(["payment_state", "=", "not_paid"]);
+        domainLunas.push(["payment_state", "in", [ "posted", "not_paid", "partial"]]);
         domainLunas.push(["move_type", "=", "out_invoice"]);
         domainLunas.push(["state", "!=", "cancel"]);
 

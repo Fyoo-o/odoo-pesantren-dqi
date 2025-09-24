@@ -1124,10 +1124,22 @@ export class KeuanganChartRenderer extends Component {
         }
 
         // Tambahkan filter sesuai status chart
+        // if (seriesName === "Lunas") {
+        //   domain.push(["parent_state", "=", "posted"]);
+        // } else if (seriesName === "Belum Lunas") {
+        //   domain.push(["parent_state", "not in", ["posted", "cancel"]]);
+        // } else if (seriesName === "Dibayar") {
+        //   domain.push(["credit", ">", 0]);
+        //   domain.push(["parent_state", "=", "posted"]);
+        // } else if (seriesName === "Belum Bayar") {
+        //   domain.push(["credit", ">", 0]);
+        //   domain.push(["parent_state", "not in", ["posted", "cancel"]]);
+        // }
+        
         if (seriesName === "Lunas") {
-          domain.push(["parent_state", "=", "posted"]);
+          domain.push(["parent_state", "=", "cancel"]);
         } else if (seriesName === "Belum Lunas") {
-          domain.push(["parent_state", "not in", ["posted", "cancel"]]);
+          domain.push(["parent_state", "=", "cancel"]);
         } else if (seriesName === "Dibayar") {
           domain.push(["credit", ">", 0]);
           domain.push(["parent_state", "=", "posted"]);

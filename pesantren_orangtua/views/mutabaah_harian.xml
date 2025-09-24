@@ -11,7 +11,7 @@
             <field name="domain">
             [
                 ('siswa_id.orangtua_id.partner_id.user_id','=',uid),
-                ('state','=','done')
+                ('state','=','Done')
             ]
             </field>
         </record>

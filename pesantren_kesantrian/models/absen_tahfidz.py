@@ -1,6 +1,6 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from datetime import date, datetime
-
+from odoo.exceptions import UserError
 class AbsenTahfidzQuran(models.Model):
     _name           = 'cdn.absen_tahfidz_quran'
     _description    = 'Model Absen Tahfidz Quran'
@@ -8,34 +8,54 @@ class AbsenTahfidzQuran(models.Model):
     #get domain 
     def _domain_halaqoh_id(self):
         tahun_ajaran = self.env.user.company_id.tahun_ajaran_aktif.id
+        user = self.env.user
 
         # Jika user adalah Manager Kesantrian -> lihat semua halaqoh di tahun ajaran aktif
         if self.env.user.has_group('pesantren_kesantrian.group_kesantrian_manager'):
             return [
                 ('fiscalyear_id', '=', tahun_ajaran)
             ]
+    # Cari employee dari user
+        employee = self.env['hr.employee'].search([('user_id', '=', user.id)], limit=1)
 
-        # Jika bukan manager -> halaqoh di tahun ajaran aktif yang user ini sebagai pengganti
-        return [
-            ('fiscalyear_id', '=', tahun_ajaran),
-        ]
+        if employee:
+            # Guru Qur’an: hanya halaqoh yang dia pegang atau dia jadi pengganti
+            return [
+                ('fiscalyear_id', '=', tahun_ajaran),
+                '|',
+                ('penanggung_jawab_id', '=', employee.id),
+                ('pengganti_ids', 'in', [employee.id])
+            ]
+
+        # Jika user bukan guru dan tidak punya employee
+        return [('id', '=', 0)]
+
 
     def _get_domain_guru(self):
+        tahun_ajaran = self.env.user.company_id.tahun_ajaran_aktif.id
+        user = self.env.user
+        if self.env.user.has_group('pesantren_kesantrian.group_kesantrian_manager'):
+            return [
+                ('fiscalyear_id', '=', tahun_ajaran)
+            ]
+
+
+        employee = self.env['hr.employee'].search([('user_id', '=', user.id)], limit=1)
+
+
+
         return [
-            ('jns_pegawai', '=', 'guru')
+            ('jns_pegawai', '=', 'guruquran')
         ]
 
     def _get_default_guru(self):
         user = self.env.user
-        if user.has_group('pesantren_guru.group_guru_staff'):
-            user = self.env['hr.employee'].search([('user_id', '=', user.id)])  
-            return user.id
-        return False
-
+        employee = self.env['hr.employee'].search([('user_id', '=', user.id)], limit=1)
+        return employee.id if employee else False
 
     name            = fields.Date(string='Tgl Absen', required=True, default=fields.Date.context_today, states={'Done': [('readonly', True)]})
     halaqoh_id      = fields.Many2one('cdn.halaqoh', string='Halaqoh', required=True, domain=_domain_halaqoh_id, states={'Done': [('readonly', True)]})
-    ustadz_id       = fields.Many2one('hr.employee', string='Ustadz', required=True, domain=_get_domain_guru, states={'Done': [('readonly', True)]}, default=_get_default_guru)
+    ustadz_id       = fields.Many2one('hr.employee', string='Ustadz', required=True, domain=_get_domain_guru, states={'Done': [('readonly', True)]}, default=_get_default_guru, readonly=True)
     fiscalyear_id   = fields.Many2one('cdn.ref_tahunajaran', string='Tahun Ajaran',readonly=True, default=lambda self:self.env.user.company_id.tahun_ajaran_aktif.id, states={'Done': [('readonly', True)]})
     sesi_id         = fields.Many2one('cdn.sesi_tahfidz', string='Sesi', required=True, states={'Done': [('readonly', True)]})
     keterangan      = fields.Text(string='Keterangan', states={'Done': [('readonly', True)]})
@@ -143,9 +163,9 @@ class AbsenTahfidzQuran(models.Model):
     def default_get(self, fields_tree):
         tahun_ajaran = self.env['res.company'].search([('id', '=', self.env.ref('base.main_company').id)]).tahun_ajaran_aktif.id
         if not tahun_ajaran:
-            raise models.ValidationError('Tahun ajaran belum di set')
+            raise UserError(_('Tahun ajaran belum di set'))
         return super().default_get(fields_tree)
-    
+        
     
     # @api.model
     # def _search(self, domain, offset=0, limit=None, order=None, count=False):
