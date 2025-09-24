@@ -24,7 +24,7 @@ class BiayaPendidikan(models.Model):
     def create(self, vals):
         if self.search([('name', '=', vals.get('name')), ('jenjang', '=', vals.get('jenjang'))]):
             raise UserError('Nama jenjang dengan kombinasi yang sama sudah ada!')
-        return super(Konfigurasi, self).create(vals)
+        return super(BiayaPendidikan, self).create(vals)
 
     def write(self, vals):
         name = vals.get('name', self.name)
@@ -32,8 +32,8 @@ class BiayaPendidikan(models.Model):
         domain = [('name', '=', name), ('jenjang', '=', jenjang), ('id', '!=', self.id)]
         if self.search(domain):
             raise UserError('Nama jenjang dengan kombinasi yang sama sudah ada!')
-        return super(Konfigurasi, self).write(vals)
-    
+        return super(BiayaPendidikan, self).write(vals)
+
     # Action untuk mengubah status ke 'konfirm'
     def konfirmasi(self):
         for record in self:

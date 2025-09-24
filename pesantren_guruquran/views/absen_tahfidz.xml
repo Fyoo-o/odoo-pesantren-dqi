@@ -39,7 +39,7 @@
             <field name="view_mode">list,form</field>
             <field name="view_id" ref="pesantren_kesantrian.cdn_absen_tahfidz_quran_view_tree" />
             <field name="domain">
-                []  
+                [('penanggung_jawab_id.user_id', '=', uid)]  
             </field>
         </record>
         <record id="action_tree_view_cdn_absen_tahfidz" model="ir.actions.act_window.view">
@@ -55,6 +55,7 @@
             <field name="act_window_id" ref="cdn_absen_tahfidz_action" />
         </record>
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="cdn_absen_tahfidz_menu_act" name="Absensi Tahfidz" parent="pesantren_guru.absensi_pengajar" action="cdn_absen_tahfidz_action" sequence="10"/>
+        <!-- <menuitem id="cdn_absen_tahfidz_menu_act" name="Absensi Tahfidz" parent="pesantren_guru.absensi_pengajar" action="cdn_absen_tahfidz_action" sequence="10"/> -->
+        <menuitem id="cdn_absen_tahfidz_menu_act" name="Absensi Tahfidz" parent="pesantren_guru.absensi_pengajar" action="cdn_absen_tahfidz_action" sequence="10" groups="pesantren_guruquran.group_guru_quran_staff" />
     </data>
 </odoo>

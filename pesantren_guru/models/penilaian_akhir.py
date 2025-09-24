@@ -28,19 +28,27 @@ class PenilaianAkhir(models.Model):
             if term.term_start_date <= today and term.term_end_date >= today:
                 return term.name.split(' ')[1]
     # domain
-    def _get_domain_siswa(self):
-    # Cari dulu employee (guru) yang login
-        guru = self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1)
-        if not guru:
-            return [('id', '=', False)]
+    # def _get_domain_siswa(self):
+    # # Cari dulu employee (guru) yang login
+    #     guru = self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1)
+    #     if not guru:
+    #         return [('id', '=', False)]
 
-        # Cari ruang kelas yang dia walikan
-        ruang_kelas = self.env['cdn.ruang_kelas'].search([('walikelas_id', '=', guru.id)], limit=1)
-        if ruang_kelas:
-            return [('id', 'in', ruang_kelas.siswa_ids.ids)]
-        else:
-            # Jika tidak jadi wali kelas, tidak boleh input apa-apa
-            return [('id', '=', False)]
+    #     # Cari ruang kelas yang dia walikan
+    #     ruang_kelas = self.env['cdn.ruang_kelas'].search([('walikelas_id', '=', guru.id)], limit=1)
+    #     if ruang_kelas:
+    #         return [('id', 'in', ruang_kelas.siswa_ids.ids)]
+    #     else:
+    #         # Jika tidak jadi wali kelas, tidak boleh input apa-apa
+    #         return [('id', '=', False)]
+    def _get_domain_siswa(self):
+        if self.env.user.has_group('pesantren_guru.group_guru_manager'):
+            return [('id','!=',False)]
+        elif self.env.user.has_group('pesantren_guru.group_guru_staff'):
+            guru = self.env['hr.employee'].search([('user_id','=',self.env.uid)]).id
+            ruang_kelas = self.env['cdn.ruang_kelas'].search([('walikelas_id', '=', guru)])
+            return [('id','in',ruang_kelas.siswa_ids.ids)]
+        return [('id','=',False)]
     def _get_domain_walikelas(self):
         domain = [('jns_pegawai','=','guru')]
         if self.env.user.has_group('pesantren_guru.group_guru_manager'):
@@ -139,12 +147,12 @@ class PenilaianAkhirLines(models.Model):
 
     penilaianakhir_id   = fields.Many2one('cdn.penilaian_akhir', string='penilaian_akhir')
     penilaianguru_id    = fields.Many2one('cdn.penilaian_akhir_guru', string='penilaian_akhir_guru', ondelete='cascade')
-    tahunajaran_id      = fields.Many2one('cdn.ref_tahunajaran', string='Tahun Ajaran')
-    semester            = fields.Selection(string='Semester', selection=[
+    tahunajaran_id      = fields.Many2one('cdn.ref_tahunajaran', related="penilaianguru_id.tahunajaran_id", string='Tahun Ajaran', store=True)
+    semester            = fields.Selection(string='Semester', related="penilaianguru_id.semester", selection=[
                         ('1', 'Semester 1'), 
-                        ('2', 'Semester 2'),])
+                        ('2', 'Semester 2'),], store=True)
     siswa_id            = fields.Many2one('cdn.siswa', string='Siswa')
-    mapel_id            = fields.Many2one('cdn.mata_pelajaran', string='Mata Pelajaran')
+    mapel_id            = fields.Many2one('cdn.mata_pelajaran', related="penilaianguru_id.mapel_id", string='Mata Pelajaran', store=True)
     nilai1              = fields.Float(string='Nilai')
     predikat1           = fields.Char(string='Predikat')
     nilai2              = fields.Float(string='Nilai')
@@ -155,6 +163,7 @@ class PenilaianAkhirLines(models.Model):
     aspek4              = fields.Char(string='Aspek 4')
     aspek5              = fields.Char(string='Aspek 5')
     aspek6              = fields.Char(string='Aspek 6')
+
 
     @api.onchange('nilai1','nilai2')
     def _onchange_nilai1(self):

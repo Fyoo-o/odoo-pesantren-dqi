@@ -205,6 +205,41 @@
                                     </group>
                                 </group>
                             </page>
+                            <page string="Akun">
+                                    <group string="Akun Login" class="o_group">
+                                        <group>
+                                            <field name="email" readonly="state in 'diterima,ditolak,batal'" />
+                                        </group>
+
+                                        <group>
+                                            <field name="nomor_login" readonly="state in 'diterima,ditolak,batal'" />
+                                        </group>
+
+                                        <group>
+                                            <div class="o_form_field o_row">
+                                                <label for="password" string="Kata Sandi"/>
+                                                <field name="password" password="True" class="o_col"/>
+                                                <button name="action_show_password" type="object" string="👁️" class="btn btn-secondary o_col"
+                                                        invisible="not show_password_button"/>
+                                            </div>    
+                                        </group>
+
+                                      
+                                        <!-- <label for="password" string="Kata sandi"/>
+                                         <div class="o_row">
+                                                <field name="password" password="True" readonly="state in 'diterima,ditolak,batal'" />
+                                                <i class="fa fa-eye toggle-password" style="cursor: pointer;" title="Tampilkan/Sembunyikan Password"/>
+                                        </div> -->
+
+                                        <!-- <div class="o_input_group">
+                                            <field name="password" password="True" readonly="state in 'diterima,ditolak,batal'" />
+                                            <span class="o_input_icon position-absolute end-0 top-50 translate-middle-y pe-2">
+                                                <i class="fa fa-eye toggle-password" style="cursor: pointer;" title="Tampilkan/Sembunyikan Password"/>
+                                            </span>
+                                        </div> -->
+
+                                    </group>
+                                </page>
                             <page name="harga_khusus" string="Harga Khusus">
                                 <group>
                                     <field name="bebasbiaya"/>
@@ -237,13 +272,13 @@
                             </page>
                         </notebook>
                     </sheet>
-                    <!-- <div class="oe_chatter" groups="pesantren_base.group_sekolah_manager">
+                    <div class="oe_chatter" groups="pesantren_base.group_sekolah_manager">
                         <chatter>
                             <field name="message_follower_ids" widget="mail_followers" />
                             <field name="activity_ids" widget="mail_activity" />
                             <field name="message_ids" widget="mail_thread" options="{'display_log_button': True}"/>
                         </chatter>
-                    </div> -->
+                    </div>
                 </form>
             </field>
         </record>

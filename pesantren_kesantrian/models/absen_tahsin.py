@@ -6,15 +6,33 @@ class AbsenTahsinQuran(models.Model):
     _description    = 'Tabel Absen Tahsin Quran'
 
     #get domain 
-    def _get_halaqoh(self):
+    def _domain_halaqoh_id(self):
         tahun_ajaran = self.env.user.company_id.tahun_ajaran_aktif.id
-        return [
-            ('fiscalyear_id', '=', tahun_ajaran)
-        ]
+        user = self.env.user
+
+        # Jika user adalah Manager Kesantrian -> lihat semua halaqoh di tahun ajaran aktif
+        if self.env.user.has_group('pesantren_kesantrian.group_kesantrian_manager'):
+            return [
+                ('fiscalyear_id', '=', tahun_ajaran)
+            ]
+    # Cari employee dari user
+        employee = self.env['hr.employee'].search([('user_id', '=', user.id)], limit=1)
+
+        if employee:
+            # Guru Qur’an: hanya halaqoh yang dia pegang atau dia jadi pengganti
+            return [
+                ('fiscalyear_id', '=', tahun_ajaran),
+                '|',
+                ('penanggung_jawab_id', '=', employee.id),
+                ('pengganti_ids', 'in', [employee.id])
+            ]
+
+        # Jika user bukan guru dan tidak punya employee
+        return [('id', '=', 0)]
 
     def _get_domain_guru(self):
         return [
-            ('jns_pegawai', '=', 'guru')
+            ('jns_pegawai', '=', 'guruquran')
         ]
 
     def _get_default_guru(self):
@@ -26,7 +44,7 @@ class AbsenTahsinQuran(models.Model):
 
 
     name            = fields.Date(string='Tgl Absen', required=True, default=fields.Date.context_today, states={'Done': [('readonly', True)]})
-    halaqoh_id      = fields.Many2one('cdn.halaqoh', string='Halaqoh', required=True, domain=_get_halaqoh, states={'Done': [('readonly', True)]})
+    halaqoh_id      = fields.Many2one('cdn.halaqoh', string='Halaqoh', required=True, domain=_domain_halaqoh_id, states={'Done': [('readonly', True)]})
     ustadz_id       = fields.Many2one('hr.employee', string='Ustadz',domain=_get_domain_guru , default=_get_default_guru ,required=True, states={'Done': [('readonly', True)]})
     fiscalyear_id   = fields.Many2one('cdn.ref_tahunajaran', string='Tahun Ajaran',readonly=True, default=lambda self:self.env.user.company_id.tahun_ajaran_aktif.id, states={'Done': [('readonly', True)]})
     absen_ids       = fields.One2many('cdn.absen_tahsin_quran_line', 'absen_id', string='Absen', states={'Done': [('readonly', True)]})

@@ -18,9 +18,9 @@
 		<menuitem id="absensi_menu_categ" name="Absensi" parent="sekolah_top_menu" sequence="30"/>
 		
 		<!-- Kategori Aktivitas -->
-        <menuitem id="tu_aktivitas" name="Aktivitas" parent="sekolah_top_menu" sequence="50"/>
-        <menuitem id="tu_aktivitas_tagihan" name="Keuangan Santri" parent="tu_aktivitas" sequence="10"/>
-		<menuitem id="tu_aktivitas_akademik" name="Akademik" parent="tu_aktivitas" sequence="20"/>
+        <!-- <menuitem id="tu_aktivitas" name="Aktivitas" parent="sekolah_top_menu" sequence="50"/> -->
+        <!-- <menuitem id="tu_aktivitas_tagihan" name="Keuangan Santri" parent="tu_aktivitas" sequence="10"/>
+		<menuitem id="tu_aktivitas_akademik" name="Akademik" parent="tu_aktivitas" sequence="20"/> -->
 		<menuitem id="tu_opkilang" name="Ekskul" parent="pengaturan_akademik_menu_categ" sequence="65"/>
 	</data>
 </odoo>

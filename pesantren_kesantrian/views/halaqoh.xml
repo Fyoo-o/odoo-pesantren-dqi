@@ -34,8 +34,11 @@
 
                             <group>
                                 <field name="name" readonly="status ==  'konfirm'"/>
-                                <field name="penanggung_jawab_id" domain="[('jns_pegawai', 'in', ['guruquran'])]"
-                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="status == 'konfirm'"/>
+                                <field name="penanggung_jawab_id" domain="[
+                                        ('id','!=',penanggung_jawab_id),
+                                        ('jns_pegawai', 'in', ['guruquran','musyrif'])
+                                    ]"
+                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="status == 'konfirm'"/>/>
                                 <field name="pengganti_ids" widget="many2many_tags"
                                     domain="[
                                         ('id','!=',penanggung_jawab_id),

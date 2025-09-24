@@ -230,10 +230,12 @@ export class GuruChartRenderer extends Component {
 
       domain1.push(["tanggal", ">=", startDate]);
       domain1.push(["tanggal", "<=", endDate]);
+      domain1.push(["absensi_id.guru_id.name", "=", session.partner_display_name]);
       // domain1.push(["guru_id", "=", session.partner_display_name]);
-      domain3.push(["guru_id", "=", session.partner_display_name]);
+      // domain3.push(["guru_id", "=", session.partner_display_name]);
       domain2.push(["tanggal", ">=", startDate]);
       domain2.push(["tanggal", "<=", endDate]);
+      domain2.push(["absen_id.penanggung_jawab_id.name", "=", session.partner_display_name]);
       // domain2.push([
       //   "penanggung_jawab_id",
       //   "ilike",

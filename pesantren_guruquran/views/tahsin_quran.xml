@@ -35,7 +35,7 @@
             <field name="view_id" ref="pesantren_kesantrian.cdn_tahsin_view_tree" />
             <field name="domain">
                 [
-                
+                ('penanggung_jawab_id.user_id', '=', uid)
                 ]
             </field>
         </record>

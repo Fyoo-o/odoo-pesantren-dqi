@@ -25,3 +25,13 @@ class PembagianEkstra(models.Model) :
     #         ekskul = rec.name.name if rec.name else 'Belum Ada Nama'
     #         # penanggung = rec.penanggung_id.name if rec.penanggung_id else 'Tanpa Penanggung'
     #         rec.display_name = f"{ekskul}"
+
+    @api.model
+    def write(self, vals):
+        record = super().write(vals)
+        for rec in self:
+            if rec.siswa_ids and rec.name:
+                rec.siswa_ids.write({
+                    'ekstrakulikuler_ids': [(4, rec.name.id)]
+                })
+        return record

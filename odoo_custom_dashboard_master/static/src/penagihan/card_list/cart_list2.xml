@@ -37,6 +37,8 @@
                                                 </td>
                                                 <td>
                                                     <span t-if="lunas.state == 'not_paid'" class="badge rounded-pill bg-danger text-light">Belum Lunas</span>
+                                                    <span t-if="lunas.state == 'partial'" class="badge rounded-pill bg-warning text-light">Sebagian Lunas</span>
+                                                    <span t-if="lunas.state == 'posted'" class="badge rounded-pill bg-info text-light">Belum Dibayar</span>
                                                 </td>
                                             </tr>
                                         </t>
