@@ -47,7 +47,7 @@
     'license': 'LGPL-3',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','pesantren_base','stock','pesantren_kesantrian','sale', 'purchase','pesantren_keuangan','pesantren_pendaftaran' ,'mail'],
+    'depends': ['base','pesantren_base','stock','pesantren_kesantrian','sale', 'purchase','pesantren_keuangan', 'pesantren_guruquran','pesantren_pendaftaran' ,'mail'],
 
     # always loaded
     'data': [
@@ -69,11 +69,13 @@
         'views/tahsin_quran.xml',
         'views/mutabaah_harian.xml',
         'views/pelanggaran.xml',
+        'views/penilaian_santri.xml',
         'views/kesehatan.xml',
         'views/prestasi_siswa.xml',
         'views/pengumuman.xml',
         'views/siswa.xml',
         'views/orangtua.xml',
+        'views/absen_malam.xml',
         'views/temp.xml',
         'views/inherit_button_pay.xml',
         'views/invoices_wizard.xml',

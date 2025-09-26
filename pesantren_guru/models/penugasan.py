@@ -8,7 +8,7 @@ class Penugasan(models.Model):
 
 
   def _domain_guru(self):
-      domain = ['&',('jns_pegawai','=','guru')]
+      domain = ['&',('jns_pegawai','in',['guru','guru,guruquran'])]
       if self.env.user.has_group('pesantren_guru.group_guru_manager'):
           domain.append(('id','!=',False))
       elif self.env.user.has_group('pesantren_guru.group_guru_staff'):
@@ -37,7 +37,7 @@ class Penugasan(models.Model):
         domain=_domain_guru,
         default=lambda self: self.env['hr.employee'].search([
             ('user_id', '=', self.env.uid),
-            ('jns_pegawai', '=', 'guru')
+            ('jns_pegawai', 'in', ['guru','guru,guruquran'])
         ], limit=1)
     )
   # jadwal_pelajaran_lines_ids = fields.Many2many(comodel_name='cdn.jadwal_pelajaran_lines', string='Jadwal Pelajaran Lines')

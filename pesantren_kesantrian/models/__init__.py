@@ -19,3 +19,4 @@ from . import absen_tahsin
 from . import tahsin_quran
 from . import res_users
 from . import keterangan
+from . import absen_malam

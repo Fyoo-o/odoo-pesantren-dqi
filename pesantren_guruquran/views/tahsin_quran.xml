@@ -33,11 +33,12 @@
             <field name="res_model">cdn.tahsin_quran</field>
             <field name="view_mode">list,form,graph,calendar</field>
             <field name="view_id" ref="pesantren_kesantrian.cdn_tahsin_view_tree" />
-            <field name="domain">
+            <!-- <field name="domain">
                 [
                 ('penanggung_jawab_id.user_id', '=', uid)
                 ]
-            </field>
+            </field> -->
+            <field name="domain" eval="[]"/>
         </record>
         <record id="action_tree_view_cdn_tahsin" model="ir.actions.act_window.view">
             <field name="sequence" eval="2" />

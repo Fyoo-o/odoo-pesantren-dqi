@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Action untuk Penilaian Santri (Orang Tua hanya lihat) -->
+        <record id="cdn_penilaian_santri_action_orangtua" model="ir.actions.act_window">
+            <field name="name">Penilaian Santri</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">cdn.penilaian_santri</field>
+            <field name="view_mode">list,form</field>
+            
+            <!-- pakai tree view dari modul guru quran -->
+            <field name="view_id" ref="pesantren_guruquran.cdn_penilaian_santri_view_tree"/>
+
+            <!-- filter data hanya untuk anak dari user login -->
+            <field name="domain">
+            [
+                ('penilaian_santri_ids.santri_id.orangtua_id.partner_id.user_id','=',uid),
+                ('state','=','done')
+            ]
+            </field>
+        </record>
+
+        <!-- Tree View link ke action -->
+        <record id="action_tree_view_cdn_penilaian_santri_orangtua" model="ir.actions.act_window.view">
+            <field name="sequence" eval="2"/>
+            <field name="view_mode">list</field>
+            <field name="view_id" ref="pesantren_guruquran.cdn_penilaian_santri_view_tree"/>
+            <field name="act_window_id" ref="cdn_penilaian_santri_action_orangtua"/>
+        </record>
+
+        <!-- Form View link ke action -->
+        <record id="action_form_view_cdn_penilaian_santri_orangtua" model="ir.actions.act_window.view">
+            <field name="sequence" eval="3"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="pesantren_guruquran.cdn_penilaian_santri_view_form"/>
+            <field name="act_window_id" ref="cdn_penilaian_santri_action_orangtua"/>
+        </record>
+          <!-- <menuitem id="cdn_penilaian_santri_menu_orangtua" name="Penilaian Santri" parent="aktivitas_menu_categ" action="cdn_penilaian_santri_action_orangtua" sequence="20"/> -->
+
+        <!-- Menu di bawah menu Orang Tua -->
+        <menuitem id="cdn_penilaian_santri_menu_orangtua"
+                  name="Penilaian Santri"
+                  parent="aktivitas_menu_categ"
+                  action="cdn_penilaian_santri_action_orangtua"
+                  sequence="5"/>
+    </data>
+</odoo>

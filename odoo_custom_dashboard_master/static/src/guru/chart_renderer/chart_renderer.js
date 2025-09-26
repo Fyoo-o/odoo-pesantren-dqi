@@ -230,36 +230,38 @@ export class GuruChartRenderer extends Component {
 
       domain1.push(["tanggal", ">=", startDate]);
       domain1.push(["tanggal", "<=", endDate]);
-      domain1.push(["absensi_id.guru_id.name", "=", session.partner_display_name]);
+      // domain1.push(["absensi_id.guru_id.name", "=", session.partner_display_name]);
       // domain1.push(["guru_id", "=", session.partner_display_name]);
       // domain3.push(["guru_id", "=", session.partner_display_name]);
       domain2.push(["tanggal", ">=", startDate]);
       domain2.push(["tanggal", "<=", endDate]);
-      domain2.push(["absen_id.penanggung_jawab_id.name", "=", session.partner_display_name]);
+      // domain2.push(["absen_id.penanggung_jawab_id.name", "=", session.partner_display_name]);
       // domain2.push([
       //   "penanggung_jawab_id",
       //   "ilike",
       //   session.partner_display_name,
       // ]);
 
-      pie1 = await this.orm.call("cdn.absensi_siswa_lines", "search_read", [
-        domain1,
-        ["id", "kelas_id", "tanggal", "guru", "kehadiran"],
-      ]);
+      pie1 = await this.orm.call(
+        "cdn.absensi_siswa_lines",
+        "search_read",
+        [domain1, ["id", "kelas_id", "tanggal", "guru", "kehadiran"]],
+        { context: this.env.context }
+    );
 
       pie2 = await this.orm.call(
         "cdn.absen_tahfidz_quran_line",
         "search_read",
-        [
-          domain2,
-          ["name", "halaqoh_id", "tanggal", "kehadiran"],
-        ]
+        [domain2, ["name", "halaqoh_id", "tanggal", "kehadiran"]],
+        { context: this.env.context }
       );
 
-      pie3 = await this.orm.call("cdn.absen_tahsin_quran_line", "search_read", [
-        domain2,
-        ["name", "halaqoh_id", "tanggal", "kehadiran"],
-      ]);
+      pie3 = await this.orm.call(
+        "cdn.absen_tahsin_quran_line",
+        "search_read",
+        [domain2, ["name", "halaqoh_id", "tanggal", "kehadiran"]],
+        { context: this.env.context }
+      );
 
       await this.processData(pie1, pie2, pie3);
     } catch (error) {
@@ -654,7 +656,7 @@ export class GuruChartRenderer extends Component {
 
       let nameHeader;
       if (this.props.title === "pie1") {
-        nameHeader = "Absensi Santri";
+        nameHeader = "Absensi Siswa";
       } else if (this.props.title === "pie2") {
         nameHeader = "Absensi Tahfidz";
       } else if (this.props.title === "pie3") {

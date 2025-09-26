@@ -50,7 +50,7 @@ class PenilaianAkhir(models.Model):
             return [('id','in',ruang_kelas.siswa_ids.ids)]
         return [('id','=',False)]
     def _get_domain_walikelas(self):
-        domain = [('jns_pegawai','=','guru')]
+        domain = [('jns_pegawai','in',['guru','guru,guruquran'])]
         if self.env.user.has_group('pesantren_guru.group_guru_manager'):
             domain.append(('id','!=',False))
         elif self.env.user.has_group('pesantren_guru.group_guru_staff'):
@@ -79,8 +79,9 @@ class PenilaianAkhir(models.Model):
     comodel_name='hr.employee',
     string='Wali Kelas',
     required=True,
+    domain=_get_domain_walikelas,
     default=_get_default_walikelas,
-    readonly=True  # Opsional: agar tidak bisa digant   i   
+    readonly=True  # Opsional: agar tidak bisa diganti
     )
     
     penilaianakhir_ids  = fields.One2many('cdn.penilaian_akhir_lines', 'penilaianakhir_id', string='Nilai Raport', domain=[('penilaianguru_id.state', '=', 'confirm')])

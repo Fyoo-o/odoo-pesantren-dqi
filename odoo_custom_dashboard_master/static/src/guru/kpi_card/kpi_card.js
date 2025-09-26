@@ -177,10 +177,14 @@ export class GuruKpiCard extends Component {
 
       console.log("🔍 Filtering with:", { startDate, endDate });
 
-      const domainAbsenSiswa = [["kehadiran", "!=", false],["absensi_id.guru_id.name", "=", session.partner_display_name]]; // Hindari null
-      const domainAbsenTahfidz = [["kehadiran", "!=", false],["penanggung_jawab_id.name", "=", session.partner_display_name]];
-      const domainAbsenTahsin = [["kehadiran", "!=", false],["penanggung_jawab_id.name", "=", session.partner_display_name]];
-      const domainAbsenEkskul = [["kehadiran", "!=", false],["absen_id.guru.name", "=", session.partner_display_name]];
+      // const domainAbsenSiswa = [["kehadiran", "!=", false],["absensi_id.guru_id.name", "=", session.partner_display_name]]; // Hindari null
+      const domainAbsenSiswa = [["kehadiran", "!=", false]];
+      // const domainAbsenTahfidz = [["kehadiran", "!=", false],["penanggung_jawab_id.name", "=", session.partner_display_name]];
+      const domainAbsenTahfidz = [["kehadiran", "!=", false]];
+      // const domainAbsenTahsin = [["kehadiran", "!=", false],["penanggung_jawab_id.name", "=", session.partner_display_name]];
+      const domainAbsenTahsin = [["kehadiran", "!=", false]];
+      // const domainAbsenEkskul = [["kehadiran", "!=", false],["absen_id.guru.name", "=", session.partner_display_name]];
+      const domainAbsenEkskul = [["kehadiran", "!=", false]];
 
       if (startDate) {
         // Coba ganti ke create_date jika tanggal tidak ada
@@ -199,56 +203,87 @@ export class GuruKpiCard extends Component {
       // Debug: Tampilkan domain
       console.log("Domain Absen Siswa:", domainAbsenSiswa);
 
-      const [absensiSantri = 0, absensiTahfidz = 0, absensiTahsin = 0] = await Promise.all([
-        this.orm.call("cdn.absensi_siswa_lines", "search_count", [domainAbsenSiswa]).catch(e => {
-          console.error("Error count absensi_siswa_lines:", e);
-          return 0;
-        }),
-        this.orm.call("cdn.absen_tahfidz_quran_line", "search_count", [domainAbsenTahfidz]).catch(e => {
-          console.error("Error count absen_tahfidz_quran_line:", e);
-          return 0;
-        }),
-        this.orm.call("cdn.absen_tahsin_quran_line", "search_count", [domainAbsenTahsin]).catch(e => {
-          console.error("Error count absen_tahsin_quran_line:", e);
-          return 0;
-        }),
-      ]);
-      const absensiEkskul = await this.orm.call(
-        "cdn.absen_ekskul_line",
-        "search_count",
-        [domainAbsenEkskul]
-      );
+      let absensiSiswa = [], absensiTahfidz = [], absensiTahsin = [], absensiEkskul = [];
 
-      console.log("✅ Hasil count:", { absensiSantri, absensiTahfidz, absensiTahsin, absensiEkskul });
+      try {
+        absensiSiswa = await this.orm.call(
+          "cdn.absensi_siswa_lines",
+          "search_read",
+          [domainAbsenSiswa,['id','absensi_id', 'siswa_id', 'kehadiran', 'create_date']],
+          { context: this.env.context }
+        );
+      } catch (e) {
+        console.error("Error count absensi_siswa_lines:", e);
+      }
+
+      try {
+        absensiTahfidz = await this.orm.call(
+          "cdn.absen_tahfidz_quran_line",
+          "search_read",
+          [domainAbsenTahfidz,['id','absen_id', 'siswa_id', 'kehadiran', 'create_date']],
+          { context: this.env.context }
+        );
+      } catch (e) {
+        console.error("Error count absen_tahfidz_quran_line:", e);
+      }
+
+      try {
+        absensiTahsin = await this.orm.call(
+          "cdn.absen_tahsin_quran_line",
+          "search_read",
+          [domainAbsenTahsin,['id','absen_id', 'siswa_id', 'kehadiran', 'create_date']],
+          { context: this.env.context }
+        );
+      } catch (e) {
+        console.error("Error count absen_tahsin_quran_line:", e);
+      }
+
+      try {
+        absensiEkskul = await this.orm.call(
+          "cdn.absen_ekskul_line",
+          "search_read",
+          [domainAbsenEkskul,['id','absen_id', 'siswa_id', 'kehadiran', 'create_date']],
+          { context: this.env.context }
+        );
+      } catch (e) {
+        console.error("Error count absen_ekskul_line:", e);
+      }
+
+      const totalAbsenSiswa = absensiSiswa?.length || 0;
+      const totalAbsenTahfidz = absensiTahfidz?.length || 0;
+      const totalAbsenTahsin = absensiTahsin?.length || 0;
+      const totalAbsenEkskul = absensiEkskul?.length || 0;
+
+      console.log("✅ Hasil count:", { totalAbsenSiswa, totalAbsenTahfidz, totalAbsenTahsin, totalAbsenEkskul });
 
       this.state.kpiData = [
         {
           name: "Absen Siswa",
-          value: absensiSantri,
+          value: totalAbsenSiswa,
           icon: "fa-user-check",
           res_model: "cdn.absensi_siswa_lines",
-          domain: domainAbsenSiswa,
+          domain: [],
         },
         {
           name: "Absen Tahfidz",
-          value: absensiTahfidz,
+          value: totalAbsenTahfidz,
           icon: "fa-quran",
           res_model: "cdn.absen_tahfidz_quran_line",
-          domain: domainAbsenTahfidz,
+          domain: [],
         },
         {
           name: "Absen Tahsin",
-          value: absensiTahsin,
+          value: totalAbsenTahsin,
           icon: "fa-book",
           res_model: "cdn.absen_tahsin_quran_line",
-          domain: domainAbsenTahsin,
+          domain: [],
         },
         {
           name: "Absen Ekskul",
-          value: absensiEkskul,
+          value: totalAbsenEkskul,
           icon: "fa-chalkboard-teacher",
           res_model: "cdn.absen_ekskul_line",
-          domain: domainAbsenEkskul,
+          domain: [],
         },
       ];
 
@@ -390,7 +425,7 @@ export class GuruKpiCard extends Component {
         name: `${cardName} Details`,
         type: "ir.actions.act_window",
         res_model: cardData.res_model,
-        views: [[false, "list"]],
+        views: [[false, "list"], [false, "form"]],
         target: "current",
         domain: cardData.domain,
       });
