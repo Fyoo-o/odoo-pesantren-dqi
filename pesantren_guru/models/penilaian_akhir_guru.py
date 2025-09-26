@@ -13,7 +13,7 @@ class PenilaianAkhirGuru(models.Model):
     def _get_default_guru(self):
         emp = self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1)
         if not emp:
-            emp = self.env['hr.employee'].search([('jns_pegawai', '=', 'guru')], limit=1)
+            emp = self.env['hr.employee'].search([('jns_pegawai', 'in', ['guru','guru,guruquran'])], limit=1)
         return emp.id if emp else False
 
     def _get_default_semester(self):
@@ -27,16 +27,16 @@ class PenilaianAkhirGuru(models.Model):
         return '1'  # fallback ke semester 1
 
     # Domain Methods
-    # def _get_domain_guru(self):
-    #     user = self.env.user
-    #     if user.has_group('base.group_system'):  # Admin bebas semua guru
-    #         return [('jns_pegawai', '=', 'guru')]
-    #     elif user.has_group('pesantren_guru.group_guru_manager'):
-    #         return [('jns_pegawai', '=', 'guru')]
-    #     elif user.has_group('pesantren_guru.group_guru_staff'):
-    #         employee = self.env['hr.employee'].search([('user_id', '=', user.id)], limit=1)
-    #         return [('id', '=', employee.id)]
-    #     return [('id', '=', False)]
+    def _get_domain_guru(self):
+        user = self.env.user
+        if user.has_group('base.group_system'):  # Admin bebas semua guru
+            return [('jns_pegawai', 'in', ['guru','guru,guruquran'])]
+        elif user.has_group('pesantren_guru.group_guru_manager'):
+            return [('jns_pegawai', 'in', ['guru','guru,guruquran'])]
+        elif user.has_group('pesantren_guru.group_guru_staff'):
+            employee = self.env['hr.employee'].search([('user_id', '=', user.id)], limit=1)
+            return [('id', '=', employee.id)]
+        return [('id', '=', False)]
 
 
     # def _get_domain_kelas(self):
@@ -59,7 +59,7 @@ class PenilaianAkhirGuru(models.Model):
         'hr.employee',
         string='Guru',
         required=True,
-        # domain=_get_domain_guru,
+        domain=_get_domain_guru,
         default=_get_default_guru
     )
     kelas_id = fields.Many2one(

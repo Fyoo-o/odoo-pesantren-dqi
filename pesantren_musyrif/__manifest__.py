@@ -47,7 +47,7 @@
     'license': 'LGPL-3',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','pesantren_base','pesantren_keuangan'],
+    'depends': ['base','pesantren_base','pesantren_keuangan', 'pesantren_kesantrian'],
 
     # always loaded
     'data': [
@@ -66,6 +66,7 @@
         'views/cek_santri.xml',
         'views/perijinan.xml',
         'views/mutabaah_harian.xml',
+        'views/absen_malam.xml',
         'views/pelanggaran.xml',
         'views/kesehatan.xml',
         'views/prestasi_siswa.xml',

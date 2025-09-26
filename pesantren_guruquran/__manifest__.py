@@ -68,6 +68,7 @@
         'views/absen_tahsin.xml',
         'views/tahsin_quran.xml',
         'views/mutabaah_harian.xml',
+        'views/penilaian_santri.xml',
         'views/pelanggaran.xml',
         'views/kesehatan.xml',
         'views/prestasi_siswa.xml',

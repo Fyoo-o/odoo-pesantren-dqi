@@ -8,7 +8,7 @@ class PembagianEkstra(models.Model) :
 
     def _get_domain_guru(self):
         return [
-            ('jns_pegawai','=','guru')
+            ('jns_pegawai','in',['guru','guru,guruquran'])
         ]
 
     

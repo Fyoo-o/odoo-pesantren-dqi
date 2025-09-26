@@ -42,8 +42,9 @@
             <field name="view_mode">list,form</field>
             <field name="view_id" ref="hr.view_employee_tree"/>
             <!-- default value for job_id -->
-            <field name="context" eval="{'default_jns_pegawai': 'ustadz'}"/>
-            <field name="domain" eval="[('jns_pegawai', 'in', ['ustadz','guru'])]"/>
+            <field name="context" eval="{'default_jns_pegawai': 'guru'}"/>
+            <!-- <field name="domain" eval="[('jns_pegawai', 'in', ['ustadz','guru'])]"/> -->
+            <field name="domain" eval="[('jns_pegawai', 'in', ['guru','guru,guruquran'])]"/>
         </record>
 
         <record id="hr_employee_guru_form_action_tree" model="ir.actions.act_window.view">

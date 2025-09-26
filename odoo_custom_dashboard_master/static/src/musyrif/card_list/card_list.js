@@ -84,7 +84,7 @@ export class MusyrifPerijinanCardList extends Component {
 
       // Jika ada filter tanggal, ambil data tambahan
       if (this.state.currentStartDate || this.state.currentEndDate) {
-        const filterDomain = [["state", "in", ["Draft", "Check", "Rejected"]]];
+        const filterDomain = [["state", "in", ["Draft", "Check", "Rejected", ]]];
 
         if (this.state.currentStartDate) {
           filterDomain.push(["tgl_ijin", ">=", this.state.currentStartDate]);

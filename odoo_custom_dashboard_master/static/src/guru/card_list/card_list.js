@@ -134,11 +134,16 @@ export class GuruList extends Component {
 
   async fetchAllProducts() {
     try {
+      // const filterDomain = [
+      //   ["state", "=", "done"],
+      //   ["siswa_id", "!=", false],
+      //   ["jml_baris", ">", 0],
+      //   ["penanggung_jawab_id.name", "=", session.partner_display_name],
+      // ];
       const filterDomain = [
         ["state", "=", "done"],
         ["siswa_id", "!=", false],
         ["jml_baris", ">", 0],
-        ["penanggung_jawab_id.name", "=", session.partner_display_name],
       ];
 
       if (this.state.startDate) {
@@ -799,7 +804,7 @@ export class EkskulList extends Component {
   async fetchAllProducts() {
     try {
       const filterDomain = [];
-      filterDomain.push(["absen_id.guru.name", "=", session.partner_display_name]);
+      // filterDomain.push(["absen_id.guru.name", "=", session.partner_display_name]);
 
       if (this.state.startDate) {
         filterDomain.push(["tanggal", ">=", this.state.startDate]);
@@ -814,7 +819,7 @@ export class EkskulList extends Component {
         ["id", "siswa_id", "guru", "ekskul", "kehadiran", "tanggal"]
       );
 
-      console.log("Data Tahfidz", kehadiranEkskul);
+      console.log("Data Ekskul", kehadiranEkskul);
 
       this.state.guruu = this.getGuruData(kehadiranEkskul);
       await this.render();

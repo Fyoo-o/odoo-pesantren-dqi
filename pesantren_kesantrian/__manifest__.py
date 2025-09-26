@@ -69,6 +69,7 @@
         'views/jns_prestasi.xml',
         'views/prestasi_siswa.xml',
         'views/mutabaah_harian.xml',
+        'views/absen_malam.xml',
         'views/musyrif.xml',
         'views/perijinan.xml',
         'views/absen_tahfidz_quran.xml',

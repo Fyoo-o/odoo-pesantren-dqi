@@ -2,18 +2,17 @@
 <odoo>
 
     <data>
-    
-        <!-- cdn.penilaian list view -->
-        <record id="cdn_penilaian_view_tree" model="ir.ui.view">
-            <field name="name">cdn.penilaian.view.list</field>
-            <field name="model">cdn.penilaian</field>
+
+        <!-- cdn.penilaian_santri list view -->
+        <record id="cdn_penilaian_santri_view_tree" model="ir.ui.view">
+            <field name="name">cdn.penilaian_santri.view.list</field>
+            <field name="model">cdn.penilaian_santri</field>
             <field name="arch" type="xml">
                 <list>
                     <field name="name"/>
-                    <field name="kelas_id"/>
-                    <field name="mapel_id"/>
+                    <field name="halaqoh_id"/>
+                    <field name="kategori_penilaian"/>
                     <field name="guru_id"/>
-                    <field name="semester"/>
                     <field name="tipe"/>
                     <field name="state"/>
                 </list>
@@ -21,50 +20,50 @@
         </record>
    
 
-        <!-- cdn.penilaian form view -->
-        <record id="cdn_penilaian_view_form" model="ir.ui.view">
-            <field name="name">cdn.penilaian.view.form</field>
-            <field name="model">cdn.penilaian</field>
+        <!-- cdn.penilaian_santri form view -->
+        <record id="cdn_penilaian_santri_view_form" model="ir.ui.view">
+            <field name="name">cdn.penilaian_santri.view.form</field>
+            <field name="model">cdn.penilaian_santri</field>
             <field name="arch" type="xml">
                 <form string="">
                     <header>
-                        <button name="action_draft" string="Draft" type="object" class="btn-default"  invisible="state != 'done'" groups="pesantren_guru.group_guru_staff"/>
-                        <button name="action_done" string="Done" type="object" class="btn-primary"  invisible="state != 'draft'" groups="pesantren_guru.group_guru_staff"/>
+                        <button name="action_draft" string="Draft" type="object" class="btn-default"  invisible="state != 'done'" groups="pesantren_guruquran.group_guru_quran_staff"/>
+                        <button name="action_done" string="Done" type="object" class="btn-primary"  invisible="state != 'draft'" groups="pesantren_guruquran.group_guru_quran_staff"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
 
-                        <group string="Penilaian">
+                        <group string="Penilaian Santri">
                             <field name="id" invisible="1"/>
                             <group>
                                 <field name="guru_id"
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
-                                <field name="kelas_id"
-                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
-                                <field name="mapel_id"
-                                    domain="[('tingkat_id','=', tingkat_id), ('guru_ids','in',[guru_id])]" 
+                                <field name="halaqoh_id"
+                                    domain="[('penanggung_jawab_id','in',[guru_id])]"
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
                             </group>
                             <group>
-                                <field name="semester"/>
+                                <field name="kategori_penilaian"
+                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
                                 <field name="tipe"/>
                             </group>
                         </group>
 
-                        <field name="penilaian_ids" nolable="true" context="{
-                            'default_id_penilaian': id,
-                            'default_id_kelas':kelas_id}">
+                        <field name="penilaian_santri_ids" nolable="true" context="{
+                            'default_id_penilaian_santri': id,
+                            'default_id_halaqoh':halaqoh_id}">
                             <list editable="bottom">
                                 <field name="name" string="Tipe"/>
                                 <!-- <field name="id_penilaian" invisible="1"/> -->
                                 <!-- <field name="id_kelas" invisible="1"/> -->
                                 <!-- <field name="state" invisible="1"/> -->
-                                <field name="siswa_id"
-                                    domain="[('ruang_kelas_id', '=', id_kelas)]"
+                                <field name="santri_id"
+                                    domain="[('halaqoh_id', '=', id_halaqoh)]"
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
                                 <field name="panggilan" string="Panggilan"/>
                                 <field name="nilai" widget="integer"/>
                                 <field name="predikat"/>
+                                <field name="juz"/>
                             </list>
                         </field>
                     </sheet>
@@ -72,13 +71,13 @@
             </field>
         </record>
 
-        <record id="view_penilaian_search" model="ir.ui.view">
-            <field name="name">cdn.penilaian.search</field>
-            <field name="model">cdn.penilaian</field>
+        <record id="view_penilaian_santri_search" model="ir.ui.view">
+            <field name="name">cdn.penilaian_santri.search</field>
+            <field name="model">cdn.penilaian_santri</field>
             <field name="arch" type="xml">
                 <search>
                     <field name="guru_id"/>
-                    <!-- <filter string="Penilaian Saya"
+                    <!-- <filter string="Penilaian Santri Saya"
                             name="my_penilaian"
                             domain="[('guru_id.user_id', '=', uid)]"/> -->
                 </search>
@@ -86,21 +85,17 @@
         </record>
 
         <!-- cdn.penilaian action window -->
-        <record id="cdn_penilaian_action" model="ir.actions.act_window">
-            <field name="name">Data Penilaian Siswa</field>
+        <record id="cdn_penilaian_santri_action" model="ir.actions.act_window">
+            <field name="name">Data Penilaian Santri</field>
             <field name="type">ir.actions.act_window</field>
-            <field name="res_model">cdn.penilaian</field>
+            <field name="res_model">cdn.penilaian_santri</field>
             <field name="view_mode">list,form</field>
-            <field name="search_view_id" ref="view_penilaian_search"/>
-            <!-- <field name="domain">
-                [('guru_id.user_id', '=', uid)] 
-            </field> -->
-           <field name="domain" eval="[]"/>
+            <field name="search_view_id" ref="view_penilaian_santri_search"/>
             <!-- <field name="context">{'search_default_my_penilaian': 1}</field> -->
         </record>
 
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="penilaian_menu_act" name="Penilaian Siswa" parent="aktivitas_penilaian_menu_categ" action="cdn_penilaian_action" sequence="10"/>
+        <menuitem id="penilaian_santri_menu_act" name="Penilaian Santri" parent="pesantren_guru.aktivitas_penilaian_menu_categ" action="cdn_penilaian_santri_action" sequence="10" groups="pesantren_guruquran.group_guru_quran_staff" />
     
     </data>
     

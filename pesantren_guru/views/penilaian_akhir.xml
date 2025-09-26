@@ -100,9 +100,10 @@
                 <field name="type">ir.actions.act_window</field>
                 <field name="res_model">cdn.penilaian_akhir</field>
                 <field name="view_mode">list,form</field>
-                <field name="domain">
+                <!-- <field name="domain">
                     [('siswa_id.ruang_kelas_id.walikelas_id.user_id', '=', uid)]
-                </field>
+                </field> -->
+                <field name="domain" eval="[]" />
             </record>
             <!-- This Menu Item must have a parent and an action -->
             <menuitem id="penilaian_akhir_menu_act" name="Penilaian Akhir ( Wali Kelas )" parent="aktivitas_penilaian_menu_categ" action="penilaian_akhir_action" sequence="30"/>
