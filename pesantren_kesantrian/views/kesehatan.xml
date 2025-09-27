@@ -31,7 +31,7 @@
             <!-- <button string="Periksa" name="action_periksa" type="object" class="btn-primary" state="periksa" invisible="state not in ('draft')" groups="pesantren_kesantrian.group_kesantrian_kesehatan,
                             pesantren_kesantrian.group_kesantrian_manager" /> -->
             <button string="Pengobatan" name="action_pengobatan" type="object" class="btn-primary" state="pengobatan" invisible="state not in ('periksa')" groups="pesantren_kesantrian.group_kesantrian_kesehatan,
-                            pesantren_kesantrian.group_kesantrian_manager" />
+                            pesantren_kesantrian.group_kesantrian_manager,pesantren_musyrif.group_musyrif_staff" />
                                     
             <!-- <button string="Batal" type="object" class="btn-primary" special="cancel" invisible="state not in ('periksa')" groups="pesantren_kesantrian.group_kesantrian_kesehatan,
                             pesantren_kesantrian.group_kesantrian_manager"/> -->
@@ -39,7 +39,7 @@
             <!-- <button string="Perawatan" name="action_rawat" type="object" class="btn-primary" state="rawat" invisible="state not in ('periksa','pengobatan')" groups="pesantren_kesantrian.group_kesantrian_kesehatan,
                             pesantren_kesantrian.group_kesantrian_manager" /> -->
             <button string="Santri Sembuh" name="action_sembuh" type="object" class="btn-primary" state="sembuh" invisible="state not in ('pengobatan')" groups="pesantren_kesantrian.group_kesantrian_kesehatan,
-                            pesantren_kesantrian.group_kesantrian_manager" />
+                            pesantren_kesantrian.group_kesantrian_manager,pesantren_musyrif.group_musyrif_staff" />
             <!-- <button string="Batal" name="action_batal" type="object" class="btn-primary" state="batal" invisible="state not in ('pengobatan')" groups="pesantren_kesantrian.group_kesantrian_kesehatan,
                             pesantren_kesantrian.group_kesantrian_manager" /> -->
 

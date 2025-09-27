@@ -53,10 +53,10 @@
                 <form string="">
                     <header>
                         <button string="Selesai" name="action_confirm" type="object" class="oe_highlight"
-                            groups="pesantren_kesantrian.group_kesantrian_manager"
+                            groups="pesantren_kesantrian.group_kesantrian_manager,pesantren_musyrif.group_musyrif_staff"
                              invisible="state != 'Draft'"/>
                         <button string="Ubah ke Draft" name="action_draft" type="object" class="oe_highlight"
-                            groups="pesantren_kesantrian.group_kesantrian_manager"
+                            groups="pesantren_kesantrian.group_kesantrian_manager,pesantren_musyrif.group_musyrif_staff"
                              invisible="state != 'Done'"/>
                         <field name="state" widget="statusbar" />
                     </header>
