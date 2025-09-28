@@ -68,7 +68,7 @@
             <field name="keterangan">PAUD - Play Group</field>
         </record>
         <record model="cdn.tingkat" id="14">
-            <field name="name">2</field>
+            <field name="name">B</field>
             <field name="jenjang">paud</field>
             <field name="keterangan">PAUD - Persiapan</field>
         </record>
@@ -80,7 +80,7 @@
             <field name="keterangan">TK/RA - Kelompok A</field>
         </record>
         <record model="cdn.tingkat" id="16">
-            <field name="name">preparation</field>
+            <field name="name">Preparation</field>
             <field name="jenjang">tk</field>
             <field name="keterangan">TK/RA - Kelompok B</field>
         </record>
