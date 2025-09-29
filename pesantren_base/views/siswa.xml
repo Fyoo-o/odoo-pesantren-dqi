@@ -323,7 +323,9 @@
                     <filter string="Jenjang" name="filter_jenjang" domain="[('jenjang', '!=', False)]" />
                     <field name="name" select="True"/>
                     <field name="nis" select="True"/>
-                    <field name="nisn" select="True"/>
+                    <field name="nisn" select="True"/>  
+                    
+                    <field name="jenjang" select="True"/>
                     <field name="ayah_nama" select="True"/>
                     <field name="ayah_telp" select="True"/>
                     <field name="ibu_nama" select="True"/>
