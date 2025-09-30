@@ -248,15 +248,19 @@
 
             <div class="row mx-0 my-3">
                 <div class="col-lg-6 col-md-12 col-sm-12 p-2">
-                    <div class="shadow-sm border p-3 bg-white h-100">
-                        <h2 class="mb-4">Perijinan</h2>
+                    <div class="card shadow-sm h-100">
+                        <!-- Card Header -->
+                        <div class="card-header text-white text-center">
+                            <h3 class="card-title mb-0">Perijinan</h3>
+                        </div>
                         <MusyrifChartRenderer 
-                            type="'chart'" 
-                            startDate="state.selectedDateRange?.start"
-                            endDate="state.selectedDateRange?.end" 
-                        />
+                        type="'chart'" 
+                        startDate="state.selectedDateRange?.start"
+                        endDate="state.selectedDateRange?.end" 
+                    />
                     </div>
                 </div>
+
 
                 <!-- Pelanggaran Card -->
                 <div class="col-lg-6 col-md-12 col-sm-12 p-2">
