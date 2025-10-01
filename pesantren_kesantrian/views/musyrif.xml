@@ -60,7 +60,7 @@
             <field name="view_id" ref="hr.view_employee_tree"/>
             <field name="context" eval="{'default_jns_pegawai': 'musyrif'}"/>
             <!-- domain job_id -->
-            <field name="domain" eval="[('jns_pegawai', '=', 'musyrif')]"/>
+            <field name="domain" eval="[('jns_pegawai', 'in', ['musyrif', 'musyrif,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])]"/>
         </record>
 
         <record id="hr_employee_musyrif_form_action_tree" model="ir.actions.act_window.view">

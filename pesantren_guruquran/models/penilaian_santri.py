@@ -41,7 +41,7 @@ class Penilaian(models.Model):
         # domain=_domain_guru,
         default=lambda self: self.env['hr.employee'].search([
             ('user_id', '=', self.env.uid),
-            ('jns_pegawai', 'in', ['guruquran','guru,guruquran'])
+            ('jns_pegawai', 'in', ['guruquran','guru,guruquran', 'musyrif,guruquran', 'musyrif,guru,guruquran'])
         ], limit=1)
     )
     tipe                = fields.Selection(string='Tipe', selection=[
@@ -90,7 +90,7 @@ class Penilaian(models.Model):
         if not vals.get('guru_id'):
             guru = self.env['hr.employee'].search([
                 ('user_id', '=', self.env.uid),
-                ('jns_pegawai', 'in', ['guruquran','guru,guruquran'])
+                ('jns_pegawai', 'in', ['guruquran','guru,guruquran', 'musyrif,guruquran', 'musyrif,guru,guruquran'])
             ], limit=1) 
             if guru:
                 vals['guru_id'] = guru.id

@@ -50,7 +50,7 @@ class PenilaianAkhir(models.Model):
             return [('id','in',ruang_kelas.siswa_ids.ids)]
         return [('id','=',False)]
     def _get_domain_walikelas(self):
-        domain = [('jns_pegawai','in',['guru','guru,guruquran'])]
+        domain = [('jns_pegawai','in',['guru','guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])]
         if self.env.user.has_group('pesantren_guru.group_guru_manager'):
             domain.append(('id','!=',False))
         elif self.env.user.has_group('pesantren_guru.group_guru_staff'):
