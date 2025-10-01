@@ -2791,7 +2791,7 @@ class UbigKaryawanController(http.Controller):
                                         </tr>
                                         <tr>
                                             <td style="padding: 8px; font-weight: bold; color: #333333;">Lembaga :</td>
-                                            <td style="padding: 8px; color: #555555;">{pendaftaran.lembaga.replace('paud', 'PAUD').replace('tk', 'TK').replace('sd', 'SD').replace('smpmts', 'SMP / MTS').replace('smama', 'SMA / MA').replace('smk', 'SMK')}</td>
+                                            <td style="padding: 8px; color: #555555;">{pendaftaran.lembaga.replace('paud', 'PAUD').replace('tk', 'TK').replace('sd', 'SD / MI').replace('smpmts', 'SMP / MTS').replace('smama', 'SMA / MA').replace('smk', 'SMK').replace('nonformal', 'Non Formal').replace('pondokputra', 'Pondok Putra').replace('pondokputri', 'Pondok Putri').replace('rtq', 'RTQ')}</td>
                                         </tr>
                                         <tr>
                                             <td style="padding: 8px; font-weight: bold; color: #333333;">Jabatan Kerja :</td>

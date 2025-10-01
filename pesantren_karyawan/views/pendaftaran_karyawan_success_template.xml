@@ -119,7 +119,7 @@
                                     </div>
                                     <div>
                                         <span class="text-capitalize" style="margin-left: 30px;">
-                                            <t t-esc="pendaftaran.lembaga.replace('paud', 'PAUD').replace('tk', 'TK').replace('sdmi', 'SD / MI').replace('smpmts', 'SMP / MTS').replace('smama', 'SMA / MA').replace('smk', 'SMK')" />
+                                            <t t-esc="pendaftaran.lembaga.replace('paud', 'PAUD').replace('tk', 'TK').replace('sdmi', 'SD / MI').replace('smpmts', 'SMP / MTS').replace('smama', 'SMA / MA').replace('smk', 'SMK').replace('nonformal', 'Non Formal').replace('pondokputra', 'Pondok Putra').replace('pondokputri', 'Pondok Putri').replace('rtq', 'RTQ')" />
                                         </span>
                                     </div>
                                 </div>
