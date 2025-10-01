@@ -11,7 +11,11 @@ class hr_employee(models.Model):
                         ('sdmi','SD / MI'),
                         ('smpmts','SMP / MTS'),
                         ('smama','SMA / MA'),
-                        ('smk','SMK')], string='Lembaga', default='smama')
+                        ('smk','SMK'),
+                        ('nonformal', 'Non Formal'),
+                        ('pondokputra', 'Pondok Putra'),
+                        ('pondokputri', 'Pondok Putri'),
+                        ('rtq', 'RTQ')], string='Lembaga', default='smama')
     pendidikan_guru_ids = fields.One2many(comodel_name="edu.employee", inverse_name="employee_id", string="Riwayat Pendidikan", help="")
     marital = fields.Selection(string='Status Pernikahan', selection=[('single', 'Belum Kawin'), ('married', 'Menikah'), ('divorced', 'Cerai Hidup'), ('cerai', 'Cerai Mati')])
     jns_pegawai = fields.Selection([

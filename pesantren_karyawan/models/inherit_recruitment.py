@@ -25,8 +25,11 @@ class inheritRecruitment(models.Model):
                             ('sdmi','SD / MI'),
                             ('smpmts','SMP / MTS'),
                             ('smama','SMA / MA'),
-                            ('smk','SMK')], 
-                        string='Lembaga')
+                            ('smk','SMK'),
+                            ('nonformal','Non Formal'),
+                            ('pondokputra','Pondok Putra'),
+                            ('pondokputri','Pondok Putri'),
+                            ('rtq','RTQ')], string='Lembaga')
     job_id              = fields.Many2one('hr.job', string="Jabatan Kerja", store=True)
 
     # Data Diri

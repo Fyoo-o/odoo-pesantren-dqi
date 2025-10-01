@@ -304,6 +304,10 @@
                                 <option value="smpmts">SMP / MTS</option>
                                 <option value="smama">SMA / MA</option>
                                 <option value="smk">SMK</option>
+                                <option value="nonformal">Non Formal</option>
+                                <option value="pondokputra">Pondok Putra</option>
+                                <option value="pondokputri">Pondok Putri</option>
+                                <option value="rtq">RTQ</option>
                             </select>
                             <div class="invalid-feedback">
                                 Pilih posisi yang dilamar.
