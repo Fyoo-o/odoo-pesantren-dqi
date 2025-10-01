@@ -12,10 +12,10 @@ class AbsensiSiswa(models.Model):
     def _get_domain_guru(self):
         user = self.env.user
         if user.has_group('pesantren_guru.group_guru_manager'):
-            return [('user_id', '=', self.env.user.id),('jns_pegawai','in',['guru','guru,guruquran'])]
+            return [('user_id', '=', self.env.user.id),('jns_pegawai','in',['guru','guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])]
         elif user.has_group('pesantren_guru.group_guru_staff'):
             user = self.env['hr.employee'].search([('user_id', '=', user.id)])  
-            return [('user_id', '=', self.env.user.id),('jns_pegawai','in',['guru','guru,guruquran'])]
+            return [('user_id', '=', self.env.user.id),('jns_pegawai','in',['guru','guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])]
         return [('id','=',False)]
 
     def _get_default_guru(self):
@@ -149,7 +149,7 @@ class AbsensiSiswa(models.Model):
     def _onchange_guru_domain(self):
         return {
             'domain': {
-                'guru_id': [('jns_pegawai','in',['guru','guru,guruquran'])],
+                'guru_id': [('jns_pegawai','in',['guru','guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])]
             }
         }
         

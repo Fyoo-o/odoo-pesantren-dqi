@@ -51,6 +51,17 @@ class inheritKarywan(models.Model):
                 self.jns_pegawai = 'keamanan'
             elif job_name == 'kesehatan':
                 self.jns_pegawai = 'kesehatan'
+            elif job_name == 'guruquran':
+                self.jns_pegawai = 'guruquran'
+            elif job_name == 'musyrif,guruquran':
+                self.jns_pegawai = 'musyrif,guruquran'
+            elif job_name == 'guru,guruquran':
+                self.jns_pegawai = 'guru,guruquran'
+            elif job_name == 'musyrif,guru':
+                self.jns_pegawai = 'musyrif,guru'
+            elif job_name == 'musyrif,guru,guruquran':
+                self.jns_pegawai = 'musyrif,guru,guruquran'
+                
             else:
                 self.jns_pegawai = False
 

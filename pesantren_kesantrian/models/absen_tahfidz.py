@@ -50,7 +50,7 @@ class AbsenTahfidzQuran(models.Model):
 
     def _get_domain_guru(self):
         return [
-            ('jns_pegawai', 'in', ['guruquran','guru,guruquran'])
+            ('jns_pegawai', 'in', ['guruquran','guru,guruquran', 'musyrif,guruquran', 'musyrif,guru,guruquran'])
         ]
 
     def _get_default_guru(self):

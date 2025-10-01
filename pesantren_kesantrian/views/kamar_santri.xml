@@ -39,12 +39,12 @@
                             <group>
                                 <field name="kamar_id" options="{'no_create_edit':True, 'no_create':True}" readonly="status ==  'konfirm'"/>
                                 <field name="musyrif_id" options="{'no_create_edit':True, 'no_create':True}" domain="[
-                                        ('jns_pegawai', 'in', ['musyrif','ustadz'])
+                                        ('jns_pegawai', 'in', ['musyrif','ustadz', 'musyrif,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])
                                     ]" readonly="status ==  'konfirm'"/>
                                 <field name="pengganti_ids" widget="many2many_tags"
                                     domain="[
                                         ('id','!=',musyrif_id),
-                                        ('jns_pegawai', 'in', ['musyrif','ustadz'])
+                                        ('jns_pegawai', 'in', ['musyrif','ustadz', 'musyrif,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])
                                     ]"
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="status ==  'konfirm'"/>
                             </group>

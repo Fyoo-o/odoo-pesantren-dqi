@@ -44,7 +44,7 @@
                 <field name="kode"/>
                 <field name="kategori"/>
                 <field name="guru_ids"
-                      domain="[('jns_pegawai', '=', 'guru')]"
+                      domain="[('jns_pegawai', 'in', ['guru', 'guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])]"
                       widget="many2many_tags"/>
               </group>
             </group>

@@ -9,7 +9,7 @@ class Konfigurasi(models.Model):
     # jenjang         = fields.Selection(selection=[('paud','PAUD'),('tk','TK'),('sdmi','SD / MI'),('smpmts','SMP / MTS'),('smama','SMA / MA'),('smk','SMK')], string='Jenjang', required=True)
     keterangan      = fields.Text(string='Keterangan', help='')
     status          = fields.Selection(string='Status', selection=[('draft', 'Draft'), ('konfirm', 'Terkonfirmasi')], default="draft")
-    jenjang         = fields.Selection(selection=[('paud','PAUD'),('tk','TK/RA'),('sd','SD/MI'),('smp','SMP/MTS'),('sma','SMA/MA/SMK'),('nonformal','Non Formal')],required=True,  string="Jenjang", help="")
+    jenjang         = fields.Selection(selection=[('paud','PAUD'),('tk','TK/RA'),('sd','SD/MI'),('smp','SMP/MTS'),('sma','SMA/MA/SMK'),('nonformal','Non Formal'), ('rtq', 'Rumah Tahfidz Quran')],required=True,  string="Jenjang", help="")
 
   
     # Action untuk mengubah status ke 'konfirm'

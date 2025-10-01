@@ -44,7 +44,7 @@ class KenaikanKelas(models.Model):
     walikelas_id = fields.Many2one(
         comodel_name="hr.employee",  
         string="Wali Kelas",  
-        domain="[('jns_pegawai','=','guru')]"
+        domain="[('jns_pegawai','in',['guru', 'guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])]"
     )
     
     status = fields.Selection(

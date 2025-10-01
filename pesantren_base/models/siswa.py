@@ -28,8 +28,7 @@ class siswa(models.Model):
     partner_id          = fields.Many2one('res.partner', 'Partner', ondelete="cascade")
     active_id           = fields.Many2one('res.partner', string='Customer Active', compute="_compute_partner_id")
     qr_code_image       = fields.Binary("QR Code", attachment=True)
-
-    jenjang             = fields.Selection(selection=[('paud','PAUD'),('tk','TK/RA'),('sd','SD/MI'),('smp','SMP/MTS'),('sma','SMA/MA/SMK'), ('nonformal', 'Nonformal')],  string="Jenjang", related="ruang_kelas_id.name.jenjang", readonly=False, store=True, help="")
+    jenjang             = fields.Selection(selection=[('paud','PAUD'),('tk','TK/RA'),('sd','SD/MI'),('smp','SMP/MTS'),('sma','SMA/MA/SMK'), ('nonformal', 'Non Formal'), ('rtq', 'Rumah Tahfidz Quran')],  string="Jenjang", related="ruang_kelas_id.name.jenjang", readonly=False, store=True, help="")
     nama_sekolah        = fields.Selection(selection='_get_pilihan_nama_sekolah',string="Nama Sekolah",store=True,tracking=True)
     kamar_id            = fields.Many2one('cdn.kamar_santri', string='Nama Kamar')
     ruang_kelas_id      = fields.Many2one('cdn.ruang_kelas', string="Ruang Kelas")

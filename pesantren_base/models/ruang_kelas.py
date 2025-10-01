@@ -44,11 +44,11 @@ class ruang_kelas(models.Model):
     walikelas_id = fields.Many2one(
         comodel_name="hr.employee",  
         string="Wali Kelas",  
-        domain="[('jns_pegawai','=','guru')]",
+        domain="[('jns_pegawai','in',['guru', 'musyrif,guru', 'guru,guruquran','musyrif,guru,guruquran'])]"  # Memperluas domain untuk memasukkan musyrif
     )
     jenjang = fields.Selection(
         selection=[('paud','PAUD'),('tk','TK/RA'),('sd','SD/MI'),
-                   ('smp','SMP/MTS'),('sma','SMA/MA/SMK'), ('nonformal', 'Nonformal')],
+                   ('smp','SMP/MTS'),('sma','SMA/MA/SMK'), ('nonformal', 'Non formal'), ('rtq', 'Rumah Tahfidz Quran')],
         string="Jenjang", 
         related='name.jenjang', 
         store=True,

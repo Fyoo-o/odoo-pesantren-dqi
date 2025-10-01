@@ -102,7 +102,7 @@ class JadwalPelajaranLine(models.Model):
     start_time = fields.Float(string='Jam Mulai', related='jampelajaran_id.start_time', readonly=True, widget="float_time")
     end_time = fields.Float(string='Jam Selesai', related='jampelajaran_id.end_time', readonly=True, widget="float_time")
     matapelajaran_id = fields.Many2one('cdn.mata_pelajaran', string='Mata Pelajaran', domain="[('jenjang', '=', jenjang)]")
-    guru_id = fields.Many2one('hr.employee', string='Guru', domain=[('jns_pegawai','=','guru')])
+    guru_id = fields.Many2one('hr.employee', string='Guru', domain=[('jns_pegawai','in',['guru', 'guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])])
 
     @api.onchange('matapelajaran_id')
     def _onchange_matapelajaran_id(self):

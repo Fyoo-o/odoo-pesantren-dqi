@@ -45,7 +45,7 @@
             <field name="ks_layout">layout5</field>
             <field name="ks_domain" >
                 [
-                    ("jns_pegawai","=","guru")
+                    ("jns_pegawai","in",["guru", "guru,guruquran", "musyrif,guru", "musyrif,guru,guruquran"])
                 ]
             </field>
         </record>
