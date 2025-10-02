@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <data>
+    
+        <!-- cdn.nilai_tahsin list view -->
+        <record id="cdn_nilai_tahsin_view_tree" model="ir.ui.view">
+            <field name="name">cdn.nilai_tahsin.view.list</field>
+            <field name="model">cdn.nilai_tahsin</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="name"/>
+                    <field name="lulus"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- cdn.nilai_tahsin form view -->
+        <record id="cdn_nilai_tahsin_view_form" model="ir.ui.view">
+            <field name="name">cdn.nilai_tahsin.view.form</field>
+            <field name="model">cdn.nilai_tahsin</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only" string="Nilai Tahsin Name"/>
+                            <h1><field name="name"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="lulus"/>
+                            </group>
+                            <group>
+                                <!-- Anda bisa tambahkan field lain di sini nanti -->
+                            </group>
+                        </group>
+                        <notebook>
+                            <!-- Tab tambahan bisa ditambahkan di sini jika diperlukan -->
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- cdn.nilai_tahsin action window -->
+        <record id="cdn_nilai_tahsin_action" model="ir.actions.act_window">
+            <field name="name">Nilai Tahsin</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">cdn.nilai_tahsin</field>
+            <field name="view_mode">list,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Klik untuk membuat nilai tahsin baru.
+                </p>
+                <p>
+                    Kelola data penilaian tahsin santri di sini.
+                </p>
+            </field>
+        </record>
+
+        <!-- cdn.nilai_tahsin search view -->
+        <record id="cdn_nilai_tahsin_view_search" model="ir.ui.view">
+            <field name="name">cdn.nilai_tahsin.view.search</field>
+            <field name="model">cdn.nilai_tahsin</field>
+            <field name="arch" type="xml">
+                <search string="Nilai Tahsin">
+                    <field name="name" string="Nama" filter_domain="[('name','ilike',self)]"/>
+                    <field name="lulus" string="Status Lulus"/>
+                    <filter string="Lulus" name="filter_lulus" domain="[('lulus','=',True)]"/>
+                    <filter string="Tidak Lulus" name="filter_tidak_lulus" domain="[('lulus','=',False)]"/>
+                    <group string="Group By..">
+                        <filter string="Status Lulus" name="group_by_lulus" context="{'group_by':'lulus'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Menu Item untuk Nilai Tahsin -->
+       <menuitem id="nilai_tahsin_menu_act"
+          name="Nilai Tahsin"
+          parent="pengaturan_tahsin_menu_categ"
+          action="cdn_nilai_tahsin_action"
+          sequence="20"/>
+    </data>
+
+</odoo>

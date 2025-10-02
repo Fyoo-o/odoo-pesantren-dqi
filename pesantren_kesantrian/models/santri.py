@@ -13,9 +13,28 @@ class Santri(models.Model):
     musyrif_id          = fields.Many2one('hr.employee', related='kamar_id.musyrif_id', string='Musyrif/Pembina', readonly=True)
     musyrif_ganti_ids   = fields.Many2many(comodel_name='hr.employee', related='kamar_id.pengganti_ids', string='Musyrif Pengganti', readonly=True)
     halaqoh_id          = fields.Many2one('cdn.halaqoh', string='Halaqoh', readonly=True)
+    halaqoh_ids = fields.Many2many(
+        'cdn.halaqoh',
+        'cdn_siswa_halaqoh_rel',   # tabel relasi Many2many
+        'siswa_id', 'halaqoh_m2m_id',
+        string='Semua Halaqoh',
+        readonly=True
+    )
     penanggung_jawab_id = fields.Many2one(comodel_name='hr.employee', related='halaqoh_id.penanggung_jawab_id', string='Penanggung Jawab', readonly=True)
     pengganti_ids       = fields.Many2many(comodel_name ='hr.employee', related='halaqoh_id.pengganti_ids', string='Ustadz Pengganti', readonly=True)
+    penanggung_jawab_ids = fields.Many2many(
+        comodel_name='hr.employee',
+        string='Semua Penanggung Jawab',
+        compute='_compute_penanggung_jawab_ids',
+        store=False
+    )
 
+    pengganti_all_ids = fields.Many2many(
+        comodel_name='hr.employee',
+        string='Semua Ustadz Pengganti',
+        compute='_compute_pengganti_all_ids',
+        store=False
+    )
     tahfidz_quran_ids   = fields.One2many('cdn.tahfidz_quran', 'siswa_id', string='Tahfidz Quran', readonly=True)
 
     #state info smart button
@@ -56,7 +75,16 @@ class Santri(models.Model):
                 ])
                 # Hitung sisa tagihan (amount_residual_signed)
                 siswa.saldo_tagihan_count = sum(tagihan.mapped('amount_residual_signed'))
-
+    
+    @api.depends('halaqoh_ids')
+    def _compute_penanggung_jawab_ids(self):
+        for rec in self:
+            rec.penanggung_jawab_ids = rec.halaqoh_ids.mapped('penanggung_jawab_id')
+            
+    @api.depends('halaqoh_ids')
+    def _compute_pengganti_all_ids(self):
+        for rec in self:
+            rec.pengganti_all_ids = rec.halaqoh_ids.mapped('pengganti_ids')
     def _compute_count_uang_saku(self):
         for siswa in self:
             if siswa.partner_id:
@@ -73,7 +101,19 @@ class Santri(models.Model):
     def _compute_uang_saku_formatted(self):
         for record in self:
             record.uang_saku_formatted = int(record.uang_saku_count)
+    @api.model
+    def create(self, vals):
+        rec = super().create(vals)
+        if rec.halaqoh_id and rec.halaqoh_id not in rec.halaqoh_ids:
+            rec.halaqoh_ids = [(4, rec.halaqoh_id.id)]
+        return rec
 
+    def write(self, vals):
+        res = super().write(vals)
+        for rec in self:
+            if rec.halaqoh_id and rec.halaqoh_id not in rec.halaqoh_ids:
+                rec.halaqoh_ids = [(4, rec.halaqoh_id.id)]
+        return res
     # actions smart button
     # def action_saldo_tagihan(self):
     #     self.ensure_one()

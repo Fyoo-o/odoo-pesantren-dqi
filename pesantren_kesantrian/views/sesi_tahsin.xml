@@ -1,0 +1,74 @@
+<!-- Sesi Tahsin List View -->
+<odoo>
+    <data>
+<record id="cdn_sesi_tahsin_view_tree" model="ir.ui.view">
+    <field name="name">cdn.sesi_tahsin.view.list</field>
+    <field name="model">cdn.sesi_tahsin</field>
+    <field name="arch" type="xml">
+        <list>
+            <field name="name" />
+            <field name="keterangan" />
+        </list>
+    </field>
+</record>
+
+<!-- Sesi Tahsin Form View -->
+<record id="cdn_sesi_tahsin_view_form" model="ir.ui.view">
+    <field name="name">cdn.sesi_tahsin.view.form</field>
+    <field name="model">cdn.sesi_tahsin</field>
+    <field name="arch" type="xml">
+        <form string="">
+            <sheet>
+                <div class="oe_title">
+                    <label for="name" class="oe_edit_only" string="Sesi Tahsin"/>
+                    <h1><field name="name"/></h1>
+                </div>
+                <group>
+                    <group>
+                        <field name="keterangan" />
+                    </group>
+                    <group>
+                    </group>
+                </group>
+                <notebook>
+                </notebook>
+            </sheet>
+        </form>
+    </field>
+</record>
+
+<!-- Sesi Tahsin Action Window -->
+<record id="cdn_sesi_tahsin_action" model="ir.actions.act_window">
+    <field name="name">Sesi Tahsin</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">cdn.sesi_tahsin</field>
+    <field name="view_mode">list,form</field>
+    <field name="help" type="html">
+        <p class="oe_view_nocontent_create">
+            <!-- Add Text Here -->
+        </p><p>
+            <!-- More details about what a user can do with this object will be OK --> 
+        </p>
+    </field>
+</record>
+
+<!-- Sesi Tahsin Search View -->
+<record id="cdn_sesi_tahsin_view_search" model="ir.ui.view">
+    <field name="name">cdn.sesi_tahsin.view.search</field>
+    <field name="model">cdn.sesi_tahsin</field>
+    <field name="arch" type="xml">
+        <search string="Sesi Tahsin">
+            <filter string="Nama" name="filter_by_name" domain="[('name','=','')]"/>
+            <filter string="Keterangan" name="filter_by_keterangan" domain="[('keterangan','=','')]"/>
+            <field name="name" select="True"/>
+            <field name="keterangan" select="True"/>
+            <group string="Group By..">
+            </group>
+        </search>
+    </field>
+</record>
+
+<!-- Sesi Tahsin Menu Item -->
+<menuitem id="sesi_tahsin_menu_act" name="Sesi Tahsin" parent="pengaturan_tahsin_menu_categ" action="cdn_sesi_tahsin_action" sequence="30"/>
+    </data>
+</odoo>

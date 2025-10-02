@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from . import kesehatan
 from . import cdn_surah,cdn_ayat
-from . import tindakan_hukuman, sesi_tahfidz , jns_pelanggaran, data_pelanggaran, halaqoh,level_tahsin, daftar_hadits, nilai_tahfidz
+from . import tindakan_hukuman, sesi_tahfidz , jns_pelanggaran, data_pelanggaran, halaqoh, sesi_tahsin, level_tahsin, daftar_hadits, nilai_tahfidz, nilai_tahsin
 from . import mutabaah, mutabaah_harian
 from . import aset_pesantren
 from . import kamar_santri
@@ -20,3 +20,4 @@ from . import tahsin_quran
 from . import res_users
 from . import keterangan
 from . import absen_malam
+from . import sesi_tahsin

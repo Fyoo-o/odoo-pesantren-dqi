@@ -61,7 +61,7 @@ class AbsenTahfidzQuran(models.Model):
     name            = fields.Date(string='Tgl Absen', required=True, default=fields.Date.context_today, states={'Done': [('readonly', True)]})
     halaqoh_id      = fields.Many2one('cdn.halaqoh', string='Halaqoh', required=True, domain=_domain_halaqoh_id, states={'Done': [('readonly', True)]})
     ustadz_id       = fields.Many2one('hr.employee', string='Ustadz', required=True, domain=_get_domain_guru, states={'Done': [('readonly', True)]}, default=_get_default_guru)
-    fiscalyear_id   = fields.Many2one('cdn.ref_tahunajaran', string='Tahun Ajaran',readonly=True, default=lambda self:self.env.user.company_id.tahun_ajaran_aktif.id, states={'Done': [('readonly', True)]})
+    fiscalyear_id   = fields.Many2one('cdn.ref_tahunajaran', string='Tahun Ajaran', readonly=True, default=lambda self:self.env.user.company_id.tahun_ajaran_aktif.id, states={'Done': [('readonly', True)]})
     sesi_id         = fields.Many2one('cdn.sesi_tahfidz', string='Sesi', required=True, states={'Done': [('readonly', True)]})
     keterangan      = fields.Text(string='Keterangan', states={'Done': [('readonly', True)]})
     absen_ids       = fields.One2many('cdn.absen_tahfidz_quran_line', 'absen_id', string='Absen', states={'Done': [('readonly', True)]})
