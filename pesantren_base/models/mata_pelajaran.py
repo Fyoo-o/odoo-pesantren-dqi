@@ -16,6 +16,9 @@ class MataPelajaran(models.Model):
                     ('lainnya', 'Lainnya')
                   ], string='Kategori Matpel')
   jenjang       = fields.Selection([
+                    ('paud', 'PAUD'),
+                    ('tk', 'TK'),
+                    ('rtq', 'Rumah Tahfidz Quran'),
                     ('sd', 'SD'),
                     ('smp', 'SMP'),
                     ('sma', 'SMA'),

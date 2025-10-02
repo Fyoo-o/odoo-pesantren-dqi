@@ -9,6 +9,7 @@
                 <list default_order="id desc" create="false">
                     <!-- Add your fields here -->
                     <field name="tanggal" />
+                    <field name="sesi_tahsin_id"/>
                     <field name="siswa_id" />
                     <field name="halaqoh_id" string="Halaqah" />
                     <field name="buku_tahsin_id" />
@@ -47,35 +48,42 @@
                                 <field name="barcode"/>
                                 <field name="siswa_id" string="Santri" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" readonly="1" />
                                 <field name="kelas_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" />
+                                <field name="sesi_tahsin_id"
+                                    options="{'no_create_edit':True, 'no_create':True, 'no_open':True}"
+                                    readonly="state in ('draft','done')" />
                             </group>
                             <group>
                                 <field name="kamar_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" readonly="1" />
                                 <field name="halaqoh_id" string="Halaqah" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" readonly="1" />
                                 <field name="musyrif_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" readonly="1" />
+                                <field name="keterangan" string="Keterangan"/>
                             </group>
                         </group>
 
-                        <group string="Pelaksanaan Tahsin">
-                            <group>
-                                <field name="tanggal" />
-                            </group>
-
-                            <group>
-                                <field name="ustadz_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" />
-                            </group>
-
-                        </group>
-
-                        <group string="Penilaian Tahsin">
-                            <group>
-                                <field name="buku_tahsin_id" />
-                                <field name="jilid_tahsin_id" domain="[('buku_tahsin_id','=',buku_tahsin_id)]"/>
-                            </group>
-                            <group>
-                                <field name="halaman_tahsin" />
-                                <!-- <field name="nilai_mad" /> -->
-                                <field name="keterangan" string="Catatan Musyrif/Ustadz" />
-                            </group>
+                         <group>
+                            <notebook>
+                                <page string="Harian">
+                                    <group string="Pelaksanaan Tahsin">
+                                        <group>
+                                            <field name="tanggal" />
+                                        </group>
+                                        <group>
+                                            <field name="ustadz_id" options="{'no_create_edit':True, 'no_create':True, 'no_open':True}" />
+                                        </group>
+                                    </group>
+                                    <group string="Penilaian Tahsin">
+                                        <group>
+                                            <field name="buku_tahsin_id" />
+                                            <field name="jilid_tahsin_id" domain="[('buku_tahsin_id','=',buku_tahsin_id)]"/>
+                                            <field name="nilai_id"/>
+                                        </group>
+                                        <group>
+                                            <field name="halaman_tahsin" />
+                                            <field name="catatan_musyrif" string="Catatan Musyrif/Ustadz" />
+                                        </group>
+                                    </group>
+                                </page>
+                            </notebook>
                         </group>
 
                     </sheet>

@@ -19,13 +19,14 @@ class TahsinQuran(models.Model):
     nilai_tajwid    = fields.Integer(string='Nilai Tajwid', states={'done': [('readonly', True)]})
     nilai_makhroj   = fields.Integer(string='Nilai Makhroj', states={'done': [('readonly', True)]})
     nilai_mad       = fields.Integer(string='Mad', states={'done': [('readonly', True)]})
-
+    nilai_id        = fields.Many2one('cdn.nilai_tahsin', string='Nilai', states={'done': [('readonly', True)]})
     # Revisi : Tambahkan field Buku Tahsin
     buku_tahsin_id  = fields.Many2one('cdn.buku_tahsin', string='Buku Tahsin', states={'done': [('readonly', True)]})
     jilid_tahsin_id = fields.Many2one('cdn.jilid_tahsin', string='Jilid Tahsin', states={'done': [('readonly', True)]})
     halaman_tahsin  = fields.Char(string='Halaman', states={'done': [('readonly', True)]})
     
 
+    catatan_musyrif = fields.Char(string='catatan_musyrif', states={'done': [('readonly', True)]})
     keterangan      = fields.Char(string='Keterangan', states={'done': [('readonly', True)]})
 
     state = fields.Selection([
@@ -35,10 +36,10 @@ class TahsinQuran(models.Model):
     penanggung_jawab_id = fields.Many2one('hr.employee', string='Penanggung Jawab', related='halaqoh_id.penanggung_jawab_id', readonly=True, store=True)
 
 
-    barcode          = fields.Char(string="Kartu Santri", related="siswa_id.barcode_santri", readonly=True)
-
+    barcode             = fields.Char(string="Kartu Santri", related="siswa_id.barcode_santri", readonly=True)
+    sesi_tahsin_id      = fields.Many2one('cdn.sesi_tahsin', string='Sesi', required=True)
     kamar_id    = fields.Many2one('cdn.kamar_santri', string='Kamar', related='siswa_id.kamar_id', readonly=True)
-    halaqoh_id  = fields.Many2one('cdn.halaqoh', string='Halaqoh', related='siswa_id.halaqoh_id', readonly=True)
+    # halaqoh_id  = fields.Many2one('cdn.halaqoh', string='Halaqoh', related='siswa_id.halaqoh_id', readonly=True)
     musyrif_id  = fields.Many2one('hr.employee', string='Musyrif', related='siswa_id.musyrif_id', readonly=True)
 
     @api.onchange('siswa_id')
@@ -69,7 +70,6 @@ class TahsinQuran(models.Model):
     def create(self, vals):
         vals['name'] = self.env['ir.sequence'].next_by_code('cdn.tahsin_quran')
         return super(TahsinQuran, self).create(vals)
-    
     # def write(self, vals):
     #     if not vals.get('level_tahsin_id',self.level_tahsin_id.id) or not vals.get('nilai_tajwid',self.nilai_tajwid) or not vals.get('nilai_makhroj',self.nilai_makhroj) or not vals.get('nilai_mad',self.nilai_mad):
     #         raise models.ValidationError('ERROR ! Periksa kembali pengisian KATEGORI Tahsin dan Nilai-nilainya !')

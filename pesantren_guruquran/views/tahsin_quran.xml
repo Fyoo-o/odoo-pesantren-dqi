@@ -8,20 +8,19 @@
             <field name="inherit_id" ref="pesantren_kesantrian.cdn_tahsin_quran_view_form"/>
             <field name="arch" type="xml">
 
-                <xpath expr="//sheet" position="inside">
-                    <group name="nilai_tahsin" string="Nilai">
-
-                        <group>
-                            <field name="fashohah"/>
-                            <field name="tajwid"/>
+                 <xpath expr="//notebook" position="inside">
+                    <page string="Ujian">
+                        <group name="nilai_tahsin" string="Nilai">
+                            <group>
+                                <field name="fashohah"/>
+                                <field name="tajwid"/>
+                            </group>
+                            <group>
+                                <field name="ghorib_musykilat"/>
+                                <field name="suara_lagu"/>
+                            </group>
                         </group>
-
-                        <group>
-                            <field name="ghorib_musykilat"/>
-                            <field name="suara_lagu"/>
-                        </group>
-                    
-                    </group>
+                    </page>
                 </xpath>
 
             </field>

@@ -8,6 +8,7 @@
             <field name="arch" type="xml">
                 <list default_order="id desc" >
                     <field name="name" />
+                    <field name="sesi_id"/>
                     <field name="halaqoh_id" string="Halaqah" />
                     <field name="ustadz_id" />
                     <field name="state" />
@@ -34,16 +35,18 @@
                                 <field name="name" />
                             </group>
                             <group>
-                                <field name="fiscalyear_id" readonly="1" />
+                                <field name="fiscalyear_id" readonly="True"/>
                             </group>
                         </group>
 
                         <group string="Absensi">
                             <group>
                                 <field name="halaqoh_id" strig="Halaqah" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
+                                <field name="sesi_id"/>
                             </group>
                             <group>
                                 <field name="ustadz_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
+                                <field name="keterangan" strig="Keterangan"/>
                             </group>
                         </group>
 

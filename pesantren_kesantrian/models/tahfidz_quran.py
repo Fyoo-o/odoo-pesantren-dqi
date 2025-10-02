@@ -235,7 +235,7 @@ class TahfidzQuran(models.Model):
 
     predikat = fields.Selection(
         string='Predikat',
-        selection=[('a+', 'A+'), ('a', 'A'), ('b+', 'B+'), ('b', 'B'), ('c+', 'C+'), ('c', 'C')],
+        selection=[('a+', 'MUMTAZ'), ('a', 'JAYYID JIDDAN'), ('b+', 'JAYYID'), ('b', 'MAQBUL'), ('c+', 'DHAIF'), ('c', 'DHAIF JIDDAN')],
         compute='_compute_predikat',
         store=True,
         states={'done': [('readonly', True)]}

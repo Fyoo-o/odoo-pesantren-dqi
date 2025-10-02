@@ -45,8 +45,8 @@ class AbsenTahsinQuran(models.Model):
 
     name            = fields.Date(string='Tgl Absen', required=True, default=fields.Date.context_today, states={'Done': [('readonly', True)]})
     halaqoh_id      = fields.Many2one('cdn.halaqoh', string='Halaqoh', required=True, domain=_domain_halaqoh_id, states={'Done': [('readonly', True)]})
-    ustadz_id       = fields.Many2one('hr.employee', string='Ustadz',domain=_get_domain_guru , default=_get_default_guru ,required=True, states={'Done': [('readonly', True)]})
-    fiscalyear_id   = fields.Many2one('cdn.ref_tahunajaran', string='Tahun Ajaran',readonly=True, default=lambda self:self.env.user.company_id.tahun_ajaran_aktif.id, states={'Done': [('readonly', True)]})
+    ustadz_id       = fields.Many2one('hr.employee', string='Ustadz',domain=_get_domain_guru, default=_get_default_guru ,required=True, states={'Done': [('readonly', True)]})
+    fiscalyear_id   = fields.Many2one('cdn.ref_tahunajaran', string='Tahun Ajaran', readonly=True, default=lambda self:self.env.user.company_id.tahun_ajaran_aktif.id, states={'Done': [('readonly', True)]})
     absen_ids       = fields.One2many('cdn.absen_tahsin_quran_line', 'absen_id', string='Absen', states={'Done': [('readonly', True)]})
     state           = fields.Selection([
         ('Draft', 'Draft'),
@@ -54,8 +54,8 @@ class AbsenTahsinQuran(models.Model):
         ('Done','Selesai'),
     ], default='Draft', string='Status')
     penanggung_jawab_id = fields.Many2one('hr.employee', string='Penanggung Jawab', related='halaqoh_id.penanggung_jawab_id', readonly=True, store=True)
-
-
+    sesi_id         = fields.Many2one('cdn.sesi_tahsin', string='Sesi', required=True, states={'Done': [('readonly', True)]})
+    keterangan      = fields.Char(string='Keterangan')
     def action_proses(self):
         self.state = 'Proses'
         for absen in self.absen_ids:
@@ -65,6 +65,7 @@ class AbsenTahsinQuran(models.Model):
                     'siswa_id': absen.siswa_id.id,
                     'halaqoh_id': self.halaqoh_id.id,
                     'ustadz_id': self.ustadz_id.id,
+                    'sesi_tahsin_id': self.sesi_id.id,
                     'state': 'draft',
                 }
                 self.env['cdn.tahsin_quran'].create(tahsin_quran_vals)

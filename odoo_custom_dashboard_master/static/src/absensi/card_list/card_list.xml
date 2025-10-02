@@ -5,7 +5,7 @@
             <div class="col-lg-12 p-0">
                 <div class="card shadow-sm border-0 rounded-0">
                     <div class="card-header d-flex justify-content-between">
-                        <h3 class="card-title mb-0">Persetujuan Jam Kerja Karyawan</h3>
+                        <h3 class="card-title mb-0 text-white">Persetujuan Jam Kerja Karyawan</h3>
                     </div>
                     <div class="card-body pt-1">
                         <t t-if="state.permintaann.length > 0">
