@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Sequence -->
+    <record id="seq_cdn_penilaian_quran" model="ir.sequence">
+        <field name="name">Penilaian Halaqoh</field>
+        <field name="code">cdn.penilaian_quran</field>
+        <field name="prefix">PQ/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>   
+
+    <!-- List View -->
+    <record id="view_penilaian_quran_tree" model="ir.ui.view">
+        <field name="name">cdn.penilaian_quran.tree</field>
+        <field name="model">cdn.penilaian_quran</field>
+        <field name="arch" type="xml">
+            <list default_order="tanggal desc" create="false">
+                <field name="name"/>
+                <field name="tanggal"/>
+                <field name="siswa_id"/>
+                <field name="halaqoh_id" string="Halaqoh"/>
+                <field name="ustadz_id"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_penilaian_quran_form" model="ir.ui.view">
+        <field name="name">cdn.penilaian_quran.form</field>
+        <field name="model">cdn.penilaian_quran</field>
+        <field name="arch" type="xml">
+            <form string="Penilaian Halaqoh" create="false">
+                <header>
+                    <button string="Confirm" type="object" name="action_confirm" 
+                            invisible="state != 'draft'" class="oe_highlight"/>
+                    <button string="Set to Draft" type="object" name="action_draft" 
+                            invisible="state != 'done'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box"/>
+                    
+                    <group string="Informasi Santri">
+                        <group>
+                            <field name="barcode" readonly="1"/>
+                            <field name="siswa_id" required="1" 
+                                   options="{'no_create': True, 'no_open': True}"/>
+                            <field name="kelas_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="kamar_id" readonly="1"/>
+                            <field name="halaqoh_id" readonly="1"/>
+                            <field name="musyrif_id" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Pelaksanaan">
+                        <group>
+                            <field name="tanggal"/>
+                            <field name="ustadz_id" required="1"
+                                   options="{'no_create': True, 'no_open': True}"/>
+                        </group>
+                        <group>
+                            <field name="sesi_id" required="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <!-- TAB TAHFIDZ -->
+                       <page string="Tahfidz">
+    <!-- Tampilkan Tahfidz Terakhir (Referensi) -->
+                        <group string="Tahfidz Terakhir" colspan="4" invisible="siswa_id == False">
+                            <group>
+                                <field name="last_surah_id" readonly="1"/>
+                                <field name="last_ayat_akhir" readonly="1"/>
+                            </group>
+                        </group>
+
+                        <!-- Form Input Penilaian Baru -->
+                        <group string="Hafalan Baru">
+                            <group>
+                                <field name="surah_id"/>
+                                <field name="ayat_awal"/>
+                                <field name="ayat_akhir"/>
+                            </group>
+                            <group>
+                                <field name="jml_baris"/>
+                                <field name="nilai_hafalan"/>
+                                <field name="predikat" readonly="1"/>
+                            </group>
+                        </group>
+                        <group string="Keterangan">
+                            <field name="keterangan_tahfidz" nolabel="1"/>
+                        </group>
+                    </page>
+
+                        <!-- TAB TAHsin HARIAN -->
+                        <page string="Tahsin Harian">
+                            <group string="Buku Halaman">
+                                <group>
+                                    <field name="buku_harian_id"/>
+                                    <field name="jilid_harian_id"/>
+                                </group>
+                                <group>
+                                    <field name="halaman_harian"/>
+                                </group>
+                            </group>
+                            <group string="Penilaian">
+                                <group>
+                                    <field name="nilai_tajwid_harian"/>
+                                    <field name="nilai_makhroj_harian"/>
+                                </group>
+                                <group>
+                                    <field name="nilai_mad_harian"/>
+                                </group>
+                            </group>
+                            <group string="Catatan">
+                                <field name="catatan_harian" nolabel="1" placeholder="Catatan untuk tahsin harian..."/>
+                            </group>
+                        </page>
+
+                        <!-- TAB TAHsin UJIAN -->
+                        <page string="Tahsin Ujian">
+                            <group string="Buku Halaman">
+                                <group>
+                                    <field name="buku_ujian_id"/>
+                                    <field name="jilid_ujian_id"/>
+                                </group>
+                                <group>
+                                    <field name="halaman_ujian"/>
+                                </group>
+                            </group>
+                            <group string="Penilaian">
+                                <group>
+                                    <field name="nilai_tajwid_ujian"/>
+                                    <field name="nilai_makhroj_ujian"/>
+                                </group>
+                                <group>
+                                    <field name="nilai_mad_ujian"/>
+                                </group>
+                            </group>
+                            <group string="Catatan">
+                                <field name="catatan_ujian" nolabel="1" placeholder="Catatan untuk tahsin ujian..."/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_penilaian_quran_search" model="ir.ui.view">
+        <field name="name">cdn.penilaian_quran.search</field>
+        <field name="model">cdn.penilaian_quran</field>
+        <field name="arch" type="xml">
+            <search string="Cari Penilaian Halaqoh">
+                <field name="name" string="Referensi" filter_domain="['|', ('name', 'ilike', self), ('siswa_id.name', 'ilike', self)]"/>
+                <field name="siswa_id"/>
+                <field name="halaqoh_id"/>
+                <field name="ustadz_id"/>
+                <field name="tanggal"/>
+                <field name="state"/>
+                
+                <group expand="0" string="Group By">
+                    <filter name="group_siswa" string="Santri" context="{'group_by': 'siswa_id'}"/>
+                    <filter name="group_tanggal" string="Tanggal" context="{'group_by': 'tanggal'}"/>
+                    <filter name="group_halaqoh" string="Halaqoh" context="{'group_by': 'halaqoh_id'}"/>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                </group>
+                
+                <filter name="filter_today" string="Hari Ini" domain="[('tanggal','=',context_today().strftime('%Y-%m-%d'))]"/>
+                <filter name="filter_draft" string="Draft" domain="[('state','=','draft')]"/>
+                <filter name="filter_done" string="Selesai" domain="[('state','=','done')]"/>
+            </search>
+        </field>
+    </record>
+    <record id="cdn_penilaian_quran_view_calendar" model="ir.ui.view">
+            <field name="name">cdn.penilaian_quran.view.calendar</field>
+            <field name="model">cdn.penilaian_quran</field>
+            <field name="arch" type="xml">
+                <calendar string="Penilaian Halaqoh" date_start="tanggal">
+                    <!-- Add your fields here -->
+                    <field name="name" />
+                </calendar>
+            </field>
+    </record>
+
+    <!-- Action Window -->
+    <record id="action_penilaian_quran" model="ir.actions.act_window">
+        <field name="name">Penilaian Halaqoh</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cdn.penilaian_quran</field>
+        <field name="view_mode">list,form,graph,calendar</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Buat penilaian Halaqoh baru untuk santri.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem 
+        id="menu_penilaian_quran" 
+        name="Penilaian Halaqoh" 
+        parent="kepesantrenan_halaqoh_menu_categ" 
+        action="action_penilaian_quran" 
+        sequence="15"/>
+</odoo>

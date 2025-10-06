@@ -12,6 +12,7 @@
         <menuitem id="kepesantrenan_menu_categ" name="Kepesantrenan" sequence="10" parent="kesantrian_menu_root" groups="pesantren_kesantrian.group_kesantrian_staff">
                 <menuitem id="kepesantrenan_tahfidz_menu_categ" name="Tahfidzh" sequence="10"/>
                 <menuitem id="kepesantrenan_tahsin_menu_categ" name="Tahsin" sequence="20" />
+                <menuitem id="kepesantrenan_halaqoh_menu_categ" name="Halaqoh" sequence="25" />
                 <menuitem id="kepesantrenan_hadits_menu_categ" name="Hadits" sequence="30" />
                 <menuitem id="kepesantrenan_kepengasuhan_menu_categ" name="Kepengasuhan" sequence="40" />
         </menuitem>    
@@ -22,6 +23,7 @@
         <menuitem id="pengaturan_menu_categ" name="Pengaturan" sequence="40" parent="kesantrian_menu_root" groups="pesantren_kesantrian.group_kesantrian_manager">
             <menuitem id="pengaturan_pesantren_menu_categ" name="Pesantren" sequence="10" />
             <menuitem id="pengaturan_tahfidz_menu_categ" name="Tahfidzh" sequence="20" />
+            <menuitem id="pengaturan_halaqoh_menu_categ" name="halaqoh" sequence="20" />
             <menuitem id="pengaturan_tahsin_menu_categ" name="Tahsin" sequence="25" />
             <menuitem id="pengaturan_kepengasuhan_menu_categ" name="Kepengasuhan" sequence="30" />
 
