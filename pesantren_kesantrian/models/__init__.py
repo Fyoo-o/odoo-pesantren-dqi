@@ -16,6 +16,7 @@ from . import tahfidz_hadits
 from . import res_partner
 from . import tahfidz_quran
 from . import absen_tahsin
+from . import absen_halaqoh, penilaian_quran, sesi_halaqoh
 from . import tahsin_quran
 from . import res_users
 from . import keterangan
