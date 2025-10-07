@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- 🧱 Inherit dari view form aslinya -->
+        <record id="cdn_absen_halaqoh_view_form_guruquran_inherit" model="ir.ui.view">
+            <field name="name">cdn.absen_halaqoh.guruquran.form.inherit</field>
+            <field name="model">cdn.absen_halaqoh</field>
+            <field name="inherit_id" ref="pesantren_kesantrian.cdn_absen_halaqoh_view_form"/>
+            <field name="arch" type="xml">
+
+                <!-- Ubah judul form -->
+                <xpath expr="//form" position="attributes">
+                    <attribute name="string">Absensi Halaqoh Guru Quran</attribute>
+                </xpath>
+
+                <!-- Jika ingin menambah field khusus (opsional) -->
+                <!--
+                <xpath expr="//group/group/field[@name='keterangan']" position="after">
+                    <field name="catatan_tambahan" string="Catatan Guru Quran"/>
+                </xpath>
+                -->
+            </field>
+        </record>
+
+        <!-- 🧱 Inherit dari list view aslinya -->
+        <record id="cdn_absen_halaqoh_view_tree_guruquran_inherit" model="ir.ui.view">
+            <field name="name">cdn.absen_halaqoh.guruquran.tree.inherit</field>
+            <field name="model">cdn.absen_halaqoh</field>
+            <field name="inherit_id" ref="pesantren_kesantrian.cdn_absen_halaqoh_view_tree"/>
+            <field name="arch" type="xml">
+                <!-- Ganti label kalau mau -->
+                <xpath expr="//list" position="attributes">
+                    <attribute name="string">Daftar Absensi Halaqoh Guru Quran</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- 🔗 Action khusus untuk modul guruquran -->
+        <record id="cdn_absen_halaqoh_action_guruquran" model="ir.actions.act_window">
+            <field name="name">Absensi Halaqoh</field>
+            <field name="res_model">cdn.absen_halaqoh</field>
+            <field name="view_mode">list,form</field>
+            <field name="view_id" ref="cdn_absen_halaqoh_view_tree_guruquran_inherit"/>
+        </record>
+
+        <!-- 🧭 Menu di bawah menu utama modul guruquran -->
+        <menuitem id="cdn_absen_halaqoh_menu_act" name="Absensi Halaqoh" parent="pesantren_guru.absensi_pengajar" action="cdn_absen_halaqoh_action_guruquran" sequence="10" groups="pesantren_guruquran.group_guru_quran_staff" />
+
+    </data>
+</odoo>

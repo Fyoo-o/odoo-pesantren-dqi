@@ -44,10 +44,14 @@ class Penilaian(models.Model):
             ('jns_pegawai', 'in', ['guruquran','guru,guruquran', 'musyrif,guruquran', 'musyrif,guru,guruquran'])
         ], limit=1)
     )
-    tipe                = fields.Selection(string='Tipe', selection=[
-                            ('Ujian Juz','Ujian Juz'),
-                            ('Ujian Tahfidz','Ujian Tahfidz'),
-                            ('Ujian Tasmi','Ujian Tasmi')], required=True)
+    tipe = fields.Selection(string='Tipe', selection=[
+    ('Ujian Juz', 'Ujian Juz'),
+    ('Ujian Tahfidz', 'Ujian Tahfidz'),
+    ('Ujian Tasmi', 'Ujian Tasmi'),
+    ('Ujian Tahsin', 'Ujian Tahsin'),
+    ('Ujian Harian', 'Ujian Harian'),
+    ('Ujian Bulanan', 'Ujian Bulanan'),
+    ], required=True)
     state               = fields.Selection(string='Status', selection=[('draft', 'Draft'), ('done', 'Done')], default='draft')
     penilaian_santri_ids       = fields.One2many(comodel_name='cdn.penilaian_santri_lines', inverse_name='penilaian_santri_id', string='Penilaian Santri')
 

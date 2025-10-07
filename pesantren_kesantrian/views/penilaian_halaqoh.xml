@@ -69,31 +69,26 @@
                     <notebook>
                         <!-- TAB TAHFIDZ -->
                        <page string="Tahfidz">
-    <!-- Tampilkan Tahfidz Terakhir (Referensi) -->
-                        <group string="Tahfidz Terakhir" colspan="4" invisible="siswa_id == False">
-                            <group>
-                                <field name="last_surah_id" readonly="1"/>
-                                <field name="last_ayat_akhir" readonly="1"/>
+                            <!-- Info Tahfidz Terakhir -->
+                            <group string="Tahfidz Terakhir" colspan="4" invisible="siswa_id == False">
+                                <group>
+                                    <field name="last_surah_id" readonly="1"/>
+                                    <field name="last_ayat_akhir" readonly="1"/>
+                                </group>
                             </group>
-                        </group>
-
-                        <!-- Form Input Penilaian Baru -->
-                        <group string="Hafalan Baru">
-                            <group>
-                                <field name="surah_id"/>
-                                <field name="ayat_awal"/>
-                                <field name="ayat_akhir"/>
-                            </group>
-                            <group>
-                                <field name="jml_baris"/>
-                                <field name="nilai_hafalan"/>
-                                <field name="predikat" readonly="1"/>
-                            </group>
-                        </group>
-                        <group string="Keterangan">
-                            <field name="keterangan_tahfidz" nolabel="1"/>
-                        </group>
-                    </page>
+                            <!-- Tabel Dinamis Setoran Hafalan -->
+                            <field name="tahfidz_line_ids">
+                                <list editable="bottom">
+                                    <field name="surah_id"/>
+                                    <field name="ayat_awal"/>
+                                    <field name="ayat_akhir"/>
+                                    <field name="jml_baris"/>
+                                    <field name="nilai_hafalan"/>
+                                    <field name="predikat" readonly="1"/>
+                                    <field name="keterangan"/>
+                                </list>
+                            </field>
+                        </page>
 
                         <!-- TAB TAHsin HARIAN -->
                         <page string="Tahsin Harian">
@@ -108,6 +103,9 @@
                             </group>
                             <group string="Penilaian">
                                 <group>
+                                    <field name="surah_id"/>
+                                    <field name="ayat_awal"/>
+                                    <field name="ayat_akhir"/>
                                     <field name="nilai_tajwid_harian"/>
                                     <field name="nilai_makhroj_harian"/>
                                 </group>

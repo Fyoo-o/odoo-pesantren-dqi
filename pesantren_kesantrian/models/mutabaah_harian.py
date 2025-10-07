@@ -11,7 +11,7 @@ class Mutabaah_harian(models.Model):
    
     name        = fields.Char(string='No. Referensi', readonly=True)
     tgl         = fields.Date('Tgl Mutabaah', required=True, default=lambda self: date.today())
-    sesi_id     = fields.Many2one(comodel_name='cdn.mutabaah.sesi', string='Sesi', required=True)
+    sesi_id     = fields.Many2one(comodel_name='cdn.mutabaah.sesi', string='Sesi')
     siswa_id    = fields.Many2one('cdn.siswa', string='Santri',  ondelete='cascade', required=True)
     halaqoh_id  = fields.Many2one('cdn.halaqoh', string='Halaqoh', readonly=True, related='siswa_id.halaqoh_id')
     

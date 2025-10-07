@@ -37,7 +37,7 @@ class TahsinQuran(models.Model):
 
 
     barcode             = fields.Char(string="Kartu Santri", related="siswa_id.barcode_santri", readonly=True)
-    sesi_tahsin_id      = fields.Many2one('cdn.sesi_tahsin', string='Sesi', required=True)
+    sesi_tahsin_id      = fields.Many2one('cdn.sesi_tahsin', string='Sesi')
     kamar_id    = fields.Many2one('cdn.kamar_santri', string='Kamar', related='siswa_id.kamar_id', readonly=True)
     # halaqoh_id  = fields.Many2one('cdn.halaqoh', string='Halaqoh', related='siswa_id.halaqoh_id', readonly=True)
     musyrif_id  = fields.Many2one('hr.employee', string='Musyrif', related='siswa_id.musyrif_id', readonly=True)
