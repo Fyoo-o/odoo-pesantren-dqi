@@ -62,7 +62,7 @@
                                    options="{'no_create': True, 'no_open': True}"/>
                         </group>
                         <group>
-                            <field name="sesi_id" required="1"/>
+                            <field name="sesi_id"/>
                         </group>
                     </group>
 
