@@ -40,9 +40,9 @@ class TahfidzTahsin(models.Model):
     ], default='draft', string='Status')
 
     # === TAB TAHFIDZ ===
-    surah_id = fields.Many2one('cdn.surah', string='Surah')
-    ayat_awal = fields.Many2one('cdn.ayat', string='Ayat Awal', domain="[('surah_id','=',surah_id)]")
-    ayat_akhir = fields.Many2one('cdn.ayat', string='Ayat Akhir', domain="[('surah_id','=',surah_id)]")
+    surah_id = fields.Many2one('cdn.surah', compute='_compute_main_fields', string='Surah')
+    ayat_awal = fields.Many2one('cdn.ayat', string='Ayat Awal', compute='_compute_main_fields', domain="[('surah_id','=',surah_id)]")
+    ayat_akhir = fields.Many2one('cdn.ayat', string='Ayat Akhir', compute='_compute_main_fields', domain="[('surah_id','=',surah_id)]")
     jml_baris = fields.Integer(string='Jumlah Maqro')
     nilai_hafalan = fields.Integer(string='Nilai Hafalan', default=75)
     predikat = fields.Selection([
@@ -99,7 +99,32 @@ class TahfidzTahsin(models.Model):
                 rec.predikat = 'c+'
             else:
                 rec.predikat = 'c'
+                
+    @api.depends('tahfidz_line_ids', 'tahfidz_line_ids.sequence')
+    def _compute_main_fields(self):
+        for rec in self:
+            lines = rec.tahfidz_line_ids
+            if lines:
+                # urutkan manual berdasarkan sequence saja (aman tanpa id)
+                sorted_lines = lines.sorted(key=lambda r: (r.sequence or 0))
+                first_line = sorted_lines[0]
+                last_line = sorted_lines[-1]
 
+                rec.surah_id = last_line.surah_id.id
+                rec.ayat_awal = first_line.ayat_awal.id
+                rec.ayat_akhir = last_line.ayat_akhir.id
+            else:
+                rec.surah_id = False
+                rec.ayat_awal = False
+                rec.ayat_akhir = False
+
+
+    @api.model
+    def create(self, vals):
+        record = super().create(vals)
+        record._compute_main_fields()  # isi surah_id, ayat_awal, ayat_akhir
+        return record
+    
     @api.depends('siswa_id', 'tahfidz_line_ids.surah_id', 'tahfidz_line_ids.ayat_akhir')
     def _compute_last_tahfidz(self):
         for rec in self:

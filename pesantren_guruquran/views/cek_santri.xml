@@ -17,7 +17,8 @@
                     <field name="ruang_kelas_id" readonly='1'/>
                     <field name="halaqoh_id" string="Halaqah" readonly='1'/>
                     <field name="penanggung_jawab_id" readonly='1'/>
-                    <field name="last_tahfidz" readonly='1'/>
+                    <field name="tahfidz_terakhir_id" readonly='1'/>
+                    <!-- <field name="last_tahfidz" readonly='1'/> -->
                 </list>
             </field>
         </record>
@@ -65,13 +66,15 @@
                                 <field name="tahfidz_quran_ids">
                                     <list create="0" edit="0" delete="0">
                                         <field name="tanggal" />
-                                        <field name="sesi_tahfidz_id"/>
+                                        <!-- <field name="sesi_tahfidz_id"/> -->
+                                        <field name="sesi_id"/>
                                         <field name="surah_id"/>
                                         <field name="ayat_awal"/>
                                         <field name="ayat_akhir"/>
-                                        <field name="nilai_id"/>
-                                        <field name="nilai" />
-                                        <field name="predikat" />
+                                        <!-- <field name="nilai_id"/> -->
+                                        <!-- <field name="nilai" /> -->
+                                         <field name="nilai_hafalan"/>
+                                        <!-- <field name="predikat" /> -->
                                         <field name="ustadz_id"/>
                                         <field name="state"/>
                                     </list>

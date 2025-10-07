@@ -106,10 +106,10 @@
                                     <field name="surah_id"/>
                                     <field name="ayat_awal"/>
                                     <field name="ayat_akhir"/>
-                                    <field name="nilai_tajwid_harian"/>
-                                    <field name="nilai_makhroj_harian"/>
                                 </group>
                                 <group>
+                                    <field name="nilai_tajwid_harian"/>
+                                    <field name="nilai_makhroj_harian"/>
                                     <field name="nilai_mad_harian"/>
                                 </group>
                             </group>

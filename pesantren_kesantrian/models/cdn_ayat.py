@@ -3,7 +3,8 @@ from odoo import api, fields, models
 class Ayah(models.Model):
   _name = 'cdn.ayat'
   _description = 'Data Ayat Al-Quran'
-
+  # _rec_name = 'display_name'
+  
   name = fields.Integer(string='Ayat ke')
   juz = fields.Integer(string='Juz')
   manzil = fields.Integer(string='Manzil')
@@ -27,3 +28,12 @@ class Ayah(models.Model):
         record.ayat_sajda = 'y'
       else:
         record.ayat_sajda = 'n'
+
+    # Tambahkan ini ⬇️⬇️⬇️
+  @api.depends('name', 'surah_id')
+  def name_get(self):
+      result = []
+      for rec in self:
+          display = f"{rec.surah_id.name} - Ayat {rec.name}"
+          result.append((rec.id, display))
+      return result

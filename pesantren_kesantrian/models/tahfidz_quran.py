@@ -215,6 +215,7 @@ class TahfidzQuran(models.Model):
     tanggal         = fields.Date(string='Tgl Tahfidz', required=True)
     siswa_id        = fields.Many2one('cdn.siswa', string='Santri', required=True , ondelete='cascade')
     last_tahfidz    = fields.Many2one('cdn.tahfidz_quran', string='Tahfidz Terakhir', related='siswa_id.last_tahfidz', readonly=True, store=True)
+    # last_tahfidz    = fields.Related('siswa_id.tahfidz_terakhir_id', string='Tahfidz Terakhir', readonly=True, store=True)
     halaqoh_id      = fields.Many2one('cdn.halaqoh', string='Halaqoh', readonly=True)
     ustadz_id       = fields.Many2one('hr.employee', string='Ustadz')
     sesi_tahfidz_id = fields.Many2one('cdn.sesi_tahfidz', string='Sesi', required=True)
