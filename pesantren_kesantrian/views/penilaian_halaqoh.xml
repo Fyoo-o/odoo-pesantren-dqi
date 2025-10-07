@@ -14,7 +14,7 @@
         <field name="name">cdn.penilaian_quran.tree</field>
         <field name="model">cdn.penilaian_quran</field>
         <field name="arch" type="xml">
-            <list default_order="tanggal desc" create="false">
+            <list default_order="name desc" create="false">
                 <field name="name"/>
                 <field name="tanggal"/>
                 <field name="siswa_id"/>
