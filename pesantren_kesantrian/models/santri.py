@@ -8,6 +8,25 @@ class Santri(models.Model):
     ]
     partner_id          = fields.Many2one('res.partner', string='Siswa', required=True)
     last_tahfidz        = fields.Many2one('cdn.tahfidz_quran', string='Tahfidz Terakhir', readonly=True )
+    tahfidz_terakhir_id = fields.Many2one(
+        'cdn.penilaian_quran',
+        string='Tahfidz Terakhir',
+        compute='_compute_tahfidz_terakhir',
+        store=False,
+        readonly=True,
+        ondelete='set null'
+    )
+    def action_view_tahfidz_terakhir(self):
+        self.ensure_one()
+        if not self.tahfidz_terakhir_id:
+            raise UserError("Belum ada data tahfidz terakhir untuk santri ini.")
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'cdn.penilaian_quran',
+            'view_mode': 'form',
+            'res_id': self.tahfidz_terakhir_id.id,
+            'target': 'current',
+        }    
     ruang_kelas_id      = fields.Many2one('cdn.ruang_kelas', string='Ruang Kelas')
     kamar_id            = fields.Many2one('cdn.kamar_santri', string='Kamar', readonly=True)
     musyrif_id          = fields.Many2one('hr.employee', related='kamar_id.musyrif_id', string='Musyrif/Pembina', readonly=True)
@@ -35,14 +54,15 @@ class Santri(models.Model):
         compute='_compute_pengganti_all_ids',
         store=False
     )
-    tahfidz_quran_ids   = fields.One2many('cdn.tahfidz_quran', 'siswa_id', string='Tahfidz Quran', readonly=True)
+    tahfidz_quran_ids   = fields.One2many('cdn.penilaian_quran', 'siswa_id', string='Tahfidz Quran', readonly=True)
 
     #state info smart button
     kesehatan_count     = fields.Integer(string='Kesehatan', compute='_compute_count_kesehatan')
     pelanggaran_count   = fields.Integer(string='Pelanggaran', compute='_compute_count_pelanggaran')
     prestasi_siswa_count = fields.Integer(string='Prestasi', compute='_compute_count_prestasi')
-    tahfidz_quran_count = fields.Integer(string='Tahfidz Quran', compute='_compute_count_tahfidz_quran')
-
+    # tahfidz_quran_count = fields.Integer(string='Tahfidz Quran', compute='_compute_count_tahfidz_quran')
+    
+    penilaian_quran_count = fields.Integer(string='Penilaian Quran', compute='_compute_count_penilaian_quran')
     saldo_tagihan_count = fields.Float(string='Saldo Tagihan', compute='_compute_count_saldo_tagihan', widget="integer")
     uang_saku_count = fields.Float(string='Uang Saku', compute='_compute_count_uang_saku', widget="integer")
     
@@ -60,9 +80,29 @@ class Santri(models.Model):
     def _compute_count_prestasi(self):
         for siswa in self:
             siswa.prestasi_siswa_count = self.env['cdn.prestasi_siswa'].search_count([('siswa_id', '=', siswa.id)])
-    def _compute_count_tahfidz_quran(self):
+    # def _compute_count_tahfidz_quran(self):
+    #     for siswa in self:
+    #         siswa.tahfidz_quran_count = self.env['cdn.tahfidz_quran'].search_count([('siswa_id', '=', siswa.id)])
+
+    def _compute_count_penilaian_quran(self):
         for siswa in self:
-            siswa.tahfidz_quran_count = self.env['cdn.tahfidz_quran'].search_count([('siswa_id', '=', siswa.id)])
+            siswa.penilaian_quran_count = self.env['cdn.penilaian_quran'].search_count([
+                ('siswa_id', '=', siswa.id)
+            ])
+    @api.depends('tahfidz_quran_ids.state', 'tahfidz_quran_ids.tanggal')
+    def _compute_tahfidz_terakhir(self):
+        for siswa in self:
+            last = self.env['cdn.penilaian_quran'].search([
+                ('siswa_id', '=', siswa.id),
+                ('state', '=', 'done')
+            ], order='tanggal desc, id desc', limit=1)
+            siswa.tahfidz_terakhir_id = last.id if last else False
+    def action_confirm(self):
+        for rec in self:
+            rec.state = 'done'
+            rec._compute_last_tahfidz()
+            if rec.siswa_id:
+                rec.siswa_id._compute_tahfidz_terakhir()            
 
     def _compute_count_saldo_tagihan(self):
         for siswa in self:
@@ -337,12 +377,25 @@ class Santri(models.Model):
             },
             'domain': [('siswa_id', '=', self.id)]
         }
+    # def action_tahfidz_quran(self):
+    #     return {
+    #         'name': 'Tahfidz Quran',
+    #         'view_type': 'form',
+    #         'view_mode': 'list,form',
+    #         'res_model': 'cdn.tahfidz_quran',
+    #         'type': 'ir.actions.act_window',
+    #         'target': 'current',
+    #         'context': {
+    #             'default_siswa_id': self.id,
+    #         },
+    #         'domain': [('siswa_id', '=', self.id)]
+    #     }
     def action_tahfidz_quran(self):
         return {
             'name': 'Tahfidz Quran',
             'view_type': 'form',
             'view_mode': 'list,form',
-            'res_model': 'cdn.tahfidz_quran',
+            'res_model': 'cdn.penilaian_quran',
             'type': 'ir.actions.act_window',
             'target': 'current',
             'context': {
@@ -350,6 +403,7 @@ class Santri(models.Model):
             },
             'domain': [('siswa_id', '=', self.id)]
         }
+
 
     # def action_saldo_tagihan(self):
     #     return {

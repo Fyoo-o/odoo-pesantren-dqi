@@ -70,7 +70,8 @@
                                 <field name="street2" string="RT / RW"/>
                                 <field name="kota_id" domain="[('propinsi_id','=',propinsi_id)]" />
                                 <field name="zip" string="Kode Pos"  />
-                                <field name="last_tahfidz" />
+                                <!-- <field name="last_surah_id" readonly="1"/> -->
+                                <field name="tahfidz_terakhir_id" readonly="1" context="{'form_view_ref': 'pesantren_kesantrian.cdn_penilaian_quran_form'}"/>
                             </group>
                             
                             

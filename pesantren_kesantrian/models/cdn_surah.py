@@ -3,7 +3,8 @@ from odoo import api, fields, models
 class Surah(models.Model):
   _name = 'cdn.surah'
   _description = 'Data Surah Al-Quran'
-
+  # _rec_name = 'id_name'
+  
   id_name = fields.Char(string='Nama Surah')
   number = fields.Integer(string='Nomor Surah')
   name = fields.Char(string='Surah in ID')
