@@ -54,7 +54,7 @@ class AbsenTahsinQuran(models.Model):
         ('Done','Selesai'),
     ], default='Draft', string='Status')
     penanggung_jawab_id = fields.Many2one('hr.employee', string='Penanggung Jawab', related='halaqoh_id.penanggung_jawab_id', readonly=True, store=True)
-    sesi_id         = fields.Many2one('cdn.sesi_tahsin', string='Sesi', required=True, states={'Done': [('readonly', True)]})
+    sesi_id         = fields.Many2one('cdn.sesi_tahsin', string='Sesi',states={'Done': [('readonly', True)]})
     keterangan      = fields.Char(string='Keterangan')
     def action_proses(self):
         self.state = 'Proses'

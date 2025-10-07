@@ -35,17 +35,30 @@ class Absenhalaqoh(models.Model):
             ('jns_pegawai', 'in', ['guruquran','guru,guruquran', 'musyrif,guruquran', 'musyrif,guru,guruquran'])
         ]
 
+    # def _get_default_guru(self):
+    #     user = self.env.user
+    #     if user.has_group('pesantren_guru.group_guru_staff'):
+    #         employee = self.env['hr.employee'].search([('user_id', '=', user.id)], limit=1)
+    #         if employee:
+    #             return employee.id
+    #     return False
+    
     def _get_default_guru(self):
         user = self.env.user
-        if user.has_group('pesantren_guru.group_guru_staff'):
-            user = self.env['hr.employee'].search([('user_id', '=', user.id)])  
-            return user.id
-        return False
-
+        employee = self.env['hr.employee'].search([('user_id', '=', user.id)], limit=1)
+        return employee.id if employee else False
 
     name            = fields.Date(string='Tgl Absen', required=True, default=fields.Date.context_today, states={'Done': [('readonly', True)]})
     halaqoh_id      = fields.Many2one('cdn.halaqoh', string='Halaqoh', required=True, domain=_domain_halaqoh_id, states={'Done': [('readonly', True)]})
-    ustadz_id       = fields.Many2one('hr.employee', string='Ustadz',domain=_get_domain_guru, default=_get_default_guru ,required=True, states={'Done': [('readonly', True)]})
+    # ustadz_id       = fields.Many2one('hr.employee', string='Ustadz',domain=_get_domain_guru, default=_get_default_guru ,required=True, states={'Done': [('readonly', True)]})
+    ustadz_id = fields.Many2one(
+        'hr.employee',
+        string='Ustadz',
+        domain=_get_domain_guru,
+        default=_get_default_guru,
+        required=True,
+        states={'Done': [('readonly', True)]}
+    )
     fiscalyear_id   = fields.Many2one('cdn.ref_tahunajaran', string='Tahun Ajaran', readonly=True, default=lambda self:self.env.user.company_id.tahun_ajaran_aktif.id, states={'Done': [('readonly', True)]})
     absen_ids       = fields.One2many('cdn.absen_halaqoh_line', 'absen_id', string='Absen', states={'Done': [('readonly', True)]})
     state           = fields.Selection([
@@ -54,7 +67,7 @@ class Absenhalaqoh(models.Model):
         ('Done','Selesai'),
     ], default='Draft', string='Status')
     penanggung_jawab_id = fields.Many2one('hr.employee', string='Penanggung Jawab', related='halaqoh_id.penanggung_jawab_id', readonly=True, store=True)
-    sesi_id         = fields.Many2one('cdn.sesi_halaqoh', string='Sesi', required=True, states={'Done': [('readonly', True)]})
+    sesi_id         = fields.Many2one('cdn.sesi_halaqoh', string='Sesi', states={'Done': [('readonly', True)]})
     keterangan      = fields.Char(string='Keterangan')
     def action_proses(self):
         self.state = 'Proses'

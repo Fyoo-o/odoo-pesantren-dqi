@@ -95,7 +95,7 @@
         </record>
 
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="penilaian_santri_menu_act" name="Penilaian Santri" parent="pesantren_guru.aktivitas_penilaian_menu_categ" action="cdn_penilaian_santri_action" sequence="10" groups="pesantren_guruquran.group_guru_quran_staff" />
+        <menuitem id="penilaian_santri_menu_act" name="Penilaian Santri" parent="pesantren_guru.tahfidz_tahsin" action="cdn_penilaian_santri_action" sequence="5" groups="pesantren_guruquran.group_guru_quran_staff" />
     
     </data>
     

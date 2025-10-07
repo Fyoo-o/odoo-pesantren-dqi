@@ -78,6 +78,7 @@
         'views/absen_malam.xml',
         'views/temp.xml',
         'views/inherit_button_pay.xml',
+        'views/penilain_halaqoh.xml',
         'views/invoices_wizard.xml',
         # wizard
         

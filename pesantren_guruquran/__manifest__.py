@@ -62,7 +62,9 @@
         # views
         'views/cek_santri.xml',
         'views/guru_quran.xml',
+        'views/penilaian_quran.xml',
         # 'views/perijinan.xml',
+        'views/absen_halaqoh.xml',
         'views/absen_tahfidz.xml',
         'views/tahfidz_quran.xml',
         'views/absen_tahsin.xml',
