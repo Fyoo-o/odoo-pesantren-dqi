@@ -85,6 +85,29 @@ class Absenhalaqoh(models.Model):
 
     def action_confirm(self):
         self.state = 'Done'
+        
+    def action_sync_penilaian(self):
+        Penilaian = self.env['cdn.penilaian_quran']
+
+        for record in self:
+            for line in record.absen_ids.filtered(lambda l: l.kehadiran == 'Hadir'):
+                # Cek apakah sudah ada penilaian dengan kombinasi yang sama
+                existing = Penilaian.search([
+                    ('tanggal', '=', record.name),
+                    ('siswa_id', '=', line.siswa_id.id),
+                    ('halaqoh_id', '=', record.halaqoh_id.id),
+                    ('sesi_id', '=', record.sesi_id.id),
+                ], limit=1)
+
+                if not existing:
+                    Penilaian.create({
+                        'tanggal': record.name,
+                        'siswa_id': line.siswa_id.id,
+                        'halaqoh_id': record.halaqoh_id.id,
+                        'ustadz_id': record.ustadz_id.id,
+                        'sesi_id': record.sesi_id.id,
+                        'state': 'draft',
+                    })
 
 
     @staticmethod

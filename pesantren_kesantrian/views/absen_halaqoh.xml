@@ -36,6 +36,7 @@
                     <!-- <field name="state" widget="statusbar"/>         -->
                         <button string="Proses" name="action_proses" type="object" class="oe_highlight"  invisible="state != 'Draft'"/>
                         <button string="Selesai" name="action_confirm" type="object" class="oe_highlight" invisible="state != 'Proses'"/>
+                        <button string="Sinkronkan Penilaian" name="action_sync_penilaian" type="object" class="oe_highlight" invisible="state == 'Draft'"/>
                         <field name="state" widget="statusbar" />
                     </header>
                     <sheet>
