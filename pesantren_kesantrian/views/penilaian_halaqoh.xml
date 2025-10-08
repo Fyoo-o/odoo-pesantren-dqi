@@ -103,9 +103,9 @@
                             </group>
                             <group string="Penilaian">
                                 <group>
-                                    <field name="surah_id"/>
-                                    <field name="ayat_awal"/>
-                                    <field name="ayat_akhir"/>
+                                    <field name="surah_id_harian"/>
+                                    <field name="ayat_awal_harian"/>
+                                    <field name="ayat_akhir_harian"/>
                                 </group>
                                 <group>
                                     <field name="nilai_tajwid_harian"/>
@@ -131,10 +131,13 @@
                             </group>
                             <group string="Penilaian">
                                 <group>
-                                    <field name="nilai_tajwid_ujian"/>
-                                    <field name="nilai_makhroj_ujian"/>
+                                    <field name="surah_id_ujian"/>
+                                    <field name="ayat_awal_ujian"/>
+                                    <field name="ayat_akhir_ujian"/>
                                 </group>
                                 <group>
+                                    <field name="nilai_tajwid_ujian"/>
+                                    <field name="nilai_makhroj_ujian"/>
                                     <field name="nilai_mad_ujian"/>
                                 </group>
                             </group>
@@ -169,6 +172,11 @@
                 </group>
                 
                 <filter name="filter_today" string="Hari Ini" domain="[('tanggal','=',context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Hari Ini &amp; Kemarin" name="today_yesterday"
+                        domain="[
+                            ('tanggal', '&gt;=', (context_today() - relativedelta(days=1))),
+                            ('tanggal', '&lt;=', context_today())
+                        ]"/>
                 <filter name="filter_draft" string="Draft" domain="[('state','=','draft')]"/>
                 <filter name="filter_done" string="Selesai" domain="[('state','=','done')]"/>
             </search>

@@ -53,8 +53,9 @@
     'data': [
         'security/groups.xml',
         'security/ir.model.access.csv',
+        
         # wizard
-
+        'wizard/absensi_filter_wizard.xml',
          # data
         'views/menu.xml',
         # views

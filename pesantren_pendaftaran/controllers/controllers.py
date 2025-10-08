@@ -1400,7 +1400,7 @@ class PesantrenPendaftaran(http.Controller):
                         <div class="card-description">
                             <div>
                                 Jika memerlukan bantuan:<br>
-                                <strong>Telp / WA: 0853-9051-1124</strong>
+                                <strong>Telp / WA: 0822-5207-9785</strong>
                             </div>
                         </div>
                         <div class="text-center pb-4">
@@ -2283,7 +2283,6 @@ Terima kasih!
                                 </p>
                                 <ul style="margin: 0; padding-left: 20px; color: #555555;">
                                     <li>0822 5207 9785</li>
-                                    <li>0853 9051 1124</li>
                                 </ul>
                                 <p style="margin: 20px 0;">
                                     Kami berharap portal ini dapat membantu Bapak/Ibu memantau perkembangan putra/putri selama berada di pesantren.
@@ -2745,7 +2744,7 @@ class PesantrenPsbBantuan(http.Controller):
                             </div>
                             <div class="text-secondary mb-4">
                                 <span>Informasi PSB & Konsultasi Pendidikan:</span><br>
-                                <a href="#" class="text-decoration-none" style="color: purple;">0853-9051-1124</a><br>
+                                <a href="#" class="text-decoration-none" style="color: purple;">0822-5207-9785</a><br>
                             </div>
                             <h5>Media Sosial Kami</h5>
                             <span class="text-uppercase" style="color: purple;">Instagram : @daqubanat_</span><br>

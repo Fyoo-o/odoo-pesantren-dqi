@@ -189,111 +189,117 @@ export class TahfidzCardList extends Component {
         });
     }
 
-    async onTahfidzRowClick(tahfidz) {
-        try {
-            const tahfidzRecord = await this.orm.searchRead(
-                'cdn.tahfidz_quran', 
-                [
-                    ['siswa_id.name', '=', tahfidz.name],
-                    ['jml_baris', '=', tahfidz.total_baris]
-                ], 
-                ['id']
-            );
-    
-            if (tahfidzRecord.length > 0) {
+   async onTahfidzRowClick(tahfidz) {
+    try {
+        const record = await this.orm.searchRead(
+            'cdn.penilaian_quran',
+            [
+                ['siswa_id.name', '=', tahfidz.name],
+                ['state', '=', 'done']
+            ],
+            ['id'],
+            { order: 'tanggal desc', limit: 1 }
+        );
 
-                this.actionService.doAction({
-                    type: 'ir.actions.act_window',
-                    res_model: 'cdn.tahfidz_quran',
-                    res_id: tahfidzRecord[0].id,
-                    views: [[false, 'form']],
-                    target: 'current'
-                });
-            }
-        } catch (error) {
-            console.error("Error navigating to tahfidz record:", error);
+        if (record.length > 0) {
+            this.actionService.doAction({
+                type: 'ir.actions.act_window',
+                res_model: 'cdn.penilaian_quran',
+                res_id: record[0].id,
+                views: [[false, 'form']],
+                target: 'current'
+            });
         }
+    } catch (error) {
+        console.error("Error navigating to tahfidz record:", error);
     }
+}
+
 
     async fetchTahfidzTertinggi() {
-        try {
-            this.state.isLoading = true;
-    
-            const filterDomain = [
-                ['state', '=', 'done'],
-                ['siswa_id', '!=', false],
-                ['jml_baris', '>', 0]
-            ];
-    
-            if (this.state.currentStartDate) {
-                filterDomain.push(['tanggal', '>=', this.state.currentStartDate]);
-            }
-            if (this.state.currentEndDate) {
-                filterDomain.push(['tanggal', '<=', this.state.currentEndDate]);
-            }
-    
-            const tahfidzRecords = await this.orm.searchRead(
-                'cdn.tahfidz_quran',
-                filterDomain,
-                [
-                    'siswa_id',
-                    'halaqoh_id',
-                    'jml_baris',
-                    'state',
-                    'tanggal'
-                ],
-                { order: 'jml_baris desc' }
-            );
-    
-            if (!tahfidzRecords || tahfidzRecords.length === 0) {
-                this.state.hasData = false;
-                this.state.topTahfidz = [];
-                return;
-            }
-    
-            const studentTahfidz = {};
-            tahfidzRecords.forEach(record => {
-                if (record.jml_baris > 0) {
-                    const studentName = record.siswa_id[1];
-                    if (!studentTahfidz[studentName] || studentTahfidz[studentName].jml_baris < record.jml_baris) {
-                        studentTahfidz[studentName] = {
-                            student_name: studentName,
-                            jml_baris: record.jml_baris,
-                            kelas: record.halaqoh_id ? record.halaqoh_id[1] : "N/A"
-                        };
-                    }
-                }
-            });
-    
-            let sortedData = Object.entries(studentTahfidz)
-                .map(([name, data]) => ({
-                    name: name,
-                    total_baris: data.jml_baris,
-                    kelas: data.kelas
-                }))
-                .sort((a, b) => b.total_baris - a.total_baris)
-                .slice(0, 10);
-    
-            this.state.topTahfidz = sortedData.map((item, index) => {
-                const tahfidz = {
-                    number: index + 1,
-                    ...item
-                };
-                
-                tahfidz.onClick = () => this.onTahfidzRowClick(tahfidz);
-                return tahfidz;
-            });
-    
-            this.state.hasData = this.state.topTahfidz.length > 0;
-    
-        } catch (error) {
-            console.error("Error fetching tahfidz data:", error);
+    try {
+        this.state.isLoading = true;
+
+        // 🔍 Filter hanya penilaian yang selesai
+        const domain = [['state', '=', 'done']];
+
+        if (this.state.currentStartDate) {
+            domain.push(['tanggal', '>=', this.state.currentStartDate]);
+        }
+        if (this.state.currentEndDate) {
+            domain.push(['tanggal', '<=', this.state.currentEndDate]);
+        }
+
+        // Ambil semua penilaian done
+        const penilaianRecords = await this.orm.searchRead(
+            'cdn.penilaian_quran',
+            domain,
+            ['id', 'siswa_id', 'tanggal']
+        );
+
+        if (!penilaianRecords.length) {
             this.state.topTahfidz = [];
             this.state.hasData = false;
-        } finally {
-            this.state.isLoading = false;
+            return;
         }
+
+        const penilaianIds = penilaianRecords.map(p => p.id);
+
+        // 🔹 Ambil detail tahfidz line
+        const tahfidzLines = await this.orm.searchRead(
+            'cdn.penilaian_quran_line',
+            [['penilaian_id', 'in', penilaianIds]],
+            ['penilaian_id', 'jml_baris']
+        );
+
+        if (!tahfidzLines.length) {
+            this.state.topTahfidz = [];
+            this.state.hasData = false;
+            return;
+        }
+
+        // 🔢 Hitung total jml_baris per santri
+        const totalPerSantri = {};
+        for (const line of tahfidzLines) {
+            const penilaian = penilaianRecords.find(p => p.id === line.penilaian_id[0]);
+            if (!penilaian || !penilaian.siswa_id) continue;
+
+            const siswaName = penilaian.siswa_id[1];
+            if (!totalPerSantri[siswaName]) {
+                totalPerSantri[siswaName] = {
+                    name: siswaName,
+                    total_baris: 0
+                };
+            }
+            totalPerSantri[siswaName].total_baris += line.jml_baris || 0;
+        }
+
+        // 🔽 Urutkan dan ambil top 10
+        const sortedData = Object.values(totalPerSantri)
+            .sort((a, b) => b.total_baris - a.total_baris)
+            .slice(0, 10);
+
+        // Tambahkan nomor urut + klik action
+        this.state.topTahfidz = sortedData.map((item, index) => {
+            const tahfidz = {
+                number: index + 1,
+                ...item
+            };
+
+            tahfidz.onClick = () => this.onTahfidzRowClick(tahfidz);
+            return tahfidz;
+        });
+
+        this.state.hasData = this.state.topTahfidz.length > 0;
+    } catch (error) {
+        console.error("Error fetching tahfidz data:", error);
+        this.state.topTahfidz = [];
+        this.state.hasData = false;
+    } finally {
+        this.state.isLoading = false;
     }
+}
+
 }
 
 TahfidzCardList.template = 'owl.TahfidzCardList';

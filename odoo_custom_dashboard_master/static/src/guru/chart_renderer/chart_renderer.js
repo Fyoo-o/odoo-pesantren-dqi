@@ -250,20 +250,14 @@ export class GuruChartRenderer extends Component {
     );
 
       pie2 = await this.orm.call(
-        "cdn.absen_tahfidz_quran_line",
+        "cdn.absen_halaqoh_line",
         "search_read",
         [domain2, ["name", "halaqoh_id", "tanggal", "kehadiran"]],
         { context: this.env.context }
       );
 
-      pie3 = await this.orm.call(
-        "cdn.absen_tahsin_quran_line",
-        "search_read",
-        [domain2, ["name", "halaqoh_id", "tanggal", "kehadiran"]],
-        { context: this.env.context }
-      );
 
-      await this.processData(pie1, pie2, pie3);
+      await this.processData(pie1, pie2);
     } catch (error) {
       console.error("Error fetching data from Odoo:", error);
     } finally {
@@ -623,10 +617,8 @@ export class GuruChartRenderer extends Component {
       let resModel;
       if (this.props.title === "pie1") {
         resModel = "cdn.absensi_siswa_lines";
-      } else if (this.props.title === "pie2") {
-        resModel = "cdn.absen_tahfidz_quran_line";
-      } else if (this.props.title === "pie3") {
-        resModel = "cdn.absen_tahsin_quran_line";
+      }  else if (this.props.title === "pie2") {
+        resModel = "cdn.absen_halaqoh_line";
       }
 
       let domainAction = [];
@@ -645,22 +637,13 @@ export class GuruChartRenderer extends Component {
           ["kehadiran", "=", kehadiran]
           // ["penaggung_jawab_id", "=", session.partner_display_name]
         );
-      } else if (this.props.title === "pie3") {
-        let kehadiran = originalLabel;
-        domainAction.push(
-          ["id", "in", associatedIds],
-          ["kehadiran", "=", kehadiran],
-          // ["penanggung_jawab_id", "=", session.partner_display_name]
-        );
       }
 
       let nameHeader;
       if (this.props.title === "pie1") {
         nameHeader = "Absensi Siswa";
       } else if (this.props.title === "pie2") {
-        nameHeader = "Absensi Tahfidz";
-      } else if (this.props.title === "pie3") {
-        nameHeader = "Absensi Tahsin";
+        nameHeader = "Absensi Halaqoh";
       }
       if (
         this.actionService &&

@@ -1,289 +1,50 @@
 /** @odoo-module **/
-
 import { Component, onWillStart, onMounted, onWillUnmount } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
-import { session } from "@web/session";
 
-export class GuruList extends Component {
-  setup() {
-    this.orm = useService("orm");
-    this.action = useService("action");
-    const today = new Date();
-    this.state = {
-      guruu: [],
-      startDate: new Date(
-        Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1, 0, 0, 1)
-      )
-        .toISOString()
-        .split("T")[0],
-      endDate: new Date(
-        Date.UTC(
-          today.getUTCFullYear(),
-          today.getUTCMonth(),
-          today.getUTCDate(),
-          23,
-          59,
-          59,
-          999
-        )
-      )
-        .toISOString()
-        .split("T")[0],
-    };
-    this.refreshInterval = null;
-    this.countdownInterval = null;
-    this.countdownTime = 10;
-    this.isCountingDown = false;
-    onWillStart(async () => {
-      await this.fetchAllProducts();
-    });
+export class BaseDateFilteredListComponent extends Component {
+    setup() {
+        this.orm = useService("orm");
+        this.action = useService("action");
+        const today = new Date();
 
-    onMounted(() => {
-      this.attachEventListeners();
-      this.filterDataByPeriod();
-    });
-
-    onWillUnmount(() => {
-      // COUNTDOWN
-      if (this.countdownInterval) {
-        clearInterval(this.countdownInterval);
-      }
-    });
-  }
-
-  toggleCountdown() {
-    if (this.isCountingDown) {
-      // Jika sedang countdown, hentikan
-      this.clearIntervals();
-      document.getElementById("timerCountdown").textContent = "";
-      const clockElement = document.getElementById("timerIcon");
-      if (clockElement) {
-        clockElement.classList.add("fas", "fa-clock");
-      }
-    } else {
-      // Jika tidak sedang countdown, mulai baru
-      this.isCountingDown = true; // Set flag sebelum memulai countdown
-      this.startCountdown();
-      const clockElement = document.getElementById("timerIcon");
-      if (clockElement) {
-        clockElement.classList.remove("fas", "fa-clock");
-      }
-    }
-  }
-
-  clearIntervals() {
-    if (this.countdownInterval) {
-      clearInterval(this.countdownInterval);
-      this.countdownInterval = null;
-    }
-    if (this.refreshInterval) {
-      clearInterval(this.refreshInterval);
-      this.refreshInterval = null;
-    }
-    this.countdownTime = 10; // Reset countdown time
-    this.isCountingDown = false; // Reset flag
-  }
-
-  startCountdown() {
-    // Reset dan inisialisasi ulang
-    this.countdownTime = 10;
-    this.clearIntervals(); // Bersihkan interval yang mungkin masih berjalan
-    this.updateCountdownDisplay();
-
-    // Mulai interval baru
-    this.countdownInterval = setInterval(() => {
-      this.countdownTime--;
-
-      if (this.countdownTime < 0) {
-        this.countdownTime = 10;
-        if (this.state.startDate && this.state.endDate) {
-          console.log(
-            "dates state: ",
-            this.state.startDate,
-            "& ",
-            this.state.endDate
-          );
-          const startDate = this.state.startDate;
-          const endDate = this.state.endDate;
-          console.log("dates: ", startDate, "& ", endDate);
-          this.refreshChart(startDate, endDate);
-        } else {
-          this.refreshChart();
-        }
-      }
-
-      this.updateCountdownDisplay();
-    }, 1000);
-
-    // Set flag bahwa countdown sedang berjalan
-    this.isCountingDown = true;
-  }
-
-  updateCountdownDisplay() {
-    const countdownElement = document.getElementById("timerCountdown");
-    const timerIcon = document.getElementById("timerIcon");
-
-    if (countdownElement) {
-      countdownElement.textContent = this.countdownTime;
-    }
-  }
-
-  refreshChart(startDate, endDate) {
-    this.fetchAllProducts();
-  }
-
-  async fetchAllProducts() {
-    try {
-      // const filterDomain = [
-      //   ["state", "=", "done"],
-      //   ["siswa_id", "!=", false],
-      //   ["jml_baris", ">", 0],
-      //   ["penanggung_jawab_id.name", "=", session.partner_display_name],
-      // ];
-      const filterDomain = [
-        ["state", "=", "done"],
-        ["siswa_id", "!=", false],
-        ["jml_baris", ">", 0],
-      ];
-
-      if (this.state.startDate) {
-        filterDomain.push(["tanggal", ">=", this.state.startDate]);
-      }
-      if (this.state.endDate) {
-        filterDomain.push(["tanggal", "<=", this.state.endDate]);
-      }
-
-      const tahfidzRecords = await this.orm.searchRead(
-        "cdn.tahfidz_quran",
-        filterDomain,
-        ["id", "siswa_id", "halaqoh_id", "jml_baris", "state", "tanggal"],
-        { order: "jml_baris desc" }
-      );
-
-      console.log("Data Tahfidz", tahfidzRecords);
-
-      this.state.guruu = this.getGuruData(tahfidzRecords);
-      await this.render();
-    } catch (error) {
-      console.error("Error fetching Karyawan Data:", error);
-    }
-  }
-
-  getGuruData(guruData) {
-    const uniqueGuru = guruData.reduce((acc, data) => {
-      const key = data.id;
-      if (!acc[key]) {
-        acc[key] = {
-          name: Array.isArray(data.siswa_id) ? data.siswa_id[1] : data.siswa_id,
-          halaqoh_id: Array.isArray(data.halaqoh_id)
-            ? data.halaqoh_id[1]
-            : data.halaqoh_id,
-          jml_baris: data.jml_baris,
-          // tanggal: data.tanggal,
-          // status: data.state,
-          id: data.id,
+        // Inisialisasi state dasar
+        this.state = {
+            items: [],
+            startDate: this.getDefaultStartDate(today),
+            endDate: this.getDefaultEndDate(today),
         };
-      }
-      return acc;
-    }, {});
 
-    return Object.values(uniqueGuru)
-      .sort((a, b) => b.jml_baris - a.jml_baris)
-      .slice(0, 10)
-      .map((data, index) => ({
-        number: index + 1,
-        id: data.id,
-        nama: data.name,
-        halaqoh: data.halaqoh_id,
-        baris: data.jml_baris || "N/A",
-        // tgl: data.tanggal || "N/A",
-        // status: data.status,
-      }));
-  }
+        this.countdownInterval = null;
+        this.countdownTime = 10;
+        this.isCountingDown = false;
 
-  attachEventListeners() {
-    const startDateInput = document.getElementById("startDate");
-    const endDateInput = document.getElementById("endDate");
-    const timerButton = document.getElementById("timerButton");
+        onWillStart(async () => {
+            await this.fetchData();
+        });
 
-    if (timerButton) {
-      timerButton.addEventListener("click", this.toggleCountdown.bind(this));
-    } else {
-      console.error("Timer button element not found");
+        onMounted(() => {
+            this.attachEventListeners();
+        });
+
+        onWillUnmount(() => {
+            if (this.countdownInterval) {
+                clearInterval(this.countdownInterval);
+                this.countdownInterval = null;
+            }
+        });
     }
 
-    if (startDateInput && endDateInput) {
-      startDateInput.addEventListener("change", async (event) => {
-        this.state.startDate = event.target.value;
-        await this.fetchAllProducts();
-      });
-
-      endDateInput.addEventListener("change", async (event) => {
-        this.state.endDate = event.target.value;
-        await this.fetchAllProducts();
-      });
-    } else {
-      console.error("Date input elements not found");
+    // ——— TANGGAL DEFAULT ———
+    getDefaultStartDate(today) {
+        return new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1, 0, 0, 1))
+            .toISOString()
+            .split("T")[0];
     }
 
-    const today = new Date();
-    let startDate = new Date(
-      Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1, 0, 0, 1)
-    );
-    let endDate = new Date(
-      Date.UTC(
-        today.getUTCFullYear(),
-        today.getUTCMonth(),
-        today.getUTCDate(),
-        23,
-        59,
-        59,
-        999
-      )
-    );
-    // Add change listener to period selection dropdown
-    if (periodSelection) {
-      periodSelection.addEventListener("change", () => {
-        switch (periodSelection.value) {
-          case "7":
-            startDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                today.getUTCDate() - 7
-              )
-            );
-            endDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                today.getUTCDate()
-              )
-            );
-            break;
-          case "15":
-            startDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                today.getUTCDate() - 15
-              )
-            );
-            endDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                today.getUTCDate()
-              )
-            );
-            break;
-          case "month":
-            // Set startDate to the 1st of the current month at 00:00:01 UTC
-            startDate = new Date(
-              Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1, 0, 0, 1)
-            );
-            endDate = new Date(
-              Date.UTC(
+    getDefaultEndDate(today) {
+        return new Date(
+            Date.UTC(
                 today.getUTCFullYear(),
                 today.getUTCMonth(),
                 today.getUTCDate(),
@@ -291,1043 +52,297 @@ export class GuruList extends Component {
                 59,
                 59,
                 999
-              )
-            );
-            break;
-          case "today":
-            // Set startDate and endDate to today
-            startDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                today.getUTCDate(),
-                0,
-                0,
-                0,
-                1
-              )
-            );
-            endDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                today.getUTCDate(),
-                23,
-                59,
-                59,
-                999
-              )
-            );
-            break;
-          case "yesterday":
-            // Set startDate and endDate to yesterday
-            startDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                today.getUTCDate() - 1,
-                0,
-                0,
-                0,
-                1
-              )
-            );
-            endDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                today.getUTCDate() - 1,
-                23,
-                59,
-                59,
-                999
-              )
-            );
-            break;
-          case "lastMonth":
-            startDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth() - 1,
-                1,
-                0,
-                0,
-                1
-              )
-            );
-            endDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                0,
-                23,
-                59,
-                59,
-                999
-              )
-            );
-            break;
-          default:
-            startDate = null;
-            endDate = null;
+            )
+        )
+            .toISOString()
+            .split("T")[0];
+    }
+
+    // ——— TIMER ———
+    toggleCountdown() {
+        if (this.isCountingDown) {
+            this.clearIntervals();
+            this.updateCountdownDisplay("");
+            this.updateTimerIcon(true);
+        } else {
+            this.isCountingDown = true;
+            this.startCountdown();
+            this.updateTimerIcon(false);
+        }
+    }
+
+    clearIntervals() {
+        if (this.countdownInterval) {
+            clearInterval(this.countdownInterval);
+            this.countdownInterval = null;
+        }
+        this.countdownTime = 10;
+        this.isCountingDown = false;
+    }
+
+    startCountdown() {
+        this.countdownTime = 10;
+        this.clearIntervals();
+        this.updateCountdownDisplay(this.countdownTime);
+
+        this.countdownInterval = setInterval(() => {
+            this.countdownTime--;
+            if (this.countdownTime < 0) {
+                this.countdownTime = 10;
+                this.fetchData();
+            }
+            this.updateCountdownDisplay(this.countdownTime);
+        }, 1000);
+
+        this.isCountingDown = true;
+    }
+
+    updateCountdownDisplay(text) {
+        const el = document.getElementById("timerCountdown");
+        if (el) el.textContent = text;
+    }
+
+    updateTimerIcon(showClock) {
+        const icon = document.getElementById("timerIcon");
+        if (!icon) return;
+        icon.classList.toggle("fas", showClock);
+        icon.classList.toggle("fa-clock", showClock);
+    }
+
+    // ——— EVENT LISTENERS ———
+    attachEventListeners() {
+        const startDateInput = document.getElementById("startDate");
+        const endDateInput = document.getElementById("endDate");
+        const timerButton = document.getElementById("timerButton");
+        const periodSelection = document.getElementById("periodSelection");
+
+        // Timer button
+        if (timerButton) {
+            timerButton.addEventListener("click", this.toggleCountdown.bind(this));
         }
 
-        // Update the input fields and the state
-        if (startDate && endDate) {
-          this.state.startDate = startDate.toISOString().split("T")[0];
-          this.state.endDate = endDate.toISOString().split("T")[0];
-          startDateInput.value = this.state.startDate;
-          endDateInput.value = this.state.endDate;
-          this.fetchAllProducts();
+        // Date inputs
+        if (startDateInput) {
+            startDateInput.addEventListener("change", (e) => {
+                this.state.startDate = e.target.value;
+                this.fetchData();
+            });
         }
-      });
-    }
-  }
-
-  updateDatesAndFilter(event) {
-    const startDateInput = document.getElementById("startDate");
-    const endDateInput = document.getElementById("endDate");
-
-    this.state.startDate = startDateInput.value || null;
-    this.state.endDate = endDateInput.value || null;
-
-    console.log("Updated Dates:", this.state.startDate, this.state.endDate);
-
-    // Fetch and filter products based on updated date range
-    this.fetchAllProducts();
-  }
-
-  filterData() {
-    var startDate = document.getElementById("startDate")?.value;
-    var endDate = document.getElementById("endDate")?.value;
-
-    if (startDate && endDate) {
-      this.fetchAllProducts(startDate, endDate);
-      this.state.startDate = startDate;
-      this.state.endDate = endDate;
-    } else {
-      this.fetchAllProducts();
-    }
-  }
-
-  filterDataByPeriod() {
-    const startDateInput = document.getElementById("startDate");
-    const endDateInput = document.getElementById("endDate");
-    const periodSelection = document.getElementById("periodSelection");
-
-    // Langsung eksekusi logic tanpa mendaftarkan event listener baru
-    const today = new Date();
-    let startDate = new Date(
-      Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1, 0, 0, 1)
-    );
-    let endDate = new Date(
-      Date.UTC(
-        today.getUTCFullYear(),
-        today.getUTCMonth(),
-        today.getUTCDate(),
-        23,
-        59,
-        59,
-        999
-      )
-    );
-
-    if (periodSelection) {
-      periodSelection.addEventListener("change", () => {
-        switch (periodSelection.value) {
-          case "today":
-            // Hari Ini
-            startDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                today.getUTCDate(),
-                0,
-                0,
-                0,
-                1
-              )
-            );
-            endDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                today.getUTCDate(),
-                23,
-                59,
-                59,
-                999
-              )
-            );
-            break;
-          case "yesterday":
-            // Kemarin
-            startDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                today.getUTCDate() - 1,
-                0,
-                0,
-                0,
-                1
-              )
-            );
-            endDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                today.getUTCDate() - 1,
-                23,
-                59,
-                59,
-                999
-              )
-            );
-            break;
-          case "thisWeek":
-            // Minggu Ini
-            const startOfWeek = today.getUTCDate() - today.getUTCDay(); // Set ke hari Minggu
-            startDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                startOfWeek,
-                0,
-                0,
-                0,
-                1
-              )
-            );
-            endDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                startOfWeek + 6,
-                23,
-                59,
-                59,
-                999
-              )
-            );
-            break;
-          case "lastWeek":
-            // Minggu Lalu
-            const lastWeekStart = today.getUTCDate() - today.getUTCDay() - 7; // Minggu sebelumnya
-            startDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                lastWeekStart,
-                0,
-                0,
-                0,
-                1
-              )
-            );
-            endDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                lastWeekStart + 6,
-                23,
-                59,
-                59,
-                999
-              )
-            );
-            break;
-          case "thisMonth":
-            // Bulan Ini
-            startDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                1,
-                0,
-                0,
-                0,
-                1
-              )
-            );
-            endDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth() + 1,
-                0,
-                23,
-                59,
-                59,
-                999
-              )
-            );
-            break;
-          case "lastMonth":
-            // Bulan Lalu
-            startDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth() - 1,
-                1,
-                0,
-                0,
-                0,
-                1
-              )
-            );
-            endDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                0,
-                23,
-                59,
-                59,
-                999
-              )
-            );
-            break;
-          case "thisYear":
-            // Tahun Ini
-            startDate = new Date(
-              Date.UTC(today.getUTCFullYear(), 0, 1, 0, 0, 0, 1)
-            );
-            endDate = new Date(
-              Date.UTC(today.getUTCFullYear(), 11, 31, 23, 59, 59, 999)
-            );
-            break;
-          case "lastYear":
-            // Tahun Lalu
-            startDate = new Date(
-              Date.UTC(today.getUTCFullYear() - 1, 0, 1, 0, 0, 0, 1)
-            );
-            endDate = new Date(
-              Date.UTC(today.getUTCFullYear() - 1, 11, 31, 23, 59, 59, 999)
-            );
-            break;
-          default:
-            // Default ke Bulan Ini jika tidak ada yang cocok
-            startDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                1,
-                0,
-                0,
-                0,
-                1
-              )
-            );
-            endDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth() + 1,
-                0,
-                23,
-                59,
-                59,
-                999
-              )
-            );
+        if (endDateInput) {
+            endDateInput.addEventListener("change", (e) => {
+                this.state.endDate = e.target.value;
+                this.fetchData();
+            });
         }
 
-        // Update the input fields and the state
-        if (startDate && endDate) {
-          this.state.startDate = startDate.toISOString().split("T")[0];
-          this.state.endDate = endDate.toISOString().split("T")[0];
-          startDateInput.value = this.state.startDate;
-          endDateInput.value = this.state.endDate;
-          console.log("dates down: ", startDate, "& ", endDate);
-          console.log(
-            "dates down state: ",
-            this.state.startDate,
-            "& ",
-            this.state.endDate
-          );
+        // Period dropdown
+        if (periodSelection) {
+            periodSelection.addEventListener("change", () => {
+                const today = new Date();
+                let startDate, endDate;
 
-          this.fetchAllProducts(startDate, endDate);
+                switch (periodSelection.value) {
+                    case "today":
+                        startDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 0, 0, 0, 1));
+                        endDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 23, 59, 59, 999));
+                        break;
+                    case "yesterday":
+                        startDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() - 1, 0, 0, 0, 1));
+                        endDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() - 1, 23, 59, 59, 999));
+                        break;
+                    case "thisWeek":
+                        const startOfWeek = today.getUTCDate() - today.getUTCDay();
+                        startDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), startOfWeek, 0, 0, 0, 1));
+                        endDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), startOfWeek + 6, 23, 59, 59, 999));
+                        break;
+                    case "lastWeek":
+                        const lastWeekStart = today.getUTCDate() - today.getUTCDay() - 7;
+                        startDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), lastWeekStart, 0, 0, 0, 1));
+                        endDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), lastWeekStart + 6, 23, 59, 59, 999));
+                        break;
+                    case "thisMonth":
+                        startDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1, 0, 0, 0, 1));
+                        endDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() + 1, 0, 23, 59, 59, 999));
+                        break;
+                    case "lastMonth":
+                        startDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() - 1, 1, 0, 0, 0, 1));
+                        endDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 0, 23, 59, 59, 999));
+                        break;
+                    case "thisYear":
+                        startDate = new Date(Date.UTC(today.getUTCFullYear(), 0, 1, 0, 0, 0, 1));
+                        endDate = new Date(Date.UTC(today.getUTCFullYear(), 11, 31, 23, 59, 59, 999));
+                        break;
+                    case "lastYear":
+                        startDate = new Date(Date.UTC(today.getUTCFullYear() - 1, 0, 1, 0, 0, 0, 1));
+                        endDate = new Date(Date.UTC(today.getUTCFullYear() - 1, 11, 31, 23, 59, 59, 999));
+                        break;
+                    default:
+                        // Default: this month
+                        startDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1, 0, 0, 0, 1));
+                        endDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() + 1, 0, 23, 59, 59, 999));
+                }
+
+                if (startDate && endDate) {
+                    this.state.startDate = startDate.toISOString().split("T")[0];
+                    this.state.endDate = endDate.toISOString().split("T")[0];
+                    if (startDateInput) startDateInput.value = this.state.startDate;
+                    if (endDateInput) endDateInput.value = this.state.endDate;
+                    this.fetchData();
+                }
+            });
         }
-      });
     }
-  }
 
-  redirectToGuruList(guruId) {
-    try {
-      console.log(guruId);
-      return this.action.doAction({
-        type: "ir.actions.act_window",
-        name: "Top Santri Hafalan Terbanyak",
-        res_model: "cdn.tahfidz_quran",
-        res_id: guruId,
-        views: [[false, "form"]],
-        target: "current",
-        domain: [["id", "=", guruId]],
-      });
-    } catch (error) {
-      console.error("Error in redirectToProductList:", error);
+    // ——— METODE ABSTRAK ———
+    // Harus di-override oleh subclass
+    async fetchData() {
+        throw new Error("fetchData() must be implemented in subclass");
     }
-  }
 
-  onGuruClick(guruId) {
-    this.redirectToGuruList(guruId);
-  }
+    onRowClick(record) {
+        // Opsional: override jika perlu navigasi
+    }
 }
+/** @odoo-module **/
+export class GuruList extends BaseDateFilteredListComponent {
+    async fetchData() {
+        try {
+            this.state.isLoading = true;
 
-export class EkskulList extends Component {
-  setup() {
-    this.orm = useService("orm");
-    this.action = useService("action");
-    const today = new Date();
-    this.state = {
-      guruu: [],
-      startDate: new Date(
-        Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1, 0, 0, 1)
-      )
-        .toISOString()
-        .split("T")[0],
-      endDate: new Date(
-        Date.UTC(
-          today.getUTCFullYear(),
-          today.getUTCMonth(),
-          today.getUTCDate(),
-          23,
-          59,
-          59,
-          999
-        )
-      )
-        .toISOString()
-        .split("T")[0],
-    };
-    this.refreshInterval = null;
-    this.countdownInterval = null;
-    this.countdownTime = 10;
-    this.isCountingDown = false;
-    onWillStart(async () => {
-      await this.fetchAllProducts();
-    });
+            // Filter
+            const domain = [['penilaian_id.state', '=', 'done']];
+            if (this.state.startDate) domain.push(['penilaian_id.tanggal', '>=', this.state.startDate]);
+            if (this.state.endDate) domain.push(['penilaian_id.tanggal', '<=', this.state.endDate]);
 
-    onMounted(() => {
-      this.attachEventListeners();
-      this.filterDataByPeriod();
-    });
+            // 1️⃣ Ambil semua line penilaian
+            const lineRecords = await this.orm.searchRead(
+                'cdn.penilaian_quran_line',
+                domain,
+                ['id', 'penilaian_id', 'jml_baris']
+            );
 
-    onWillUnmount(() => {
-      // COUNTDOWN
-      if (this.countdownInterval) {
-        clearInterval(this.countdownInterval);
-      }
-    });
-  }
+            console.log("Jumlah line ditemukan:", lineRecords.length);
 
-  toggleCountdown() {
-    if (this.isCountingDown) {
-      // Jika sedang countdown, hentikan
-      this.clearIntervals();
-      document.getElementById("timerCountdown").textContent = "";
-      const clockElement = document.getElementById("timerIcon");
-      if (clockElement) {
-        clockElement.classList.add("fas", "fa-clock");
-      }
-    } else {
-      // Jika tidak sedang countdown, mulai baru
-      this.isCountingDown = true; // Set flag sebelum memulai countdown
-      this.startCountdown();
-      const clockElement = document.getElementById("timerIcon");
-      if (clockElement) {
-        clockElement.classList.remove("fas", "fa-clock");
-      }
-    }
-  }
+            if (!lineRecords.length) {
+                this.state.items = [];
+                await this.render();
+                return;
+            }
 
-  clearIntervals() {
-    if (this.countdownInterval) {
-      clearInterval(this.countdownInterval);
-      this.countdownInterval = null;
-    }
-    if (this.refreshInterval) {
-      clearInterval(this.refreshInterval);
-      this.refreshInterval = null;
-    }
-    this.countdownTime = 10; // Reset countdown time
-    this.isCountingDown = false; // Reset flag
-  }
+            // 2️⃣ Ambil semua penilaian terkait untuk tahu siswa & halaqoh
+            const penilaianIds = [...new Set(lineRecords.map(l => l.penilaian_id?.[0]).filter(Boolean))];
+            const penilaianRecords = await this.orm.searchRead(
+                'cdn.penilaian_quran',
+                [['id', 'in', penilaianIds]],
+                ['id', 'siswa_id', 'halaqoh_id']
+            );
 
-  startCountdown() {
-    // Reset dan inisialisasi ulang
-    this.countdownTime = 10;
-    this.clearIntervals(); // Bersihkan interval yang mungkin masih berjalan
-    this.updateCountdownDisplay();
+            const penilaianMap = new Map(penilaianRecords.map(p => [
+                p.id,
+                {
+                    siswa: p.siswa_id ? p.siswa_id[1] : 'N/A',
+                    halaqoh: p.halaqoh_id ? p.halaqoh_id[1] : 'N/A',
+                }
+            ]));
 
-    // Mulai interval baru
-    this.countdownInterval = setInterval(() => {
-      this.countdownTime--;
+            // 3️⃣ Agregasi total baris per siswa
+            const totalPerSiswa = {};
+            for (const line of lineRecords) {
+                const penilaianId = line.penilaian_id?.[0];
+                const info = penilaianMap.get(penilaianId);
+                if (!info) continue;
 
-      if (this.countdownTime < 0) {
-        this.countdownTime = 10;
-        if (this.state.startDate && this.state.endDate) {
-          console.log(
-            "dates state: ",
-            this.state.startDate,
-            "& ",
-            this.state.endDate
-          );
-          const startDate = this.state.startDate;
-          const endDate = this.state.endDate;
-          console.log("dates: ", startDate, "& ", endDate);
-          this.refreshChart(startDate, endDate);
-        } else {
-          this.refreshChart();
+                if (!totalPerSiswa[info.siswa]) {
+                    totalPerSiswa[info.siswa] = {
+                        nama: info.siswa,
+                        halaqoh: info.halaqoh,
+                        total_baris: 0,
+                        penilaian_id: penilaianId,
+                    };
+                }
+                totalPerSiswa[info.siswa].total_baris += line.jml_baris || 0;
+            }
+
+            // 4️⃣ Urutkan dan tampilkan top 10
+            const sorted = Object.values(totalPerSiswa)
+                .sort((a, b) => b.total_baris - a.total_baris)
+                .slice(0, 10);
+
+            this.state.items = sorted.map((item, index) => ({
+                number: index + 1,
+                nama: item.nama,
+                halaqoh: item.halaqoh,
+                baris: item.total_baris,
+                onClick: () => this.openRecord(item.penilaian_id),
+            }));
+
+            this.state.hasData = this.state.items.length > 0;
+            await this.render();
+        } catch (error) {
+            console.error("Error fetching Top Hafalan data (GuruList):", error);
+            this.state.items = [];
+            await this.render();
+        } finally {
+            this.state.isLoading = false;
         }
-      }
-
-      this.updateCountdownDisplay();
-    }, 1000);
-
-    // Set flag bahwa countdown sedang berjalan
-    this.isCountingDown = true;
-  }
-
-  updateCountdownDisplay() {
-    const countdownElement = document.getElementById("timerCountdown");
-    const timerIcon = document.getElementById("timerIcon");
-
-    if (countdownElement) {
-      countdownElement.textContent = this.countdownTime;
-    }
-  }
-
-  refreshChart(startDate, endDate) {
-    this.fetchAllProducts();
-  }
-
-  async fetchAllProducts() {
-    try {
-      const filterDomain = [];
-      // filterDomain.push(["absen_id.guru.name", "=", session.partner_display_name]);
-
-      if (this.state.startDate) {
-        filterDomain.push(["tanggal", ">=", this.state.startDate]);
-      }
-      if (this.state.endDate) {
-        filterDomain.push(["tanggal", "<=", this.state.endDate]);
-      }
-
-      const kehadiranEkskul = await this.orm.searchRead(
-        "cdn.absen_ekskul_line",
-        filterDomain,
-        ["id", "siswa_id", "guru", "ekskul", "kehadiran", "tanggal"]
-      );
-
-      console.log("Data Ekskul", kehadiranEkskul);
-
-      this.state.guruu = this.getGuruData(kehadiranEkskul);
-      await this.render();
-    } catch (error) {
-      console.error("Error fetching Karyawan Data:", error);
-    }
-  }
-
-  getGuruData(guruData) {
-    const uniqueGuru = guruData.reduce((acc, data) => {
-      const key = data.id;
-      if (!acc[key]) {
-        acc[key] = {
-          name: Array.isArray(data.siswa_id) ? data.siswa_id[1] : data.siswa_id,
-          nis: data.nis,
-          kehadiran: data.kehadiran,
-          tanggal: data.tanggal,
-          pembimbing: Array.isArray(data.guru) ? data.guru[1] : data.guru,
-          ekskul: Array.isArray(data.ekskul) ? data.ekskul[1] : data.ekskul,
-          id: data.id,
-        };
-      }
-      return acc;
-    }, {});
-
-    return Object.values(uniqueGuru).map((data, index) => ({
-      number: index + 1,
-      id: data.id,
-      nama: data.name,
-      nis: data.nis,
-      kehadiran: data.kehadiran || "N/A",
-      ekskul: data.ekskul || "N/A",
-      pembimbing: data.pembimbing || "N/A",
-    }));
-  }
-
-  attachEventListeners() {
-    const startDateInput = document.getElementById("startDate");
-    const endDateInput = document.getElementById("endDate");
-    const timerButton = document.getElementById("timerButton");
-
-    if (timerButton) {
-      timerButton.addEventListener("click", this.toggleCountdown.bind(this));
-    } else {
-      console.error("Timer button element not found");
     }
 
-    if (startDateInput && endDateInput) {
-      startDateInput.addEventListener("change", async (event) => {
-        this.state.startDate = event.target.value;
-        await this.fetchAllProducts();
-      });
-
-      endDateInput.addEventListener("change", async (event) => {
-        this.state.endDate = event.target.value;
-        await this.fetchAllProducts();
-      });
-    } else {
-      console.error("Date input elements not found");
+    openRecord(penilaianId) {
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            name: "Detail Penilaian",
+            res_model: "cdn.penilaian_quran",
+            res_id: penilaianId,
+            views: [[false, "form"]],
+            target: "current",
+        });
     }
-
-    const today = new Date();
-    let startDate = new Date(
-      Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1, 0, 0, 1)
-    );
-    let endDate = new Date(
-      Date.UTC(
-        today.getUTCFullYear(),
-        today.getUTCMonth(),
-        today.getUTCDate(),
-        23,
-        59,
-        59,
-        999
-      )
-    );
-    // Add change listener to period selection dropdown
-    if (periodSelection) {
-      periodSelection.addEventListener("change", () => {
-        switch (periodSelection.value) {
-          case "7":
-            startDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                today.getUTCDate() - 7
-              )
-            );
-            endDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                today.getUTCDate()
-              )
-            );
-            break;
-          case "15":
-            startDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                today.getUTCDate() - 15
-              )
-            );
-            endDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                today.getUTCDate()
-              )
-            );
-            break;
-          case "month":
-            // Set startDate to the 1st of the current month at 00:00:01 UTC
-            startDate = new Date(
-              Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1, 0, 0, 1)
-            );
-            endDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                today.getUTCDate(),
-                23,
-                59,
-                59,
-                999
-              )
-            );
-            break;
-          case "today":
-            // Set startDate and endDate to today
-            startDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                today.getUTCDate(),
-                0,
-                0,
-                0,
-                1
-              )
-            );
-            endDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                today.getUTCDate(),
-                23,
-                59,
-                59,
-                999
-              )
-            );
-            break;
-          case "yesterday":
-            // Set startDate and endDate to yesterday
-            startDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                today.getUTCDate() - 1,
-                0,
-                0,
-                0,
-                1
-              )
-            );
-            endDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                today.getUTCDate() - 1,
-                23,
-                59,
-                59,
-                999
-              )
-            );
-            break;
-          case "lastMonth":
-            startDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth() - 1,
-                1,
-                0,
-                0,
-                1
-              )
-            );
-            endDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                0,
-                23,
-                59,
-                59,
-                999
-              )
-            );
-            break;
-          default:
-            startDate = null;
-            endDate = null;
-        }
-
-        // Update the input fields and the state
-        if (startDate && endDate) {
-          this.state.startDate = startDate.toISOString().split("T")[0];
-          this.state.endDate = endDate.toISOString().split("T")[0];
-          startDateInput.value = this.state.startDate;
-          endDateInput.value = this.state.endDate;
-          this.fetchAllProducts();
-        }
-      });
-    }
-  }
-
-  updateDatesAndFilter(event) {
-    const startDateInput = document.getElementById("startDate");
-    const endDateInput = document.getElementById("endDate");
-
-    this.state.startDate = startDateInput.value || null;
-    this.state.endDate = endDateInput.value || null;
-
-    console.log("Updated Dates:", this.state.startDate, this.state.endDate);
-
-    // Fetch and filter products based on updated date range
-    this.fetchAllProducts();
-  }
-
-  filterData() {
-    var startDate = document.getElementById("startDate")?.value;
-    var endDate = document.getElementById("endDate")?.value;
-
-    if (startDate && endDate) {
-      this.fetchAllProducts(startDate, endDate);
-      this.state.startDate = startDate;
-      this.state.endDate = endDate;
-    } else {
-      this.fetchAllProducts();
-    }
-  }
-
-  filterDataByPeriod() {
-    const startDateInput = document.getElementById("startDate");
-    const endDateInput = document.getElementById("endDate");
-    const periodSelection = document.getElementById("periodSelection");
-
-    // Langsung eksekusi logic tanpa mendaftarkan event listener baru
-    const today = new Date();
-    let startDate = new Date(
-      Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1, 0, 0, 1)
-    );
-    let endDate = new Date(
-      Date.UTC(
-        today.getUTCFullYear(),
-        today.getUTCMonth(),
-        today.getUTCDate(),
-        23,
-        59,
-        59,
-        999
-      )
-    );
-
-    if (periodSelection) {
-      periodSelection.addEventListener("change", () => {
-        switch (periodSelection.value) {
-          case "today":
-            // Hari Ini
-            startDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                today.getUTCDate(),
-                0,
-                0,
-                0,
-                1
-              )
-            );
-            endDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                today.getUTCDate(),
-                23,
-                59,
-                59,
-                999
-              )
-            );
-            break;
-          case "yesterday":
-            // Kemarin
-            startDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                today.getUTCDate() - 1,
-                0,
-                0,
-                0,
-                1
-              )
-            );
-            endDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                today.getUTCDate() - 1,
-                23,
-                59,
-                59,
-                999
-              )
-            );
-            break;
-          case "thisWeek":
-            // Minggu Ini
-            const startOfWeek = today.getUTCDate() - today.getUTCDay(); // Set ke hari Minggu
-            startDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                startOfWeek,
-                0,
-                0,
-                0,
-                1
-              )
-            );
-            endDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                startOfWeek + 6,
-                23,
-                59,
-                59,
-                999
-              )
-            );
-            break;
-          case "lastWeek":
-            // Minggu Lalu
-            const lastWeekStart = today.getUTCDate() - today.getUTCDay() - 7; // Minggu sebelumnya
-            startDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                lastWeekStart,
-                0,
-                0,
-                0,
-                1
-              )
-            );
-            endDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                lastWeekStart + 6,
-                23,
-                59,
-                59,
-                999
-              )
-            );
-            break;
-          case "thisMonth":
-            // Bulan Ini
-            startDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                1,
-                0,
-                0,
-                0,
-                1
-              )
-            );
-            endDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth() + 1,
-                0,
-                23,
-                59,
-                59,
-                999
-              )
-            );
-            break;
-          case "lastMonth":
-            // Bulan Lalu
-            startDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth() - 1,
-                1,
-                0,
-                0,
-                0,
-                1
-              )
-            );
-            endDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                0,
-                23,
-                59,
-                59,
-                999
-              )
-            );
-            break;
-          case "thisYear":
-            // Tahun Ini
-            startDate = new Date(
-              Date.UTC(today.getUTCFullYear(), 0, 1, 0, 0, 0, 1)
-            );
-            endDate = new Date(
-              Date.UTC(today.getUTCFullYear(), 11, 31, 23, 59, 59, 999)
-            );
-            break;
-          case "lastYear":
-            // Tahun Lalu
-            startDate = new Date(
-              Date.UTC(today.getUTCFullYear() - 1, 0, 1, 0, 0, 0, 1)
-            );
-            endDate = new Date(
-              Date.UTC(today.getUTCFullYear() - 1, 11, 31, 23, 59, 59, 999)
-            );
-            break;
-          default:
-            // Default ke Bulan Ini jika tidak ada yang cocok
-            startDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                1,
-                0,
-                0,
-                0,
-                1
-              )
-            );
-            endDate = new Date(
-              Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth() + 1,
-                0,
-                23,
-                59,
-                59,
-                999
-              )
-            );
-        }
-
-        // Update the input fields and the state
-        if (startDate && endDate) {
-          this.state.startDate = startDate.toISOString().split("T")[0];
-          this.state.endDate = endDate.toISOString().split("T")[0];
-          startDateInput.value = this.state.startDate;
-          endDateInput.value = this.state.endDate;
-          console.log("dates down: ", startDate, "& ", endDate);
-          console.log(
-            "dates down state: ",
-            this.state.startDate,
-            "& ",
-            this.state.endDate
-          );
-
-          this.fetchAllProducts(startDate, endDate);
-        }
-      });
-    }
-  }
-
-  redirectToGuruList(guruId) {
-    try {
-      console.log(guruId);
-      return this.action.doAction({
-        type: "ir.actions.act_window",
-        name: "Kehadiran Ekskul",
-        res_model: "cdn.absen_ekskul_line",
-        res_id: guruId,
-        views: [[false, "form"]],
-        target: "current",
-        domain: [["id", "=", guruId]],
-      });
-    } catch (error) {
-      console.error("Error in redirectToProductList:", error);
-    }
-  }
-
-  onGuruClick(guruId) {
-    this.redirectToGuruList(guruId);
-  }
 }
 
 GuruList.template = "owl.GuruList";
+
+export class EkskulList extends BaseDateFilteredListComponent {
+    async fetchData() {
+        try {
+            const domain = [];
+            if (this.state.startDate) domain.push(["tanggal", ">=", this.state.startDate]);
+            if (this.state.endDate) domain.push(["tanggal", "<=", this.state.endDate]);
+
+            const records = await this.orm.searchRead(
+                "cdn.absen_ekskul_line",
+                domain,
+                ["id", "siswa_id", "guru", "ekskul", "kehadiran", "tanggal"]
+            );
+
+            this.state.items = this.processEkskulData(records);
+            await this.render();
+        } catch (error) {
+            console.error("Error fetching Ekskul data:", error);
+        }
+    }
+
+    processEkskulData(data) {
+        return data.map((rec, i) => ({
+            number: i + 1,
+            id: rec.id,
+            nama: Array.isArray(rec.siswa_id) ? rec.siswa_id[1] : "N/A",
+            ekskul: Array.isArray(rec.ekskul) ? rec.ekskul[1] : "N/A",
+            pembimbing: Array.isArray(rec.guru) ? rec.guru[1] : "N/A",
+            kehadiran: rec.kehadiran || "N/A",
+            onClick: () => this.openRecord(rec.id)
+        }));
+    }
+
+    openRecord(id) {
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            name: "Kehadiran Ekskul",
+            res_model: "cdn.absen_ekskul_line",
+            res_id: id,
+            views: [[false, "form"]],
+            target: "current",
+        });
+    }
+}
 
 EkskulList.template = "owl.EkskulList";

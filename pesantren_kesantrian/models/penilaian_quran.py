@@ -43,7 +43,7 @@ class TahfidzTahsin(models.Model):
     surah_id = fields.Many2one('cdn.surah', compute='_compute_main_fields', string='Surah')
     ayat_awal = fields.Many2one('cdn.ayat', string='Ayat Awal', compute='_compute_main_fields', domain="[('surah_id','=',surah_id)]")
     ayat_akhir = fields.Many2one('cdn.ayat', string='Ayat Akhir', compute='_compute_main_fields', domain="[('surah_id','=',surah_id)]")
-    jml_baris = fields.Integer(string='Jumlah Maqro')
+    jml_baris = fields.Integer(string="Jumlah Maqra'", store=True)
     nilai_hafalan = fields.Integer(string='Nilai Hafalan', default=75)
     predikat = fields.Selection([
         ('a+', 'A+'), ('a', 'A'), ('b+', 'B+'), ('b', 'B'), ('c+', 'C+'), ('c', 'C')
@@ -63,6 +63,10 @@ class TahfidzTahsin(models.Model):
     nilai_makhroj_harian = fields.Integer(string='Nilai Makhroj')
     nilai_mad_harian = fields.Integer(string='Nilai Mad')
     catatan_harian = fields.Text(string='Catatan (Harian)')
+    surah_id_harian = fields.Many2one('cdn.surah', string='Surah')
+    ayat_awal_harian = fields.Many2one('cdn.ayat', string='Ayat Awal',domain="[('surah_id','=',surah_id)]")
+    ayat_akhir_harian = fields.Many2one('cdn.ayat', string='Ayat Akhir', domain="[('surah_id','=',surah_id)]")
+    
 
     # === TAB TAHsin UJIAN ===
     buku_ujian_id = fields.Many2one('cdn.buku_tahsin', string='Buku (Ujian)')
@@ -73,6 +77,9 @@ class TahfidzTahsin(models.Model):
     nilai_makhroj_ujian = fields.Integer(string='Nilai Makhroj')
     nilai_mad_ujian = fields.Integer(string='Nilai Mad')
     catatan_ujian = fields.Text(string='Catatan (Ujian)')
+    surah_id_ujian = fields.Many2one('cdn.surah', string='Surah')
+    ayat_awal_ujian = fields.Many2one('cdn.ayat', string='Ayat Awal', domain="[('surah_id','=',surah_id)]")
+    ayat_akhir_ujian = fields.Many2one('cdn.ayat', string='Ayat Akhir', domain="[('surah_id','=',surah_id)]")
     # === INFORMASI TAHFIDZ TERAKHIR ===
     last_surah_id = fields.Many2one(
         'cdn.surah', string='Surah Terakhir',
@@ -99,7 +106,7 @@ class TahfidzTahsin(models.Model):
                 rec.predikat = 'c+'
             else:
                 rec.predikat = 'c'
-                
+
     @api.depends('tahfidz_line_ids', 'tahfidz_line_ids.sequence')
     def _compute_main_fields(self):
         for rec in self:
@@ -263,7 +270,7 @@ class PenilaianQuranLine(models.Model):
     surah_id = fields.Many2one('cdn.surah', string='Surah', required=True)
     ayat_awal = fields.Many2one('cdn.ayat', string='Ayat Awal', domain="[('surah_id','=',surah_id)]")
     ayat_akhir = fields.Many2one('cdn.ayat', string='Ayat Akhir', domain="[('surah_id','=',surah_id)]")
-    jml_baris = fields.Integer(string='Jumlah Baris')
+    jml_baris = fields.Integer(string="Jumlah Maqra'")
     nilai_hafalan = fields.Integer(string='Nilai Hafalan', default=75)
     predikat = fields.Selection([
         ('a+', 'A+'), ('a', 'A'), ('b+', 'B+'), ('b', 'B'), ('c+', 'C+'), ('c', 'C')
