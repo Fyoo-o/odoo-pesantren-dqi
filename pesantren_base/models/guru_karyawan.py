@@ -207,7 +207,6 @@ class hr_employee(models.Model):
                                     </p> 
                                     <ul style="margin: 0; padding-left: 20px; color: #555555; font-size: 14px;"> 
                                         <li>0822 5207 9785</li> 
-                                        <li>0853 9051 1124</li> 
                                     </ul> 
                                     <p style="margin: 20px 0; font-size: 14px;"> 
                                         Terima kasih telah menggunakan layanan kami. Kami berharap akun ini dapat membantu Anda dalam menjalankan aktivitas di pesantren. 

@@ -426,7 +426,6 @@ class inheritRecruitment(models.Model):
                                 </p>
                                 <ul style="margin: 0; padding-left: 20px; color: #4a5568; font-size: 16px; line-height: 1.6;">
                                     <li>0822 5207 9785</li>
-                                    <li>0853 9051 1124</li>
                                 </ul>
                             </div>
                         </div>

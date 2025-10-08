@@ -102,6 +102,12 @@
                     <filter string="Hari Ini" name="today" domain="[
                         ('name','=',(context_today().strftime('%Y-%m-%d'))),
                     ]" /> 
+
+                    <filter string="Hari Ini &amp; Kemarin" name="today_yesterday"
+                    domain="[
+                        ('name', '&gt;=', (context_today() - relativedelta(days=1))),
+                        ('name', '&lt;=', context_today())
+                    ]"/>
                 </search>
             </field>
         </record>

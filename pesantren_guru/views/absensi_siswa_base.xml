@@ -8,6 +8,7 @@
             <field name="model">cdn.absensi_siswa</field>
             <field name="arch" type="xml">
                 <list create="false" edit="false" delete="false">
+                   <button name="%(pesantren_guru.action_absensi_filter_wizard)d" string="Filter Tanggal Manual" type="action" class="btn-primary"/>
                     <field name="name" />
                     <field name="tanggal" />
                     <field name="jampelajaran_id" />
@@ -126,11 +127,13 @@
                     
                     <filter string="Hari Ini" name="today" 
                         domain="[('tanggal', '=', context_today())]"/>
-                    <filter string="7 Hari Terakhir" name="last_week" 
+                    <filter string="Hari Ini dan Kemarin" name="today_yesterday"
+                        domain="[('tanggal', '&gt;=', (context_today() - relativedelta(days=1))), ('tanggal', '&lt;=', context_today())]"/>
+                   <filter string="7 Hari Terakhir" name="last_week" 
                         domain="[('tanggal', '&gt;=', (context_today() - relativedelta(days=7)))]"/>
                     <filter string="30 Hari Terakhir" name="last_month" 
                         domain="[('tanggal', '&gt;=', (context_today() - relativedelta(days=30)))]"/>
-                    
+      
                     <group expand="0" string="Group By">
                         <filter string="Kelas" name="group_kelas" context="{'group_by':'kelas_id'}"/>
                         <filter string="Mata Pelajaran" name="group_mapel" context="{'group_by':'mapel_id'}"/>
@@ -153,6 +156,20 @@
             <field name="search_view_id" ref="cdn_absensi_siswa_search_public"/>
             <field name="domain">[]</field>
             <field name="context">{}</field>
+        </record>
+        <!-- Tambahkan action tombol di tree view -->
+        <record id="action_absensi_filter_wizard_server" model="ir.actions.server">
+            <field name="name">Filter Tanggal Manual</field>
+            <field name="model_id" ref="model_cdn_absensi_siswa"/>
+            <field name="binding_model_id" ref="model_cdn_absensi_siswa"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">action = {
+                'type': 'ir.actions.act_window',
+                'res_model': 'cdn.absensi.filter.wizard',
+                'view_mode': 'form',
+                'target': 'new'
+            }</field>
         </record>
 
         <!-- Menu Item untuk Akses Umum dengan akses pesantren_base -->
