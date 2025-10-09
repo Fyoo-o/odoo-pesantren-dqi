@@ -200,7 +200,7 @@ export class MusyrifKpiCard extends Component {
                 siswaData = await this.orm.call(
                     'cdn.siswa',
                     'search_read',
-                    [[], ['id', 'complete_name', 'jns_kelamin', 'tahfidz_quran_count', 'create_date']],
+                    [[], ['id', 'complete_name', 'jns_kelamin', 'penilaian_quran_count', 'create_date']],
                     { context: this.env.context }
                 );
             } catch (error) {
