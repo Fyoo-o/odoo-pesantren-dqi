@@ -200,9 +200,9 @@ export class SekolahKpiCard extends Component {
           "id",
           "complete_name",
           "jns_kelamin",
-          "last_tahfidz",
+          "tahfidz_terakhir_id",
           "pelanggaran_count",
-          "tahfidz_quran_count",
+          "penilaian_quran_count",
         ],
       ]);
 

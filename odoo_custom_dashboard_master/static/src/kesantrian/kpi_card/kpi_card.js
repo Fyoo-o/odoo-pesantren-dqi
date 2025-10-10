@@ -186,7 +186,7 @@ export class KpiCard extends Component {
                 siswaData = await this.orm.call(
                     'cdn.siswa', 
                     'search_read', 
-                    [domain, ['id', 'complete_name', 'jns_kelamin', 'last_tahfidz', 'pelanggaran_count', 'tahfidz_quran_count']],
+                    [domain, ['id', 'complete_name', 'jns_kelamin', 'last_tahfidz', 'pelanggaran_count', 'penilaian_quran_count']],
                     { context: this.env.context }
                 );
             } catch (error) {
