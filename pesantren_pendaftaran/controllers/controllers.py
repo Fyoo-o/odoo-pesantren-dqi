@@ -1247,6 +1247,8 @@ class PesantrenPendaftaran(http.Controller):
                             {f'<li class="nav-item dropdown">'
                             f'<a href="#" class="dropdown-link nav-link "><i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>'
                             f'<div class="dropdown-content">'
+                            f'<a href="/pengumuman/paud">PAUD</a>'
+                            f'<a href="/pengumuman/tk-ra">TK / RA</a>'
                             f'<a href="/pengumuman/sd-mi">SD / MI</a>'
                             f'<a href="/pengumuman/smp-mts">SMP / MTS</a>'
                             f'<a href="/pengumuman/sma-ma">SMA / MA</a>'
@@ -1297,6 +1299,8 @@ class PesantrenPendaftaran(http.Controller):
                         <i class="fa-solid fa-bullhorn me-2"></i>Pengumuman
                     </a>
                     <div class="dropdown-content">
+                        <a href="/pengumuman/paud">PAUD</a>
+                        <a href="/pengumuman/tk-ra">TK / RA</a>
                         <a href="/pengumuman/sd-mi">SD / MI</a>
                         <a href="/pengumuman/smp-mts">SMP / MTS</a>
                         <a href="/pengumuman/sma-ma">SMA / MA</a>
@@ -2631,6 +2635,8 @@ class PesantrenPsbBantuan(http.Controller):
                             {f'<li class="nav-item dropdown">'
                             f'<a href="#" class="dropdown-link nav-link effect"><i class="fa-solid fa-bullhorn me-2" style="color: black;"></i>Pengumuman</a>'
                             f'<div class="dropdown-content">'
+                            f'<a href="/pengumuman/paud">PAUD</a>'
+                            f'<a href="/pengumuman/tk-ra">TK / RA</a>'
                             f'<a href="/pengumuman/sd-mi">SD / MI</a>'
                             f'<a href="/pengumuman/smp-mts">SMP / MTS</a>'
                             f'<a href="/pengumuman/sma-ma">SMA / MA</a>'
@@ -2670,6 +2676,8 @@ class PesantrenPsbBantuan(http.Controller):
                         {f'<li class="nav-item dropdown">'
                         f'<a href="#" class="dropdown-link nav-link effect" style="color: black;"><i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>'
                         f'<div class="dropdown-content">'
+                        f'<a href="/pengumuman/paud">PAUD</a>'
+                        f'<a href="/pengumuman/tk-ra">TK / RA</a>'
                         f'<a href="/pengumuman/sd-mi">SD / MI</a>'
                         f'<a href="/pengumuman/smp-mts">SMP / MTS</a>'
                         f'<a href="/pengumuman/sma-ma">SMA / MA</a>'
@@ -2794,6 +2802,44 @@ class PesantrenPsbBantuan(http.Controller):
         """
         return request.make_response(html_response)
 
+class PendaftaranSeleksiPaud(http.Controller):
+    @http.route('/pengumuman/paud', type='http', auth='public')
+    def pengumuman(self, **kwargs):
+
+        # Mengambil nilai kuota pendaftaran dari ir.config_parameter
+        config_param = request.env['ir.config_parameter'].sudo()
+        is_halaman_pendaftaran = config_param.get_param('pesantren_pendaftaran.is_halaman_pendaftaran')
+        is_halaman_pengumuman = config_param.get_param('pesantren_pendaftaran.is_halaman_pengumuman')
+
+        if is_halaman_pengumuman:
+            # Render form pendaftaran HTML
+            calon_santri = request.env['ubig.pendaftaran'].sudo().search([('state', 'in', ['diterima', 'ditolak']), ('jenjang_id.jenjang', '=', 'paud')])
+
+            return request.render('pesantren_pendaftaran.pendaftaran_seleksi_paud_template', {
+                'santri': calon_santri,
+                'is_halaman_pendaftaran': is_halaman_pendaftaran,
+            })
+        else:
+            return request.redirect('/psb')
+class PendaftaranSeleksiTk(http.Controller):
+    @http.route('/pengumuman/tk-ra', type='http', auth='public')
+    def pengumuman(self, **kwargs):
+
+        # Mengambil nilai kuota pendaftaran dari ir.config_parameter
+        config_param = request.env['ir.config_parameter'].sudo()
+        is_halaman_pendaftaran = config_param.get_param('pesantren_pendaftaran.is_halaman_pendaftaran')
+        is_halaman_pengumuman = config_param.get_param('pesantren_pendaftaran.is_halaman_pengumuman')
+
+        if is_halaman_pengumuman:
+            # Render form pendaftaran HTML
+            calon_santri = request.env['ubig.pendaftaran'].sudo().search([('state', 'in', ['diterima', 'ditolak']), ('jenjang_id.jenjang', '=', 'tk')])
+
+            return request.render('pesantren_pendaftaran.pendaftaran_seleksi_tk_template', {
+                'santri': calon_santri,
+                'is_halaman_pendaftaran': is_halaman_pendaftaran,
+            })
+        else:
+            return request.redirect('/psb')
 class PendaftaranSeleksiSdMi(http.Controller):
     @http.route('/pengumuman/sd-mi', type='http', auth='public')
     def pengumuman(self, **kwargs):
@@ -3716,6 +3762,8 @@ class PortalOrangTua(http.Controller):
                             {f'<li class="nav-item dropdown">'
                             f'<a href="#" class="dropdown-link nav-link "><i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>'
                             f'<div class="dropdown-content">'
+                            f'<a href="/pengumuman/paud">PAUD</a>'
+                            f'<a href="/pengumuman/tk-ra">TK / RA</a>'
                             f'<a href="/pengumuman/sd-mi">SD / MI</a>'
                             f'<a href="/pengumuman/smp-mts">SMP / MTS</a>'
                             f'<a href="/pengumuman/sma-ma">SMA / MA</a>'
@@ -3759,6 +3807,8 @@ class PortalOrangTua(http.Controller):
                         {f'<li class="nav-item dropdown">'
                         f'<a href="#" class="dropdown-link nav-link "><i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>'
                         f'<div class="dropdown-content">'
+                        f'<a href="/pengumuman/paud">PAUD</a>'
+                        f'<a href="/pengumuman/tk-ra">TK / RA</a>'
                         f'<a href="/pengumuman/sd-mi">SD / MI</a>'
                         f'<a href="/pengumuman/smp-mts">SMP / MTS</a>'
                         f'<a href="/pengumuman/sma-ma">SMA / MA</a>'
