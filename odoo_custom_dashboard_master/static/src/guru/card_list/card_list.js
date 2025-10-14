@@ -269,11 +269,11 @@ export class GuruList extends BaseDateFilteredListComponent {
                 .slice(0, 10);
 
             this.state.items = sorted.map((item, index) => ({
-                number: index + 1,
-                nama: item.nama,
-                halaqoh: item.halaqoh,
-                baris: item.total_baris,
-                onClick: () => this.openRecord(item.penilaian_id),
+            id: item.penilaian_id, // tambahkan ini
+            number: index + 1,
+            nama: item.nama,
+            halaqoh: item.halaqoh,
+            baris: item.total_baris,
             }));
 
             this.state.hasData = this.state.items.length > 0;

@@ -25,16 +25,30 @@
                             </setting> -->
 
                             <group string="Tanggal Pendaftaran" name="group_tanggal_pendaftaran">
-                                <field name="tgl_mulai_pendaftaran" widget="date" string="Tanggal Mulai Pendaftaran"/>
-                                <field name="tgl_akhir_pendaftaran" widget="date" string="Tanggal Akhir Pendaftaran"/>
+                                <group string="Tanggal Pendaftaran Gelombang 1">
+                                    <field name="tgl_mulai_pendaftaran" widget="date" string="Tanggal Mulai Pendaftaran"/>
+                                    <field name="tgl_akhir_pendaftaran" widget="date" string="Tanggal Akhir Pendaftaran"/>
+                                </group>
+                                <group string="Tanggal Pendaftaran Gelombang 2">
+                                    <field name="tgl_mulai_pendaftaran_gel_2" widget="date" string="Tanggal Mulai Pendaftaran"/>
+                                    <field name="tgl_akhir_pendaftaran_gel_2" widget="date" string="Tanggal Akhir Pendaftaran"/>
+                                </group>
                             </group>
-
                             <group string="Tanggal Seleksi" name="group_tanggal_seleksi">
-                                <field name="tgl_mulai_seleksi" widget="datetime" string="Tanggal Mulai Seleksi"/>
-                                <field name="tgl_akhir_seleksi" widget="datetime" string="Tanggal Akhir Seleksi"/>
-                                <field name="tgl_pengumuman_hasil_seleksi" widget="datetime" string="Tanggal Pengumuman Hasil Seleksi"/>
+                                <group string="Tanggal Seleksi Gelombang 1">
+                                    <field name="tgl_mulai_seleksi" widget="datetime" string="Tanggal Mulai Seleksi"/>
+                                    <field name="tgl_akhir_seleksi" widget="datetime" string="Tanggal Akhir Seleksi"/>
+                                </group>
+                                <group string="Tanggal Seleksi Gelombang 2">
+                                    <field name="tgl_mulai_seleksi_gel_2" widget="datetime" string="Tanggal Mulai Seleksi"/>
+                                    <field name="tgl_akhir_seleksi_gel_2" widget="datetime" string="Tanggal Akhir Seleksi"/>
+                                </group>
                             </group>
-
+                            <group string="Tanggal Pengumuman" name="group_tanggal_pengumuman">
+                                <field name="tgl_pengumuman_hasil_seleksi" widget="datetime" string="Tanggal Pengumuman Hasil Seleksi Gelombang 1"/>
+                                <field name="tgl_pengumuman_hasil_seleksi_gel_2" widget="datetime" string="Tanggal Pengumuman Hasil Seleksi Gelombang 2"/>              
+                            </group>
+                           
                             <group string="Halaman Pendaftaran" name="group_halaman_pendaftaran">
                                 <field name="is_halaman_pendaftaran"/>
                             </group>

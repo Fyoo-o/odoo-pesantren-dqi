@@ -854,9 +854,19 @@ class ResConfigSettings(models.TransientModel):
         config_parameter='pesantren_pendaftaran.tgl_mulai_pendaftaran',
         help="Atur tgl dibukanya pendaftaran",
     )
+    tgl_mulai_pendaftaran_gel_2 = fields.Datetime(
+        string="Tanggal Mulai Pendaftaran Gelombang 2",
+        config_parameter='pesantren_pendaftaran.tgl_mulai_pendaftaran_gel_2',
+        help="Atur tgl dibukanya pendaftaran gelombang 2",
+    )
     tgl_akhir_pendaftaran = fields.Datetime(
         string="Tanggal Akhir Pendaftaran",
         config_parameter='pesantren_pendaftaran.tgl_akhir_pendaftaran',
+        help="Atur tgl akhir dari pendaftaran",
+    )
+    tgl_akhir_pendaftaran_gel_2 = fields.Datetime(
+        string="Tanggal Akhir Pendaftaran Gelombang 2",
+        config_parameter='pesantren_pendaftaran.tgl_akhir_pendaftaran_gel_2',
         help="Atur tgl akhir dari pendaftaran",
     )
     tgl_mulai_seleksi = fields.Datetime(
@@ -869,9 +879,24 @@ class ResConfigSettings(models.TransientModel):
         config_parameter='pesantren_pendaftaran.tgl_akhir_seleksi',
         help="Atur tgl akhir seleksi",
     )
+    tgl_mulai_seleksi_gel_2 = fields.Datetime(
+        string="Tanggal Mulai Seleksi",
+        config_parameter='pesantren_pendaftaran.tgl_mulai_seleksi',
+        help="Atur tgl mulai seleksi",
+    )
+    tgl_akhir_seleksi_gel_2 = fields.Datetime(
+        string="Tanggal Akhir Seleksi",
+        config_parameter='pesantren_pendaftaran.tgl_akhir_seleksi_gel_2',
+        help="Atur tgl akhir seleksi",
+    )
     tgl_pengumuman_hasil_seleksi = fields.Datetime(
         string="Tanggal Pengumuman Hasil Seleksi",
         config_parameter='pesantren_pendaftaran.tgl_pengumuman_hasil_seleksi',
+        help="Atur tgl pengumuman hasil seleksi",
+    )
+    tgl_pengumuman_hasil_seleksi_gel_2 = fields.Datetime(
+        string="Tanggal Pengumuman Hasil Seleksi",
+        config_parameter='pesantren_pendaftaran.tgl_pengumuman_hasil_seleksi_gel_2',
         help="Atur tgl pengumuman hasil seleksi",
     )
 
