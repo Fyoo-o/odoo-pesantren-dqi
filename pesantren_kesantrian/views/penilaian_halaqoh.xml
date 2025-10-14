@@ -63,6 +63,7 @@
                         </group>
                         <group>
                             <field name="sesi_id"/>
+                            <field name="jenjang_display"/>
                         </group>
                     </group>
 
@@ -70,7 +71,7 @@
                         <!-- TAB TAHFIDZ -->
                        <page string="Tahfidz">
                             <!-- Info Tahfidz Terakhir -->
-                            <group string="Tahfidz Terakhir" colspan="4" invisible="siswa_id == False">
+                            <group string="Tahfidz Terakhir" colspan="4" invisible="not siswa_id">
                                 <group>
                                     <field name="last_surah_id" readonly="1"/>
                                     <field name="last_ayat_akhir" readonly="1"/>
@@ -83,13 +84,16 @@
                                     <field name="ayat_awal"/>
                                     <field name="ayat_akhir"/>
                                     <field name="jml_baris"/>
-                                    <field name="nilai_hafalan"/>
+
+                                    <!-- Nilai Hafalan hanya muncul untuk jenjang SD ke atas -->
+                                    <field name="nilai_hafalan"
+                                        invisible="penilaian_id.jenjang_display in ['paud','tk','tk/ra']"/>
+
                                     <field name="predikat" readonly="1"/>
                                     <field name="keterangan"/>
                                 </list>
                             </field>
-                        </page>
-
+                       </page>
                         <!-- TAB TAHsin HARIAN -->
                         <page string="Tahsin Harian">
                             <group string="Buku Halaman">

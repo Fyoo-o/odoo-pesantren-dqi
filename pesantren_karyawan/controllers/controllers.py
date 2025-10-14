@@ -425,7 +425,7 @@ class PesantrenBeranda(http.Controller):
             <nav class="navbar navbar-expand-lg bg-body-grenyellow shadow sticky-top">
                 <div class="container d-flex">
                     <a class="navbar-brand d-flex text-white fw-bold" href="#">
-                        <img src="https://i.ibb.co.com/1MFsvMq/1731466812700.png" alt="Icon Daarul Qur'an Istiqomah" class="me-2 d-md-block d-none" width="40" height="40">
+                        <img src="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" alt="Icon Daarul Qur'an Istiqomah" class="me-2 d-md-block d-none" width="40" height="40">
                         <span class="d-md-block d-none h3">
                             PSB Daarul Qur'an Istiqomah
                         </span> 
@@ -448,7 +448,7 @@ class PesantrenBeranda(http.Controller):
             <div class="bg-body-grenyellow rounded-90">
                 <div class="container py-3 d-md-flex d-block text-light justify-content-center align-items-center">
                     <div class="me-5 w-set-auto d-flex justify-content-center">
-                        <img src="https://i.ibb.co.com/1MFsvMq/1731466812700.png" alt="Logo Daarul Qur'an Istiqomah" width="65%">
+                        <img src="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" alt="Logo Daarul Qur'an Istiqomah" width="65%">
                     </div>
                     <div class="ms-md-3 m-0 text-center text-md-start">
                         <h1 class="fw-bold">Pendaftaran Santri Baru</h1>
@@ -538,7 +538,7 @@ class PesantrenBeranda(http.Controller):
                     </div>
                     <!-- Image Section -->
                     <div class="col-md-6">
-                        <img src="pesantren_pendaftaran/static/src/img/PAGE2.44b0e259.png" class="img-fluid rounded-4"
+                        <img src="pesantren_pendaftaran/static/src/img/IMG_20251014_113930_334.jpg" class="img-fluid rounded-4"
                             alt="Syarat Pendaftaran">
                     </div>
                 </div>
@@ -635,7 +635,7 @@ class PesantrenBeranda(http.Controller):
             <div class="container my-5">
                 <div class="row align-items-center">
                     <div class="col-md-6">
-                        <img src="pesantren_pendaftaran/static/src/img/PAGE3.e3b6d704.png" alt="Informasi Pendaftaran" class="rounded-custom img-fluid" />
+                        <img src="pesantren_pendaftaran/static/src/img/IMG_20251014_113930_248.jpg" alt="Informasi Pendaftaran" class="rounded-custom img-fluid" />
                     </div>
                     <div class="col-md-6 col-sm-12">
                         <h3 class="fw-bold"><span class="text-green">Informasi</span> Pelayanan Pendaftaran</h3>
