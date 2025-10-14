@@ -49,6 +49,11 @@ class PesantrenBeranda(http.Controller):
         tgl_mulai_seleksi = config_obj.get_param('pesantren_pendaftaran.tgl_mulai_seleksi')
         tgl_akhir_seleksi = config_obj.get_param('pesantren_pendaftaran.tgl_akhir_seleksi')
         tgl_pengumuman_hasil_seleksi = config_obj.get_param('pesantren_pendaftaran.tgl_pengumuman_hasil_seleksi')
+        tgl_mulai_pendaftaran_gel_2 = config_obj.get_param('pesantren_pendaftaran.tgl_mulai_pendaftaran_gel_2')
+        tgl_akhir_pendaftaran_gel_2 = config_obj.get_param('pesantren_pendaftaran.tgl_akhir_pendaftaran_gel_2')
+        tgl_mulai_seleksi_gel_2 = config_obj.get_param('pesantren_pendaftaran.tgl_mulai_seleksi_gel_2')
+        tgl_akhir_seleksi_gel_2 = config_obj.get_param('pesantren_pendaftaran.tgl_akhir_seleksi_gel_2')
+        tgl_pengumuman_hasil_seleksi_gel_2 = config_obj.get_param('pesantren_pendaftaran.tgl_pengumuman_hasil_seleksi_gel_2')
 
         # Set nilai default dinamis jika parameter kosong
         if not tgl_mulai_pendaftaran:
@@ -80,6 +85,36 @@ class PesantrenBeranda(http.Controller):
             tgl_pengumuman_hasil_seleksi = tgl_pengumuman_hasil_seleksi_dt.strftime('%Y-%m-%d %H:%M:%S')
         else:
             tgl_pengumuman_hasil_seleksi_dt = datetime.datetime.strptime(tgl_pengumuman_hasil_seleksi, '%Y-%m-%d %H:%M:%S')
+        
+        if not tgl_mulai_pendaftaran_gel_2:
+            tgl_mulai_pendaftaran_gel_2_dt = datetime.datetime.now() + datetime.timedelta(days=1)
+            tgl_mulai_pendaftaran_gel_2 = tgl_mulai_pendaftaran_gel_2_dt.strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            tgl_mulai_pendaftaran_gel_2_dt = datetime.datetime.strptime(tgl_mulai_pendaftaran_gel_2, '%Y-%m-%d %H:%M:%S')
+
+        if not tgl_akhir_pendaftaran_gel_2:
+            tgl_akhir_pendaftaran_gel_2_dt = tgl_mulai_pendaftaran_gel_2_dt + datetime.timedelta(days=3)
+            tgl_akhir_pendaftaran_gel_2 = tgl_akhir_pendaftaran_gel_2_dt.strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            tgl_akhir_pendaftaran_gel_2_dt = datetime.datetime.strptime(tgl_akhir_pendaftaran_gel_2, '%Y-%m-%d %H:%M:%S')
+
+        if not tgl_mulai_seleksi_gel_2:
+            tgl_mulai_seleksi_gel_2_dt = tgl_akhir_pendaftaran_gel_2_dt
+            tgl_mulai_seleksi_gel_2 = tgl_mulai_seleksi_gel_2_dt.strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            tgl_mulai_seleksi_gel_2_dt = datetime.datetime.strptime(tgl_mulai_seleksi_gel_2, '%Y-%m-%d %H:%M:%S')
+
+        if not tgl_akhir_seleksi_gel_2:
+            tgl_akhir_seleksi_gel_2_dt = tgl_mulai_seleksi_gel2_dt + datetime.timedelta(days=3)
+            tgl_akhir_seleksi_gel_2 = tgl_akhir_seleksi_gel_2_dt.strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            tgl_akhir_seleksi_gel_2_dt = datetime.datetime.strptime(tgl_akhir_seleksi_gel_2, '%Y-%m-%d %H:%M:%S')
+
+        if not tgl_pengumuman_hasil_seleksi_gel_2:
+            tgl_pengumuman_hasil_seleksi_gel_2_dt = tgl_akhir_seleksi_gel_2_dt + datetime.timedelta(days=2)
+            tgl_pengumuman_hasil_seleksi_gel_2 = tgl_pengumuman_hasil_seleksi_gel_2_dt.strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            tgl_pengumuman_hasil_seleksi_gel_2_dt = datetime.datetime.strptime(tgl_pengumuman_hasil_seleksi_gel_2, '%Y-%m-%d %H:%M:%S')
 
         # Format tanggal manual dalam bahasa Indonesia
         def format_tanggal_manual(dt):
@@ -95,6 +130,11 @@ class PesantrenBeranda(http.Controller):
         tgl_mulai_seleksi_formatted = format_tanggal_manual(tgl_mulai_seleksi_dt)
         tgl_akhir_seleksi_formatted = format_tanggal_manual(tgl_akhir_seleksi_dt)
         tgl_pengumuman_hasil_seleksi_formatted = format_tanggal_manual(tgl_pengumuman_hasil_seleksi_dt)
+        tgl_mulai_pendaftaran_gel_2_formatted = format_tanggal_manual(tgl_mulai_pendaftaran_gel_2_dt)
+        tgl_akhir_pendaftaran_gel_2_formatted = format_tanggal_manual(tgl_akhir_pendaftaran_gel_2_dt)
+        tgl_mulai_seleksi_gel_2_formatted = format_tanggal_manual(tgl_mulai_seleksi_gel_2_dt)
+        tgl_akhir_seleksi_gel_2_formatted = format_tanggal_manual(tgl_akhir_seleksi_gel_2_dt)
+        tgl_pengumuman_hasil_seleksi_gel_2_formatted = format_tanggal_manual(tgl_pengumuman_hasil_seleksi_gel_2_dt)
 
         html_content = f"""
                     <!doctype html>
@@ -445,7 +485,7 @@ class PesantrenBeranda(http.Controller):
                     </div>
                     <h2 class="step-number">1</h2>
                     <h5 class="font-weight-bold mt-3">Checkup / Periksa Kesehatan</h5>
-                    <p>Pemeriksaan kesehatan dari calon peserta didik oleh petugas klinik Az-Zainiyah.</p>
+                    <p>Pemeriksaan kesehatan dari calon peserta didik oleh petugas kesehatan.</p>
                     <div class="bottom-icon mt-4">
                         <i class="bi bi-shirt text-info"></i>
                     </div>
@@ -560,7 +600,8 @@ class PesantrenBeranda(http.Controller):
                         <div class="accordion-body">
                             <!-- Konten untuk Verifikasi Berkas -->
                             <p class="m-0">Tanggal:</p>
-                            <p class="fw-bold">{tgl_mulai_pendaftaran_formatted} s.d {tgl_akhir_pendaftaran_formatted}</p>
+                            <p class="fw-bold">Gelombang 1{tgl_mulai_pendaftaran_formatted} s.d {tgl_akhir_pendaftaran_formatted}</p>
+                            <p class="fw-bold">Gelombang 2{tgl_mulai_pendaftaran_gel_2_formatted} s.d {tgl_akhir_pendaftaran_gel_2_formatted}</p>
                             <p class="m-0">Tempat Penerimaan:</p>
                             <p class="fw-bold">Pondok Pesantren Daarul Qur'an Istiqomah, {alamat_lengkap} </p>
                         </div>
@@ -735,6 +776,11 @@ class PesantrenPendaftaran(http.Controller):
         tgl_mulai_seleksi = config_obj.get_param('pesantren_pendaftaran.tgl_mulai_seleksi')
         tgl_akhir_seleksi = config_obj.get_param('pesantren_pendaftaran.tgl_akhir_seleksi')
         tgl_pengumuman_hasil_seleksi = config_obj.get_param('pesantren_pendaftaran.tgl_pengumuman_hasil_seleksi')
+        tgl_mulai_pendaftaran_gel_2 = config_obj.get_param('pesantren_pendaftaran.tgl_mulai_pendaftaran_gel_2')
+        tgl_akhir_pendaftaran_gel_2 = config_obj.get_param('pesantren_pendaftaran.tgl_akhir_pendaftaran_gel_2')
+        tgl_mulai_seleksi_gel_2 = config_obj.get_param('pesantren_pendaftaran.tgl_mulai_seleksi_gel_2')
+        tgl_akhir_seleksi_gel_2 = config_obj.get_param('pesantren_pendaftaran.tgl_akhir_seleksi_gel_2')
+        tgl_pengumuman_hasil_seleksi_gel_2 = config_obj.get_param('pesantren_pendaftaran.tgl_pengumuman_hasil_seleksi_gel_2')
         is_halaman_pendaftaran = config_obj.get_param('pesantren_pendaftaran.is_halaman_pendaftaran')
         is_halaman_pengumuman = config_obj.get_param('pesantren_pendaftaran.is_halaman_pengumuman')
 
@@ -768,6 +814,38 @@ class PesantrenPendaftaran(http.Controller):
             tgl_pengumuman_hasil_seleksi = tgl_pengumuman_hasil_seleksi_dt.strftime('%Y-%m-%d %H:%M:%S')
         else:
             tgl_pengumuman_hasil_seleksi_dt = datetime.datetime.strptime(tgl_pengumuman_hasil_seleksi, '%Y-%m-%d %H:%M:%S')
+       
+       
+        # SEt Pendaftaran Gelombang 2
+        if not tgl_mulai_pendaftaran_gel_2:
+            tgl_mulai_pendaftaran_gel_2_dt = datetime.datetime.now() + datetime.timedelta(days=1)
+            tgl_mulai_pendaftaran_gel_2 = tgl_mulai_pendaftaran_gel_2_dt.strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            tgl_mulai_pendaftaran_gel_2_dt = datetime.datetime.strptime(tgl_mulai_pendaftaran_gel_2, '%Y-%m-%d %H:%M:%S')
+
+        if not tgl_akhir_pendaftaran_gel_2:
+            tgl_akhir_pendaftaran_gel_2_dt = tgl_mulai_pendaftaran_gel_2_dt + datetime.timedelta(days=3)
+            tgl_akhir_pendaftaran_gel_2 = tgl_akhir_pendaftaran_gel_2_dt.strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            tgl_akhir_pendaftaran_gel_2_dt = datetime.datetime.strptime(tgl_akhir_pendaftaran_gel_2, '%Y-%m-%d %H:%M:%S')
+
+        if not tgl_mulai_seleksi_gel_2:
+            tgl_mulai_seleksi_gel_2_dt = tgl_akhir_pendaftaran_gel_2_dt
+            tgl_mulai_seleksi_gel_2 = tgl_mulai_seleksi_gel_2_dt.strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            tgl_mulai_seleksi_gel_2_dt = datetime.datetime.strptime(tgl_mulai_seleksi_gel_2, '%Y-%m-%d %H:%M:%S')
+
+        if not tgl_akhir_seleksi_gel_2:
+            tgl_akhir_seleksi_gel_2_dt = tgl_mulai_seleksi_gel_2_dt + datetime.timedelta(days=3)
+            tgl_akhir_seleksi_gel_2 = tgl_akhir_seleksi_gel_2_dt.strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            tgl_akhir_seleksi_gel_2_dt = datetime.datetime.strptime(tgl_akhir_seleksi_gel_2, '%Y-%m-%d %H:%M:%S')
+
+        if not tgl_pengumuman_hasil_seleksi_gel_2:
+            tgl_pengumuman_hasil_seleksi_gel_2_dt = tgl_akhir_seleksi_gel_2_dt + datetime.timedelta(days=2)
+            tgl_pengumuman_hasil_seleksi_gel_2 = tgl_pengumuman_hasil_seleksi_gel_2_dt.strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            tgl_pengumuman_hasil_seleksi_gel_2_dt = datetime.datetime.strptime(tgl_pengumuman_hasil_seleksi_gel_2, '%Y-%m-%d %H:%M:%S')
 
         # Format tanggal manual dalam bahasa Indonesia
         def format_tanggal_manual(dt):
@@ -783,6 +861,13 @@ class PesantrenPendaftaran(http.Controller):
         tgl_mulai_seleksi_formatted = format_tanggal_manual(tgl_mulai_seleksi_dt)
         tgl_akhir_seleksi_formatted = format_tanggal_manual(tgl_akhir_seleksi_dt)
         tgl_pengumuman_hasil_seleksi_formatted = format_tanggal_manual(tgl_pengumuman_hasil_seleksi_dt)
+       
+        # Format tanggal Gelombang 2 untuk ditampilkan di halaman
+        tgl_mulai_pendaftaran_gel_2_formatted = format_tanggal_manual(tgl_mulai_pendaftaran_gel_2_dt)
+        tgl_akhir_pendaftaran_gel_2_formatted = format_tanggal_manual(tgl_akhir_pendaftaran_gel_2_dt)
+        tgl_mulai_seleksi_gel_2_formatted = format_tanggal_manual(tgl_mulai_seleksi_gel_2_dt)
+        tgl_akhir_seleksi_gel_2_formatted = format_tanggal_manual(tgl_akhir_seleksi_gel_2_dt)
+        tgl_pengumuman_hasil_seleksi_gel_2_formatted = format_tanggal_manual(tgl_pengumuman_hasil_seleksi_gel_2_dt)
 
 
         html_response = f"""
@@ -1502,7 +1587,7 @@ class PesantrenPendaftaran(http.Controller):
                                         <p class="info-list">
                                             Pendaftaran dilaksanakan pada:<br>
                                             <span class="highlight-text">Gel 1:</span> {tgl_mulai_pendaftaran_formatted} - {tgl_akhir_pendaftaran_formatted}<br>
-                                            <span class="highlight-text">Gel 2:</span> {tgl_mulai_pendaftaran_formatted} - {tgl_akhir_pendaftaran_formatted}<br>
+                                            <span class="highlight-text">Gel 2:</span> {tgl_mulai_pendaftaran_gel_2_formatted} - {tgl_akhir_pendaftaran_gel_2_formatted}<br>
                                             melalui website <a href="/pendaftaran" class="text-decoration-none" style="color: #059669; font-weight: 600;">https://aplikasi.dqi.ac.id/psb</a>
                                         </p>
                                     </div>
@@ -1518,7 +1603,7 @@ class PesantrenPendaftaran(http.Controller):
                                         <div class="section-title">2. Pelaksanaan Test Masuk</div>
                                         <p class="info-list">
                                             <span class="highlight-text">Gel 1:</span> {tgl_mulai_seleksi_formatted} - {tgl_akhir_seleksi_formatted}<br>
-                                            <span class="highlight-text">Gel 2:</span> {tgl_mulai_seleksi_formatted} - {tgl_akhir_seleksi_formatted}
+                                            <span class="highlight-text">Gel 2:</span> {tgl_mulai_seleksi_gel_2_formatted} - {tgl_akhir_seleksi_gel_2_formatted}
                                         </p>
                                     </div>
                                     <div class="col-md-4 text-center">
@@ -1531,7 +1616,7 @@ class PesantrenPendaftaran(http.Controller):
                                 <div class="section-title">4. Pengumuman Hasil Seleksi</div>
                                 <p class="info-list">
                                     <span class="highlight-text">Gel 1:</span> {tgl_pengumuman_hasil_seleksi_formatted}<br>
-                                    <span class="highlight-text">Gel 2:</span> {tgl_pengumuman_hasil_seleksi_formatted}
+                                    <span class="highlight-text">Gel 2:</span> {tgl_pengumuman_hasil_seleksi_gel_2_formatted}
                                 </p>
                             </div>
 

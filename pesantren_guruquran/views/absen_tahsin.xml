@@ -29,6 +29,6 @@
         </record>
         <!-- This Menu Item must have a parent and an action -->
         <!-- <menuitem id="cdn_absen_tahsin_menu_act" name="Absensi Tahsin" parent="pesantren_guru.absensi_pengajar" action="cdn_absen_tahsin_action" sequence="10"/> -->
-        <menuitem id="cdn_absen_tahsin_menu_act" name="Absensi Tahsin" parent="pesantren_guru.absensi_pengajar" action="cdn_absen_tahsin_action" sequence="10" groups="pesantren_guruquran.group_guru_quran_staff" />
+        <!-- <menuitem id="cdn_absen_tahsin_menu_act" name="Absensi Tahsin" parent="pesantren_guru.absensi_pengajar" action="cdn_absen_tahsin_action" sequence="10" groups="pesantren_guruquran.group_guru_quran_staff" /> -->
     </data>
 </odoo>

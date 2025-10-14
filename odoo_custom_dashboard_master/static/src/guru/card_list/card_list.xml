@@ -18,7 +18,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <t t-foreach="state.items" t-as="guru" t-key="guru.id">
+                                     <t t-foreach="state.items" t-as="guru" t-key="guru.id">
                                         <tr style="cursor: pointer;"
                                             t-att-id="'guru-' + guru.id"
                                             t-on-click="() => this.openRecord(guru.id)">
