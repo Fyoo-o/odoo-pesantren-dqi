@@ -119,8 +119,8 @@ class TahfidzTahsin(models.Model):
     nilai_mad_harian = fields.Integer(string='Nilai Mad')
     catatan_harian = fields.Text(string='Catatan (Harian)')
     surah_id_harian = fields.Many2one('cdn.surah', string='Surah')
-    ayat_awal_harian = fields.Many2one('cdn.ayat', string='Ayat Awal',domain="[('surah_id','=',surah_id)]")
-    ayat_akhir_harian = fields.Many2one('cdn.ayat', string='Ayat Akhir', domain="[('surah_id','=',surah_id)]")
+    ayat_awal_harian = fields.Many2one('cdn.ayat', string='Ayat Awal',domain="[('surah_id','=',surah_id_harian)]")
+    ayat_akhir_harian = fields.Many2one('cdn.ayat', string='Ayat Akhir', domain="[('surah_id','=',surah_id_harian)]")
     
 
     # === TAB TAHsin UJIAN ===
@@ -133,8 +133,8 @@ class TahfidzTahsin(models.Model):
     nilai_mad_ujian = fields.Integer(string='Nilai Mad')
     catatan_ujian = fields.Text(string='Catatan (Ujian)')
     surah_id_ujian = fields.Many2one('cdn.surah', string='Surah')
-    ayat_awal_ujian = fields.Many2one('cdn.ayat', string='Ayat Awal', domain="[('surah_id','=',surah_id)]")
-    ayat_akhir_ujian = fields.Many2one('cdn.ayat', string='Ayat Akhir', domain="[('surah_id','=',surah_id)]")
+    ayat_awal_ujian = fields.Many2one('cdn.ayat', string='Ayat Awal', domain="[('surah_id','=',surah_id_ujian)]")
+    ayat_akhir_ujian = fields.Many2one('cdn.ayat', string='Ayat Akhir', domain="[('surah_id','=',surah_id_ujian)]")
     # === INFORMASI TAHFIDZ TERAKHIR ===
     last_surah_id = fields.Many2one(
         'cdn.surah', string='Surah Terakhir',
