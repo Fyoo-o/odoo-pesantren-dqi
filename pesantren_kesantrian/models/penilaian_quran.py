@@ -59,6 +59,56 @@ class TahfidzTahsin(models.Model):
         'penilaian_id',
         string='Setoran Tahfidz'
     )
+
+    # === TAB Murajaah Harian ===
+    buku_murajaah_id = fields.Many2one(
+        'cdn.buku_tahsin',
+        string='Buku',
+        default=lambda self: self.env['cdn.buku_tahsin'].search([('name', '=', "Al-Qur'an")], limit=1),
+        readonly=True
+    )
+
+    # Ambil daftar Juz unik dari cdn.ayat
+    juz_murajaah = fields.Selection(
+        selection=lambda self: self._get_juz_selection(),
+        string='Juz'
+    )
+
+    # Surah (akan difilter berdasar juz)
+    surah_murajaah_id = fields.Many2one(
+        'cdn.surah',
+        string='Surah',
+        domain="[('id', 'in', available_surah_ids)]"
+    )
+
+    halaman_murajaah = fields.Char(string='Halaman')
+    catatan_murajaah_harian = fields.Text(string='Catatan Murajaah (Harian)')
+
+    # Field bantu (computed, tidak disimpan)
+    available_surah_ids = fields.Many2many(
+        'cdn.surah',
+        compute='_compute_available_surah_ids',
+        string='Available Surahs'
+    )
+
+    # === Helper Functions ===
+    def _get_juz_selection(self):
+        try:
+            ayat_records = self.env['cdn.ayat'].search([('juz', '!=', False), ('juz', '!=', 0)])
+            juz_values = sorted(set(ayat_records.mapped('juz')))
+            return [(str(j), f"Juz {j}") for j in juz_values]
+        except Exception:
+            return []
+
+    @api.depends('juz_murajaah')
+    def _compute_available_surah_ids(self):
+        for rec in self:
+            if rec.juz_murajaah:
+                ayat_ids = self.env['cdn.ayat'].search([('juz', '=', rec.juz_murajaah)])
+                rec.available_surah_ids = ayat_ids.mapped('surah_id')
+            else:
+                rec.available_surah_ids = False
+
     # === TAB TAHsin HARIAN ===
     buku_harian_id = fields.Many2one('cdn.buku_tahsin', string='Buku (Harian)')
     jilid_harian_id = fields.Many2one('cdn.jilid_tahsin', string='Jilid (Harian)', 
@@ -116,8 +166,8 @@ class TahfidzTahsin(models.Model):
                     rec.predikat = 'BB'
                     rec.keterangan_predikat = 'Belum Berkembang'
 
-            # Sistem SD ke atas pakai A+, A, B+, B, C, D
-            else:
+            # Sistem SD
+            elif jenjang in ['sd']:
                 if n >= 95:
                     rec.predikat = 'A+'
                     rec.keterangan_predikat = 'Mumtaz'
@@ -136,6 +186,50 @@ class TahfidzTahsin(models.Model):
                 else:
                     rec.predikat = 'D'
                     rec.keterangan_predikat = 'Dhaif Jiddan'
+                
+            # Sistem SMP  
+            elif jenjang in ['smp']: 
+                if n >= 90:
+                    rec.predikat = 'A'
+                    rec.keterangan_predikat = 'Mumtaz'
+                elif n >= 80:
+                    rec.predikat = 'B'
+                    rec.keterangan_predikat = 'Jayyid Jiddan'
+                elif n >= 70:
+                    rec.predikat = 'C'
+                    rec.keterangan_predikat = 'Jayyid'
+                else:
+                    rec.predikat = 'D'
+                    rec.keterangan_predikat = 'Mardud'
+                    
+            # Sistem SMA
+            elif jenjang in ['sma']:
+                if n >= 96:
+                    rec.predikat = 'A+'
+                    rec.keterangan_predikat = 'Mumtaz'
+                elif n >= 90:
+                    rec.predikat = 'A'
+                    rec.keterangan_predikat = 'Mumtaz'
+                elif n >= 80:
+                    rec.predikat = 'B+'
+                    rec.keterangan_predikat = 'Jayyid Jiddan'
+                elif n >= 75:
+                    rec.predikat = 'B'
+                    rec.keterangan_predikat = 'Jayyid'
+                elif n >= 70:
+                    rec.predikat = 'C'
+                    rec.keterangan_predikat = 'Maqbul'
+                elif n >= 60:
+                    rec.predikat = 'D'
+                    rec.keterangan_predikat = 'Dhaif'
+                else:
+                    rec.predikat = 'E'
+                    rec.keterangan_predikat = 'Dhaif Jiddan'
+                    
+            # Default (jika jenjang tidak dikenali) 
+            else: 
+                rec.predikat = False 
+                rec.keterangan_predikat = False
 
     @api.depends('tahfidz_line_ids', 'tahfidz_line_ids.sequence')
     def _compute_main_fields(self):
@@ -323,18 +417,50 @@ class PenilaianQuranLine(models.Model):
                     rec.predikat = 'MB - Mulai Berkembang'
                 else:
                     rec.predikat = 'BB - Belum Berkembang'
-                continue
 
-            # === SD ke atas ===
-            if n >= 95:
-                rec.predikat = 'A+ (Mumtaz)'
-            elif n >= 91:
-                rec.predikat = 'A (Jayyid Jiddan)'
-            elif n >= 80:
-                rec.predikat = 'B+ (Jayyid)'
-            elif n >= 70:
-                rec.predikat = 'B (Maqbul)'
-            elif n >= 60:
-                rec.predikat = 'C (Dhaif)'
+            # === SD ===
+            elif jenjang in ['sd', 'sd/mi', 'sdmi']:
+                if n >= 95:
+                    rec.predikat = 'A+ (Mumtaz)'
+                elif n >= 91:
+                    rec.predikat = 'A (Jayyid Jiddan)'
+                elif n >= 80:
+                    rec.predikat = 'B+ (Jayyid)'
+                elif n >= 70:
+                    rec.predikat = 'B (Maqbul)'
+                elif n >= 60:
+                    rec.predikat = 'C (Dhaif)'
+                else:
+                    rec.predikat = 'D (Dhaif Jiddan)'
+
+            # === SMP ===
+            elif jenjang in ['smp', 'smp/mts', 'smpmts']:
+                if n >= 90:
+                    rec.predikat = 'A (Mumtaz)'
+                elif n >= 80:
+                    rec.predikat = 'B (Jayyid Jiddan)'
+                elif n >= 70:
+                    rec.predikat = 'C (Jayyid)'
+                else:
+                    rec.predikat = 'D (Mardud)'
+
+            # === SMA ===
+            elif jenjang in ['sma', 'ma', 'smama']:
+                if n >= 96:
+                    rec.predikat = 'A+ (Mumtaz)'
+                elif n >= 90:
+                    rec.predikat = 'A (Mumtaz)'
+                elif n >= 80:
+                    rec.predikat = 'B+ (Jayyid Jiddan)'
+                elif n >= 75:
+                    rec.predikat = 'B (Jayyid)'
+                elif n >= 70:
+                    rec.predikat = 'C (Maqbul)'
+                elif n >= 60:
+                    rec.predikat = 'D (Dhaif)'
+                else:
+                    rec.predikat = 'E (Dhaif Jiddan)'
+
+            # === Default ===
             else:
-                rec.predikat = 'D (Dhaif Jiddan)'
+                rec.predikat = False
