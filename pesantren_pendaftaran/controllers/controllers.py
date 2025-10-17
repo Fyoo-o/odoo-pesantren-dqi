@@ -2855,9 +2855,14 @@ class PesantrenPsbBantuan(http.Controller):
                                 <a href="#" class="text-decoration-none" style="color: purple;">0822-5207-9785</a><br>
                             </div>
                             <h5>Media Sosial Kami</h5>
-                            <span class="text-uppercase" style="color: purple;">Instagram : @daqubanat_</span><br>
+                            <!-- <span class="text-uppercase" style="color: purple;">Instagram : @daqubanat_</span><br>
                             <span class="text-uppercase" style="color: purple;">Facebook  : @Daarul Quran Istiqomah</span><br>
                             <span class="text-uppercase" style="color: purple;">Youtube   : @dqimedia</span><br>
+                            -->
+                            
+                            <span style="color: purple;">Instagram : <a href="https://www.instagram.com/dqimedia" class="text-decoration-none" style="color: purple;">@dqimedia</a></span><br>
+                            <span style="color: purple;">Facebook  : <a href="https://www.facebook.com/daquistiqomah/" class="text-decoration-none" style="color: purple;">@Daarul Quran Istiqomah</span></a><br>
+                            <span style="color: purple;">Youtube   : <a href="https://www.youtube.com/@dqimedia" class="text-decoration-none" style="color: purple;">@dqimedia</a></span><br>
                         </div>
                     </div>
                 </div>
