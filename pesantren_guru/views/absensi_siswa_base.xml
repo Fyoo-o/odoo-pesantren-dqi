@@ -8,7 +8,7 @@
             <field name="model">cdn.absensi_siswa</field>
             <field name="arch" type="xml">
                 <list create="false" edit="false" delete="false">
-                   <button name="%(pesantren_guru.action_absensi_filter_wizard)d" string="Filter Tanggal Manual" type="action" class="btn-primary"/>
+                    <button name="%(pesantren_guru.action_absensi_filter_wizard)d" string="Filter Tanggal Manual" type="action" class="btn-primary"/>
                     <field name="name" />
                     <field name="tanggal" />
                     <field name="jampelajaran_id" />
@@ -146,7 +146,7 @@
 
         <!-- cdn.absensi_siswa action window - Akses Umum -->
         <record id="cdn_absensi_siswa_action_public" model="ir.actions.act_window">
-            <field name="name">Data Absensi Santri</field>
+            <field name="name">Data Absensi Siswa</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.absensi_siswa</field>
             <field name="view_mode">list,form</field>
@@ -173,7 +173,7 @@
         </record>
 
         <!-- Menu Item untuk Akses Umum dengan akses pesantren_base -->
-        <menuitem id="cdn_absensi_siswa_menu_public" name="Absensi Santri"
+        <menuitem id="cdn_absensi_siswa_menu_public" name="Absensi Siswa"
             parent="pesantren_base.absensi_menu_categ" 
             action="cdn_absensi_siswa_action_public" 
             sequence="10" />

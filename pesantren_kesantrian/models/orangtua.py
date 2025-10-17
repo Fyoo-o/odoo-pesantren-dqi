@@ -15,7 +15,7 @@ class OrangTua(models.Model):
             'name': res.name,  # Nama pengguna
             'company_id': self.env.ref('base.main_company').id,  # Mengatur perusahaan default
             'partner_id': res.partner_id.id,  # Hubungkan dengan partner terkait
-            'password': 'partner',  # Password default
+            'password': res.password,  # Password default
             'groups_id': [(6, 0, [
                 # Assign grup internal user (standard)
                 self.env.ref('base.group_user').id, 
@@ -34,6 +34,10 @@ class OrangTua(models.Model):
         })
         
         res.user_id = user.id
+        
+        if res.partner_id:
+            res.partner_id.user_id = user.id
+        
         return res
 
     def unlink(self):
@@ -88,6 +92,10 @@ class OrangTua(models.Model):
         #     },
         # }
 
-
-
-
+    def write(self, vals):
+        res = super(OrangTua, self).write(vals)
+        for record in self:
+            # Jika field password diubah, update password user terkait
+            if vals.get('password') and record.user_id:
+                record.user_id.sudo().write({'password': vals['password']})
+        return res

@@ -27,11 +27,17 @@ class OrangTua(models.Model):
     password            = fields.Char(string="Password", help="Password login untuk akun orang tua")
 
     @api.model
+    def create(self, vals):
+        record = super().create(vals)
+        if record.user_id and record.partner_id:
+            record.partner_id.user_id = record.user_id
+        return record
+
+    @api.model
     def default_get(self, fields):
        res = super(OrangTua,self).default_get(fields)
        res['jns_partner'] = 'ortu'
        return res
-
 
     def _update_user_group_limit(self):
         group_orangtua_limit = self.env.ref('pesantren_kesantrian.group_kesantrian_orang_tua_acces_limit')

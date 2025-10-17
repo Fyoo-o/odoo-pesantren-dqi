@@ -25,32 +25,31 @@
         </record>
 
         <!-- kesehatan -->
-        <record id="group_kesantrian_kesehatan"  model="res.groups">
+        <record id="group_kesantrian_kesehatan" model="res.groups">
             <field name="name">Kesantrian Kesehatan</field>
             <field name="users" eval="[(4, ref('base.user_admin'))]"/>
-			<field name="category_id" ref="pesantren_base.module_category_alhamra"/>
+            <field name="category_id" ref="pesantren_base.module_category_alhamra"/>
         </record>
 
         <!-- keamanan -->
-        <record id="group_kesantrian_keamanan"  model="res.groups">
+        <record id="group_kesantrian_keamanan" model="res.groups">
             <field name="name">Kesantrian Keamanan</field>
             <field name="users" eval="[(4, ref('base.user_admin'))]"/>
-			<field name="category_id" ref="pesantren_base.module_category_alhamra"/>
+            <field name="category_id" ref="pesantren_base.module_category_alhamra"/>
         </record>
 
         <!-- orang tua -->
-        <record id="group_kesantrian_orang_tua"  model="res.groups">
+        <record id="group_kesantrian_orang_tua" model="res.groups">
             <field name="name">Orang Tua</field>
             <field name="users" eval="[(4, ref('base.user_admin'))]"/>
-			<field name="category_id" ref="pesantren_base.module_category_alhamra"/>
+            <field name="category_id" ref="pesantren_base.module_category_alhamra"/>
         </record>
 
-        <record id="group_kesantrian_orang_tua_acces_limit"  model="res.groups">
+        <record id="group_kesantrian_orang_tua_acces_limit" model="res.groups">
             <field name="name">Akses Limit Orang Tua</field>
             <field name="users" eval="[(4, ref('base.user_admin'))]"/>
-			<field name="category_id" ref="pesantren_base.module_category_alhamra"/>
+            <field name="category_id" ref="pesantren_base.module_category_alhamra"/>
         </record>
-    </data>
-    
 
+    </data>
 </odoo>
