@@ -29,8 +29,12 @@
             <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.bootstrap5.css" />
             <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css" rel="stylesheet"/>
             <style>
-                .container-main {
+                <!-- .container-main {
                 background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+                min-height: 100vh;
+                display: flex; 
+                flex-direction: column;
+                margin: 0;
                 }
 
                 .offcanvas.offcanvas-end {
@@ -102,6 +106,227 @@
                 opacity: 1;
                 transform: translateY(0);
                 }
+                } -->
+
+                body {
+                    margin: 0;
+                    padding: 0;
+                }
+
+                .container-main {
+                    background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+                    min-height: 100vh;
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                /* Content wrapper untuk sticky footer */
+                .container-main > *:not(footer) {
+                    flex-shrink: 0;
+                }
+
+                .offcanvas.offcanvas-end {
+                    width: 250px;
+                }
+
+                .offcanvas .nav-link {
+                    color: #ffffff;
+                }
+
+                .offcanvas .btn-close {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    filter: invert(1);
+                }
+
+                .background {
+                    background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+                }
+
+                /* Desain Dropdown */
+                .dropdown {
+                    position: relative;
+                }
+
+                .dropdown-link {
+                    cursor: pointer;
+                }
+
+                .dropdown-content {
+                    display: none;
+                    position: absolute;
+                    top: 100%;
+                    right: 0;
+                    background-color: #ffffff;
+                    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+                    border-radius: 5px;
+                    min-width: 150px;
+                    z-index: 1;
+                    overflow: hidden;
+                }
+
+                .dropdown-content a {
+                    color: #333;
+                    padding: 10px 15px;
+                    display: block;
+                    text-decoration: none;
+                    transition: background-color 0.2s;
+                }
+
+                .dropdown-content a:hover {
+                    background-color: #f1f1f1;
+                }
+
+                /* Menampilkan dropdown saat hover */
+                .dropdown:hover .dropdown-content {
+                    display: block;
+                    animation: fadeIn 0.3s;
+                }
+
+                /* Animasi fade-in */
+                @keyframes fadeIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-10px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                /* Table Container */
+                .table-container-wrapper {
+                    width: 900px;
+                    max-width: 100%;
+                    padding: 20px 40px;
+                }
+
+                /* Wrapper table dengan scroll horizontal saja */
+                .table-wrapper {
+                    overflow-x: auto;
+                    overflow-y: visible; /* Tidak ada scroll vertikal */
+                    -webkit-overflow-scrolling: touch;
+                }
+
+                .table-wrapper table {
+                    width: 100%;
+                    margin-bottom: 0;
+                }
+
+                /* Footer Styles */
+                footer {
+                    margin-top: auto !important;
+                    padding: 20px 0 !important;
+                }
+
+                footer ul {
+                    padding: 0;
+                    margin: 0;
+                }
+
+                /* Mobile Responsive */
+                @media (max-width: 768px) {
+                    /* Navbar Brand */
+                    .navbar-brand {
+                        font-size: 14px !important;
+                        margin-left: 10px !important;
+                    }
+
+                    .navbar-brand img {
+                        width: 40px !important;
+                    }
+
+                    /* Marquee text */
+                    marquee {
+                        font-size: 12px !important;
+                        padding: 8px 0 !important;
+                    }
+
+                    /* Heading */
+                    h4.text-center {
+                        font-size: 16px !important;
+                        padding: 0 15px;
+                        margin-bottom: 20px !important;
+                    }
+
+                    /* Wrapper tetap di tengah, tidak scroll */
+                    .d-flex.justify-content-center {
+                        padding: 0 10px;
+                    }
+
+                    /* Table Container - wrapper putih tidak scroll */
+                    .table-container-wrapper {
+                        width: 100% !important;
+                        max-width: calc(100vw - 20px) !important;
+                        padding: 15px !important;
+                    }
+
+                    /* Hanya table yang scroll horizontal, TIDAK vertikal */
+                    .table-wrapper {
+                        overflow-x: auto;
+                        overflow-y: visible;
+                        -webkit-overflow-scrolling: touch;
+                        margin: 0 -15px;
+                        padding: 0 15px;
+                    }
+
+                    .table-wrapper table {
+                        font-size: 12px !important;
+                    }
+
+                    .table-wrapper table th,
+                    .table-wrapper table td {
+                        padding: 8px 10px !important;
+                        white-space: nowrap;
+                    }
+
+                    /* Footer */
+                    footer {
+                        flex-direction: column !important;
+                        align-items: center !important;
+                        padding: 15px 10px !important;
+                        margin-top: 30px !important;
+                    }
+
+                    footer .ms-5,
+                    footer .me-5 {
+                        margin: 0 !important;
+                        width: 100%;
+                        text-align: center;
+                    }
+
+                    footer ul {
+                        flex-direction: column !important;
+                        gap: 10px;
+                        padding: 10px 0 !important;
+                    }
+
+                    footer ul li {
+                        margin: 0 !important;
+                    }
+
+                    footer ul li a {
+                        margin: 0 !important;
+                        display: block;
+                    }
+
+                    footer p {
+                        margin-top: 15px !important;
+                        font-size: 12px;
+                    }
+                }
+
+                /* Tablet Responsive */
+                @media (max-width: 992px) and (min-width: 769px) {
+                    .table-container-wrapper {
+                        width: 95% !important;
+                    }
+
+                    footer ul {
+                        font-size: 12px !important;
+                    }
                 }
 
             </style>
@@ -223,7 +448,7 @@
                 <h4 class="text-center mt-3 mb-5 text-white fw-semibold">Papan Pengumuman Hasil
                     Seleksi PSB Program PAUD</h4>
 
-                <div class="d-flex justify-content-center">
+                <!-- <div class="d-flex justify-content-center">
                     <div style="width: 900px; padding: 20px 40px;" class="bg-white shadow-lg rounded mb-3">
                         <table id="myTable" class="table table-striped" style="width:100%">
                             <thead>
@@ -258,6 +483,45 @@
                             </tbody>
                         </table>
                     </div>
+                </div> -->
+
+                <div class="d-flex justify-content-center">
+                    <div class="bg-white shadow-lg rounded mb-3 table-container-wrapper">
+                        <div class="table-wrapper">
+                            <table id="myTable" class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>No Pendaftaran</th>
+                                        <th>Nama</th>
+                                        <th>Jenjang</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="santri" t-as="record">
+                                        <tr>
+                                            <td>
+                                                <t t-esc="record.nomor_pendaftaran" />
+                                            </td>
+                                            <td>
+                                                <t t-esc="record.partner_id.name" />
+                                            </td>
+                                            <td>
+                                                <span style="text-transform: uppercase;">
+                                                    <t t-esc="record.jenjang_id.jenjang.replace('paud', 'PAUD')" />
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span style="text-transform: capitalize;">
+                                                    <t t-esc="record.state" />
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
 
                 <footer class="text-white p-2" style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-top: 135px;">
@@ -280,7 +544,7 @@
                         </ul>
                     </div>
                     <div class="me-5">
-                        <p class="text-center mt-1">© 2024 TIM IT PPIB</p>
+                        <p class="text-center mt-1">© 2025 TIM IT PPIB</p>
                     </div>
                 </footer>
             </div>
@@ -370,13 +634,13 @@
             </head>
             <t t-set="title">Pengumuman - Daarul Qur'an Istiqomah</t>
             <link rel="icon" type="image/x-icon" href="/pesantren_pendaftaran/static/img/favicon.ico?v=1" />
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QW  ZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" />
             <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.bootstrap5.css" />
             <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css" rel="stylesheet"/>
             <style>
-                .container-main {
+                <!-- .container-main {
                 background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
                 }
 
@@ -449,8 +713,229 @@
                 opacity: 1;
                 transform: translateY(0);
                 }
+                } -->
+
+                body {
+                    margin: 0;
+                    padding: 0;
                 }
 
+                .container-main {
+                    background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+                    min-height: 100vh;
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                /* Content wrapper untuk sticky footer */
+                .container-main > *:not(footer) {
+                    flex-shrink: 0;
+                }
+
+                .offcanvas.offcanvas-end {
+                    width: 250px;
+                }
+
+                .offcanvas .nav-link {
+                    color: #ffffff;
+                }
+
+                .offcanvas .btn-close {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    filter: invert(1);
+                }
+
+                .background {
+                    background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+                }
+
+                /* Desain Dropdown */
+                .dropdown {
+                    position: relative;
+                }
+
+                .dropdown-link {
+                    cursor: pointer;
+                }
+
+                .dropdown-content {
+                    display: none;
+                    position: absolute;
+                    top: 100%;
+                    right: 0;
+                    background-color: #ffffff;
+                    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+                    border-radius: 5px;
+                    min-width: 150px;
+                    z-index: 1;
+                    overflow: hidden;
+                }
+
+                .dropdown-content a {
+                    color: #333;
+                    padding: 10px 15px;
+                    display: block;
+                    text-decoration: none;
+                    transition: background-color 0.2s;
+                }
+
+                .dropdown-content a:hover {
+                    background-color: #f1f1f1;
+                }
+
+                /* Menampilkan dropdown saat hover */
+                .dropdown:hover .dropdown-content {
+                    display: block;
+                    animation: fadeIn 0.3s;
+                }
+
+                /* Animasi fade-in */
+                @keyframes fadeIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-10px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                /* Table Container */
+                .table-container-wrapper {
+                    width: 900px;
+                    max-width: 100%;
+                    padding: 20px 40px;
+                }
+
+                /* Wrapper table dengan scroll horizontal saja */
+                .table-wrapper {
+                    overflow-x: auto;
+                    overflow-y: visible; /* Tidak ada scroll vertikal */
+                    -webkit-overflow-scrolling: touch;
+                }
+
+                .table-wrapper table {
+                    width: 100%;
+                    margin-bottom: 0;
+                }
+
+                /* Footer Styles */
+                footer {
+                    margin-top: auto !important;
+                    padding: 20px 0 !important;
+                }
+
+                footer ul {
+                    padding: 0;
+                    margin: 0;
+                }
+
+                /* Mobile Responsive */
+                @media (max-width: 768px) {
+                    /* Navbar Brand */
+                    .navbar-brand {
+                        font-size: 14px !important;
+                        margin-left: 10px !important;
+                    }
+
+                    .navbar-brand img {
+                        width: 40px !important;
+                    }
+
+                    /* Marquee text */
+                    marquee {
+                        font-size: 12px !important;
+                        padding: 8px 0 !important;
+                    }
+
+                    /* Heading */
+                    h4.text-center {
+                        font-size: 16px !important;
+                        padding: 0 15px;
+                        margin-bottom: 20px !important;
+                    }
+
+                    /* Wrapper tetap di tengah, tidak scroll */
+                    .d-flex.justify-content-center {
+                        padding: 0 10px;
+                    }
+
+                    /* Table Container - wrapper putih tidak scroll */
+                    .table-container-wrapper {
+                        width: 100% !important;
+                        max-width: calc(100vw - 20px) !important;
+                        padding: 15px !important;
+                    }
+
+                    /* Hanya table yang scroll horizontal, TIDAK vertikal */
+                    .table-wrapper {
+                        overflow-x: auto;
+                        overflow-y: visible;
+                        -webkit-overflow-scrolling: touch;
+                        margin: 0 -15px;
+                        padding: 0 15px;
+                    }
+
+                    .table-wrapper table {
+                        font-size: 12px !important;
+                    }
+
+                    .table-wrapper table th,
+                    .table-wrapper table td {
+                        padding: 8px 10px !important;
+                        white-space: nowrap;
+                    }
+
+                    /* Footer */
+                    footer {
+                        flex-direction: column !important;
+                        align-items: center !important;
+                        padding: 15px 10px !important;
+                        margin-top: 30px !important;
+                    }
+
+                    footer .ms-5,
+                    footer .me-5 {
+                        margin: 0 !important;
+                        width: 100%;
+                        text-align: center;
+                    }
+
+                    footer ul {
+                        flex-direction: column !important;
+                        gap: 10px;
+                        padding: 10px 0 !important;
+                    }
+
+                    footer ul li {
+                        margin: 0 !important;
+                    }
+
+                    footer ul li a {
+                        margin: 0 !important;
+                        display: block;
+                    }
+
+                    footer p {
+                        margin-top: 15px !important;
+                        font-size: 12px;
+                    }
+                }
+
+                /* Tablet Responsive */
+                @media (max-width: 992px) and (min-width: 769px) {
+                    .table-container-wrapper {
+                        width: 95% !important;
+                    }
+
+                    footer ul {
+                        font-size: 12px !important;
+                    }
+                }
+                
             </style>
 
             <div class="container-main">
@@ -570,7 +1055,7 @@
                 <h4 class="text-center mt-3 mb-5 text-white fw-semibold">Papan Pengumuman Hasil
                     Seleksi PSB Program TK / RA</h4>
 
-                <div class="d-flex justify-content-center">
+                <!-- <div class="d-flex justify-content-center">
                     <div style="width: 900px; padding: 20px 40px;" class="bg-white shadow-lg rounded mb-3">
                         <table id="myTable" class="table table-striped" style="width:100%">
                             <thead>
@@ -605,6 +1090,45 @@
                             </tbody>
                         </table>
                     </div>
+                </div> -->
+
+                <div class="d-flex justify-content-center">
+                    <div class="bg-white shadow-lg rounded mb-3 table-container-wrapper">
+                        <div class="table-wrapper">
+                            <table id="myTable" class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>No Pendaftaran</th>
+                                        <th>Nama</th>
+                                        <th>Jenjang</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="santri" t-as="record">
+                                        <tr>
+                                            <td>
+                                                <t t-esc="record.nomor_pendaftaran" />
+                                            </td>
+                                            <td>
+                                                <t t-esc="record.partner_id.name" />
+                                            </td>
+                                            <td>
+                                                <span style="text-transform: uppercase;">
+                                                    <t t-esc="record.jenjang_id.jenjang.replace('paud', 'PAUD')" />
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span style="text-transform: capitalize;">
+                                                    <t t-esc="record.state" />
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
 
                 <footer class="text-white p-2" style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-top: 135px;">
@@ -627,7 +1151,7 @@
                         </ul>
                     </div>
                     <div class="me-5">
-                        <p class="text-center mt-1">© 2024 TIM IT PPIB</p>
+                        <p class="text-center mt-1">© 2025 TIM IT PPIB</p>
                     </div>
                 </footer>
             </div>
@@ -724,7 +1248,7 @@
             <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.bootstrap5.css" />
             <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css" rel="stylesheet"/>
             <style>
-                .container-main {
+                <!-- .container-main {
                 background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
                 }
 
@@ -797,6 +1321,227 @@
                 opacity: 1;
                 transform: translateY(0);
                 }
+                } -->
+
+                body {
+                    margin: 0;
+                    padding: 0;
+                }
+
+                .container-main {
+                    background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+                    min-height: 100vh;
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                /* Content wrapper untuk sticky footer */
+                .container-main > *:not(footer) {
+                    flex-shrink: 0;
+                }
+
+                .offcanvas.offcanvas-end {
+                    width: 250px;
+                }
+
+                .offcanvas .nav-link {
+                    color: #ffffff;
+                }
+
+                .offcanvas .btn-close {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    filter: invert(1);
+                }
+
+                .background {
+                    background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+                }
+
+                /* Desain Dropdown */
+                .dropdown {
+                    position: relative;
+                }
+
+                .dropdown-link {
+                    cursor: pointer;
+                }
+
+                .dropdown-content {
+                    display: none;
+                    position: absolute;
+                    top: 100%;
+                    right: 0;
+                    background-color: #ffffff;
+                    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+                    border-radius: 5px;
+                    min-width: 150px;
+                    z-index: 1;
+                    overflow: hidden;
+                }
+
+                .dropdown-content a {
+                    color: #333;
+                    padding: 10px 15px;
+                    display: block;
+                    text-decoration: none;
+                    transition: background-color 0.2s;
+                }
+
+                .dropdown-content a:hover {
+                    background-color: #f1f1f1;
+                }
+
+                /* Menampilkan dropdown saat hover */
+                .dropdown:hover .dropdown-content {
+                    display: block;
+                    animation: fadeIn 0.3s;
+                }
+
+                /* Animasi fade-in */
+                @keyframes fadeIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-10px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                /* Table Container */
+                .table-container-wrapper {
+                    width: 900px;
+                    max-width: 100%;
+                    padding: 20px 40px;
+                }
+
+                /* Wrapper table dengan scroll horizontal saja */
+                .table-wrapper {
+                    overflow-x: auto;
+                    overflow-y: visible; /* Tidak ada scroll vertikal */
+                    -webkit-overflow-scrolling: touch;
+                }
+
+                .table-wrapper table {
+                    width: 100%;
+                    margin-bottom: 0;
+                }
+
+                /* Footer Styles */
+                footer {
+                    margin-top: auto !important;
+                    padding: 20px 0 !important;
+                }
+
+                footer ul {
+                    padding: 0;
+                    margin: 0;
+                }
+
+                /* Mobile Responsive */
+                @media (max-width: 768px) {
+                    /* Navbar Brand */
+                    .navbar-brand {
+                        font-size: 14px !important;
+                        margin-left: 10px !important;
+                    }
+
+                    .navbar-brand img {
+                        width: 40px !important;
+                    }
+
+                    /* Marquee text */
+                    marquee {
+                        font-size: 12px !important;
+                        padding: 8px 0 !important;
+                    }
+
+                    /* Heading */
+                    h4.text-center {
+                        font-size: 16px !important;
+                        padding: 0 15px;
+                        margin-bottom: 20px !important;
+                    }
+
+                    /* Wrapper tetap di tengah, tidak scroll */
+                    .d-flex.justify-content-center {
+                        padding: 0 10px;
+                    }
+
+                    /* Table Container - wrapper putih tidak scroll */
+                    .table-container-wrapper {
+                        width: 100% !important;
+                        max-width: calc(100vw - 20px) !important;
+                        padding: 15px !important;
+                    }
+
+                    /* Hanya table yang scroll horizontal, TIDAK vertikal */
+                    .table-wrapper {
+                        overflow-x: auto;
+                        overflow-y: visible;
+                        -webkit-overflow-scrolling: touch;
+                        margin: 0 -15px;
+                        padding: 0 15px;
+                    }
+
+                    .table-wrapper table {
+                        font-size: 12px !important;
+                    }
+
+                    .table-wrapper table th,
+                    .table-wrapper table td {
+                        padding: 8px 10px !important;
+                        white-space: nowrap;
+                    }
+
+                    /* Footer */
+                    footer {
+                        flex-direction: column !important;
+                        align-items: center !important;
+                        padding: 15px 10px !important;
+                        margin-top: 30px !important;
+                    }
+
+                    footer .ms-5,
+                    footer .me-5 {
+                        margin: 0 !important;
+                        width: 100%;
+                        text-align: center;
+                    }
+
+                    footer ul {
+                        flex-direction: column !important;
+                        gap: 10px;
+                        padding: 10px 0 !important;
+                    }
+
+                    footer ul li {
+                        margin: 0 !important;
+                    }
+
+                    footer ul li a {
+                        margin: 0 !important;
+                        display: block;
+                    }
+
+                    footer p {
+                        margin-top: 15px !important;
+                        font-size: 12px;
+                    }
+                }
+
+                /* Tablet Responsive */
+                @media (max-width: 992px) and (min-width: 769px) {
+                    .table-container-wrapper {
+                        width: 95% !important;
+                    }
+
+                    footer ul {
+                        font-size: 12px !important;
+                    }
                 }
 
             </style>
@@ -918,7 +1663,7 @@
                 <h4 class="text-center mt-3 mb-5 text-white fw-semibold">Papan Pengumuman Hasil
                     Seleksi PSB Program SD / MI</h4>
 
-                <div class="d-flex justify-content-center">
+                <!-- <div class="d-flex justify-content-center">
                     <div style="width: 900px; padding: 20px 40px;" class="bg-white shadow-lg rounded mb-3">
                         <table id="myTable" class="table table-striped" style="width:100%">
                             <thead>
@@ -953,6 +1698,45 @@
                             </tbody>
                         </table>
                     </div>
+                </div> -->
+
+                <div class="d-flex justify-content-center">
+                    <div class="bg-white shadow-lg rounded mb-3 table-container-wrapper">
+                        <div class="table-wrapper">
+                            <table id="myTable" class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>No Pendaftaran</th>
+                                        <th>Nama</th>
+                                        <th>Jenjang</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="santri" t-as="record">
+                                        <tr>
+                                            <td>
+                                                <t t-esc="record.nomor_pendaftaran" />
+                                            </td>
+                                            <td>
+                                                <t t-esc="record.partner_id.name" />
+                                            </td>
+                                            <td>
+                                                <span style="text-transform: uppercase;">
+                                                    <t t-esc="record.jenjang_id.jenjang.replace('paud', 'PAUD')" />
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span style="text-transform: capitalize;">
+                                                    <t t-esc="record.state" />
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
 
                 <footer class="text-white p-2" style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-top: 135px;">
@@ -975,7 +1759,7 @@
                         </ul>
                     </div>
                     <div class="me-5">
-                        <p class="text-center mt-1">© 2024 TIM IT PPIB</p>
+                        <p class="text-center mt-1">© 2025 TIM IT PPIB</p>
                     </div>
                 </footer>
             </div>
@@ -1050,7 +1834,7 @@
             <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.bootstrap5.css" />
             <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css" rel="stylesheet"/>
             <style>
-                .container-main {
+                <!-- .container-main {
                 background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
                 max-width: 100vw;
                 }
@@ -1124,6 +1908,227 @@
                 opacity: 1;
                 transform: translateY(0);
                 }
+                } -->
+
+                body {
+                    margin: 0;
+                    padding: 0;
+                }
+
+                .container-main {
+                    background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+                    min-height: 100vh;
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                /* Content wrapper untuk sticky footer */
+                .container-main > *:not(footer) {
+                    flex-shrink: 0;
+                }
+
+                .offcanvas.offcanvas-end {
+                    width: 250px;
+                }
+
+                .offcanvas .nav-link {
+                    color: #ffffff;
+                }
+
+                .offcanvas .btn-close {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    filter: invert(1);
+                }
+
+                .background {
+                    background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+                }
+
+                /* Desain Dropdown */
+                .dropdown {
+                    position: relative;
+                }
+
+                .dropdown-link {
+                    cursor: pointer;
+                }
+
+                .dropdown-content {
+                    display: none;
+                    position: absolute;
+                    top: 100%;
+                    right: 0;
+                    background-color: #ffffff;
+                    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+                    border-radius: 5px;
+                    min-width: 150px;
+                    z-index: 1;
+                    overflow: hidden;
+                }
+
+                .dropdown-content a {
+                    color: #333;
+                    padding: 10px 15px;
+                    display: block;
+                    text-decoration: none;
+                    transition: background-color 0.2s;
+                }
+
+                .dropdown-content a:hover {
+                    background-color: #f1f1f1;
+                }
+
+                /* Menampilkan dropdown saat hover */
+                .dropdown:hover .dropdown-content {
+                    display: block;
+                    animation: fadeIn 0.3s;
+                }
+
+                /* Animasi fade-in */
+                @keyframes fadeIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-10px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                /* Table Container */
+                .table-container-wrapper {
+                    width: 900px;
+                    max-width: 100%;
+                    padding: 20px 40px;
+                }
+
+                /* Wrapper table dengan scroll horizontal saja */
+                .table-wrapper {
+                    overflow-x: auto;
+                    overflow-y: visible; /* Tidak ada scroll vertikal */
+                    -webkit-overflow-scrolling: touch;
+                }
+
+                .table-wrapper table {
+                    width: 100%;
+                    margin-bottom: 0;
+                }
+
+                /* Footer Styles */
+                footer {
+                    margin-top: auto !important;
+                    padding: 20px 0 !important;
+                }
+
+                footer ul {
+                    padding: 0;
+                    margin: 0;
+                }
+
+                /* Mobile Responsive */
+                @media (max-width: 768px) {
+                    /* Navbar Brand */
+                    .navbar-brand {
+                        font-size: 14px !important;
+                        margin-left: 10px !important;
+                    }
+
+                    .navbar-brand img {
+                        width: 40px !important;
+                    }
+
+                    /* Marquee text */
+                    marquee {
+                        font-size: 12px !important;
+                        padding: 8px 0 !important;
+                    }
+
+                    /* Heading */
+                    h4.text-center {
+                        font-size: 16px !important;
+                        padding: 0 15px;
+                        margin-bottom: 20px !important;
+                    }
+
+                    /* Wrapper tetap di tengah, tidak scroll */
+                    .d-flex.justify-content-center {
+                        padding: 0 10px;
+                    }
+
+                    /* Table Container - wrapper putih tidak scroll */
+                    .table-container-wrapper {
+                        width: 100% !important;
+                        max-width: calc(100vw - 20px) !important;
+                        padding: 15px !important;
+                    }
+
+                    /* Hanya table yang scroll horizontal, TIDAK vertikal */
+                    .table-wrapper {
+                        overflow-x: auto;
+                        overflow-y: visible;
+                        -webkit-overflow-scrolling: touch;
+                        margin: 0 -15px;
+                        padding: 0 15px;
+                    }
+
+                    .table-wrapper table {
+                        font-size: 12px !important;
+                    }
+
+                    .table-wrapper table th,
+                    .table-wrapper table td {
+                        padding: 8px 10px !important;
+                        white-space: nowrap;
+                    }
+
+                    /* Footer */
+                    footer {
+                        flex-direction: column !important;
+                        align-items: center !important;
+                        padding: 15px 10px !important;
+                        margin-top: 30px !important;
+                    }
+
+                    footer .ms-5,
+                    footer .me-5 {
+                        margin: 0 !important;
+                        width: 100%;
+                        text-align: center;
+                    }
+
+                    footer ul {
+                        flex-direction: column !important;
+                        gap: 10px;
+                        padding: 10px 0 !important;
+                    }
+
+                    footer ul li {
+                        margin: 0 !important;
+                    }
+
+                    footer ul li a {
+                        margin: 0 !important;
+                        display: block;
+                    }
+
+                    footer p {
+                        margin-top: 15px !important;
+                        font-size: 12px;
+                    }
+                }
+
+                /* Tablet Responsive */
+                @media (max-width: 992px) and (min-width: 769px) {
+                    .table-container-wrapper {
+                        width: 95% !important;
+                    }
+
+                    footer ul {
+                        font-size: 12px !important;
+                    }
                 }
 
             </style>
@@ -1133,7 +2138,7 @@
                     <div class="container-fluid">
                         <a class="navbar-brand ms-5 text-white fw-semibold" href="/psb">
                             <!-- <img src="logoweb.png" alt="Logo" width="30" height="24" class="d-inline-block align-text-top"> -->
-                            <img src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" width="50" alt="Logo Pesantren" />
+                            <img src="https://i.ibb.co.com/1MFsvMq/1731466812700.png" width="50" alt="Logo Pesantren" />
  Daarul Qur'an Istiqomah </a>
                         <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar2" aria-controls="offcanvasNavbar">
                             <span class="navbar-toggler-icon"></span>
@@ -1245,7 +2250,7 @@
                 <h4 class="text-center mt-3 mb-5 text-white fw-semibold">Papan Pengumuman Hasil
                     Seleksi PSB Program SMP / MTS</h4>
 
-                <div class="d-flex justify-content-center">
+                <!-- <div class="d-flex justify-content-center">
                     <div style="width: 900px; padding: 20px 40px;" class="bg-white shadow-lg rounded mb-3">
                         <table id="myTable" class="table table-striped" style="width:100%">
                             <thead>
@@ -1280,6 +2285,45 @@
                             </tbody>
                         </table>
                     </div>
+                </div> -->
+
+                <div class="d-flex justify-content-center">
+                    <div class="bg-white shadow-lg rounded mb-3 table-container-wrapper">
+                        <div class="table-wrapper">
+                            <table id="myTable" class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>No Pendaftaran</th>
+                                        <th>Nama</th>
+                                        <th>Jenjang</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="santri" t-as="record">
+                                        <tr>
+                                            <td>
+                                                <t t-esc="record.nomor_pendaftaran" />
+                                            </td>
+                                            <td>
+                                                <t t-esc="record.partner_id.name" />
+                                            </td>
+                                            <td>
+                                                <span style="text-transform: uppercase;">
+                                                    <t t-esc="record.jenjang_id.jenjang.replace('paud', 'PAUD')" />
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span style="text-transform: capitalize;">
+                                                    <t t-esc="record.state" />
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
 
                 <footer class="text-white p-2" style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-top: 135px;">
@@ -1302,7 +2346,7 @@
                         </ul>
                     </div>
                     <div class="me-5">
-                        <p class="text-center mt-1">© 2024 TIM IT PPIB</p>
+                        <p class="text-center mt-1">© 2025 TIM IT PPIB</p>
                     </div>
                 </footer>
             </div>
@@ -1377,7 +2421,7 @@
             <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.bootstrap5.css" />
             <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css" rel="stylesheet"/>
             <style>
-                .container-main {
+                <!-- .container-main {
                 background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
                 }
 
@@ -1450,6 +2494,227 @@
                 opacity: 1;
                 transform: translateY(0);
                 }
+                } -->
+
+                body {
+                    margin: 0;
+                    padding: 0;
+                }
+
+                .container-main {
+                    background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+                    min-height: 100vh;
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                /* Content wrapper untuk sticky footer */
+                .container-main > *:not(footer) {
+                    flex-shrink: 0;
+                }
+
+                .offcanvas.offcanvas-end {
+                    width: 250px;
+                }
+
+                .offcanvas .nav-link {
+                    color: #ffffff;
+                }
+
+                .offcanvas .btn-close {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    filter: invert(1);
+                }
+
+                .background {
+                    background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+                }
+
+                /* Desain Dropdown */
+                .dropdown {
+                    position: relative;
+                }
+
+                .dropdown-link {
+                    cursor: pointer;
+                }
+
+                .dropdown-content {
+                    display: none;
+                    position: absolute;
+                    top: 100%;
+                    right: 0;
+                    background-color: #ffffff;
+                    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+                    border-radius: 5px;
+                    min-width: 150px;
+                    z-index: 1;
+                    overflow: hidden;
+                }
+
+                .dropdown-content a {
+                    color: #333;
+                    padding: 10px 15px;
+                    display: block;
+                    text-decoration: none;
+                    transition: background-color 0.2s;
+                }
+
+                .dropdown-content a:hover {
+                    background-color: #f1f1f1;
+                }
+
+                /* Menampilkan dropdown saat hover */
+                .dropdown:hover .dropdown-content {
+                    display: block;
+                    animation: fadeIn 0.3s;
+                }
+
+                /* Animasi fade-in */
+                @keyframes fadeIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-10px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                /* Table Container */
+                .table-container-wrapper {
+                    width: 900px;
+                    max-width: 100%;
+                    padding: 20px 40px;
+                }
+
+                /* Wrapper table dengan scroll horizontal saja */
+                .table-wrapper {
+                    overflow-x: auto;
+                    overflow-y: visible; /* Tidak ada scroll vertikal */
+                    -webkit-overflow-scrolling: touch;
+                }
+
+                .table-wrapper table {
+                    width: 100%;
+                    margin-bottom: 0;
+                }
+
+                /* Footer Styles */
+                footer {
+                    margin-top: auto !important;
+                    padding: 20px 0 !important;
+                }
+
+                footer ul {
+                    padding: 0;
+                    margin: 0;
+                }
+
+                /* Mobile Responsive */
+                @media (max-width: 768px) {
+                    /* Navbar Brand */
+                    .navbar-brand {
+                        font-size: 14px !important;
+                        margin-left: 10px !important;
+                    }
+
+                    .navbar-brand img {
+                        width: 40px !important;
+                    }
+
+                    /* Marquee text */
+                    marquee {
+                        font-size: 12px !important;
+                        padding: 8px 0 !important;
+                    }
+
+                    /* Heading */
+                    h4.text-center {
+                        font-size: 16px !important;
+                        padding: 0 15px;
+                        margin-bottom: 20px !important;
+                    }
+
+                    /* Wrapper tetap di tengah, tidak scroll */
+                    .d-flex.justify-content-center {
+                        padding: 0 10px;
+                    }
+
+                    /* Table Container - wrapper putih tidak scroll */
+                    .table-container-wrapper {
+                        width: 100% !important;
+                        max-width: calc(100vw - 20px) !important;
+                        padding: 15px !important;
+                    }
+
+                    /* Hanya table yang scroll horizontal, TIDAK vertikal */
+                    .table-wrapper {
+                        overflow-x: auto;
+                        overflow-y: visible;
+                        -webkit-overflow-scrolling: touch;
+                        margin: 0 -15px;
+                        padding: 0 15px;
+                    }
+
+                    .table-wrapper table {
+                        font-size: 12px !important;
+                    }
+
+                    .table-wrapper table th,
+                    .table-wrapper table td {
+                        padding: 8px 10px !important;
+                        white-space: nowrap;
+                    }
+
+                    /* Footer */
+                    footer {
+                        flex-direction: column !important;
+                        align-items: center !important;
+                        padding: 15px 10px !important;
+                        margin-top: 30px !important;
+                    }
+
+                    footer .ms-5,
+                    footer .me-5 {
+                        margin: 0 !important;
+                        width: 100%;
+                        text-align: center;
+                    }
+
+                    footer ul {
+                        flex-direction: column !important;
+                        gap: 10px;
+                        padding: 10px 0 !important;
+                    }
+
+                    footer ul li {
+                        margin: 0 !important;
+                    }
+
+                    footer ul li a {
+                        margin: 0 !important;
+                        display: block;
+                    }
+
+                    footer p {
+                        margin-top: 15px !important;
+                        font-size: 12px;
+                    }
+                }
+
+                /* Tablet Responsive */
+                @media (max-width: 992px) and (min-width: 769px) {
+                    .table-container-wrapper {
+                        width: 95% !important;
+                    }
+
+                    footer ul {
+                        font-size: 12px !important;
+                    }
                 }
 
             </style>
@@ -1459,7 +2724,7 @@
                     <div class="container-fluid">
                         <a class="navbar-brand ms-5 text-white fw-semibold" href="/psb">
                             <!-- <img src="logoweb.png" alt="Logo" width="30" height="24" class="d-inline-block align-text-top"> -->
-                            <img src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" width="50" alt="Logo Pesantren" />
+                            <img src="https://i.ibb.co.com/1MFsvMq/1731466812700.png" width="50" alt="Logo Pesantren" />
  Daarul Qur'an Istiqomah </a>
                         <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar3" aria-controls="offcanvasNavbar">
                             <span class="navbar-toggler-icon"></span>
@@ -1571,7 +2836,7 @@
                 <h4 class="text-center mt-3 mb-5 text-white fw-semibold">Papan Pengumuman Hasil
                     Seleksi PSB Program SMA / MA</h4>
 
-                <div class="d-flex justify-content-center">
+                <!-- <div class="d-flex justify-content-center">
                     <div style="width: 900px; padding: 20px 40px;" class="bg-white shadow-lg rounded mb-3">
                         <table id="myTable" class="table table-striped" style="width:100%">
                             <thead>
@@ -1604,6 +2869,45 @@
                             </tbody>
                         </table>
                     </div>
+                </div> -->
+
+                <div class="d-flex justify-content-center">
+                    <div class="bg-white shadow-lg rounded mb-3 table-container-wrapper">
+                        <div class="table-wrapper">
+                            <table id="myTable" class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>No Pendaftaran</th>
+                                        <th>Nama</th>
+                                        <th>Jenjang</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="santri" t-as="record">
+                                        <tr>
+                                            <td>
+                                                <t t-esc="record.nomor_pendaftaran" />
+                                            </td>
+                                            <td>
+                                                <t t-esc="record.partner_id.name" />
+                                            </td>
+                                            <td>
+                                                <span style="text-transform: uppercase;">
+                                                    <t t-esc="record.jenjang_id.jenjang.replace('paud', 'PAUD')" />
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span style="text-transform: capitalize;">
+                                                    <t t-esc="record.state" />
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
 
                 <footer class="text-white p-2" style="display: flex; justify-content: space-between; flex-wrap: wrap; margin-top: 135px;">
@@ -1626,7 +2930,7 @@
                         </ul>
                     </div>
                     <div class="me-5">
-                        <p class="text-center mt-1">© 2024 TIM IT PPIB</p>
+                        <p class="text-center mt-1">© 2025 TIM IT PPIB</p>
                     </div>
                 </footer>
             </div>
