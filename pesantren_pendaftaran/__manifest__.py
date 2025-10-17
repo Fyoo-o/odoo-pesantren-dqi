@@ -32,7 +32,6 @@
         - Akim
         - Aldo
 
-
         November 2024
 
         Informasi Lebih lanjut, hubungi :

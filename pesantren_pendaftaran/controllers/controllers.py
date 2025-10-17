@@ -351,7 +351,7 @@ class PesantrenBeranda(http.Controller):
                     <h1 class="fw-bold">Pendaftaran Santri Baru</h1>
                     <h3 class="fw-bold pb-3">Pondok Pesantren Daarul Qur’an Istiqomah</h3>
                     <h5 class="fw-bold">Daarul Qur’an Istiqomah Boarding School for Education and Science</h5>
-                    <h5 class="fw-bold">Tahun Ajaran 2024 - 2025</h5>
+                    <h5 class="fw-bold">Tahun Ajaran 2025 - 2025</h5>
                     <a href="/psb" class="btn btn-light rounded-5 text-primary mt-2">Daftar Sekarang</a>
                 </div>
                 </div>
@@ -580,7 +580,7 @@ class PesantrenBeranda(http.Controller):
                         data-bs-parent="#accordionExample">
                         <div class="accordion-body">
                             <p class="m-0">Tanggal:</p>
-                            <p class="fw-bold">1 Maret s.d. 8 Juli 2024</p>
+                            <p class="fw-bold">1 Maret s.d. 8 Juli 2025</p>
                             <p class="m-0">Layanan Putra:</p>
                             <p class="fw-bold">Kantor Sekretariat Putra</p>
                             <p class="m-0">Layanan Putri:</p>
@@ -659,7 +659,7 @@ class PesantrenBeranda(http.Controller):
             #     </div>
             #     <div class="text-center  mt-4">
             #         <hr class="border-white">
-            #         <p>©Copyright 2024 - Daarul Qur’an Istiqomah</p>
+            #         <p>©Copyright 2025 - Daarul Qur’an Istiqomah</p>
             #     </div>
             #     </div>
             # </footer>
@@ -913,6 +913,15 @@ class PesantrenPendaftaran(http.Controller):
                         display: flex;
                         flex-direction: column;
                         font-family: "poppins";
+                    }}
+                    
+                    a.effect {{
+                        transition: .1s !important;
+                    }}
+
+                    a.effect:hover {{
+                        box-shadow: 0 3px 10px rgba(0,0,0,0.2) !important;
+                        border-radius: 12px;
                     }}
 
                    .offcanvas.offcanvas-end {{
@@ -1311,14 +1320,14 @@ class PesantrenPendaftaran(http.Controller):
                     <div class="collapse navbar-collapse" id="navbarNav">
                         <ul class="navbar-nav ms-auto">
                             <li class="nav-item me-3">
-                                <a class="nav-link " href="/psb"><i class="fa-solid fa-house me-2" style="color:black !important;"></i>Beranda</a>
+                                <a class="nav-link effect" href="/psb"><i class="fa-solid fa-house me-2" style="color:black !important;"></i>Beranda</a>
                             </li>
                             {f'<li class="nav-item me-3">'  
-                            f'<a class="nav-link " href="/pendaftaran" {"data-bs-toggle='modal' data-bs-target='#modalPendaftaranTutup'" if not is_halaman_pendaftaran else ""}>'
+                            f'<a class="nav-link effect" href="/pendaftaran" {"data-bs-toggle='modal' data-bs-target='#modalPendaftaranTutup'" if not is_halaman_pendaftaran else ""}>'
                             f'<i class="fa-solid fa-note-sticky me-2" style="color:black !important;"></i>Pendaftaran</a>'
                             f'</li>'}
                             <li class="nav-item dropdown">
-                                <a href="#" class="dropdown-link nav-link"
+                                <a href="#" class="dropdown-link nav-link effect"
                                     style="color: black !important;">
                                     <i class="fa-solid fa-fingerprint me-2"></i>Login</a>
                                 <div class="dropdown-content">
@@ -1327,10 +1336,10 @@ class PesantrenPendaftaran(http.Controller):
                                 </div>
                             </li>
                             <li class="nav-item me-3">
-                                <a class="nav-link " href="/bantuan"><i class="fa-solid fa-lock me-2" style="color:black;"></i>Bantuan</a>
+                                <a class="nav-link effect" href="/bantuan"><i class="fa-solid fa-lock me-2" style="color:black;"></i>Bantuan</a>
                             </li>
                             {f'<li class="nav-item dropdown">'
-                            f'<a href="#" class="dropdown-link nav-link "><i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>'
+                            f'<a href="#" class="dropdown-link nav-link effect"><i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>'
                             f'<div class="dropdown-content">'
                             f'<a href="/pengumuman/paud">PAUD</a>'
                             f'<a href="/pengumuman/tk-ra">TK / RA</a>'
@@ -1396,9 +1405,9 @@ class PesantrenPendaftaran(http.Controller):
             </div>
             </div>
 
-            <div style="display: flex; justify-content: center;" class="mt-5">
-                <div class="text-center ">
-                    <h4 class="fs-2 fw-semibold mb-2">Aplikasi penerimaan santri baru</h4>
+            <div style="display: flex; padding-top:3rem; justify-content: center;" class="mt-5">
+                <div class="text-center">
+                    <h4 class="fs-2 fw-semibold mb-2">Aplikasi Pendaftaran Santri Baru</h4>
                     <span>Daarul Qur'an Istiqomah Tanah Laut Kalimantan Selatan</span> <br><br>
                     {f'<div class="nav-item d-flex justify-content-center align-items-center">'
                             f'<a class="nav-link " style="background-color: #059669; color: white !important; text-decoration: none; padding: 8px 16px; border-radius: 5px; font-size: 14px; width: 50%;" class=" id="daftar" href="/pendaftaran" {"data-bs-toggle='modal' data-bs-target='#modalPendaftaranTutup'" if not is_halaman_pendaftaran else ""}>'
@@ -1406,10 +1415,8 @@ class PesantrenPendaftaran(http.Controller):
                     f'</div>'}
                 </div>
             </div>
-
-        
             
-              <div class="mt-5 mb-5" style="height:80vh; padding-top:10rem;padding-bottom:10rem;">
+              <div class="mt-5 mb-5" style="height:80vh; padding-top:4rem; padding-bottom:10rem;">
                 <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px;">
                     <!-- Program Pendidikan Card -->
                     <div class="info-card">
@@ -1515,7 +1522,7 @@ class PesantrenPendaftaran(http.Controller):
                             </h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="modal-body">
+                        <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
                             <div class="info-section">
                                 <div class="row align-items-center">
                                     <div class="col-md-8">
@@ -1529,7 +1536,7 @@ class PesantrenPendaftaran(http.Controller):
                                         </ul>
                                     </div>
                                     <div class="col-md-4 text-center">
-                                        <img src="https://i.ibb.co.com/wRNC9B0/img1.jpg" alt="Gambar Pondok" width="150" class="rounded">
+                                        <img src="pesantren_pendaftaran/static/src/img/IMG_20251015_160257_521.jpg" alt="Gambar Pondok" width="150" class="rounded" style="aspect-ratio: 1/1; object-fit: cover; height: auto;">
                                     </div>
                                 </div>
                             </div>
@@ -1544,7 +1551,7 @@ class PesantrenPendaftaran(http.Controller):
                                         </p>
                                     </div>
                                     <div class="col-md-4 text-center">
-                                        <img src="https://i.ibb.co.com/hW8F8Qs/img2.jpg" alt="Gambar Pondok" width="150" class="rounded">
+                                        <img src="pesantren_pendaftaran/static/src/img/IMG_20251015_160257_839.jpg" alt="Gambar Pondok" width="150" class="rounded" style="aspect-ratio: 1/1; object-fit: cover; height: auto;">
                                     </div>
                                 </div>
                             </div>
@@ -1559,7 +1566,7 @@ class PesantrenPendaftaran(http.Controller):
                                         </ul>
                                     </div>
                                     <div class="col-md-4 text-center">
-                                        <img src="https://i.ibb.co.com/jZznN6Q/img3.jpg" alt="Gambar Pondok" width="150" class="rounded">
+                                        <img src="pesantren_pendaftaran/static/src/img/IMG_20251015_160257_277.jpg" alt="Gambar Pondok" width="150" class="rounded" style="aspect-ratio: 1/1; object-fit: cover; height: auto;">
                                     </div>
                                 </div>
                             </div>
@@ -1579,7 +1586,7 @@ class PesantrenPendaftaran(http.Controller):
                             </h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="modal-body">
+                        <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
                             <div class="info-section">
                                 <div class="row align-items-center">
                                     <div class="col-md-8">
@@ -1592,7 +1599,7 @@ class PesantrenPendaftaran(http.Controller):
                                         </p>
                                     </div>
                                     <div class="col-md-4 text-center">
-                                        <img src="https://i.ibb.co.com/KKKwWG1/img4.jpg" alt="Gambar Pondok" width="150" class="rounded">
+                                        <img src="pesantren_pendaftaran/static/src/img/IMG_20251014_113930_248.jpg" alt="Gambar Pondok" width="150" class="rounded" style="aspect-ratio: 1/1; object-fit: cover; height: auto;">
                                     </div>
                                 </div>
                             </div>
@@ -1607,17 +1614,24 @@ class PesantrenPendaftaran(http.Controller):
                                         </p>
                                     </div>
                                     <div class="col-md-4 text-center">
-                                        <img src="https://i.ibb.co.com/s9g5nM2/img5.jpg" alt="Gambar Pondok" width="150" class="rounded">
+                                        <img src="pesantren_pendaftaran/static/src/img/IMG_20251015_160257_476.jpg" alt="Gambar Pondok" width="150" class="rounded" style="aspect-ratio: 1/1; object-fit: cover; height: auto;">
                                     </div>
                                 </div>
                             </div>
 
                             <div class="info-section">
-                                <div class="section-title">4. Pengumuman Hasil Seleksi</div>
-                                <p class="info-list">
-                                    <span class="highlight-text">Gel 1:</span> {tgl_pengumuman_hasil_seleksi_formatted}<br>
-                                    <span class="highlight-text">Gel 2:</span> {tgl_pengumuman_hasil_seleksi_gel_2_formatted}
-                                </p>
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        <div class="section-title">4. Pengumuman Hasil Seleksi</div>
+                                        <p class="info-list">
+                                            <span class="highlight-text">Gel 1:</span> {tgl_pengumuman_hasil_seleksi_formatted}<br>
+                                            <span class="highlight-text">Gel 2:</span> {tgl_pengumuman_hasil_seleksi_gel_2_formatted}
+                                        </p>
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        <img src="pesantren_pendaftaran/static/src/img/IMG_20251014_113930_334.jpg" alt="Gambar Pondok" width="150" class="rounded" style="aspect-ratio: 1/1; object-fit: cover; height: auto;">
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="note-section">
@@ -1639,7 +1653,7 @@ class PesantrenPendaftaran(http.Controller):
                             </h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="modal-body">b
+                        <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
                             <div class="info-section">
                                 <div class="section-title">SYARAT UTAMA PENDAFTARAN</div>
                                 <ol class="info-list" style="padding-left: 20px;">
@@ -1683,7 +1697,7 @@ class PesantrenPendaftaran(http.Controller):
             		</ul>
             	</div>
             	<div class="me-5">
-            		<p class="text-center mt-1">© 2024 TIM IT PPIB</p>
+            		<p class="text-center mt-1">© 2025 TIM IT PPIB</p>
             	</div>
             </footer>
             </div>
@@ -1905,7 +1919,7 @@ class UbigPendaftaranController(http.Controller):
             </ul>
         </div>
         <div class="me-5">
-            <p class="text-center mt-1">© 2024 TIM IT PPIB</p>
+            <p class="text-center mt-1">© 2025 TIM IT PPIB</p>
         </div>
     </footer>
 
@@ -2568,6 +2582,7 @@ class PesantrenPsbBantuan(http.Controller):
 
                     a.effect:hover {{
                         box-shadow: 0 3px 10px rgba(0,0,0,0.2) !important;
+                        border-radius: 12px;
                     }}
 
                     /* Desain Dropdown */
@@ -2858,7 +2873,7 @@ class PesantrenPsbBantuan(http.Controller):
                     </ul>
                 </div>
                 <div class="me-5">
-                    <p class="text-center mt-1">© 2024 TIM IT PPIB</p>
+                    <p class="text-center mt-1">© 2025 TIM IT PPIB</p>
                 </div>
             </footer>
 
@@ -4011,12 +4026,12 @@ class PortalOrangTua(http.Controller):
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>15 Jan 2024</td>
+                                    <td>15 Jan 2025</td>
                                     <td>IDR 1.250.000,-</td>
                                     <td><span class="badge bg-success">Lunas</span></td>
                                 </tr>
                                 <tr>
-                                    <td>20 Jan 2024</td>
+                                    <td>20 Jan 2025</td>
                                     <td>IDR 1.250.000,-</td>
                                     <td><span class="badge bg-warning">Menunggu Konfirmasi</span></td>
                                 </tr>
@@ -4037,7 +4052,7 @@ class PortalOrangTua(http.Controller):
                     </ul>
                 </div>
                 <div class="me-5">
-                    <p class="text-center mt-1">© 2024 TIM IT PPIB</p>
+                    <p class="text-center mt-1">© 2025 TIM IT PPIB</p>
                 </div>
             </footer>
 

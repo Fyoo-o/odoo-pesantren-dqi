@@ -358,6 +358,11 @@ class PesantrenBeranda(http.Controller):
                     .step-line {{
                         display: none;
                     }}
+                    
+                    .banner-section img {{
+                        width: 200px;
+                        margin-bottom: 6px;
+                    }}
                 }}
 
                 /* Styling umum */
@@ -425,7 +430,7 @@ class PesantrenBeranda(http.Controller):
             <nav class="navbar navbar-expand-lg bg-body-grenyellow shadow sticky-top">
                 <div class="container d-flex">
                     <a class="navbar-brand d-flex text-white fw-bold" href="#">
-                        <img src="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" alt="Icon Daarul Qur'an Istiqomah" class="me-2 d-md-block d-none" width="40" height="40">
+                        <img src="pesantren_pendaftaran/static/src/img/logoweb.png" alt="Icon Daarul Qur'an Istiqomah" class="me-2 d-md-block d-none" width="40" height="40">
                         <span class="d-md-block d-none h3">
                             PSB Daarul Qur'an Istiqomah
                         </span> 
@@ -444,22 +449,22 @@ class PesantrenBeranda(http.Controller):
             </nav>
             <!-- Navbar end -->
 
-            <!-- banner -->
-            <div class="bg-body-grenyellow rounded-90">
-                <div class="container py-3 d-md-flex d-block text-light justify-content-center align-items-center">
-                    <div class="me-5 w-set-auto d-flex justify-content-center">
-                        <img src="https://drive.usercontent.google.com/download?id=1VZRccbFtq82wTNcReEq43piA_GJQddcm" alt="Logo Daarul Qur'an Istiqomah" width="65%">
-                    </div>
-                    <div class="ms-md-3 m-0 text-center text-md-start">
-                        <h1 class="fw-bold">Pendaftaran Santri Baru</h1>
-                        <h3 class="fw-bold pb-3">Pondok Pesantren Daarul Qur'an Istiqomah</h3>
-                        <h5 class="fw-bold">Daarul Qur'an Istiqomah Boarding School for Education and Science</h5>
-                        <h5 class="fw-bold">Tahun Ajaran 2024 - 2025</h5>
-                        <a href="/psb" class="btn btn-light rounded-5 text-primary mt-2 fw-bold">Daftar Sekarang</a>
+                <!-- banner -->
+                <div class="banner-section bg-body-grenyellow rounded-90" style="min-height: 91vh; display: flex; align-items: center;">
+                    <div class="container py-3 d-md-flex d-block text-light justify-content-center align-items-center">
+                        <div class="me-5 w-set-auto d-flex justify-content-center">
+                            <img src="pesantren_pendaftaran/static/src/img/logoweb.png" alt="Logo Daarul Qur'an Istiqomah" width="400px">
+                        </div>
+                        <div class="ms-md-3 m-0 text-center text-md-start">
+                            <h1 class="fw-bold">Pendaftaran Santri Baru</h1>
+                            <h3 class="fw-bold pb-3">Pondok Pesantren Daarul Qur'an Istiqomah</h3>
+                            <h5 class="fw-bold">Daarul Qur'an Istiqomah Boarding School for Education and Science</h5>
+                            <h5 class="fw-bold">Tahun Ajaran 2025 - 2026</h5>
+                            <a href="/psb" class="btn btn-light rounded-5 text-primary mt-2 fw-bold">Daftar Sekarang</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <!-- banner end -->
+                <!-- banner end -->
 
             <!-- Step Pendaftaran -->
             <div class="container text-center my-5">
