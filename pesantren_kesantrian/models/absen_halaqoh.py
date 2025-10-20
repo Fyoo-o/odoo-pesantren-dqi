@@ -69,6 +69,11 @@ class Absenhalaqoh(models.Model):
     penanggung_jawab_id = fields.Many2one('hr.employee', string='Penanggung Jawab', related='halaqoh_id.penanggung_jawab_id', readonly=True, store=True)
     sesi_id         = fields.Many2one('cdn.sesi_halaqoh', string='Sesi', states={'Done': [('readonly', True)]})
     keterangan      = fields.Char(string='Keterangan')
+    row_number      = fields.Integer(string='No', compute='_compute_row_number', store=False)
+
+    def _compute_row_number(self):
+        for index, record in enumerate(self):
+            record.row_number = index + 1
     def action_proses(self):
         self.state = 'Proses'
         for absen in self.absen_ids:
@@ -199,7 +204,11 @@ class AbsenTahsinQuranLine(models.Model):
         ('Alpa', 'Alpa'),
     ], string='Kehadiran', required=True)
     penanggung_jawab_id = fields.Many2one('hr.employee', string='Penanggung Jawab', related='halaqoh_id.penanggung_jawab_id', readonly=True, store=True)
-    
+    row_number      = fields.Integer(string='No', compute='_compute_row_number', store=False)
+
+    def _compute_row_number(self):
+        for index, record in enumerate(self):
+            record.row_number = index + 1
     def action_view_permission(self):
         """Open permission form for this student"""
         if not self.siswa_id or not self.tanggal:

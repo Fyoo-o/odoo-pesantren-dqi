@@ -7,6 +7,7 @@
             <field name="model">cdn.absen_halaqoh</field>
             <field name="arch" type="xml">
                 <list default_order="id desc" >
+                    <field name="row_number" string="No" />
                     <field name="name" />
                     <field name="sesi_id" />
                     <field name="halaqoh_id" string="Halaqah" />
@@ -56,6 +57,7 @@
                             <page string="Daftar Kehadiran">
                                 <field colspan="4" name="absen_ids" nolabel="1" widget="one2many_list">
                                     <list string="" editable="top">
+                                        <field name="row_number" string="No" />
                                         <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" string="Santri"/>
                                         <field name="panggilan" string="Panggilan"/>
                                         <field name="nis" />

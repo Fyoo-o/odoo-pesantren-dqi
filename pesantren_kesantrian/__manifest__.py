@@ -105,6 +105,7 @@
     'assets': {
         'web.assets_backend': [
             # 'pesantren_kesantrian/static/src/js/perijinan_autofocus.js',
+            'pesantren_kesantrian/static/src/scss/style.scss',
         ],
     },
     # only loaded in demonstration mode

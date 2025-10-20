@@ -7,6 +7,7 @@
             <field name="model">cdn.absensi_malam</field>
             <field name="arch" type="xml">
                 <list default_order="id desc">
+                    <field name="row_number" string="No" />
                     <field name="name"/>
                     <field name="tgl"/>
                     <field name="siswa_id"/>

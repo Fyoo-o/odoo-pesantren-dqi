@@ -19,11 +19,37 @@
                 <field name="tanggal" optional="show"/>
                 <field name="siswa_id" optional="show"/>
                 <field name="halaqoh_id" string="Halaqoh" optional="show"/>
-                <field name="surah_id" optional="hide"/>
-                <field name="ayat_awal" optional="hide"/>
-                <field name="ayat_akhir" optional="hide"/>
                 <field name="ustadz_id" optional="show"/>
                 <field name="state" optional="show"/>
+
+                <!-- Tahfidz -->
+                <field name="surah_id" string="Surat Tahfidz" optional="hide"/>
+                <field name="ayat_awal" string="Ayat Awal Tahfidz" optional="hide"/>
+                <field name="ayat_akhir" string="Ayat Akhir Tahfidz" optional="hide"/>
+                <field name="jml_baris" string="Jumlah Baris Tahfidz" optional="hide"/>
+                
+                <!-- Murajaah Harian -->
+                <field name="buku_murajaah_id" string="Buku Murajaah" optional="hide"/>
+                <field name="juz_murajaah" string="Juz Murajaah" optional="hide"/>
+                <field name="surah_murajaah_id" string="Surah Murajaah" optional="hide"/>
+                <field name="halaman_murajaah" string="Halaman Murajaah" optional="hide"/>
+
+                <!-- Tahsin Harian -->
+                <field name="buku_harian_id" string="Buku Tahsin (Harian)" optional="hide"/>
+                <field name="jilid_harian_id" string="Jilid Tahsin (Harian)" optional="hide"/>
+                <field name="halaman_harian" string="Halaman Tahsin (Harian)" optional="hide"/>
+                <field name="nilai_harian" string="Nilai Harian (PAUD/TK)" optional="hide"/>
+                <field name="surah_id_harian" string="Surat Tahsin (Harian)" optional="hide"/>
+                <field name="ayat_awal_harian" string="Ayat Awal Tahsin (Harian)" optional="hide"/>
+                <field name="ayat_akhir_harian" string="Ayat Akhir Tahsin (Harian)" optional="hide"/>
+
+                <!-- Tahsin Ujian -->
+                <field name="buku_ujian_id" string="Buku Tahsin (Ujian)" optional="hide"/>
+                <field name="jilid_ujian_id" string="Jilid Tahsin (Ujian)" optional="hide"/>
+                <field name="halaman_ujian" string="Halaman Tahsin (Ujian)" optional="hide"/>
+                <field name="surah_id_ujian" string="Surat Tahsin (Ujian)" optional="hide"/>
+                <field name="ayat_awal_ujian" string="Ayat Awal Tahsin (Ujian)" optional="hide"/>
+                <field name="ayat_akhir_ujian" string="Ayat Akhir Tahsin (Ujian)" optional="hide"/>
             </list>
         </field>
     </record>
@@ -185,8 +211,30 @@
                 <field name="tanggal"/>
                 <field name="state"/>
 
-                <!-- 🧩 Tambahan Filter Baru -->
-                <filter name="filter_tahfidz_only" string="Setoran Tahfidz (Ada Data)" domain="[('tahfidz_line_ids', '!=', False)]"/>
+                <!-- 🧩 Filter Berdasarkan Jenis Data -->
+                <separator/>
+                <filter name="filter_tahfidz_only" string="Setoran Tahfidz (Ada Data)" 
+                        domain="[('tahfidz_line_ids', '!=', False)]"/>
+                
+                <filter name="filter_tahsin_harian" string="Tahsin Harian (Ada Data)" 
+                        domain="['|', '|', '|', 
+                                ('buku_harian_id', '!=', False),
+                                ('jilid_harian_id', '!=', False),
+                                ('halaman_harian', '!=', False),
+                                ('catatan_harian', '!=', False)]"/>
+                
+                <filter name="filter_tahsin_ujian" string="Tahsin Ujian (Ada Data)" 
+                        domain="['|', '|', '|',
+                                ('buku_ujian_id', '!=', False),
+                                ('jilid_ujian_id', '!=', False),
+                                ('halaman_ujian', '!=', False),
+                                ('catatan_ujian', '!=', False)]"/>
+
+                <filter name="filter_murajaah_harian" string="Murajaah Harian (Ada Data)" 
+                        domain="['|', '|',
+                                ('juz_murajaah', '!=', False),
+                                ('surah_murajaah_id', '!=', False),
+                                ('catatan_murajaah_harian', '!=', False)]"/>
 
                 <group expand="0" string="Group By">
                     <filter name="group_siswa" string="Santri" context="{'group_by': 'siswa_id'}"/>
