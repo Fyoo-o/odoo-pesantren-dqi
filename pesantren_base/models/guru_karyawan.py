@@ -91,7 +91,8 @@ class hr_employee(models.Model):
             
             groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_user')) 
             groups_to_add.append(self.env.ref('pesantren_base.group_sekolah_user')) 
-            groups_to_add.append(self.env.ref('hr.group_hr_manager')) # Menambahkan grup HR User # groups_to_add.append(self.env.ref('hr_attendance.group_hr_attendance_officer')) # Menambahkan grup Absensi
+            # groups_to_add.append(self.env.ref('hr.group_hr_manager')) # Menambahkan grup HR User # groups_to_add.append(self.env.ref('hr_attendance.group_hr_attendance_officer')) # Menambahkan grup Absensi
+            groups_to_add.append(self.env.ref('pesantren_base.group_hr_employee_readonly'))
         elif self.jns_pegawai == 'guru':
             # groups_to_add.append(self.env.ref('pesantren_guru.group_guru_manager'))
             groups_to_add.append(self.env.ref('pesantren_guru.group_guru_staff'))
@@ -101,7 +102,8 @@ class hr_employee(models.Model):
 
             groups_to_add.append(self.env.ref('pesantren_base.group_sekolah_user'))
             groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_user'))
-            groups_to_add.append(self.env.ref('hr.group_hr_manager'))
+            # groups_to_add.append(self.env.ref('hr.group_hr_manager'))
+            groups_to_add.append(self.env.ref('pesantren_base.group_hr_employee_readonly'))
             # groups_to_add.append(self.env.ref('hr_attendance.group_hr_attendance_officer'))
         # elif self.jns_pegawai in ['musyrif', 'ustadz']:
         elif self.jns_pegawai == 'guru,guruquran':
@@ -110,21 +112,24 @@ class hr_employee(models.Model):
 
             groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_user')) 
             groups_to_add.append(self.env.ref('pesantren_base.group_sekolah_user')) 
-            groups_to_add.append(self.env.ref('hr.group_hr_manager')) # Menambahkan grup HR Use
+            # groups_to_add.append(self.env.ref('hr.group_hr_manager')) # Menambahkan grup HR Use
+            groups_to_add.append(self.env.ref('pesantren_base.group_hr_employee_readonly'))
         elif self.jns_pegawai == 'musyrif,guru':
             groups_to_add.append(self.env.ref('pesantren_musyrif.group_musyrif_staff'))
             groups_to_add.append(self.env.ref('pesantren_guru.group_guru_staff'))
 
             groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_user')) 
             groups_to_add.append(self.env.ref('pesantren_base.group_sekolah_user')) 
-            groups_to_add.append(self.env.ref('hr.group_hr_manager')) # Menambahkan grup HR User # groups_to_add.append(self.env.ref('hr_attendance.group_hr_attendance_officer')) # Menambahkan grup Absensi
+            # groups_to_add.append(self.env.ref('hr.group_hr_manager')) # Menambahkan grup HR User # groups_to_add.append(self.env.ref('hr_attendance.group_hr_attendance_officer')) # Menambahkan grup Absensi
+            groups_to_add.append(self.env.ref('pesantren_base.group_hr_employee_readonly'))
         elif self.jns_pegawai == 'musyrif,guruquran':
             groups_to_add.append(self.env.ref('pesantren_musyrif.group_musyrif_staff'))
             groups_to_add.append(self.env.ref('pesantren_guruquran.group_guru_quran_staff'))
 
             groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_user')) 
             groups_to_add.append(self.env.ref('pesantren_base.group_sekolah_user')) 
-            groups_to_add.append(self.env.ref('hr.group_hr_manager')) # Menambahkan grup HR User # groups_to_add.append(self.env.ref('hr_attendance.group_hr_attendance_officer')) # Menambahkan grup Absensi
+            # groups_to_add.append(self.env.ref('hr.group_hr_manager')) # Menambahkan grup HR User # groups_to_add.append(self.env.ref('hr_attendance.group_hr_attendance_officer')) # Menambahkan grup Absensi
+            groups_to_add.append(self.env.ref('pesantren_base.group_hr_employee_readonly'))
         elif self.jns_pegawai == 'musyrif,guru,guruquran':
             groups_to_add.append(self.env.ref('pesantren_musyrif.group_musyrif_staff'))
             groups_to_add.append(self.env.ref('pesantren_guru.group_guru_staff'))
@@ -132,13 +137,15 @@ class hr_employee(models.Model):
 
             groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_user')) 
             groups_to_add.append(self.env.ref('pesantren_base.group_sekolah_user')) 
-            groups_to_add.append(self.env.ref('hr.group_hr_manager')) # Menambahkan grup HR User # groups_to_add.append(self.env.ref('hr_attendance.group_hr_attendance_officer')) # Menambahkan grup Absensi
+            # groups_to_add.append(self.env.ref('hr.group_hr_manager')) # Menambahkan grup HR User # groups_to_add.append(self.env.ref('hr_attendance.group_hr_attendance_officer')) # Menambahkan grup Absensi
+            groups_to_add.append(self.env.ref('pesantren_base.group_hr_employee_readonly'))
         elif self.jns_pegawai == 'musyrif':
             groups_to_add.append(self.env.ref('pesantren_musyrif.group_musyrif_staff'))
 
             groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_user'))
             groups_to_add.append(self.env.ref('pesantren_base.group_sekolah_user'))
-            groups_to_add.append(self.env.ref('hr.group_hr_manager'))
+            # groups_to_add.append(self.env.ref('hr.group_hr_manager'))
+            groups_to_add.append(self.env.ref('pesantren_base.group_hr_employee_readonly'))
             # groups_to_add.append(self.env.ref('hr_attendance.group_hr_attendance_officer'))
         elif self.jns_pegawai == 'keamanan':
             groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_keamanan'))

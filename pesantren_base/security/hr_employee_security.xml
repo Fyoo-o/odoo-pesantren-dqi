@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Grup baru hanya untuk baca data karyawan -->
+        <record id="group_hr_employee_readonly" model="res.groups">
+            <field name="name">HR Employee Read Only</field>
+            <field name="category_id" ref="base.module_category_human_resources"/>
+            <field name="comment">Hanya bisa melihat data karyawan tanpa mengubah.</field>
+        </record>
+
+    </data>
+</odoo>
