@@ -232,6 +232,16 @@
                                     ('juz_murajaah', '=', False)
                                 ]"/>
 
+                <!-- Filter Murajaah Harian: Tampilkan jika ADA data murajaah ATAU SEMUA kosong -->
+                <filter name="filter_murajaah_harian" string="Murajaah Harian" domain="['|',
+                                ('juz_murajaah', '!=', False),
+                                '&amp;', '&amp;', '&amp;',
+                                    ('tahfidz_line_ids', '=', False),
+                                    ('buku_harian_id', '=', False),
+                                    ('buku_ujian_id', '=', False),
+                                    ('juz_murajaah', '=', False)
+                                ]"/>
+
                 <!-- Filter Tahsin Harian: Tampilkan jika ADA data tahsin harian ATAU SEMUA kosong -->
                 <filter name="filter_tahsin_harian" string="Tahsin Harian" domain="['|',
                                 ('buku_harian_id', '!=', False),
@@ -245,16 +255,6 @@
                 <!-- Filter Tahsin Ujian: Tampilkan jika ADA data tahsin ujian ATAU SEMUA kosong -->
                 <filter name="filter_tahsin_ujian" string="Tahsin Ujian" domain="['|',
                                 ('buku_ujian_id', '!=', False),
-                                '&amp;', '&amp;', '&amp;',
-                                    ('tahfidz_line_ids', '=', False),
-                                    ('buku_harian_id', '=', False),
-                                    ('buku_ujian_id', '=', False),
-                                    ('juz_murajaah', '=', False)
-                                ]"/>
-
-                <!-- Filter Murajaah Harian: Tampilkan jika ADA data murajaah ATAU SEMUA kosong -->
-                <filter name="filter_murajaah_harian" string="Murajaah Harian" domain="['|',
-                                ('juz_murajaah', '!=', False),
                                 '&amp;', '&amp;', '&amp;',
                                     ('tahfidz_line_ids', '=', False),
                                     ('buku_harian_id', '=', False),
