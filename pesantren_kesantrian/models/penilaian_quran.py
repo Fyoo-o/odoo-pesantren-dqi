@@ -49,6 +49,21 @@ class TahfidzTahsin(models.Model):
     # === TAHFIDZ ===
     nilai_hafalan = fields.Integer(string='Nilai Hafalan')
     nilai_tahfidz = fields.Many2one('cdn.nilai_tahfidz', string='Nilai Tahfidz')
+    last_jml_baris = fields.Integer(
+        string="Jumlah Maqra'",
+        compute='_compute_last_nilai_predikat',
+        store=True
+    )
+    last_nilai_hafalan = fields.Integer(
+        string='Nilai Hafalan',
+        compute='_compute_last_nilai_predikat',
+        store=True
+    )
+    last_predikat = fields.Char(
+        string='Predikat',
+        compute='_compute_last_nilai_predikat',
+        store=True
+    )
 
     # PREDIKAT (otomatis tergantung jenjang)
     predikat = fields.Char(string='Predikat', compute='_compute_predikat', store=True)
@@ -149,6 +164,19 @@ class TahfidzTahsin(models.Model):
         'cdn.ayat', string='Ayat Terakhir',
         compute='_compute_last_tahfidz', store=True, readonly=True
     )
+    
+    @api.depends('tahfidz_line_ids', 'tahfidz_line_ids.nilai_hafalan', 'tahfidz_line_ids.penilaian_id.jenjang_display')
+    def _compute_last_nilai_predikat(self):
+        for rec in self:
+            if rec.tahfidz_line_ids:
+                # Ambil line terakhir berdasarkan sequence
+                last_line = rec.tahfidz_line_ids.sorted(key=lambda r: r.sequence or 0)[-1]
+                rec.last_jml_baris = last_line.jml_baris
+                rec.last_nilai_hafalan = last_line.nilai_hafalan
+                rec.last_predikat = last_line.predikat
+            else:
+                rec.last_nilai_hafalan = 0
+                rec.last_predikat = ''
     # === COMPUTE ===
     @api.depends('nilai_tahfidz.name', 'jenjang_display')
     def _compute_predikat(self):

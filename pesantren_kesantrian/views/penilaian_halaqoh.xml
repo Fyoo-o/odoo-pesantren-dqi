@@ -26,8 +26,10 @@
                 <field name="surah_id" string="Surat Tahfidz" optional="hide"/>
                 <field name="ayat_awal" string="Ayat Awal Tahfidz" optional="hide"/>
                 <field name="ayat_akhir" string="Ayat Akhir Tahfidz" optional="hide"/>
-                <field name="jml_baris" string="Jumlah Baris Tahfidz" optional="hide"/>
-                
+                <field name="last_jml_baris" string="Jumlah Maqra' Tahfidz" optional="hide"/>
+                <field name="last_nilai_hafalan" string="Nilai Hafalan Tahfidz" optional="hide"/>
+                <field name="last_predikat" string="Nilai Predikat Tahfidz" optional="hide"/>
+
                 <!-- Murajaah Harian -->
                 <field name="buku_murajaah_id" string="Buku Murajaah" optional="hide"/>
                 <field name="juz_murajaah" string="Juz Murajaah" optional="hide"/>
@@ -42,6 +44,9 @@
                 <field name="surah_id_harian" string="Surat Tahsin (Harian)" optional="hide"/>
                 <field name="ayat_awal_harian" string="Ayat Awal Tahsin (Harian)" optional="hide"/>
                 <field name="ayat_akhir_harian" string="Ayat Akhir Tahsin (Harian)" optional="hide"/>
+                <field name="nilai_tajwid_harian" string="Nilai Tajwid Tahsin (Harian)" optional="hide"/>
+                <field name="nilai_makhroj_harian" string="Nilai Makhroj Tahsin (Harian)" optional="hide"/>
+                <field name="nilai_mad_harian" string="Nilai Mad Tahsin (Harian)" optional="hide"/>
 
                 <!-- Tahsin Ujian -->
                 <field name="buku_ujian_id" string="Buku Tahsin (Ujian)" optional="hide"/>
@@ -50,6 +55,9 @@
                 <field name="surah_id_ujian" string="Surat Tahsin (Ujian)" optional="hide"/>
                 <field name="ayat_awal_ujian" string="Ayat Awal Tahsin (Ujian)" optional="hide"/>
                 <field name="ayat_akhir_ujian" string="Ayat Akhir Tahsin (Ujian)" optional="hide"/>
+                <field name="nilai_tajwid_ujian" string="Nilai Tajwid Tahsin (Ujian)" optional="hide"/>
+                <field name="nilai_makhroj_ujian" string="Nilai Makhroj Tahsin (Ujian)" optional="hide"/>
+                <field name="nilai_mad_ujian" string="Nilai Mad Tahsin (Ujian)" optional="hide"/>
             </list>
         </field>
     </record>
@@ -213,28 +221,46 @@
 
                 <!-- 🧩 Filter Berdasarkan Jenis Data -->
                 <separator/>
-                <filter name="filter_tahfidz_only" string="Setoran Tahfidz (Ada Data)" 
-                        domain="[('tahfidz_line_ids', '!=', False)]"/>
-                
-                <filter name="filter_tahsin_harian" string="Tahsin Harian (Ada Data)" 
-                        domain="['|', '|', '|', 
-                                ('buku_harian_id', '!=', False),
-                                ('jilid_harian_id', '!=', False),
-                                ('halaman_harian', '!=', False),
-                                ('catatan_harian', '!=', False)]"/>
-                
-                <filter name="filter_tahsin_ujian" string="Tahsin Ujian (Ada Data)" 
-                        domain="['|', '|', '|',
-                                ('buku_ujian_id', '!=', False),
-                                ('jilid_ujian_id', '!=', False),
-                                ('halaman_ujian', '!=', False),
-                                ('catatan_ujian', '!=', False)]"/>
 
-                <filter name="filter_murajaah_harian" string="Murajaah Harian (Ada Data)" 
-                        domain="['|', '|',
+                <!-- Filter Tahfidz: Tampilkan jika ADA data tahfidz ATAU SEMUA kosong -->
+                <filter name="filter_tahfidz_only" string="Setoran Tahfidz" domain="['|',
+                                ('tahfidz_line_ids', '!=', False),
+                                '&amp;', '&amp;', '&amp;',
+                                    ('tahfidz_line_ids', '=', False),
+                                    ('buku_harian_id', '=', False),
+                                    ('buku_ujian_id', '=', False),
+                                    ('juz_murajaah', '=', False)
+                                ]"/>
+
+                <!-- Filter Tahsin Harian: Tampilkan jika ADA data tahsin harian ATAU SEMUA kosong -->
+                <filter name="filter_tahsin_harian" string="Tahsin Harian" domain="['|',
+                                ('buku_harian_id', '!=', False),
+                                '&amp;', '&amp;', '&amp;',
+                                    ('tahfidz_line_ids', '=', False),
+                                    ('buku_harian_id', '=', False),
+                                    ('buku_ujian_id', '=', False),
+                                    ('juz_murajaah', '=', False)
+                                ]"/>
+
+                <!-- Filter Tahsin Ujian: Tampilkan jika ADA data tahsin ujian ATAU SEMUA kosong -->
+                <filter name="filter_tahsin_ujian" string="Tahsin Ujian" domain="['|',
+                                ('buku_ujian_id', '!=', False),
+                                '&amp;', '&amp;', '&amp;',
+                                    ('tahfidz_line_ids', '=', False),
+                                    ('buku_harian_id', '=', False),
+                                    ('buku_ujian_id', '=', False),
+                                    ('juz_murajaah', '=', False)
+                                ]"/>
+
+                <!-- Filter Murajaah Harian: Tampilkan jika ADA data murajaah ATAU SEMUA kosong -->
+                <filter name="filter_murajaah_harian" string="Murajaah Harian" domain="['|',
                                 ('juz_murajaah', '!=', False),
-                                ('surah_murajaah_id', '!=', False),
-                                ('catatan_murajaah_harian', '!=', False)]"/>
+                                '&amp;', '&amp;', '&amp;',
+                                    ('tahfidz_line_ids', '=', False),
+                                    ('buku_harian_id', '=', False),
+                                    ('buku_ujian_id', '=', False),
+                                    ('juz_murajaah', '=', False)
+                                ]"/>
 
                 <group expand="0" string="Group By">
                     <filter name="group_siswa" string="Santri" context="{'group_by': 'siswa_id'}"/>
