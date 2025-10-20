@@ -55,7 +55,11 @@ class AbsensiSiswa(models.Model):
     materi              = fields.Text(string='Materi', required=True)
     state               = fields.Selection(selection=[('draft', 'Draft'), ('done', 'Done')], string='State', default='draft')
     absensi_ids         = fields.One2many(comodel_name='cdn.absensi_siswa_lines', inverse_name='absensi_id', string='Absensi Siswa')
-    
+    row_number          = fields.Integer(string='No', compute='_compute_row_number', store=False)
+
+    def _compute_row_number(self):
+        for index, record in enumerate(self):
+            record.row_number = index + 1    
     # action
     def action_draft(self):
         self.state = 'draft'
@@ -299,8 +303,11 @@ class AbsensiSiswaLine(models.Model):
     keterangan      = fields.Char(string='Keterangan')
     panggilan       = fields.Char(string='Nama Panggilan', related='siswa_id.namapanggilan', readonly=True, store=True)
     guru = fields.Many2one('hr.employee',string="Guru", related='absensi_id.guru_id')
-    
+    row_number      = fields.Integer(string='No', compute='_compute_row_number', store=False)
 
+    def _compute_row_number(self):
+        for index, record in enumerate(self):
+            record.row_number = index + 1   
     @staticmethod
     def format_datetime_indonesia(dt):
         bulan_dict = {

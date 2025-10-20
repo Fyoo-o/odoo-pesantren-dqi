@@ -72,7 +72,11 @@ class AbsensiEkskul(models.Model):
         ('Proses', 'Proses'),
         ('Done', 'Selesai'),
     ], default='Proses', string='Status', tracking=True)
+    row_number      = fields.Integer(string='No', compute='_compute_row_number', store=False)
 
+    def _compute_row_number(self):
+        for index, record in enumerate(self):
+            record.row_number = index + 1
     # Onchange: Filter ekskul berdasarkan guru
     @api.onchange('guru')
     def _onchange_guru(self):
@@ -156,7 +160,11 @@ class AbsenEkskulLine(models.Model):
     keterangan = fields.Char(string="Keterangan")
     guru = fields.Many2one('hr.employee', string="Guru", related='absen_id.guru')
     ekskul = fields.Many2one('cdn.pembagian_ekstra', string="Ekskul", related='absen_id.ekskul_id')
+    row_number      = fields.Integer(string='No', compute='_compute_row_number', store=False)
 
+    def _compute_row_number(self):
+        for index, record in enumerate(self):
+            record.row_number = index + 1
     @staticmethod
     def format_datetime_indonesia(dt):
         bulan_dict = {

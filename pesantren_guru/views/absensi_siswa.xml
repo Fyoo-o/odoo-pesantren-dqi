@@ -29,12 +29,17 @@
             <field name="model">cdn.absensi_siswa</field>
             <field name="arch" type="xml">
                 <list>
-                    <field name="name" />
-                    <field name="tanggal" />
-                    <field name="jampelajaran_id" />
-                    <field name="kelas_id" />
-                    <field name="mapel_id" />
-                    <field name="guru_id" />
+                    <field name="row_number" string="No"/>
+                    <field name="name" optional="show"/>
+                    <field name="tanggal" optional="show" />
+                    <field name="jampelajaran_id" optional="show" />
+                    <field name="kelas_id" optional="show" />
+                    <field name="mapel_id" optional="show" />
+                    <field name="guru_id" optional="show" />
+                    <field name="state" optional="show" />
+                    <field name="tema" optional="hide" />
+                    <field name="materi" optional="hide" />
+                    <field name="rpp_id" optional="hide" />
                 </list>
             </field>
         </record>
@@ -80,6 +85,7 @@
                             <page string="Absensi Siswa">
                                 <field name="absensi_ids" nolable="1">
                                     <list editable="bottom" create="false" delete="false">
+                                        <field name="row_number" string="No"/>
                                         <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
                                         <field name="panggilan" string="Panggilan"/>
                                         <field name="nis" />
@@ -152,7 +158,7 @@
             <field name="context">{}</field>
         </record>
         <!-- This Menu Item must have a parent and an action -->
-        <!-- <menuitem id="cdn_absensi_siswa_menu_act" name="Absensi Santri"
+        <!-- <menuitem id="cdn_absensi_siswa_menu_act" name="Absensi Siswa"
             parent="absensi_pengajar" action="cdn_absensi_siswa_action" sequence="10" /> -->
         <menuitem id="cdn_absensi_siswa_menu_act" name="Absensi Siswa"
             parent="absensi_pengajar" action="cdn_absensi_siswa_action" sequence="10" groups="pesantren_guru.group_guru_staff"/>

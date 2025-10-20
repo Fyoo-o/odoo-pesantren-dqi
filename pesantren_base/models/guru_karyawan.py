@@ -78,7 +78,8 @@ class hr_employee(models.Model):
             groups_to_add.append(self.env.ref('pesantren_musyrif.group_musyrif_manager'))
             groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_kesehatan'))
             groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_keamanan'))
-            # groups_to_add.append(self.env.ref('pesantren_kasrama.group_kasrama_manager'))
+            # Tambahkan akses Akuntansi Administrator
+            groups_to_add.append(self.env.ref('account.group_account_manager'))
         elif self.jns_pegawai == 'guruquran':
             # groups_to_add.append(self.env.ref('pesantren_guruquran.group_guru_quran_manager')) 
             # groups_to_add.append(self.env.ref('pesantren_guruquran.group_guru_quran_manager')) 

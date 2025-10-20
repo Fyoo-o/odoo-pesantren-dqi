@@ -32,8 +32,11 @@ class AbsensiMalam(models.Model):
         ('draft', 'Draft'),
         ('done', 'Selesai'),
     ], default='draft', string='Status')
+    row_number      = fields.Integer(string='No', compute='_compute_row_number', store=False)
 
-    # --- onchange barcode & siswa ---
+    def _compute_row_number(self):
+        for index, record in enumerate(self):
+            record.row_number = index + 1    # --- onchange barcode & siswa ---
     @api.onchange('siswa_id')
     def _onchange_siswa_id(self):
         if self.siswa_id:

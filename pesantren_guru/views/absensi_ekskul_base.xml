@@ -8,6 +8,7 @@
             <field name="priority">99</field>
             <field name="arch" type="xml">
                 <list string="Absensi Ekskul">
+                    <field name="row_number" string="No" />
                     <field name="name"/>
                     <field name="ekskul_id"/>
                     <field name="guru"/>

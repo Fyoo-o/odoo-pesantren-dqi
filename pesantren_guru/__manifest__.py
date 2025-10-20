@@ -81,4 +81,9 @@
     "installable": True,
 	"auto_install": False,
 	"application": True,  
+    'assets': {
+        'web.assets_backend': [
+            'pesantren_guru/static/src/scss/style.scss',
+        ],
+    },
 }

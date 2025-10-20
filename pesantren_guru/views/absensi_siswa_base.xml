@@ -8,19 +8,21 @@
             <field name="model">cdn.absensi_siswa</field>
             <field name="arch" type="xml">
                 <list create="false" edit="false" delete="false">
-                    <button name="%(pesantren_guru.action_absensi_filter_wizard)d" string="Filter Tanggal Manual" type="action" class="btn-primary"/>
-                    <field name="name" />
-                    <field name="tanggal" />
-                    <field name="jampelajaran_id" />
-                    <field name="kelas_id" />
-                    <field name="mapel_id" />
-                    <field name="guru_id" />
-                    <field name="state" />
+                    <!-- <button name="%(pesantren_guru.action_absensi_filter_wizard)d" string="Filter Tanggal Manual" type="action" class="btn-primary"/> -->
+                    <field name="row_number" string="No"/>
+                    <field name="name" optional="show"/>
+                    <field name="tanggal" optional="show" />
+                    <field name="jampelajaran_id" optional="show" />
+                    <field name="kelas_id" optional="show" />
+                    <field name="mapel_id" optional="show" />
+                    <field name="guru_id" optional="show" />
+                    <field name="state" optional="show" />
+                    <field name="tema" optional="hide" />
+                    <field name="materi" optional="hide" />
+                    <field name="rpp_id" optional="hide" />
                 </list>
             </field>
         </record>
-
-        
 
         <!-- cdn.absensi_siswa form view - Akses Umum (Read Only) -->
         <record id="cdn_absensi_siswa_view_form_public" model="ir.ui.view">
@@ -52,10 +54,11 @@
                             </group>
                         </group>
                         <notebook>
-                            <page string="Absensi Santri">
+                            <page string="Absensi Siswa">
                                 <field name="absensi_ids" nolabel="1" readonly="1">
                                     <list create="false" edit="false" delete="false">
-                                        <field name="siswa_id" string="Santri"/>
+                                        <field name="row_number" string="No"/>
+                                        <field name="siswa_id" string="Siswa"/>
                                         <field name="panggilan" string="Panggilan"/>
                                         <field name="nis" />
                                         <field name="kehadiran"/>

@@ -1,0 +1,12 @@
+.o_list_view th[name="row_number"],
+.o_list_view td[name="row_number"],
+.o_list_view th[data-name="row_number"],
+.o_list_view td[data-name="row_number"] {
+    text-align: center !important;
+}
+
+/* Rata tengah teks header kolom "No" */
+.o_list_view .o_list_renderer .o_list_table th[data-name="row_number"] .o_list_number_th {
+    justify-content: center !important;
+    text-align: center !important;
+}
