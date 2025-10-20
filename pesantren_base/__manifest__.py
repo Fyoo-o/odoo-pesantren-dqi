@@ -52,6 +52,7 @@
     # always loaded
     'data': [
         'security/groups.xml',
+        'security/hr_employee_security.xml',
         'security/ir.model.access.csv',
         # 'data/ks_sekolah_data.xml',
 
