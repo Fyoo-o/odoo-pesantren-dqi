@@ -20,7 +20,6 @@
                 <field name="siswa_id" optional="show"/>
                 <field name="halaqoh_id" string="Halaqoh" optional="show"/>
                 <field name="ustadz_id" optional="show"/>
-                <field name="state" optional="show"/>
 
                 <!-- Tahfidz -->
                 <field name="surah_id" string="Surat Tahfidz" optional="hide"/>
@@ -58,6 +57,9 @@
                 <field name="nilai_tajwid_ujian" string="Nilai Tajwid Tahsin (Ujian)" optional="hide"/>
                 <field name="nilai_makhroj_ujian" string="Nilai Makhroj Tahsin (Ujian)" optional="hide"/>
                 <field name="nilai_mad_ujian" string="Nilai Mad Tahsin (Ujian)" optional="hide"/>
+
+                <!-- Status -->
+                <field name="state" optional="show"/>
             </list>
         </field>
     </record>
@@ -199,6 +201,20 @@
                             <group string="Catatan">
                                 <field name="catatan_ujian" nolabel="1" placeholder="Catatan untuk tahsin ujian..."/>
                             </group>
+                        </page>
+
+                        <!-- TAB Riwayat Hafalan -->
+                        <page string="Riwayat Hafalan">
+                            <field name="riwayat_hafalan_ids">
+                                <list default_order="tanggal_penilaian desc, sequence desc">
+                                    <field name="tanggal_penilaian" string="Tanggal"/>
+                                    <field name="surah_id" string="Surah"/>
+                                    <field name="ayat_awal" string="Ayat Awal"/>
+                                    <field name="ayat_akhir" string="Ayat Akhir"/>
+                                    <field name="nilai_hafalan" string="Nilai Hafalan"/>
+                                    <field name="predikat" string="Predikat Hafalan"/>
+                                </list>
+                            </field>
                         </page>
                     </notebook>
                 </sheet>

@@ -42,9 +42,9 @@ class TahfidzTahsin(models.Model):
     ], default='draft', string='Status')
 
     # === TAB TAHFIDZ ===
-    surah_id = fields.Many2one('cdn.surah', compute='_compute_main_fields', string='Surah')
-    ayat_awal = fields.Many2one('cdn.ayat', string='Ayat Awal', compute='_compute_main_fields', domain="[('surah_id','=',surah_id)]")
-    ayat_akhir = fields.Many2one('cdn.ayat', string='Ayat Akhir', compute='_compute_main_fields', domain="[('surah_id','=',surah_id)]")
+    surah_id = fields.Many2one('cdn.surah', compute='_compute_main_fields', string='Surah', ondelete='cascade', store="True")
+    ayat_awal = fields.Many2one('cdn.ayat', string='Ayat Awal', compute='_compute_main_fields', domain="[('surah_id','=',surah_id)]", ondelete='cascade', store="True")
+    ayat_akhir = fields.Many2one('cdn.ayat', string='Ayat Akhir', compute='_compute_main_fields', domain="[('surah_id','=',surah_id)]", ondelete='cascade', store="True")
     jml_baris = fields.Integer(string="Jumlah Maqra'", store=True)
     # === TAHFIDZ ===
     nilai_hafalan = fields.Integer(string='Nilai Hafalan')
@@ -74,6 +74,14 @@ class TahfidzTahsin(models.Model):
         'penilaian_id',
         string='Setoran Tahfidz'
     )
+    
+    # === TAB Riwayat Hafalan ===
+    riwayat_hafalan_ids = fields.One2many(
+        'cdn.penilaian_quran_line',
+        compute='_compute_riwayat_hafalan',
+        string='Riwayat Hafalan',
+        readonly=True
+    )
 
     # === TAB Murajaah Harian ===
     buku_murajaah_id = fields.Many2one(
@@ -93,7 +101,8 @@ class TahfidzTahsin(models.Model):
     surah_murajaah_id = fields.Many2one(
         'cdn.surah',
         string='Surah',
-        domain="[('id', 'in', available_surah_ids)]"
+        domain="[('id', 'in', available_surah_ids)]",
+        ondelete='cascade'
     )
 
     halaman_murajaah = fields.Char(string='Halaman')
@@ -103,7 +112,8 @@ class TahfidzTahsin(models.Model):
     available_surah_ids = fields.Many2many(
         'cdn.surah',
         compute='_compute_available_surah_ids',
-        string='Available Surahs'
+        string='Available Surahs',
+        ondelete='cascade'
     )
 
     # === Helper Functions ===
@@ -139,9 +149,9 @@ class TahfidzTahsin(models.Model):
     nilai_makhroj_harian = fields.Integer(string='Nilai Makhroj')
     nilai_mad_harian = fields.Integer(string='Nilai Mad')
     catatan_harian = fields.Text(string='Catatan (Harian)')
-    surah_id_harian = fields.Many2one('cdn.surah', string='Surah')
-    ayat_awal_harian = fields.Many2one('cdn.ayat', string='Ayat Awal',domain="[('surah_id','=',surah_id_harian)]")
-    ayat_akhir_harian = fields.Many2one('cdn.ayat', string='Ayat Akhir', domain="[('surah_id','=',surah_id_harian)]")
+    surah_id_harian = fields.Many2one('cdn.surah', string='Surah', ondelete='cascade')
+    ayat_awal_harian = fields.Many2one('cdn.ayat', string='Ayat Awal',domain="[('surah_id','=',surah_id_harian)]", ondelete='cascade')
+    ayat_akhir_harian = fields.Many2one('cdn.ayat', string='Ayat Akhir', domain="[('surah_id','=',surah_id_harian)]", ondelete='cascade')
 
     # === TAB TAHsin UJIAN ===
     buku_ujian_id = fields.Many2one('cdn.buku_tahsin', string='Buku (Ujian)')
@@ -152,19 +162,37 @@ class TahfidzTahsin(models.Model):
     nilai_makhroj_ujian = fields.Integer(string='Nilai Makhroj')
     nilai_mad_ujian = fields.Integer(string='Nilai Mad')
     catatan_ujian = fields.Text(string='Catatan (Ujian)')
-    surah_id_ujian = fields.Many2one('cdn.surah', string='Surah')
-    ayat_awal_ujian = fields.Many2one('cdn.ayat', string='Ayat Awal', domain="[('surah_id','=',surah_id_ujian)]")
-    ayat_akhir_ujian = fields.Many2one('cdn.ayat', string='Ayat Akhir', domain="[('surah_id','=',surah_id_ujian)]")
+    surah_id_ujian = fields.Many2one('cdn.surah', string='Surah', ondelete='cascade')
+    ayat_awal_ujian = fields.Many2one('cdn.ayat', string='Ayat Awal', domain="[('surah_id','=',surah_id_ujian)]", ondelete='cascade')
+    ayat_akhir_ujian = fields.Many2one('cdn.ayat', string='Ayat Akhir', domain="[('surah_id','=',surah_id_ujian)]", ondelete='cascade')
     # === INFORMASI TAHFIDZ TERAKHIR ===
     last_surah_id = fields.Many2one(
         'cdn.surah', string='Surah Terakhir',
-        compute='_compute_last_tahfidz', store=True, readonly=True
+        compute='_compute_last_tahfidz', store=True, readonly=True,
+        ondelete='cascade'
     )
     last_ayat_akhir = fields.Many2one(
         'cdn.ayat', string='Ayat Terakhir',
-        compute='_compute_last_tahfidz', store=True, readonly=True
+        compute='_compute_last_tahfidz', store=True, readonly=True,
+        ondelete='cascade'
     )
     
+    @api.depends('siswa_id')
+    def _compute_riwayat_hafalan(self):
+        for rec in self:
+            if not rec.siswa_id:
+                rec.riwayat_hafalan_ids = False
+                continue
+            # Ambil semua penilaian_quran_line dari penilaian yang sudah done untuk santri ini
+            penilaian_ids = self.env['cdn.penilaian_quran'].search([
+                ('siswa_id', '=', rec.siswa_id.id),
+                ('state', '=', 'done')
+            ]).ids
+            riwayat_lines = self.env['cdn.penilaian_quran_line'].search([
+                ('penilaian_id', 'in', penilaian_ids)
+            ])
+            rec.riwayat_hafalan_ids = riwayat_lines
+
     @api.depends('tahfidz_line_ids', 'tahfidz_line_ids.nilai_hafalan', 'tahfidz_line_ids.penilaian_id.jenjang_display')
     def _compute_last_nilai_predikat(self):
         for rec in self:
@@ -281,7 +309,56 @@ class TahfidzTahsin(models.Model):
                 rec.surah_id = False
                 rec.ayat_awal = False
                 rec.ayat_akhir = False
+    # @api.depends('tahfidz_line_ids', 'tahfidz_line_ids.sequence', 'last_surah_id', 'last_ayat_akhir', 'state')
+    # def _compute_main_fields(self):
+    #     for rec in self:
+    #         lines = rec.tahfidz_line_ids
+    #         if lines:
+    #             # Jika ada line, ambil dari line
+    #             sorted_lines = lines.sorted(key=lambda r: (r.sequence or 0))
+    #             first_line = sorted_lines[0]
+    #             last_line = sorted_lines[-1]
 
+    #             rec.surah_id = last_line.surah_id.id
+    #             rec.ayat_awal = first_line.ayat_awal.id
+    #             rec.ayat_akhir = last_line.ayat_akhir.id
+    #         elif rec.state == 'done' and rec.last_surah_id and rec.last_ayat_akhir:
+    #             # Jika status done dan tidak ada line, gunakan last_surah_id dan last_ayat_akhir
+    #             surah = rec.last_surah_id
+    #             ayat_terakhir = rec.last_ayat_akhir.name
+    #             total_ayat = surah.jml_ayat
+
+    #             if ayat_terakhir < total_ayat:
+    #                 # Lanjut surah sama
+    #                 rec.surah_id = surah.id
+    #                 next_ayat = self.env['cdn.ayat'].search([
+    #                     ('surah_id', '=', surah.id),
+    #                     ('name', '=', ayat_terakhir + 1)
+    #                 ], limit=1)
+    #                 rec.ayat_awal = next_ayat.id
+    #                 rec.ayat_akhir = False
+    #             else:
+    #                 # Pindah surah berikutnya
+    #                 next_surah = self.env['cdn.surah'].search([
+    #                     ('number', '>', surah.number)
+    #                 ], order='number', limit=1)
+    #                 if next_surah:
+    #                     rec.surah_id = next_surah.id
+    #                     ayat_1 = self.env['cdn.ayat'].search([
+    #                         ('surah_id', '=', next_surah.id),
+    #                         ('name', '=', 1)
+    #                     ], limit=1)
+    #                     rec.ayat_awal = ayat_1.id
+    #                     rec.ayat_akhir = False
+    #                 else:
+    #                     rec.surah_id = False
+    #                     rec.ayat_awal = False
+    #                     rec.ayat_akhir = False
+    #         else:
+    #             # Status draft atau tidak ada data terakhir, kosongkan
+    #             rec.surah_id = False
+    #             rec.ayat_awal = False
+    #             rec.ayat_akhir = False
 
     @api.model
     def create(self, vals):
@@ -289,7 +366,42 @@ class TahfidzTahsin(models.Model):
         record._compute_main_fields()  # isi surah_id, ayat_awal, ayat_akhir
         return record
     
-    @api.depends('siswa_id', 'tahfidz_line_ids.surah_id', 'tahfidz_line_ids.ayat_akhir')
+    # @api.depends('siswa_id', 'tahfidz_line_ids.surah_id', 'tahfidz_line_ids.ayat_akhir')
+    # def _compute_last_tahfidz(self):
+    #     for rec in self:
+    #         if not rec.siswa_id:
+    #             rec.last_surah_id = False
+    #             rec.last_ayat_akhir = False
+    #             continue
+
+    #         # Ambil penilaian terakhir yang sudah done
+    #         last = self.env['cdn.penilaian_quran'].search([
+    #             ('siswa_id', '=', rec.siswa_id.id),
+    #             ('state', '=', 'done')
+    #         ], order='tanggal desc, id desc', limit=1)
+
+    #         if last and last.tahfidz_line_ids:
+    #             last_line = last.tahfidz_line_ids.sorted(key=lambda r: (r.sequence or 0, r.id))[-1]
+    #             rec.last_surah_id = last_line.surah_id.id
+    #             rec.last_ayat_akhir = last_line.ayat_akhir.id
+    #         elif last:
+    #             rec.last_surah_id = last.surah_id.id
+    #             rec.last_ayat_akhir = last.ayat_akhir.id
+    #         else:
+    #             # Belum ada data → mulai dari Al-Fatihah ayat 1
+    #             surah_fatihah = self.env['cdn.surah'].search([('number', '=', 1)], limit=1)
+    #             if surah_fatihah:
+    #                 rec.last_surah_id = surah_fatihah.id
+    #                 ayat_1 = self.env['cdn.ayat'].search([
+    #                     ('surah_id', '=', surah_fatihah.id),
+    #                     ('name', '=', 1)
+    #                 ], limit=1)
+    #                 rec.last_ayat_akhir = ayat_1.id
+    #             else:
+    #                 rec.last_surah_id = False
+    #                 rec.last_ayat_akhir = False
+    
+    @api.depends('siswa_id', 'tahfidz_line_ids.surah_id', 'tahfidz_line_ids.ayat_akhir', 'state')
     def _compute_last_tahfidz(self):
         for rec in self:
             if not rec.siswa_id:
@@ -297,21 +409,34 @@ class TahfidzTahsin(models.Model):
                 rec.last_ayat_akhir = False
                 continue
 
-            # Ambil penilaian terakhir yang sudah done
-            last = self.env['cdn.penilaian_quran'].search([
+            # Jika record ini sudah done dan ada tahfidz_line_ids, gunakan data dari line
+            if rec.state == 'done' and rec.tahfidz_line_ids:
+                last_line = rec.tahfidz_line_ids.sorted(key=lambda r: (r.sequence or 0, r.id))[-1]
+                rec.last_surah_id = last_line.surah_id.id
+                rec.last_ayat_akhir = last_line.ayat_akhir.id
+                continue
+
+            # Cari penilaian terakhir yang sudah done (kecuali record ini)
+            domain = [
                 ('siswa_id', '=', rec.siswa_id.id),
                 ('state', '=', 'done')
-            ], order='tanggal desc, id desc', limit=1)
+            ]
+            if rec.id:
+                domain.append(('id', '!=', rec.id))
+
+            last = self.env['cdn.penilaian_quran'].search(domain, order='tanggal desc, id desc', limit=1)
 
             if last and last.tahfidz_line_ids:
+                # Ambil dari tahfidz_line_ids terakhir
                 last_line = last.tahfidz_line_ids.sorted(key=lambda r: (r.sequence or 0, r.id))[-1]
                 rec.last_surah_id = last_line.surah_id.id
                 rec.last_ayat_akhir = last_line.ayat_akhir.id
-            elif last:
-                rec.last_surah_id = last.surah_id.id
-                rec.last_ayat_akhir = last.ayat_akhir.id
+            elif last and last.last_surah_id and last.last_ayat_akhir:
+                # Ambil dari last_surah_id dan last_ayat_akhir
+                rec.last_surah_id = last.last_surah_id.id
+                rec.last_ayat_akhir = last.last_ayat_akhir.id
             else:
-                # Belum ada data → mulai dari Al-Fatihah ayat 1
+                # Jika tidak ada data sebelumnya, gunakan Al-Fatihah ayat 1
                 surah_fatihah = self.env['cdn.surah'].search([('number', '=', 1)], limit=1)
                 if surah_fatihah:
                     rec.last_surah_id = surah_fatihah.id
@@ -395,14 +520,34 @@ class TahfidzTahsin(models.Model):
                 self.ayat_awal = ayat_1.id
 
     # === WORKFLOW ===
+    # def action_confirm(self):
+    #     for rec in self:
+    #         rec.state = 'done'
+    #         rec._compute_last_tahfidz()  # pastikan langsung update surah terakhir
     def action_confirm(self):
         for rec in self:
             rec.state = 'done'
-            rec._compute_last_tahfidz()  # pastikan langsung update surah terakhir
+            rec._compute_last_tahfidz()  # Perbarui last_surah_id dan last_ayat_akhir
+            rec._compute_main_fields()   # Perbarui surah_id, ayat_awal, ayat_akhir
+    # def action_confirm(self):
+    #     for rec in self:
+    #         rec.state = 'done'
+    #         # Force recompute untuk semua record dengan siswa yang sama
+    #         related_records = self.env['cdn.penilaian_quran'].search([
+    #             ('siswa_id', '=', rec.siswa_id.id),
+    #             ('state', '=', 'draft')
+    #         ])
+    #         if related_records:
+    #             related_records._compute_last_tahfidz()
 
     def action_draft(self):
         for rec in self:
             rec.state = 'draft'
+    # def action_draft(self):
+    #     for rec in self:
+    #         rec.state = 'draft'
+    #         # Force recompute setelah set to draft
+    #         rec._compute_last_tahfidz()
 
     # === OTHER ===
     @api.model
@@ -425,11 +570,16 @@ class PenilaianQuranLine(models.Model):
 
     penilaian_id = fields.Many2one('cdn.penilaian_quran', string='Penilaian', ondelete='cascade')
     sequence = fields.Integer(string='No', default=1)
-    surah_id = fields.Many2one('cdn.surah', string='Surah', required=True)
-    ayat_awal = fields.Many2one('cdn.ayat', string='Ayat Awal', domain="[('surah_id','=',surah_id)]")
-    ayat_akhir = fields.Many2one('cdn.ayat', string='Ayat Akhir', domain="[('surah_id','=',surah_id)]")
+    surah_id = fields.Many2one('cdn.surah', string='Surah', required=True, ondelete='cascade')
+    ayat_awal = fields.Many2one('cdn.ayat', string='Ayat Awal', domain="[('surah_id','=',surah_id)]", ondelete='cascade')
+    ayat_akhir = fields.Many2one('cdn.ayat', string='Ayat Akhir', domain="[('surah_id','=',surah_id)]", ondelete='cascade')
     jml_baris = fields.Integer(string="Jumlah Maqra")
     nilai_hafalan = fields.Integer(string='Nilai Hafalan', default=75)
+    tanggal_penilaian = fields.Date(
+        string='Tanggal Penilaian',
+        related='penilaian_id.tanggal',
+        store=True
+    )
 
     predikat = fields.Char(string='Predikat', compute='_compute_predikat', store=True)
     keterangan = fields.Char(string='Keterangan')

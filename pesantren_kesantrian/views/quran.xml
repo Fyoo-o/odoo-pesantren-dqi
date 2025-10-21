@@ -42,7 +42,7 @@
 
             <notebook>
               <page string="Ayat">
-                <field name="ayat_ids" string=" " readonly="1" noupdate="1">
+                <field name="ayat_ids">
                   <list>
                     <field name="name"/>
                     <field name="juz" />

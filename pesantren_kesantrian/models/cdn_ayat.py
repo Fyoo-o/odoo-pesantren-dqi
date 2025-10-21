@@ -16,7 +16,7 @@ class Ayah(models.Model):
     ('y', 'Iya'),
     ('n', 'Tidak')
   ], string='Ayat Sajdah', compute='_compute_ayat_sajda')
-  surah_id = fields.Many2one('cdn.surah', string='Surah')
+  surah_id = fields.Many2one('cdn.surah', string='Surah', ondelete='cascade')
   ayat = fields.Char(string='Ayat')
   text = fields.Html(string='Text')
   id_translation = fields.Char(string='Arti')

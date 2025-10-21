@@ -247,12 +247,12 @@ export class GuruChartRenderer extends Component {
         "search_read",
         [domain1, ["id", "kelas_id", "tanggal", "guru", "kehadiran"]],
         { context: this.env.context }
-    );
+      );
 
       pie2 = await this.orm.call(
         "cdn.absen_halaqoh_line",
         "search_read",
-        [domain2, ["name", "halaqoh_id", "tanggal", "kehadiran"]],
+        [domain2, ["name", "halaqoh_id", "tanggal", "kehadiran", "ustadz_id"]],
         { context: this.env.context }
       );
 

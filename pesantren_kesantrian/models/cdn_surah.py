@@ -10,7 +10,7 @@ class Surah(models.Model):
   name = fields.Char(string='Surah in ID')
   id_translation = fields.Char(string='Arti')
   revelation_type = fields.Char(string='Tempat Turun')
-  ayat_ids = fields.One2many('cdn.ayat', 'surah_id', string='Ayat')
+  ayat_ids = fields.One2many('cdn.ayat', 'surah_id', string='Ayat', ondelete='cascade')
   jml_ayat = fields.Integer(string='Jumlah Ayat', compute='_compute_jml_ayat', readonly=True, store=True)
 
   @api.depends('ayat_ids')
