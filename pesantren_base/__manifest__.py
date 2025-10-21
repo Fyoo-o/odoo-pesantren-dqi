@@ -113,7 +113,8 @@
     'assets': {
         'web.assets_backend': [
             '/pesantren_base/static/src/js/limit_location.js',
-            'pesantren_base/static/src/js/nontifikasi.js'
+            'pesantren_base/static/src/js/nontifikasi.js',
+            # 'pesantren_base/static/src/scss/style.scss'
         ],
     },
     "installable": True,

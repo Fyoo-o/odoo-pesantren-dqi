@@ -8,9 +8,9 @@
       <field name="arch" type="xml">
         <list>
           <!-- Add your fields here -->
-          <field name="urut"/>
           <field name="name"/>
           <field name="kode"/>
+          <field name="urut"/>
           <field name="kategori"/>
           <field name="jenjang"/>
           <field name="guru_ids" widget="many2many_tags"/>
@@ -66,7 +66,7 @@
           <filter string="Ekstrakurikuler" name="filter_by_kategori" domain="[('kategori','=','ekstrakurikuler')]"/>
           <filter string="Lainnya" name="filter_by_kategori" domain="[('kategori','=','lainnya')]"/>
           <group string="Group By..">
-              <filter string="Jenjang" domain="[]" name="group_by_jenjang" context="{'group_by':'jenjang'}"/>
+              <filter string="Jenjang" name="group_by_jenjang" context="{'group_by':'jenjang'}"/>
           </group>
         </search>
       </field>

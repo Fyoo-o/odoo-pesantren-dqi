@@ -12,7 +12,7 @@
         <!-- <menuitem id="kepesantrenan_dqi" name="Tahfidz dan Tahsin" parent="tahfidz_tahsin" sequence="18" /> -->
         <menuitem id="kepesantrenan_dqi" name="Tahfidz dan Tahsin" parent="tahfidz_tahsin" sequence="18" groups="pesantren_guruquran.group_guru_quran_staff" /> <!-- groups="pesantren_guruquran.group_guru_quran_staff" -->
         <!-- <menuitem id="aktivitas_menu_categ" name="Aktivitas" parent="guru_menu_root" sequence="20" /> -->
-        <menuitem id="aktivitas_menu_categ" name="Aktivitas" parent="guru_menu_root" sequence="20" /> <!-- groups="pesantren_guru.group_guru_staff" -->
+        <menuitem id="aktivitas_menu_categ" name="Aktivitas" parent="guru_menu_root" sequence="20" groups="pesantren_guru.group_guru_staff" /> <!-- groups="pesantren_guru.group_guru_staff" -->
         <menuitem id="aktivitas_penilaian_menu_categ" name="Penilaian" parent="aktivitas_menu_categ" sequence="40"/>
         <!-- <menuitem id="pengaturan_menu_categ" name="Pengaturan" parent="guru_menu_root" sequence="30" /> -->
         <menuitem id="pengaturan_menu_categ" name="Pengaturan" parent="guru_menu_root" sequence="30" groups="pesantren_guru.group_guru_staff,pesantren_guruquran.group_guru_quran_staff" />
