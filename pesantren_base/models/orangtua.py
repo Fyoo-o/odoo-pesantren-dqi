@@ -25,7 +25,7 @@ class OrangTua(models.Model):
     )
 
     password            = fields.Char(string="Password", help="Password login untuk akun orang tua")
-
+    
     @api.model
     def create(self, vals):
         record = super().create(vals)

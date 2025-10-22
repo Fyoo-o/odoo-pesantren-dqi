@@ -71,8 +71,8 @@
         <field name="arch" type="xml">
             <form string="Penilaian Halaqoh" create="false">
                 <header>
-                    <button string="Confirm" type="object" name="action_confirm" invisible="state != 'draft'" class="oe_highlight"/>
-                    <button string="Set to Draft" type="object" name="action_draft" invisible="state != 'done'"/>
+                    <button string="Confirm" type="object" name="action_confirm" invisible="state != 'draft'" class="oe_highlight" groups="pesantren_kesantrian.group_kesantrian_staff,pesantren_guruquran.group_guru_quran_staff,base.group_system"/>
+                    <button string="Set to Draft" type="object" name="action_draft" invisible="state != 'done'" groups="pesantren_kesantrian.group_kesantrian_staff,pesantren_guruquran.group_guru_quran_staff,base.group_system"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>

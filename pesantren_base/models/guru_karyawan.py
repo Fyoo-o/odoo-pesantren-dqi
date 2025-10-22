@@ -233,17 +233,225 @@ class hr_employee(models.Model):
 
         mail = self.env['mail.mail'].sudo().create(email_values)
         mail.send()
+        
+        # tampilkan notifikasi dulu
+        self.env['bus.bus']._sendone(
+            self.env.user.partner_id, 
+            'simple_notification', 
+            {
+                'title': 'Aktivasi Akun Berhasil', 
+                'message': f'Akun {self.name} berhasil diaktifkan.',
+                'type': 'success',}
+        )
 
-
-        # Arahkan ke form user yang baru saja diperbarui
+        # Lanjutkan buka form user
         return {
             'type': 'ir.actions.act_window',
             'name': 'User',
             'res_model': 'res.users',
             'res_id': user.id,
             'view_mode': 'form',
-            'view_type': 'form',
             'target': 'current',
+        }
+        
+    def activate_account_action(self):
+        for rec in self:
+            # Mengambil email dan jenis pegawai langsung dari instance hr.employee
+            if not rec.work_email:
+                raise UserError("Email tidak ditemukan di data karyawan.")
+            if not rec.password or not rec.name:
+                raise UserError("Password atau Nama karyawan belum diisi.")
+            
+            # Cari user berdasarkan email dari work_email
+            user = rec.env['res.users'].search([('login', '=', rec.work_email)], limit=1)
+            
+            if not user:
+                raise UserError(f"User dengan email {rec.work_email} tidak ditemukan.")
+
+            user.groups_id = [(5, 0, 0)]  # Menghapus semua grup yang sudah ada
+
+            # Menentukan group yang sesuai berdasarkan jenis pegawai
+            groups_to_add = []
+            groups_to_add.append(rec.env.ref('base.group_user'))
+            if rec.jns_pegawai == 'superadmin':
+                groups_to_add.append(rec.env.ref('base.group_system'))
+                groups_to_add.append(rec.env.ref('hr.group_hr_manager'))
+                groups_to_add.append(rec.env.ref('hr_attendance.group_hr_attendance_officer'))
+                groups_to_add.append(rec.env.ref('pesantren_pendaftaran.group_pendaftaran_manager'))
+                groups_to_add.append(rec.env.ref('pesantren_base.group_sekolah_manager'))
+                groups_to_add.append(rec.env.ref('pesantren_kesantrian.group_kesantrian_manager'))
+                groups_to_add.append(rec.env.ref('pesantren_guru.group_guru_manager'))
+                groups_to_add.append(rec.env.ref('pesantren_guruquran.group_guru_quran_manager'))
+                groups_to_add.append(rec.env.ref('pesantren_musyrif.group_musyrif_manager'))
+                groups_to_add.append(rec.env.ref('pesantren_kesantrian.group_kesantrian_kesehatan'))
+                groups_to_add.append(rec.env.ref('pesantren_kesantrian.group_kesantrian_keamanan'))
+                # Tambahkan akses Akuntansi Administrator
+                groups_to_add.append(rec.env.ref('account.group_account_manager'))
+            elif rec.jns_pegawai == 'guruquran':
+                # groups_to_add.append(rec.env.ref('pesantren_guruquran.group_guru_quran_manager')) 
+                # groups_to_add.append(rec.env.ref('pesantren_guruquran.group_guru_quran_manager')) 
+                groups_to_add.append(rec.env.ref('pesantren_guruquran.group_guru_quran_staff')) 
+                # groups_to_add.append(rec.env.ref('pesantren_guruquran.group_guru_quran_user')) 
+                # groups_to_add.append(rec.env.ref('pesantren_guru.group_guru_manager')) 
+                groups_to_add.append(rec.env.ref('pesantren_guru.group_guru_user')) 
+                # groups_to_add.append(rec.env.ref('pesantren_guru.group_guru_staff')) 
+                
+                groups_to_add.append(rec.env.ref('pesantren_kesantrian.group_kesantrian_user')) 
+                groups_to_add.append(rec.env.ref('pesantren_base.group_sekolah_user')) 
+                # groups_to_add.append(rec.env.ref('hr.group_hr_manager')) # Menambahkan grup HR User # groups_to_add.append(rec.env.ref('hr_attendance.group_hr_attendance_officer')) # Menambahkan grup Absensi
+                groups_to_add.append(rec.env.ref('pesantren_base.group_hr_employee_readonly'))
+            elif rec.jns_pegawai == 'guru':
+                # groups_to_add.append(rec.env.ref('pesantren_guru.group_guru_manager'))
+                groups_to_add.append(rec.env.ref('pesantren_guru.group_guru_staff'))
+                # groups_to_add.append(rec.env.ref('pesantren_guru.group_guru_user'))
+                # groups_to_add.append(rec.env.ref('pesantren_guruquran.group_guru_quran_manager'))
+                groups_to_add.append(rec.env.ref('pesantren_guruquran.group_guru_quran_user'))
+
+                groups_to_add.append(rec.env.ref('pesantren_base.group_sekolah_user'))
+                groups_to_add.append(rec.env.ref('pesantren_kesantrian.group_kesantrian_user'))
+                # groups_to_add.append(rec.env.ref('hr.group_hr_manager'))
+                groups_to_add.append(rec.env.ref('pesantren_base.group_hr_employee_readonly'))
+                # groups_to_add.append(rec.env.ref('hr_attendance.group_hr_attendance_officer'))
+            # elif rec.jns_pegawai in ['musyrif', 'ustadz']:
+            elif rec.jns_pegawai == 'guru,guruquran':
+                groups_to_add.append(rec.env.ref('pesantren_guru.group_guru_staff'))
+                groups_to_add.append(rec.env.ref('pesantren_guruquran.group_guru_quran_staff'))
+
+                groups_to_add.append(rec.env.ref('pesantren_kesantrian.group_kesantrian_user')) 
+                groups_to_add.append(rec.env.ref('pesantren_base.group_sekolah_user')) 
+                # groups_to_add.append(rec.env.ref('hr.group_hr_manager')) # Menambahkan grup HR Use
+                groups_to_add.append(rec.env.ref('pesantren_base.group_hr_employee_readonly'))
+            elif rec.jns_pegawai == 'musyrif,guru':
+                groups_to_add.append(rec.env.ref('pesantren_musyrif.group_musyrif_staff'))
+                groups_to_add.append(rec.env.ref('pesantren_guru.group_guru_staff'))
+
+                groups_to_add.append(rec.env.ref('pesantren_kesantrian.group_kesantrian_user')) 
+                groups_to_add.append(rec.env.ref('pesantren_base.group_sekolah_user')) 
+                # groups_to_add.append(rec.env.ref('hr.group_hr_manager')) # Menambahkan grup HR User # groups_to_add.append(rec.env.ref('hr_attendance.group_hr_attendance_officer')) # Menambahkan grup Absensi
+                groups_to_add.append(rec.env.ref('pesantren_base.group_hr_employee_readonly'))
+            elif rec.jns_pegawai == 'musyrif,guruquran':
+                groups_to_add.append(rec.env.ref('pesantren_musyrif.group_musyrif_staff'))
+                groups_to_add.append(rec.env.ref('pesantren_guruquran.group_guru_quran_staff'))
+
+                groups_to_add.append(rec.env.ref('pesantren_kesantrian.group_kesantrian_user')) 
+                groups_to_add.append(rec.env.ref('pesantren_base.group_sekolah_user')) 
+                # groups_to_add.append(rec.env.ref('hr.group_hr_manager')) # Menambahkan grup HR User # groups_to_add.append(rec.env.ref('hr_attendance.group_hr_attendance_officer')) # Menambahkan grup Absensi
+                groups_to_add.append(rec.env.ref('pesantren_base.group_hr_employee_readonly'))
+            elif rec.jns_pegawai == 'musyrif,guru,guruquran':
+                groups_to_add.append(rec.env.ref('pesantren_musyrif.group_musyrif_staff'))
+                groups_to_add.append(rec.env.ref('pesantren_guru.group_guru_staff'))
+                groups_to_add.append(rec.env.ref('pesantren_guruquran.group_guru_quran_staff'))
+
+                groups_to_add.append(rec.env.ref('pesantren_kesantrian.group_kesantrian_user')) 
+                groups_to_add.append(rec.env.ref('pesantren_base.group_sekolah_user')) 
+                # groups_to_add.append(rec.env.ref('hr.group_hr_manager')) # Menambahkan grup HR User # groups_to_add.append(rec.env.ref('hr_attendance.group_hr_attendance_officer')) # Menambahkan grup Absensi
+                groups_to_add.append(rec.env.ref('pesantren_base.group_hr_employee_readonly'))
+            elif rec.jns_pegawai == 'musyrif':
+                groups_to_add.append(rec.env.ref('pesantren_musyrif.group_musyrif_staff'))
+
+                groups_to_add.append(rec.env.ref('pesantren_kesantrian.group_kesantrian_user'))
+                groups_to_add.append(rec.env.ref('pesantren_base.group_sekolah_user'))
+                # groups_to_add.append(rec.env.ref('hr.group_hr_manager'))
+                groups_to_add.append(rec.env.ref('pesantren_base.group_hr_employee_readonly'))
+                # groups_to_add.append(rec.env.ref('hr_attendance.group_hr_attendance_officer'))
+            elif rec.jns_pegawai == 'keamanan':
+                groups_to_add.append(rec.env.ref('pesantren_kesantrian.group_kesantrian_keamanan'))
+                groups_to_add.append(rec.env.ref('pesantren_kesantrian.group_kesantrian_user'))
+            else:
+                groups_to_add.append(rec.env.ref('pesantren_base.group_sekolah_user'))
+                groups_to_add.append(rec.env.ref('pesantren_kesantrian.group_kesantrian_user'))
+
+
+            if not groups_to_add:
+                raise UserError("Jenis pegawai tidak terdaftar untuk penambahan group.")
+            
+            # Menambahkan semua grup yang diperlukan ke user
+            for group in groups_to_add:
+                if group not in user.groups_id:
+                    user.groups_id = [(4, group.id)]
+
+            # Atur ulang password user dengan format name-nip
+            new_password = f"{rec.password}"  # Gunakan 4 digit pertama NIP
+            masked_password = new_password[:2] + '*' * (len(new_password) - 4) + new_password[-2:]
+
+            user.write({'password': new_password})
+
+            email_values = { 
+                        'subject': "Akun Diaktifkan", 
+                        'email_to': rec.work_email, 
+                        'body_html': f''' 
+                            <div style="background-color: #f0f8ff; padding: 20px; font-family: Arial, sans-serif;"> 
+                                <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);"> 
+                                    <!-- Header --> 
+                                    <div style="background-color: #0078d7; color: #ffffff; text-align: center; padding: 25px;"> 
+                                        <h1 style="margin: 0; font-size: 26px;">Aktivasi Akun Anda</h1> 
+                                    </div> 
+                                    <!-- Body --> 
+                                    <div style="padding: 20px; color: #333333;"> 
+                                        <p style="margin: 0 0 10px; font-size: 16px;">Assalamualaikum Wr. Wb,</p> 
+                                        <p style="margin: 0 0 20px; font-size: 16px;"> 
+                                            Selamat, akun Anda telah berhasil diaktifkan! Berikut adalah informasi akun Anda: 
+                                        </p> 
+                                        <div style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0;"> 
+                                            <table style="width: 100%; border-collapse: collapse;"> 
+                                                <tr> 
+                                                    <td style="padding: 10px; font-weight: bold; color: #555555;">Email :</td> 
+                                                    <td style="padding: 10px; color: #555555;">{rec.work_email}</td> 
+                                                </tr> 
+                                                <tr> 
+                                                    <td style="padding: 10px; font-weight: bold; color: #555555;">Kata Sandi :</td> 
+                                                    <td style="padding: 10px; color: #555555;">{masked_password}</td> 
+                                                </tr> 
+                                                <tr> 
+                                                    <td style="padding: 10px; font-weight: bold; color: #555555;">Jenis Akun :</td> 
+                                                    <td style="padding: 10px; color: #555555;">{rec.jns_pegawai}</td> 
+                                                </tr> 
+                                                <tr> 
+                                                    <td style="padding: 10px; font-weight: bold; color: #555555;">Tanggal Aktivasi :</td> 
+                                                    <td style="padding: 10px; color: #555555;">{fields.Datetime.now()}</td> 
+                                                </tr> 
+                                            </table> 
+                                        </div> 
+                                        <p style="text-align: center;"> 
+                                            <a href="https://aplikasi.dqi.ac.id/login" style="background-color: #0078d7; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block; font-size: 16px;"> 
+                                                Masuk Ke Akun Anda 
+                                            </a> 
+                                        </p> 
+                                        <p style="margin: 20px 0; font-size: 14px;"> 
+                                            Apabila Anda mengalami kendala, silakan hubungi tim teknis kami melalui nomor berikut: 
+                                        </p> 
+                                        <ul style="margin: 0; padding-left: 20px; color: #555555; font-size: 14px;"> 
+                                            <li>0822 5207 9785</li> 
+                                        </ul> 
+                                        <p style="margin: 20px 0; font-size: 14px;"> 
+                                            Terima kasih telah menggunakan layanan kami. Kami berharap akun ini dapat membantu Anda dalam menjalankan aktivitas di pesantren. 
+                                        </p> 
+                                    </div> 
+                                    <!-- Footer --> 
+                                    <div style="background-color: #f1f1f1; text-align: center; padding: 15px; border-top: 1px solid #dddddd;"> 
+                                        <p style="font-size: 12px; color: #888888; margin: 0;"> 
+                                            &copy; 2024 Pesantren Tahfizh Daarul Qur'an Istiqomah. All rights reserved. 
+                                        </p> 
+                                    </div> 
+                                </div> 
+                            </div> 
+                        ''' 
+                    }
+
+            mail = rec.env['mail.mail'].sudo().create(email_values)
+            mail.send()
+            
+        # Setelah semua selesai, munculkan notifikasi ringkasan
+        names = ', '.join(self.mapped('name'))
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': 'Aktivasi Akun Berhasil',
+                'message': f'{len(self)} akun berhasil diaktifkan: {names}',
+                'type': 'success',
+                'sticky': False,
+            }
         }
 
 class pendidikan_guru(models.Model):

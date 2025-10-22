@@ -68,7 +68,7 @@
                             <group>
                                 <field name="name" />
                                 <field name="email" string="Email"/>
-                                <field name="password" string="Password" password="True" />
+                                <field name="password" string="Password" widget="password_toggle"/>
                                 <field name="phone" string="No. Telepon"/>
                                 <field name="nik" />
                                 <field name="jns_partner" readonly="1" string="Kategori Pengguna" />
