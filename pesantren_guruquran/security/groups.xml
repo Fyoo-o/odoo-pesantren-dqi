@@ -284,15 +284,20 @@
 			<!-- ==========================
 				Rules: Absensi Halaqoh
 			========================== -->
+			<record id="group_guru_quran_user_rule_absensi_halaqoh" model="ir.rule">
+				<field name="name">User Rule Absensi Halaqoh</field>
+				<field name="model_id" ref="pesantren_kesantrian.model_cdn_absen_halaqoh"/>
+				<field name="domain_force">
+					[('ustadz_id.user_id', '=', user.id)]
+				</field>
+				<field name="groups" eval="[(4, ref('pesantren_guruquran.group_guru_quran_user'))]"/>
+			</record>
+
 			<record id="group_guru_quran_staff_rule_absen_halaqoh" model="ir.rule">
 				<field name="name">Staff Rule Absensi Halaqoh</field>
 				<field name="model_id" ref="pesantren_kesantrian.model_cdn_absen_halaqoh"/>
 				<field name="domain_force">[('ustadz_id.user_id', '=', user.id)]</field>
 				<field name="groups" eval="[(4, ref('pesantren_guruquran.group_guru_quran_staff'))]"/>
-				<field name="perm_create" eval="True"/>
-				<field name="perm_write" eval="True"/>
-				<field name="perm_read" eval="True"/>
-				<field name="perm_unlink" eval="True"/>
 			</record>
 
 			<record id="group_guru_quran_manager_rule_absen_halaqoh" model="ir.rule">
@@ -300,24 +305,25 @@
 				<field name="model_id" ref="pesantren_kesantrian.model_cdn_absen_halaqoh"/>
 				<field name="domain_force">[(1, '=', 1)]</field>
 				<field name="groups" eval="[(4, ref('pesantren_guruquran.group_guru_quran_manager'))]"/>
-				<field name="perm_create" eval="True"/>
-				<field name="perm_write" eval="True"/>
-				<field name="perm_read" eval="True"/>
-				<field name="perm_unlink" eval="True"/>
 			</record>
 
 			<!-- ==========================
 				Rules: Absensi Halaqoh Line
 			========================== -->
+			<record id="group_guru_quran_user_rule_absensi_halaqoh_line" model="ir.rule">
+				<field name="name">User Rule Absensi Halaqoh Line</field>
+				<field name="model_id" ref="pesantren_kesantrian.model_cdn_absen_halaqoh_line"/>
+				<field name="domain_force">
+					[('ustadz_id.user_id', '=', user.id)]
+				</field>
+				<field name="groups" eval="[(4, ref('pesantren_guruquran.group_guru_quran_user'))]"/>
+			</record>
+			
 			<record id="group_guru_quran_staff_rule_absen_halaqoh_line" model="ir.rule">
 				<field name="name">Staff Rule Absensi Halaqoh Line</field>
 				<field name="model_id" ref="pesantren_kesantrian.model_cdn_absen_halaqoh_line"/>
 				<field name="domain_force">[('ustadz_id.user_id', '=', user.id)]</field>
 				<field name="groups" eval="[(4, ref('pesantren_guruquran.group_guru_quran_staff'))]"/>
-				<field name="perm_create" eval="False"/>
-				<field name="perm_write" eval="False"/>
-				<field name="perm_read" eval="True"/>
-				<field name="perm_unlink" eval="False"/>
 			</record>
 
 			<record id="group_guru_quran_manager_rule_absen_halaqoh_line" model="ir.rule">
@@ -325,24 +331,25 @@
 				<field name="model_id" ref="pesantren_kesantrian.model_cdn_absen_halaqoh_line"/>
 				<field name="domain_force">[(1, '=', 1)]</field>
 				<field name="groups" eval="[(4, ref('pesantren_guruquran.group_guru_quran_manager'))]"/>
-				<field name="perm_create" eval="False"/>
-				<field name="perm_write" eval="False"/>
-				<field name="perm_read" eval="True"/>
-				<field name="perm_unlink" eval="False"/>
 			</record>
 
 			<!-- ==========================
 				Rules: Halaqoh (for dropdown access)
 			========================== -->
+			<record id="group_guru_quran_user_rule_halaqoh" model="ir.rule">
+				<field name="name">User Rule Halaqoh</field>
+				<field name="model_id" ref="pesantren_kesantrian.model_cdn_halaqoh"/>
+				<field name="domain_force">
+					[(1, '=', 1)]
+				</field>
+				<field name="groups" eval="[(4, ref('pesantren_guruquran.group_guru_quran_user'))]"/>
+			</record>
+
 			<record id="group_guru_quran_staff_rule_halaqoh" model="ir.rule">
 				<field name="name">Staff Rule Halaqoh</field>
 				<field name="model_id" ref="pesantren_kesantrian.model_cdn_halaqoh"/>
 				<field name="domain_force">[(1, '=', 1)]</field>
 				<field name="groups" eval="[(4, ref('pesantren_guruquran.group_guru_quran_staff'))]"/>
-				<field name="perm_create" eval="True"/>
-				<field name="perm_write" eval="True"/>
-				<field name="perm_read" eval="True"/>
-				<field name="perm_unlink" eval="True"/>
 			</record>
 
 			<record id="group_guru_quran_manager_rule_halaqoh" model="ir.rule">
@@ -350,13 +357,19 @@
 				<field name="model_id" ref="pesantren_kesantrian.model_cdn_halaqoh"/>
 				<field name="domain_force">[(1, '=', 1)]</field>
 				<field name="groups" eval="[(4, ref('pesantren_guruquran.group_guru_quran_manager'))]"/>
-				<field name="perm_create" eval="True"/>
-				<field name="perm_write" eval="True"/>
-				<field name="perm_read" eval="True"/>
-				<field name="perm_unlink" eval="True"/>
 			</record>
 
+
 		<!-- Rule untuk guru/staff -->
+		 <record id="rule_user_penilaian_quran" model="ir.rule">
+				<field name="name">User Rule Penilaian Quran</field>
+				<field name="model_id" ref="pesantren_kesantrian.model_cdn_penilaian_quran"/>
+				<field name="domain_force">
+					[('ustadz_id.user_id', '=', user.id)]
+				</field>
+				<field name="groups" eval="[(4, ref('pesantren_guruquran.group_guru_quran_user'))]"/>
+			</record>
+
 		<record id="rule_guru_penilaian_quran" model="ir.rule">
 			<field name="name">Staff Rule Penilaian Quran</field>
             <field name="model_id" ref="pesantren_kesantrian.model_cdn_penilaian_quran"/>

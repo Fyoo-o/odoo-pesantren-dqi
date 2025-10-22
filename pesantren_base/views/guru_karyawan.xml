@@ -34,7 +34,7 @@
                 <field name="department_id" position="before">
                     <field name="nip"/>
                     <field name="lembaga"/>
-                    <field name="password" readonly="0" password="True"/>
+                    <field name="password" readonly="0" password="True" widget="password_toggle"/>
 				</field>
                 <field name="coach_id" position="attributes">
                     <attribute name="invisible">1</attribute>
@@ -131,6 +131,16 @@
                 </p>
             </field>
         </record>
+
+        <record id="guru_karyawan_active_account_action" model="ir.actions.server">
+            <field name="name">Aktifkan Akun</field>
+            <field name="model_id" ref="model_hr_employee"/>
+            <field name="binding_model_id" ref="model_hr_employee"/>
+            <field name="binding_view_types">form,list</field>
+            <field name="state">code</field>
+            <field name="code">action = records.activate_account_action()</field>
+        </record>
+
         <menuitem id="menu_cdn_guru" name="Guru" parent="sekolah_top_menu" action="hr_employee_guru_open_action" sequence="20"/>
     </data>
 </odoo>

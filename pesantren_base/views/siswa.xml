@@ -216,12 +216,13 @@
                                         </group>
 
                                         <group>
-                                            <div class="o_form_field o_row">
+                                            <field name="password" string="Kata Sandi" widget="password_toggle"/>
+                                            <!-- <div class="o_form_field o_row">
                                                 <label for="password" string="Kata Sandi"/>
                                                 <field name="password" password="True" class="o_col"/>
                                                 <button name="action_show_password" type="object" string="👁️" class="btn btn-secondary o_col"
                                                         invisible="not show_password_button"/>
-                                            </div>    
+                                            </div>     -->
                                         </group>
 
                                       
