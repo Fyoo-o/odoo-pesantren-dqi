@@ -23,6 +23,22 @@
                                     </div>
                                 </div>
                             </setting> -->
+                            <group string="Pembukaan Pendaftaran &amp; Kantor Layanan" name="group_layanan_pendaftaran">
+                                <field name="tgl_buka_layanan" widget="date"/>
+                                <field name="tgl_tutup_layanan" widget="date"/>
+                                <field name="tempat_layanan" widget="text"/>
+                            </group>
+
+                            <group string="Waktu Pelayanan" name="group_waktu_pelayanan">
+                                <group string="Waktu Pagi">
+                                    <field name="waktu_pagi_mulai" placeholder="08.00"/>
+                                    <field name="waktu_pagi_selesai" placeholder="12.00"/>
+                                </group>
+                                <group string="Waktu Siang">
+                                    <field name="waktu_siang_mulai" placeholder="13.00"/>
+                                    <field name="waktu_siang_selesai" placeholder="16.00"/>
+                                </group>
+                            </group>
 
                             <group string="Tanggal Pendaftaran" name="group_tanggal_pendaftaran">
                                 <group string="Tanggal Pendaftaran Gelombang 1">
