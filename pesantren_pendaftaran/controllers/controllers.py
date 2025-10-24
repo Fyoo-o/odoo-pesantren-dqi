@@ -351,7 +351,7 @@ class PesantrenBeranda(http.Controller):
                     <h1 class="fw-bold">Pendaftaran Santri Baru</h1>
                     <h3 class="fw-bold pb-3">Pondok Pesantren Daarul Qur’an Istiqomah</h3>
                     <h5 class="fw-bold">Daarul Qur’an Istiqomah Boarding School for Education and Science</h5>
-                    <h5 class="fw-bold">Tahun Ajaran 2025 - 2025</h5>
+                    <h5 class="fw-bold">Tahun Ajaran 2026 - 2027</h5>
                     <a href="/psb" class="btn btn-light rounded-5 text-primary mt-2">Daftar Sekarang</a>
                 </div>
                 </div>
@@ -478,19 +478,7 @@ class PesantrenBeranda(http.Controller):
                 <h1 class="fw-bold">Alur <span class="text-green">Penyerahan Santri</span></h1>
                 <div class="row justify-content-center">
                 <!-- Card 1 -->
-                <div class="col-md-4 text-center my-2">
-                    <div class="card p-4 shadow border-0 h-100">
-                    <div class="circle-icon mb-3">
-                        <i class="bi bi-plus-circle-fill h1 text-green"></i>
-                    </div>
-                    <h2 class="step-number">1</h2>
-                    <h5 class="font-weight-bold mt-3">Checkup / Periksa Kesehatan</h5>
-                    <p>Pemeriksaan kesehatan dari calon peserta didik oleh petugas kesehatan.</p>
-                    <div class="bottom-icon mt-4">
-                        <i class="bi bi-shirt text-info"></i>
-                    </div>
-                    </div>
-                </div>
+        
                 <!-- Card 2 -->
                 <div class="col-md-4 text-center my-2">
                     <div class="card p-4 shadow border-0 h-100">
@@ -580,11 +568,10 @@ class PesantrenBeranda(http.Controller):
                         data-bs-parent="#accordionExample">
                         <div class="accordion-body">
                             <p class="m-0">Tanggal:</p>
-                            <p class="fw-bold">1 Maret s.d. 8 Juli 2025</p>
-                            <p class="m-0">Layanan Putra:</p>
-                            <p class="fw-bold">Kantor Sekretariat Putra</p>
-                            <p class="m-0">Layanan Putri:</p>
-                            <p class="fw-bold">Kantor Sekretariat Putri</p>
+                            <p class="fw-bold">1 Desamber 2025 s.d. 31 Januari 2026</p>
+                            <p class="m-0">Tempat Layanan:</p>
+                            <p class="fw-bold">Kantor Yayasan Daarul Qur'an Istiqomah</p>
+                        
                         </div>
                         </div>
                     </div>
@@ -603,7 +590,10 @@ class PesantrenBeranda(http.Controller):
                             <p class="fw-bold">Gelombang 1{tgl_mulai_pendaftaran_formatted} s.d {tgl_akhir_pendaftaran_formatted}</p>
                             <p class="fw-bold">Gelombang 2{tgl_mulai_pendaftaran_gel_2_formatted} s.d {tgl_akhir_pendaftaran_gel_2_formatted}</p>
                             <p class="m-0">Tempat Penerimaan:</p>
-                            <p class="fw-bold">Pondok Pesantren Daarul Qur'an Istiqomah, {alamat_lengkap} </p>
+                            <p class="fw-bold">Pondok Pesantren Daarul Qur'an Istiqomah</p>
+                            <p>Kantor Yayasan Daarul Qur'an Istiqomah<br>
+                            Jl. H. Boedjasin Simpang 3 Al Manar</p>
+
                         </div>
                         </div>
                     </div>
@@ -619,9 +609,9 @@ class PesantrenBeranda(http.Controller):
                         <div class="accordion-body">
                             <!-- Konten untuk Waktu Pelayanan -->
                             <p class="m-0">Pagi:</p>
-                            <p class="fw-bold">08.00 ~ 12.00 WIB</p>
+                            <p class="fw-bold">08.15 ~ 12.30 WIB</p>
                             <p class="m-0">Siang:</p>
-                            <p class="fw-bold">13.00 ~ 16.00 WIB</p>
+                            <p class="fw-bold">13.30 ~ 15.50 WIB</p>
                         </div>
                         </div>
                     </div>
@@ -1221,8 +1211,14 @@ class PesantrenPendaftaran(http.Controller):
                         color: #6c757d;
                         line-height: 1.8;
                     }}
+                    
+                    .info-numbered-list {{
+                        color: #6c757d;
+                        line-height: 1.8;
+                    }}
 
-                    .info-list li {{
+                    .info-list li,
+                    .info-numbered-list li {{
                         margin-bottom: 8px;
                         position: relative;
                         padding-left: 10px;
@@ -1242,6 +1238,15 @@ class PesantrenPendaftaran(http.Controller):
                         -webkit-text-fill-color: transparent;
                         background-clip: text;
                         font-weight: 600;
+                    }}
+                    
+                    .text-underlined-hover {{
+                        transition: 0.3s all ease-in-out;
+                        text-decoration: none;
+                    }}
+                    
+                    .text-underlined-hover:hover {{
+                        text-decoration: underline;
                     }}
 
                     .note-section {{
@@ -1528,11 +1533,11 @@ class PesantrenPendaftaran(http.Controller):
                                     <div class="col-md-8">
                                         <div class="section-title">PEMBUKAAN PROGRAM PENDIDIKAN (Putra dan Putri)</div>
                                         <ul class="info-list">                                   
-                                            <li>KB (2 - 3 tahun)</li>
-                                            <li>TK (4 - 5 tahun)</li>
-                                            <li>SD Tahfizh Bilingual</li>
-                                            <li>SMP Tahfizh bilingual</li>
-                                            <li>MA Tahfizh bilingual</li>
+                                            <li class="list-unstyled">KB (2 - 3 tahun)</li>
+                                            <li class="list-unstyled">TK (4 - 5 tahun)</li>
+                                            <li class="list-unstyled">SD Tahfizh Bilingual</li>
+                                            <li class="list-unstyled">SMP Tahfizh bilingual</li>
+                                            <li class="list-unstyled">MA Tahfizh bilingual</li>
                                         </ul>
                                     </div>
                                     <div class="col-md-4 text-center">
@@ -1561,8 +1566,9 @@ class PesantrenPendaftaran(http.Controller):
                                     <div class="col-md-8">
                                         <div class="section-title">MATERI UJIAN SELEKSI</div>
                                         <ul class="info-list">
-                                            <li>Membaca Al Qur'an dan Tulis Arab</li>
-                                            <li>Tes wawancara anak dan wawancara orangtua</li>
+                                            <li class="list-unstyled">Membaca Al Qur'an dan Tulis Arab</li>
+                                            <li class="list-unstyled">Tes wawancara anak dan wawancara orangtua</li>
+                                            <li class="list-unstyled">Tes Potensi Akademik Anak</li>
                                         </ul>
                                     </div>
                                     <div class="col-md-4 text-center">
@@ -1656,23 +1662,23 @@ class PesantrenPendaftaran(http.Controller):
                         <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
                             <div class="info-section">
                                 <div class="section-title">SYARAT UTAMA PENDAFTARAN</div>
-                                <ol class="info-list" style="padding-left: 20px;">
-                                    <li>Mengisi formulir online secara lengkap dan benar melalui laman <span class="highlight-text">https://dqi.ac.id/psb</span></li>
-                                    <li>Membayar biaya pendaftaran untuk program <span class="highlight-text">Paud baby Qu KB A & B (usia 2-3th)</span> sebesar <strong>Rp.350.000</strong></li>
+                                <ol class="info-numbered-list" style="padding-left: 30px;">
+                                    <li>Mengisi formulir online secara lengkap dan benar melalui laman <span class="highlight-text"><a class="hightlight-text text-underlined-hover" href="https://aplikasi.dqi.ac.id/psb" target="_blank">https://aplikasi.dqi.ac.id/psb</a></span></li>
+                                    <li>Membayar biaya pendaftaran untuk program <span class="highlight-text">Paud baby Qu KB A & B (usia 2-3th)</span> sebesar <strong>Rp.300.000</strong></li>
                                     <li>Membayar biaya pendaftaran untuk program <span class="highlight-text">TK</span> sebesar <strong>Rp.300.000</strong></li>
                                     <li>Membayar biaya pendaftaran untuk program <span class="highlight-text">SD Tahfizh bilingual</span> sebesar <strong>Rp.300.000</strong></li>
                                     <li>Membayar biaya pendaftaran untuk program <span class="highlight-text">SMP Tahfizh bilingual</span> sebesar <strong>Rp.300.000</strong></li>
                                     <li>Membayar biaya pendaftaran untuk program <span class="highlight-text">MA Tahfizh bilingual</span> sebesar <strong>Rp.300.000</strong></li>
                                     <li>
                                         <strong>Syarat Pendaftaran:</strong>
-                                        <ul class="info-list mt-2" style="margin-left: 20px;">
-                                            <li>Fotocopy Akta Kelahiran 2 lembar</li>
-                                            <li>Fotocopy KK 1 lembar</li>
-                                            <li>Fotocopy KTP Orangtua (Masing-masing 1 lembar)</li>
-                                            <li>Fotocopy Raport Semester akhir (menyusul)</li>
-                                            <li>Pas Foto berwarna ukuran 3x4 4 lembar</li>
-                                            <li>Pas Foto Orangtua masing-masing 1 lembar (Khusus Pendaftar KB dan TK)</li>
-                                            <li>Berkas dimasukkan dalam Map warna hijau dan diberi nama serta lembaga pendidikan</li>
+                                        <ul class="info-list mt-2">
+                                            <li class="list-unstyled">Fotocopy Akta Kelahiran 2 lembar</li>
+                                            <li class="list-unstyled">Fotocopy KK 1 lembar</li>
+                                            <li class="list-unstyled">Fotocopy KTP Orangtua (Masing-masing 1 lembar)</li>
+                                            <li class="list-unstyled">Fotocopy Raport Semester akhir (menyusul)</li>
+                                            <li class="list-unstyled">Pas Foto berwarna ukuran 3x4 4 lembar</li>
+                                            <li class="list-unstyled">Pas Foto Orangtua masing-masing 1 lembar (Khusus Pendaftar KB dan TK)</li>
+                                            <li class="list-unstyled">Berkas dimasukkan dalam Map warna hijau dan diberi nama serta lembaga pendidikan</li>
                                         </ul>
                                     </li>
                                 </ol>
@@ -2855,7 +2861,7 @@ class PesantrenPsbBantuan(http.Controller):
                                 <a href="#" class="text-decoration-none" style="color: purple;">0822-5207-9785</a><br>
                             </div>
                             <h5>Media Sosial Kami</h5>
-                            <!-- <span class="text-uppercase" style="color: purple;">Instagram : @daqubanat_</span><br>
+                            <!-- <span class="text-uppercase" style="color: purple;">Instagram : @dqimedia</span><br>
                             <span class="text-uppercase" style="color: purple;">Facebook  : @Daarul Quran Istiqomah</span><br>
                             <span class="text-uppercase" style="color: purple;">Youtube   : @dqimedia</span><br>
                             -->

@@ -325,6 +325,37 @@ class PesantrenBeranda(http.Controller):
                     color: var(--primary-color);
                     margin: 10px 0;
                 }}
+                
+                .btn-1 {{
+                    background-color: #fff;
+                    padding: 12px 30px;
+                    border: none;
+                    border-radius: 30px;
+                    color: #00b09b;
+                    font-size: 16px;
+                    text-transform: capitalize;
+                    transition: all .5s ease;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                    font-weight: 500;
+                }}
+                
+                .btn-1:hover {{
+                    color: #fff;
+                    background-color: #f5ae10;
+                }}
+                
+                .home-btn {{
+                    margin-top: 40px;
+                }}
+                
+                .social-media {{
+                    font-size: 20px;
+                    transition: all 0.3s ease-in-out;
+                }}
+                
+                .social-media:hover {{
+                    transform: translateX(6px);
+                }}
 
                 @media(max-width:768px) {{
                     h1 {{
@@ -363,6 +394,10 @@ class PesantrenBeranda(http.Controller):
                         width: 200px;
                         margin-bottom: 6px;
                     }}
+                    
+                    .btn-1 {{
+                        padding: 8px 20px;
+                    }}
                 }}
 
                 /* Styling umum */
@@ -400,6 +435,9 @@ class PesantrenBeranda(http.Controller):
                     .card-label {{
                         font-size: 1rem; /* Lebih kecil untuk label tablet */
                     }}
+                    .btn-1 {{
+                        padding: 8px 20px;
+                    }}
                 }}
 
                 /* Responsif untuk layar kecil */
@@ -411,6 +449,9 @@ class PesantrenBeranda(http.Controller):
                     .card-label {{
                         font-size: 0.875rem; /* Ukuran kecil untuk label */
                     }}
+                    .btn-1 {{
+                        padding: 8px 20px;
+                    }}
                 }}
 
                 /* Responsif untuk layar sangat kecil */
@@ -420,6 +461,9 @@ class PesantrenBeranda(http.Controller):
                     }}
                     .card-label {{
                         font-size: 0.75rem; /* Ukuran kecil untuk label */
+                    }}
+                    .btn-1 {{
+                        padding: 8px 20px;
                     }}
                 }}
             </style>
@@ -457,10 +501,12 @@ class PesantrenBeranda(http.Controller):
                         </div>
                         <div class="ms-md-3 m-0 text-center text-md-start">
                             <h1 class="fw-bold">Pendaftaran Santri Baru</h1>
-                            <h3 class="fw-bold pb-3">Pondok Pesantren Daarul Qur'an Istiqomah</h3>
-                            <h5 class="fw-bold">Daarul Qur'an Istiqomah Boarding School for Education and Science</h5>
+                            <h3 class="fw-500 pb-3">Pondok Pesantren Daarul Qur'an Istiqomah</h3>
+                            <h5>Daarul Qur'an Istiqomah Boarding School for Education and Science</h5>
                             <h5 class="fw-bold">Tahun Ajaran 2025 - 2026</h5>
-                            <a href="/psb" class="btn btn-light rounded-5 text-primary mt-2 fw-bold">Daftar Sekarang</a>
+                            <div class="home-btn">
+                                <a href="/psb" class="btn btn-1">Daftar Sekarang</a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -472,34 +518,34 @@ class PesantrenBeranda(http.Controller):
                 <div class="container">
                     <div class="stepper d-md-flex d-block">
                         <div class="step">
-                            <div class="step-circle">1</div>
+                            <div class="step-circle d-flex align-items-center">1</div>
                             <div class="step-line d-md-block d-none"></div>
                             <p class="mt-3 fw-bold">Pembuatan Akun</p>
                             <p class="text-muted">Mengisi identitas calon peserta didik sekaligus pembuatan akun untuk mendapatkan Nomor
                                 Registrasi.</p>
                         </div>
                         <div class="step">
-                            <div class="step-circle">2</div>
+                            <div class="step-circle d-flex align-items-center">2</div>
                             <div class="step-line d-md-block d-none"></div>
                             <p class="mt-3 fw-bold">Login & Melengkapi Data</p>
                             <p class="text-muted">Melengkapi data peserta didik, data orang tua / wali atau mahram khususnya santri putri.
                             </p>
                         </div>
                         <div class="step">
-                            <div class="step-circle">3</div>
+                            <div class="step-circle d-flex align-items-center">3</div>
                             <div class="step-line d-md-block d-none"></div>
                             <p class="mt-3 fw-bold">Mengunggah Berkas</p>
                             <p class="text-muted">Mengunggah berkas persyaratan dan berkas pendukung lainnya yang berupa gambar / foto.
                             </p>
                         </div>
                         <div class="step">
-                            <div class="step-circle">4</div>
+                            <div class="step-circle d-flex align-items-center">4</div>
                             <div class="step-line d-md-block d-none"></div>
                             <p class="mt-3 fw-bold">Pembayaran</p>
                             <p class="text-muted">Melakukan pembayaran biaya pendaftaran sesuai pendidikan yang telah dipilih.</p>
                         </div>
                         <div class="step">
-                            <div class="step-circle">5</div>
+                            <div class="step-circle d-flex align-items-center">5</div>
                             <div class="step-line d-md-block d-none"></div>
                             <p class="mt-3 fw-bold">Cetak Pendaftaran</p>
                             <p class="text-muted">Cetak atau simpan Nomor Registrasi sebagai bukti pendaftaran untuk ditunjukkan ke
@@ -549,32 +595,19 @@ class PesantrenBeranda(http.Controller):
                 </div>
             </div>
             <!-- Syarat Pendaftaran End -->
-
+            
             <!-- Alur Penyerahan Santri -->
             <div class="container mt-5">
                 <h1 class="fw-bold text-center mb-4">Alur <span class="text-green">Penyerahan Santri</span></h1>
                 <div class="row justify-content-center">
-                    <!-- Card 1 -->
-                    <div class="col-md-4 text-center my-2">
-                        <div class="card p-4 shadow border-0 h-100">
-                            <div class="circle-icon mb-3">
-                                <i class="bi bi-plus-circle-fill h1 text-green"></i>
-                            </div>
-                            <h2 class="step-number">1</h2>
-                            <h5 class="font-weight-bold mt-3">Checkup / Periksa Kesehatan</h5>
-                            <p>Pemeriksaan kesehatan dari calon peserta didik oleh petugas klinik Az-Zainiyah.</p>
-                            <div class="bottom-icon mt-4">
-                                <i class="bi bi-shirt text-info h3"></i>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Baris 1: 3 Card -->
                     <!-- Card 2 -->
                     <div class="col-md-4 text-center my-2">
                         <div class="card p-4 shadow border-0 h-100">
                             <div class="circle-icon mb-3">
                                 <i class="bi bi-file-earmark-text-fill h1 text-green"></i>
                             </div>
-                            <h2 class="step-number">2</h2>
+                            <h2 class="step-number">1</h2>
                             <h5 class="font-weight-bold mt-3">Konfirmasi Nomor Registrasi</h5>
                             <p>Menyerahkan Nomor Registrasi dan bukti pendaftaran online kepada petugas PSB.</p>
                             <div class="bottom-icon mt-4">
@@ -588,7 +621,7 @@ class PesantrenBeranda(http.Controller):
                             <div class="circle-icon mb-3">
                                 <i class="bi bi-person-check-fill h1 text-green"></i>
                             </div>
-                            <h2 class="step-number">3</h2>
+                            <h2 class="step-number">2</h2>
                             <h5 class="font-weight-bold mt-3">Ikrar Santri</h5>
                             <p>Melakukan Ikrar Santri dan kesediaan mengikuti aturan yang ditetapkan Pondok.</p>
                         </div>
@@ -599,7 +632,7 @@ class PesantrenBeranda(http.Controller):
                             <div class="circle-icon mb-3">
                                 <i class="bi bi-box-seam-fill h1 text-green"></i>
                             </div>
-                            <h2 class="step-number">4</h2>
+                            <h2 class="step-number">3</h2>
                             <h5 class="font-weight-bold mt-3">Pengambilan Seragam</h5>
                             <p>Pengambilan seragam sesuai dengan ukuran yang telah dipilih oleh pendaftar.</p>
                             <div class="bottom-icon mt-4">
@@ -607,13 +640,17 @@ class PesantrenBeranda(http.Controller):
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div class="row justify-content-center mt-3">
+                    <!-- Baris 2: 2 Card -->
                     <!-- Card 5 -->
-                    <div class="col-md-4 text-center my-2">
+                    <div class="col-md-6 text-center my-2">
                         <div class="card p-4 shadow border-0 h-100">
                             <div class="circle-icon mb-3">
                                 <i class="bi bi-people h1 text-green"></i>
                             </div>
-                            <h2 class="step-number">5</h2>
+                            <h2 class="step-number">4</h2>
                             <h5 class="font-weight-bold mt-3">Sowan Pengasuh</h5>
                             <p>Penyerahan calon peserta didik oleh orangtua / wali kepada pengasuh</p>
                             <div class="bottom-icon mt-4">
@@ -622,19 +659,20 @@ class PesantrenBeranda(http.Controller):
                         </div>
                     </div>
                     <!-- Card 6 -->
-                    <div class="col-md-4 text-center my-2">
+                    <div class="col-md-6 text-center my-2">
                         <div class="card p-4 shadow border-0 h-100">
                             <div class="circle-icon mb-3">
                                 <i class="bi bi-buildings h1 text-green"></i>
                             </div>
-                            <h2 class="step-number">6</h2>
+                            <h2 class="step-number">5</h2>
                             <h5 class="font-weight-bold mt-3">Asrama Santri</h5>
                             <p>Santri baru menempati asrama yang telah ditetepkan oleh pengurus.</p>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- Alur Penyerahan Santri end-->
+            <!-- Alur Penyerahan Santri end -->
+
 
             <!-- Informasi Pelayanan Pendaftaran -->
             <div class="container my-5">
@@ -679,7 +717,7 @@ class PesantrenBeranda(http.Controller):
                                         <p class="fw-bold">{tgl_mulai_pendaftaran_formatted} s.d {tgl_akhir_pendaftaran_formatted}</p>
                                         <p class="fw-bold">{tgl_mulai_pendaftaran_gel_2_formatted} s.d {tgl_akhir_pendaftaran_gel_2_formatted}</p>
                                         <p class="m-0">Tempat Penerimaan:</p>
-                                        <p class="fw-bold">Pondok Pesantren Daarul Qur'an Istiqomah, {alamat_lengkap}</p>
+                                        <p class="fw-bold">Pondok Pesantren Daarul Qur'an Istiqomah, Kantor Yayasan Daarul Qur'an Istiqomah, Jl. H. Boedjasin Simpang 3 Al Manar.</p>
                                     </div>
                                 </div>
                             </div>
@@ -721,9 +759,9 @@ class PesantrenBeranda(http.Controller):
                         <div class="col-md-4">
                             <h5>Social</h5>
                             <ul class="list-unstyled">
-                                <li><a href="https://www.facebook.com/daquistiqomah?mibextid=ZbWKwL" class="text-white"><i class="bi bi-facebook"></i> Facebook</a></li>
-                                <li><a href="https://www.instagram.com/dqimedia?igsh=NTVwdWlwd3o5MTF1" class="text-white"><i class="bi bi-instagram"></i> Instagram</a></li>
-                                <li><a href="https://youtube.com/@dqimedia?si=6_A8Vr3nysaegI7B" class="text-white"><i class="bi bi-youtube"></i> Youtube</a></li>
+                                <li class="social-media"><a href="https://www.facebook.com/daquistiqomah?mibextid=ZbWKwL" class="text-white text-decoration-none" target="_blank"><i class="bi bi-facebook"></i> Facebook</a></li>
+                                <li class="social-media"><a href="https://www.instagram.com/dqimedia?igsh=NTVwdWlwd3o5MTF1" class="text-white text-decoration-none" target="_blank"><i class="bi bi-instagram"></i> Instagram</a></li>
+                                <li class="social-media"><a href="https://youtube.com/@dqimedia?si=6_A8Vr3nysaegI7B" class="text-white text-decoration-none" target="_blank"><i class="bi bi-youtube"></i> Youtube</a></li>
                             </ul>
                         </div>
                         <div class="col-md-4">
@@ -735,7 +773,7 @@ class PesantrenBeranda(http.Controller):
                     </div>
                     <div class="text-center text-white mt-4">
                         <hr class="border-white">
-                        <p>©Copyright 2024 - Daarul Qur'an Istiqomah</p>
+                        <p>©Copyright 2025 - Daarul Qur'an Istiqomah</p>
                     </div>
                 </div>
             </footer>
