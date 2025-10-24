@@ -56,6 +56,29 @@ class PesantrenBeranda(http.Controller):
         tgl_akhir_seleksi_gel_2 = config_obj.get_param('pesantren_pendaftaran.tgl_akhir_seleksi_gel_2')
         tgl_pengumuman_hasil_seleksi_gel_2 = config_obj.get_param('pesantren_pendaftaran.tgl_pengumuman_hasil_seleksi_gel_2')
 
+        tgl_buka_layanan = config_obj.get_param('pesantren_pendaftaran.tgl_buka_layanan')
+        tgl_tutup_layanan = config_obj.get_param('pesantren_pendaftaran.tgl_tutup_layanan')
+        tempat_layanan = config_obj.get_param('pesantren_pendaftaran.tempat_layanan', 
+            default='Kantor Yayasan Daarul Qur\'an Istiqomah, Jl H Boedjasin Simpang 3 Al Manar')
+        waktu_pagi_mulai = config_obj.get_param('pesantren_pendaftaran.waktu_pagi_mulai', default='08.00')
+        waktu_pagi_selesai = config_obj.get_param('pesantren_pendaftaran.waktu_pagi_selesai', default='12.00')
+        waktu_siang_mulai = config_obj.get_param('pesantren_pendaftaran.waktu_siang_mulai', default='13.00')
+        waktu_siang_selesai = config_obj.get_param('pesantren_pendaftaran.waktu_siang_selesai', default='16.00')
+        tempat_verifikasi = config_obj.get_param('pesantren_pendaftaran.tempat_verifikasi',
+            default='Pondok Pesantren Daarul Qur\'an Istiqomah, Kantor Yayasan Daarul Qur\'an Istiqomah, Jl. H. Boedjasin Simpang 3 Al Manar.')
+
+        # Set nilai default untuk tanggal layanan
+        if not tgl_buka_layanan:
+            tgl_buka_layanan_dt = datetime.datetime.now()
+            tgl_buka_layanan = tgl_buka_layanan_dt.strftime('%Y-%m-%d')
+        else:
+            tgl_buka_layanan_dt = datetime.datetime.strptime(tgl_buka_layanan, '%Y-%m-%d')
+
+        if not tgl_tutup_layanan:
+            tgl_tutup_layanan_dt = datetime.datetime.now() + datetime.timedelta(days=60)
+            tgl_tutup_layanan = tgl_tutup_layanan_dt.strftime('%Y-%m-%d')
+        else:
+            tgl_tutup_layanan_dt = datetime.datetime.strptime(tgl_tutup_layanan, '%Y-%m-%d')
         # Set nilai default dinamis jika parameter kosong
         if not tgl_mulai_pendaftaran:
             tgl_mulai_pendaftaran_dt = datetime.datetime.now() + datetime.timedelta(days=1)
@@ -136,6 +159,11 @@ class PesantrenBeranda(http.Controller):
         tgl_mulai_seleksi_gel_2_formatted = format_tanggal_manual(tgl_mulai_seleksi_gel_2_dt)
         tgl_akhir_seleksi_gel_2_formatted = format_tanggal_manual(tgl_akhir_seleksi_gel_2_dt)
         tgl_pengumuman_hasil_seleksi_gel_2_formatted = format_tanggal_manual(tgl_pengumuman_hasil_seleksi_gel_2_dt)
+        
+        # Format tanggal layanan
+        tgl_buka_layanan_formatted = format_tanggal_manual(tgl_buka_layanan_dt)
+        tgl_tutup_layanan_formatted = format_tanggal_manual(tgl_tutup_layanan_dt)
+
 
         html_content = f"""
         <!doctype html>
@@ -694,11 +722,9 @@ class PesantrenBeranda(http.Controller):
                                     data-bs-parent="#accordionExample">
                                     <div class="accordion-body">
                                         <p class="m-0">Tanggal:</p>
-                                        <p class="fw-bold">1 Maret s.d. 8 Juli 2024</p>
-                                        <p class="m-0">Layanan Putra:</p>
-                                        <p class="fw-bold">Kantor Sekretariat Putra</p>
-                                        <p class="m-0">Layanan Putri:</p>
-                                        <p class="fw-bold">Kantor Sekretariat Putri</p>
+                                        <p class="fw-bold">{tgl_buka_layanan_formatted} s.d. {tgl_tutup_layanan_formatted}</p>
+                                        <p class="m-0">Tempat Layanan:</p>
+                                        <p class="fw-bold">{tempat_layanan}</p>
                                     </div>
                                 </div>
                             </div>
@@ -733,9 +759,9 @@ class PesantrenBeranda(http.Controller):
                                     <div class="accordion-body">
                                         <!-- Konten untuk Waktu Pelayanan -->
                                         <p class="m-0">Pagi:</p>
-                                        <p class="fw-bold">08.00 ~ 12.00 WIB</p>
+                                        <p class="fw-bold">{waktu_pagi_mulai} ~ {waktu_pagi_selesai} WIB</p>
                                         <p class="m-0">Siang:</p>
-                                        <p class="fw-bold">13.00 ~ 16.00 WIB</p>
+                                        <p class="fw-bold">{waktu_siang_mulai} ~ {waktu_siang_selesai} WIB</p>
                                     </div>
                                 </div>
                             </div>

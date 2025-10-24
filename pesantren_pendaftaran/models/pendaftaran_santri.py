@@ -328,6 +328,9 @@ class DataPendaftaran(models.Model):
                     pendaftaran_kadaluarsa = self.search([('state', '=', 'draft')])
                     pendaftaran_kadaluarsa.unlink()
 
+    def action_ubah_draft(self):
+        self.state = 'draft'
+
     def action_terdaftar(self):
         self.state = 'terdaftar'
 
@@ -1020,6 +1023,50 @@ class ResConfigSettings(models.TransientModel):
         default=False,
         help="Tampilkan halaman pengumuman",
     )
+    
+    # Pembukaan Pendaftaran & Kantor Layanan
+    tgl_buka_layanan = fields.Datetime(
+        string="Tanggal Pembukaan Layanan",
+        config_parameter='pesantren_pendaftaran.tgl_buka_layanan',
+        help="Tanggal pembukaan layanan pendaftaran"
+    )
+    tgl_tutup_layanan = fields.Datetime(
+        string="Tanggal Penutupan Layanan",
+        config_parameter='pesantren_pendaftaran.tgl_tutup_layanan',
+        help="Tanggal penutupan layanan pendaftaran"
+    )
+    tempat_layanan = fields.Char(
+        string="Tempat Layanan",
+        config_parameter='pesantren_pendaftaran.tempat_layanan',
+        default='Kantor Yayasan Daarul Qur\'an Istiqomah, Jl H Boedjasin Simpang 3 Al Manar',
+        help="Alamat tempat layanan pendaftaran"
+    )
+    
+    # Waktu Pelayanan
+    waktu_pagi_mulai = fields.Char(
+        string="Waktu Pelayanan Pagi (Mulai)",
+        config_parameter='pesantren_pendaftaran.waktu_pagi_mulai',
+        default='08.00',
+        help="Jam mulai pelayanan pagi (format: HH.MM)"
+    )
+    waktu_pagi_selesai = fields.Char(
+        string="Waktu Pelayanan Pagi (Selesai)",
+        config_parameter='pesantren_pendaftaran.waktu_pagi_selesai',
+        default='12.00',
+        help="Jam selesai pelayanan pagi (format: HH.MM)"
+    )
+    waktu_siang_mulai = fields.Char(
+        string="Waktu Pelayanan Siang (Mulai)",
+        config_parameter='pesantren_pendaftaran.waktu_siang_mulai',
+        default='13.00',
+        help="Jam mulai pelayanan siang (format: HH.MM)"
+    )
+    waktu_siang_selesai = fields.Char(
+        string="Waktu Pelayanan Siang (Selesai)",
+        config_parameter='pesantren_pendaftaran.waktu_siang_selesai',
+        default='16.00',
+        help="Jam selesai pelayanan siang (format: HH.MM)"
+    )
 
     bank        = fields.Selection(selection=[('451','BSI'),('002','BRI'),('009','BNI'),('014','BCA'),('008','MANDIRI'),('022','CIMB NIAGA'),], string='Bank Yang Digunakan', config_parameter='pesantren_pendaftaran.bank', help='Bank Yang Digunakan', default='451')
     no_rekening = fields.Char(
@@ -1076,6 +1123,35 @@ class ResConfigSettings(models.TransientModel):
             'pesantren_pendaftaran.no_rekening',
             self.no_rekening
         )
+        
+        self.env['ir.config_parameter'].set_param(
+            'pesantren_pendaftaran.tgl_buka_layanan',
+            self.tgl_buka_layanan.strftime('%Y-%m-%d') if self.tgl_buka_layanan else False
+        )
+        self.env['ir.config_parameter'].set_param(
+            'pesantren_pendaftaran.tgl_tutup_layanan',
+            self.tgl_tutup_layanan.strftime('%Y-%m-%d') if self.tgl_tutup_layanan else False
+        )
+        self.env['ir.config_parameter'].set_param(
+            'pesantren_pendaftaran.tempat_layanan',
+            self.tempat_layanan
+        )
+        self.env['ir.config_parameter'].set_param(
+            'pesantren_pendaftaran.waktu_pagi_mulai',
+            self.waktu_pagi_mulai
+        )
+        self.env['ir.config_parameter'].set_param(
+            'pesantren_pendaftaran.waktu_pagi_selesai',
+            self.waktu_pagi_selesai
+        )
+        self.env['ir.config_parameter'].set_param(
+            'pesantren_pendaftaran.waktu_siang_mulai',
+            self.waktu_siang_mulai
+        )
+        self.env['ir.config_parameter'].set_param(
+            'pesantren_pendaftaran.waktu_siang_selesai',
+            self.waktu_siang_selesai
+        )
 
         return res
 
@@ -1104,6 +1180,14 @@ class ResConfigSettings(models.TransientModel):
         tgl_pengumuman_hasil_seleksi = icp.get_param('pesantren_pendaftaran.tgl_pengumuman_hasil_seleksi', default=False)
         if not tgl_pengumuman_hasil_seleksi:
             tgl_pengumuman_hasil_seleksi = (datetime.now() + timedelta(days=10)).strftime('%Y-%m-%d %H:%M:%S')
+            
+        tgl_buka_layanan = icp.get_param('pesantren_pendaftaran.tgl_buka_layanan', default=False)
+        if not tgl_buka_layanan:
+            tgl_buka_layanan = (datetime.now()).strftime('%Y-%m-%d')
+
+        tgl_tutup_layanan = icp.get_param('pesantren_pendaftaran.tgl_tutup_layanan', default=False)
+        if not tgl_tutup_layanan:
+            tgl_tutup_layanan = (datetime.now() + timedelta(days=60)).strftime('%Y-%m-%d')
 
         res.update({
             # 'kuota_pendaftaran': int(icp.get_param('pesantren_pendaftaran.kuota_pendaftaran', default=0)),
@@ -1116,6 +1200,14 @@ class ResConfigSettings(models.TransientModel):
             'is_halaman_pengumuman': icp.get_param('pesantren_pendaftaran.is_halaman_pengumuman'),
             'bank': icp.get_param('pesantren_pendaftaran.bank', default='451'),
             'no_rekening': icp.get_param('pesantren_pendaftaran.no_rekening', default='7181863913'),
+            'tgl_buka_layanan': tgl_buka_layanan,
+            'tgl_tutup_layanan': tgl_tutup_layanan,
+            'tempat_layanan': icp.get_param('pesantren_pendaftaran.tempat_layanan', 
+                default='Kantor Yayasan Daarul Qur\'an Istiqomah, Jl H Boedjasin Simpang 3 Al Manar'),
+            'waktu_pagi_mulai': icp.get_param('pesantren_pendaftaran.waktu_pagi_mulai', default='08.00'),
+            'waktu_pagi_selesai': icp.get_param('pesantren_pendaftaran.waktu_pagi_selesai', default='12.00'),
+            'waktu_siang_mulai': icp.get_param('pesantren_pendaftaran.waktu_siang_mulai', default='13.00'),
+            'waktu_siang_selesai': icp.get_param('pesantren_pendaftaran.waktu_siang_selesai', default='16.00'),
         })
         return res
 

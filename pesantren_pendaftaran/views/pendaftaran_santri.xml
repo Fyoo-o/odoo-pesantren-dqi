@@ -34,6 +34,8 @@
             <field name="arch" type="xml">
                 <form string="Pendaftaran Santri" duplicate="0">
                     <header>
+                        <button name="action_ubah_draft" type="object" string="Ubah ke Draft"
+                            invisible="state in ['draft','seleksi', 'diterima', 'batal', 'ditolak']"/>
                         <button name="action_terdaftar" type="object" string="Konfirmasi"
                             invisible="state in ['seleksi', 'terdaftar', 'diterima', 'batal', 'ditolak']"
                             confirm="Apakah Data Yang Sudah Diinputkan Sudah Benar" />
@@ -195,7 +197,8 @@
                                     </group>
                                     <group>
                                         <field name="email_ayah" string="E-mail"
-                                            readonly="state in 'terdaftar,seleksi,diterima,ditolak,batal'" />
+                                            readonly="state in 'terdaftar,seleksi,diterima,ditolak,batal'"
+                                            required="state in ['draft','terdaftar','seleksi','diterima']" />
                                         <field name="agama_ayah" string="Agama"
                                             readonly="state in 'terdaftar,seleksi,diterima,ditolak,batal'" />
                                         <field name="kewarganegaraan_ayah" string="Kewarganegaraan"
@@ -222,7 +225,8 @@
                                     </group>
                                     <group>
                                         <field name="email_ibu" string="E-mail"
-                                            readonly="state in 'terdaftar,seleksi,diterima,ditolak,batal'" />
+                                            readonly="state in 'terdaftar,seleksi,diterima,ditolak,batal'"
+                                            required="state in ['draft','terdaftar','seleksi','diterima']" />
                                         <field name="agama_ibu" string="Agama"
                                             readonly="state in 'terdaftar,seleksi,diterima,ditolak,batal'" />
                                         <field name="kewarganegaraan_ibu" string="Kewarganegaraan"
