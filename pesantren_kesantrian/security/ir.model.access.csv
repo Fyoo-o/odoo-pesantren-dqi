@@ -102,3 +102,4 @@ access_wizard.blokir.saldo,access.wizard.blokir.saldo,model_wizard_blokir_saldo,
 access_wizard.open.block,access.wizard.open.block,model_wizard_open_block,pesantren_musyrif.group_musyrif_staff,1,1,1,1
 access_wizard.open.account,access.wizard.open.account,model_wizard_open_account,pesantren_musyrif.group_musyrif_staff,1,1,1,1
 
+access_ubig_pendidikan,access_ubig_pendidikan,pesantren_pendaftaran.model_ubig_pendidikan,pesantren_kesantrian.group_kesantrian_keamanan,1,0,0,0
