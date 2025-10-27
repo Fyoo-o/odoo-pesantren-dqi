@@ -27,7 +27,7 @@ class TahfidzTahsin(models.Model):
     barcode = fields.Char(related='siswa_id.barcode_santri', string="Kartu Santri", readonly=True)
     kelas_id = fields.Many2one(related='siswa_id.ruang_kelas_id', string='Kelas', readonly=True, store=True)
     kamar_id = fields.Many2one(related='siswa_id.kamar_id', string='Kamar', readonly=True)
-    halaqoh_id = fields.Many2one(related='siswa_id.halaqoh_id', string='Halaqoh', readonly=True, store=True)
+    halaqoh_id = fields.Many2one('cdn.halaqoh',string='Halaqoh', readonly=True, store=True, ondelete='cascade')
     musyrif_id = fields.Many2one(related='siswa_id.musyrif_id', string='Musyrif', readonly=True)
     penanggung_jawab_id = fields.Many2one('hr.employee', string="Penanggung Jawab")
     pengganti_ids = fields.Many2many('hr.employee', string="Pengganti")
@@ -401,7 +401,7 @@ class TahfidzTahsin(models.Model):
     #                 rec.last_surah_id = False
     #                 rec.last_ayat_akhir = False
     
-    @api.depends('siswa_id', 'tahfidz_line_ids.surah_id', 'tahfidz_line_ids.ayat_akhir', 'state')
+    @api.depends('siswa_id', 'tahfidz_line_ids.surah_id', 'tahfidz_line_ids.ayat_akhir', 'state', 'halaqoh_id')
     def _compute_last_tahfidz(self):
         for rec in self:
             if not rec.siswa_id:
@@ -424,7 +424,7 @@ class TahfidzTahsin(models.Model):
             if rec.id:
                 domain.append(('id', '!=', rec.id))
 
-            last = self.env['cdn.penilaian_quran'].search(domain, order='tanggal desc, id desc', limit=1)
+            last = self.search(domain, order='tanggal desc, id desc', limit=1)
 
             if last and last.tahfidz_line_ids:
                 # Ambil dari tahfidz_line_ids terakhir

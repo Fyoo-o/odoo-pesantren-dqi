@@ -79,46 +79,84 @@ class Absenhalaqoh(models.Model):
     def _compute_row_number(self):
         for index, record in enumerate(self):
             record.row_number = index + 1
+    # def action_proses(self):
+    #     self.state = 'Proses'
+    #     for absen in self.absen_ids:
+    #         if absen.kehadiran == 'Hadir':
+    #             halaqoh_vals = {
+    #                 'tanggal': self.name,
+    #                 'siswa_id': absen.siswa_id.id,
+    #                 'halaqoh_id': self.halaqoh_id.id,
+    #                 'ustadz_id': self.ustadz_id.id,
+    #                 'sesi_id': self.sesi_id.id,
+    #                 'state': 'draft',
+    #             }
+    #             self.env['cdn.penilaian_quran'].create(halaqoh_vals)
     def action_proses(self):
         self.state = 'Proses'
-        for absen in self.absen_ids:
-            if absen.kehadiran == 'Hadir':
-                halaqoh_vals = {
+        Penilaian = self.env['cdn.penilaian_quran']
+        for absen in self.absen_ids.filtered(lambda l: l.kehadiran == 'Hadir'):
+            # Cek existing untuk hindari duplikat (kombinasi unik: tanggal + siswa + halaqoh + sesi)
+            existing = Penilaian.search([
+                ('tanggal', '=', self.name),
+                ('siswa_id', '=', absen.siswa_id.id),
+                ('halaqoh_id', '=', self.halaqoh_id.id),
+                ('sesi_id', '=', self.sesi_id.id),
+            ], limit=1)
+            if not existing:
+                Penilaian.create({
                     'tanggal': self.name,
                     'siswa_id': absen.siswa_id.id,
-                    'halaqoh_id': self.halaqoh_id.id,
+                    'halaqoh_id': self.halaqoh_id.id,  # Pastikan set halaqoh_id benar
                     'ustadz_id': self.ustadz_id.id,
                     'sesi_id': self.sesi_id.id,
                     'state': 'draft',
-                }
-                self.env['cdn.penilaian_quran'].create(halaqoh_vals)
+                })
 
     def action_confirm(self):
         self.state = 'Done'
         
+    # def action_sync_penilaian(self):
+    #     Penilaian = self.env['cdn.penilaian_quran']
+
+    #     for record in self:
+    #         for line in record.absen_ids.filtered(lambda l: l.kehadiran == 'Hadir'):
+    #             # Cek apakah sudah ada penilaian dengan kombinasi yang sama
+    #             existing = Penilaian.search([
+    #                 ('tanggal', '=', record.name),
+    #                 ('siswa_id', '=', line.siswa_id.id),
+    #                 ('halaqoh_id', '=', record.halaqoh_id.id),
+    #                 ('sesi_id', '=', record.sesi_id.id),
+    #             ], limit=1)
+
+    #             if not existing:
+    #                 Penilaian.create({
+    #                     'tanggal': record.name,
+    #                     'siswa_id': line.siswa_id.id,
+    #                     'halaqoh_id': record.halaqoh_id.id,
+    #                     'ustadz_id': record.ustadz_id.id,
+    #                     'sesi_id': record.sesi_id.id,
+    #                     'state': 'draft',
+    #                 })
     def action_sync_penilaian(self):
         Penilaian = self.env['cdn.penilaian_quran']
-
         for record in self:
             for line in record.absen_ids.filtered(lambda l: l.kehadiran == 'Hadir'):
-                # Cek apakah sudah ada penilaian dengan kombinasi yang sama
                 existing = Penilaian.search([
                     ('tanggal', '=', record.name),
                     ('siswa_id', '=', line.siswa_id.id),
-                    ('halaqoh_id', '=', record.halaqoh_id.id),
+                    ('halaqoh_id', '=', record.halaqoh_id.id),  # Gunakan halaqoh_id dari absen
                     ('sesi_id', '=', record.sesi_id.id),
                 ], limit=1)
-
                 if not existing:
                     Penilaian.create({
                         'tanggal': record.name,
                         'siswa_id': line.siswa_id.id,
-                        'halaqoh_id': record.halaqoh_id.id,
+                        'halaqoh_id': record.halaqoh_id.id,  # Set benar
                         'ustadz_id': record.ustadz_id.id,
                         'sesi_id': record.sesi_id.id,
                         'state': 'draft',
                     })
-
 
     @staticmethod
     def format_datetime_indonesia(dt):
