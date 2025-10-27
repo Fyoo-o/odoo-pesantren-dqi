@@ -152,10 +152,12 @@ class hr_employee(models.Model):
         elif self.jns_pegawai == 'keamanan':
             groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_keamanan'))
             groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_user'))
+            groups_to_add.append(self.env.ref('pesantren_base.group_sekolah_user'))
+            groups_to_add.append(self.env.ref('pesantren_base.group_hr_employee_readonly'))
         else:
             groups_to_add.append(self.env.ref('pesantren_base.group_sekolah_user'))
             groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_user'))
-
+            groups_to_add.append(self.env.ref('pesantren_base.group_hr_employee_readonly'))
 
         if not groups_to_add:
             raise UserError("Jenis pegawai tidak terdaftar untuk penambahan group.")
