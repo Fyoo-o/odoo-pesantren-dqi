@@ -35,17 +35,28 @@ class hr_employee(models.Model):
     mata_pelajaran_ids = fields.Many2many(comodel_name="cdn.mata_pelajaran", string="Mata Pelajaran", help="")
     password = fields.Char(
         string='Password',
-        compute="_compute_password",
-        store=True
+        help="Kosongkan jika ingin pakai otomatis dari NIP",
+        store=True,
     )
 
-    @api.depends('nip')
-    def _compute_password(self):
+    @api.onchange('nip')
+    def _onchange_password(self):
         for record in self:
             if record.nip and len(record.nip) >= 6:
                 record.password = record.nip[:6]
             else:
                 record.password = ''
+    # @api.depends('nip', 'password_manual')
+    # def _compute_password(self):
+    #     for record in self:
+    #         if record.password_manual:
+    #             # Prioritas: jika manual diisi, pakai itu
+    #             record.password = record.password_manual
+    #         elif record.nip and len(record.nip) >= 6:
+    #             # Fallback: ambil 6 digit pertama NIP
+    #             record.password = record.nip[:6]
+    #         else:
+    #             record.password = ''
     
 # args=None
     def activate_account(self):

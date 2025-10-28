@@ -24,7 +24,7 @@ class OrangTua(models.Model):
         ondelete="cascade"
     )
 
-    password            = fields.Char(string="Password", help="Password login untuk akun orang tua")
+    password            = fields.Char(string="Password", help="Password login untuk akun orang tua", store=True)
     
     @api.model
     def create(self, vals):
@@ -103,9 +103,9 @@ class OrangTua(models.Model):
 
     #     return res 
 
-    def write(self, vals):
-        res = super().write(vals)
-        for record in self:
-            if vals.get('set_password') and record.user_id:
-                record.user_id.write({'password': vals['set_password']})
-        return res
+    # def write(self, vals):
+    #     res = super().write(vals)
+    #     for record in self:
+    #         if vals.get('set_password') and record.user_id:
+    #             record.user_id.write({'password': vals['set_password']})
+    #     return res

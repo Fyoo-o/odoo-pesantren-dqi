@@ -35,7 +35,7 @@
                 <field name="department_id" position="before">
                     <field name="nip"/>
                     <field name="lembaga"/>
-                    <field name="password" readonly="0" password="True" widget="password_toggle"/>
+                    <field name="password" widget="password_toggle"/>
 				</field>
                 <field name="coach_id" position="attributes">
                     <attribute name="invisible">1</attribute>
