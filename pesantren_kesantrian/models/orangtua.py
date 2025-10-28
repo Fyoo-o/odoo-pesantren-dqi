@@ -4,10 +4,17 @@ from odoo.tools.translate import _
 class OrangTua(models.Model):
     _inherit = 'cdn.orangtua'
 
+    password = fields.Char(store=True)
+
     @api.model
     def create(self, vals):
         # Membuat record 'OrangTua' menggunakan inheritance
         res = super(OrangTua, self).create(vals)
+        
+        # VALIDASI & SET DEFAULT PASSWORD (FIX ERROR BOOLEAN)
+        if not res.password or not isinstance(res.password, str):
+            # Set default password (bisa dari email atau fixed)
+            res.password = res.email[:8] if res.email else 'default123'  # Ambil 8 char pertama email, atau default
         
         # Membuat user baru dengan login berbasis email dan password default
         user = self.env['res.users'].with_context(no_reset_password=True).sudo().create({
@@ -15,7 +22,7 @@ class OrangTua(models.Model):
             'name': res.name,  # Nama pengguna
             'company_id': self.env.ref('base.main_company').id,  # Mengatur perusahaan default
             'partner_id': res.partner_id.id,  # Hubungkan dengan partner terkait
-            'password': res.password,  # Password default
+            'password': res.password,  # Password default (sekarang pasti string)
             'groups_id': [(6, 0, [
                 # Assign grup internal user (standard)
                 self.env.ref('base.group_user').id, 
@@ -67,7 +74,6 @@ class OrangTua(models.Model):
                 self.env.ref('pesantren_kesantrian.group_kesantrian_user').id,
                 self.env.ref('pesantren_guru.group_guru_user').id,
                 self.env.ref('pesantren_keuangan.group_keuangan_user').id,
-                # self.env.ref('account.group_account_invoice').id,
                 self.env.ref('account.group_account_readonly').id,
             ])]
 
@@ -92,10 +98,26 @@ class OrangTua(models.Model):
         #     },
         # }
 
+    # def write(self, vals):
+    #     res = super(OrangTua, self).write(vals)
+    #     for record in self:
+    #         # Jika field password diubah, update password user terkait
+    #         if vals.get('password') and record.user_id:
+    #             record.user_id.sudo().write({'password': vals['password']})
+    #     return res
     def write(self, vals):
+        # Simpan dulu nilai password sebelum super().write()
+        password_changed = 'password' in vals
+        new_password = vals.get('password') if password_changed else None
+        
+        # Panggil super write terlebih dahulu
         res = super(OrangTua, self).write(vals)
-        for record in self:
-            # Jika field password diubah, update password user terkait
-            if vals.get('password') and record.user_id:
-                record.user_id.sudo().write({'password': vals['password']})
+        
+        # Setelah record ter-update, baru update password user
+        if password_changed and new_password:
+            for record in self:
+                if record.user_id:
+                    # Update password user menggunakan sudo
+                    record.user_id.sudo().write({'password': new_password})
+        
         return res
