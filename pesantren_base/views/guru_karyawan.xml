@@ -138,7 +138,7 @@
             <field name="model_id" ref="model_hr_employee"/>
             <field name="binding_model_id" ref="model_hr_employee"/>
             <field name="binding_view_types">form,list</field>
-            <field name="state">code</field>
+            <field name="state">code</field>    
             <field name="code">action = records.activate_account_action()</field>
         </record>
 
