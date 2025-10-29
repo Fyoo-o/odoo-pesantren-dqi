@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Hide Custom Module Menu -->
+    <record id="pesantren_keuangan.keuangan_menu_root" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+
+    <!-- Hide Accounting Menu -->
+    <record id="account.menu_finance" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+
+    <!-- Hide POS Menu -->
+    <record id="point_of_sale.menu_point_root" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+
+    <!-- Hide Purchase Menu -->
+    <record id="purchase.menu_purchase_root" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+
+    <!-- Hide Inventory Menu -->
+    <record id="stock.menu_stock_root" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+</odoo>
