@@ -5,22 +5,22 @@ class JadwalPelajaran(models.Model):
     _name = 'cdn.jadwal_pelajaran'
     _description = 'Data Jadwal Pelajaran'
 
-    def _get_default_jadwal_ids(self):
-        jam_pelajaran = self.env['cdn.ref_jam_pelajaran'].search([])
-        default_mapel_id = False
-        if self.kelas_id:
-            default_mapel_id = self.env['cdn.mata_pelajaran'].search([
-                ('jenjang', '=', self.kelas_id.jenjang)
-            ], limit=1)
-        res = [(5, 0, 0)]
-        for i in range(6):
-            for j in jam_pelajaran:
-                res.append((0, 0, {
-                    'name': str(i + 1),
-                    'jampelajaran_id': j.id,
-                    'matapelajaran_id': default_mapel_id.id if default_mapel_id else False,
-                }))
-        return res
+    # def _get_default_jadwal_ids(self):
+    #     jam_pelajaran = self.env['cdn.ref_jam_pelajaran'].search([])
+    #     default_mapel_id = False
+    #     if self.kelas_id:
+    #         default_mapel_id = self.env['cdn.mata_pelajaran'].search([
+    #             ('jenjang', '=', self.kelas_id.jenjang)
+    #         ], limit=1)
+    #     res = [(5, 0, 0)]
+    #     for i in range(6):
+    #         for j in jam_pelajaran:
+    #             res.append((0, 0, {
+    #                 'name': str(i + 1),
+    #                 'jampelajaran_id': j.id,
+    #                 'matapelajaran_id': default_mapel_id.id if default_mapel_id else False,
+    #             }))
+    #     return res
 
     name = fields.Char(string='Nama', readonly=True, compute='_compute_name', store=True)
     tahunajaran_id = fields.Many2one('cdn.ref_tahunajaran', string='Tahun Ajaran', required=True,
@@ -32,7 +32,8 @@ class JadwalPelajaran(models.Model):
     walikelas_id = fields.Many2one('hr.employee', string='Wali Kelas', readonly=True, related='kelas_id.walikelas_id')
     semester = fields.Selection(selection=[('1', 'Semester 1'), ('2', 'Semester 2')], string='Semester', required=True)
     jadwal_ids = fields.One2many('cdn.jadwal_pelajaran_lines', inverse_name='jadwalpelajaran_id', string='Jadwal Pelajaran',
-        default=_get_default_jadwal_ids)
+        # default=_get_default_jadwal_ids
+    )
 
     @api.depends('kelas_id', 'semester', 'tahunajaran_id')
     def _compute_name(self):
@@ -92,7 +93,13 @@ class JadwalPelajaranLine(models.Model):
         ('6', 'Sabtu'),
         ('7', 'Minggu')], string='Hari', required=True)
     jadwalpelajaran_id = fields.Many2one('cdn.jadwal_pelajaran', string='Jadwal Pelajaran', ondelete='cascade')
-    kelas_id = fields.Many2one('cdn.ruang_kelas', string='Kelas', related='jadwalpelajaran_id.kelas_id', readonly=True, store=True)
+    kelas_id = fields.Many2one(
+        'cdn.ruang_kelas', 
+        string='Kelas', 
+        related='jadwalpelajaran_id.kelas_id',
+        store=True,
+        readonly=True
+    )
     jenjang = fields.Selection(
         related='jadwalpelajaran_id.jenjang',
         store=True,
@@ -102,18 +109,35 @@ class JadwalPelajaranLine(models.Model):
     start_time = fields.Float(string='Jam Mulai', related='jampelajaran_id.start_time', readonly=True, widget="float_time")
     end_time = fields.Float(string='Jam Selesai', related='jampelajaran_id.end_time', readonly=True, widget="float_time")
     matapelajaran_id = fields.Many2one('cdn.mata_pelajaran', string='Mata Pelajaran', domain="[('jenjang', '=', jenjang)]")
-    guru_id = fields.Many2one('hr.employee', string='Guru', domain=[('jns_pegawai','in',['guru', 'guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])])
+    guru_id = fields.Many2many('hr.employee', string='Guru', domain=[('jns_pegawai','in',['guru', 'guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])])
 
+    # @api.onchange('matapelajaran_id')
+    # def _onchange_matapelajaran_id(self):
+    #     if self.matapelajaran_id and self.jadwalpelajaran_id:
+    #         if self.matapelajaran_id.jenjang != self.jadwalpelajaran_id.jenjang:
+    #             warning = {
+    #                 'title': 'Peringatan',
+    #                 'message': f'Mata pelajaran {self.matapelajaran_id.name} tidak sesuai jenjang {self.jadwalpelajaran_id.jenjang}'
+    #             }
+    #             self.matapelajaran_id = False
+    #             return {'warning': warning}
     @api.onchange('matapelajaran_id')
     def _onchange_matapelajaran_id(self):
         if self.matapelajaran_id and self.jadwalpelajaran_id:
+            # validasi jenjang tetap
             if self.matapelajaran_id.jenjang != self.jadwalpelajaran_id.jenjang:
                 warning = {
                     'title': 'Peringatan',
                     'message': f'Mata pelajaran {self.matapelajaran_id.name} tidak sesuai jenjang {self.jadwalpelajaran_id.jenjang}'
                 }
                 self.matapelajaran_id = False
+                self.guru_id = [(5, 0, 0)]  # kosongkan
                 return {'warning': warning}
+            
+            # isi otomatis guru_id dari master matapelajaran
+            self.guru_id = [(6, 0, self.matapelajaran_id.guru_ids.ids)]
+        else:
+            self.guru_id = [(5, 0, 0)]  # kosongkan jika tidak ada matpel
 
     @api.onchange('start_time', 'end_time')
     def _onchange_jam(self):
