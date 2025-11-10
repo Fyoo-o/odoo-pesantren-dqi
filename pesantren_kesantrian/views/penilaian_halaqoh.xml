@@ -17,8 +17,8 @@
             <list default_order="name desc" create="false">
                 <field name="name" optional="show"/>
                 <field name="tanggal" optional="show"/>
-                <field name="siswa_id" optional="show"/>
-                <field name="halaqoh_id" string="Halaqoh" optional="show"/>
+                <field name="siswa_id" optional="show" context="{'from_guru_quran': True}"/>
+                <field name="halaqoh_id" string="Halaqoh" optional="show" context="{'from_guru_quran': True}"/>
                 <field name="ustadz_id" optional="show"/>
 
                 <!-- Tahfidz -->
@@ -81,12 +81,12 @@
                     <group string="Informasi Santri">
                         <group>
                             <field name="barcode" readonly="1"/>
-                            <field name="siswa_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="siswa_id" required="1" options="{'no_create': True, 'no_open': True}" context="{'from_guru_quran': True}"/>
                             <field name="kelas_id" readonly="1"/>
                         </group>
                         <group>
                             <field name="kamar_id" readonly="1"/>
-                            <field name="halaqoh_id" readonly="1"/>
+                            <field name="halaqoh_id" readonly="1" context="{'from_guru_quran': True}"/>
                             <field name="musyrif_id" readonly="1"/>
                         </group>
                     </group>
@@ -229,8 +229,8 @@
         <field name="arch" type="xml">
             <search string="Cari Penilaian Halaqoh">
                 <field name="name" string="Referensi" filter_domain="['|', ('name', 'ilike', self), ('siswa_id.name', 'ilike', self)]"/>
-                <field name="siswa_id"/>
-                <field name="halaqoh_id"/>
+                <field name="siswa_id" context="{'from_guru_quran': True}"/>
+                <field name="halaqoh_id" context="{'from_guru_quran': True}" />
                 <field name="ustadz_id"/>
                 <field name="tanggal"/>
                 <field name="state"/>
@@ -317,6 +317,7 @@
                 Buat penilaian Halaqoh baru untuk santri.
             </p>
         </field>
+        <field name="context">{'from_guru_quran': True}</field>
     </record>
 
     <!-- Menu Item -->

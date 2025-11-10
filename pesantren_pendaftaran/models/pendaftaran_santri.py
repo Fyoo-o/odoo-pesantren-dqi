@@ -688,6 +688,14 @@ class DataPendaftaran(models.Model):
             if not record.password:
                 raise UserError("Password wajib diisi terlebih dahulu sebelum membuat akun orang tua.")
 
+            # Cek apakah email sudah digunakan di res.users
+            email_ortu = record.email_ayah or record.email
+            if email_ortu:
+                existing_user = self.env['res.users'].sudo().search([('login', '=', email_ortu)], limit=1)
+                if existing_user:
+                    # Ini akan munculkan pop-up dengan judul "Operasi tidak valid"
+                    raise UserError(f"Email '{email_ortu}' sudah digunakan oleh pengguna lain.")
+
             # Cek apakah email orang tua sudah ada di res.partner
             existing_partner = self.env['res.partner'].search([('email', '=', record.email_ayah)], limit=1)
 

@@ -52,6 +52,7 @@
     # always loaded
     'data': [
         'security/groups.xml',
+        'security/musyrif_security.xml',
         'security/ir.model.access.csv',
 
         # data

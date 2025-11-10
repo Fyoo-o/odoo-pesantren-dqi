@@ -125,7 +125,7 @@ class Pelanggaran(models.Model):
             'confirmed': [('readonly', True)],
             'approved': [('readonly', True)],
         } ,
-        required=True, readonly=True)
+        readonly=True)
     kamar_id    = fields.Many2one('cdn.kamar_santri', string='Kamar', related='siswa_id.kamar_id', readonly=True)
     halaqoh_id  = fields.Many2one('cdn.halaqoh', string='Halaqoh', related='siswa_id.halaqoh_id', readonly=True)
     musyrif_id  = fields.Many2one('hr.employee', string='Musyrif', related='siswa_id.musyrif_id', readonly=True)

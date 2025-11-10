@@ -4,7 +4,7 @@ from datetime import date, datetime
 class Absenhalaqoh(models.Model):
     _name           = 'cdn.absen_halaqoh'
     _description    = 'Tabel Halaqoh'
-
+    
     #get domain 
     # def _domain_halaqoh_id(self):
     #     tahun_ajaran = self.env.user.company_id.tahun_ajaran_aktif.id
@@ -94,7 +94,7 @@ class Absenhalaqoh(models.Model):
     #             self.env['cdn.penilaian_quran'].create(halaqoh_vals)
     def action_proses(self):
         self.state = 'Proses'
-        Penilaian = self.env['cdn.penilaian_quran']
+        Penilaian = self.env['cdn.penilaian_quran'].with_context(from_guru_quran=True)
         for absen in self.absen_ids.filtered(lambda l: l.kehadiran == 'Hadir'):
             # Cek existing untuk hindari duplikat (kombinasi unik: tanggal + siswa + halaqoh + sesi)
             existing = Penilaian.search([
@@ -139,7 +139,7 @@ class Absenhalaqoh(models.Model):
     #                     'state': 'draft',
     #                 })
     def action_sync_penilaian(self):
-        Penilaian = self.env['cdn.penilaian_quran']
+        Penilaian = self.env['cdn.penilaian_quran'].with_context(from_guru_quran=True)
         for record in self:
             for line in record.absen_ids.filtered(lambda l: l.kehadiran == 'Hadir'):
                 existing = Penilaian.search([
@@ -157,6 +157,17 @@ class Absenhalaqoh(models.Model):
                         'sesi_id': record.sesi_id.id,
                         'state': 'draft',
                     })
+                    
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': '✅ Sinkronisasi Berhasil',
+                'message': 'Data penilaian Qur’an telah diperbarui.',
+                'type': 'success',
+                'sticky': False,
+            }
+        }
 
     @staticmethod
     def format_datetime_indonesia(dt):
@@ -295,6 +306,7 @@ class AbsenTahsinQuranLine(models.Model):
     tanggal = fields.Date(string='Tgl Absen', related='absen_id.name', readonly=True, store=True)
     halaqoh_id = fields.Many2one('cdn.halaqoh', string='Halaqoh', related='absen_id.halaqoh_id', readonly=True, store=True)
     siswa_id = fields.Many2one('cdn.siswa', string='Siswa', ondelete='cascade')
+    
     name = fields.Char(string='Nama', related='siswa_id.name', readonly=True, store=True)
     nis = fields.Char(string='NIS', related='siswa_id.nis', readonly=True, store=True)
     panggilan = fields.Char(string='Nama Panggilan', related='siswa_id.namapanggilan', readonly=True, store=True)
@@ -350,4 +362,3 @@ class AbsenTahsinQuranLine(models.Model):
             'view_mode': 'form',
             'target': 'current',
         }
-

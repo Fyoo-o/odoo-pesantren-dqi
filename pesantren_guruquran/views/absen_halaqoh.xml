@@ -42,6 +42,7 @@
             <field name="res_model">cdn.absen_halaqoh</field>
             <field name="view_mode">list,form</field>
             <field name="view_id" ref="cdn_absen_halaqoh_view_tree_guruquran_inherit"/>
+            <field name="context">{'from_guru_quran': True}</field>
         </record>
 
         <!-- 🧭 Menu di bawah menu utama modul guruquran -->

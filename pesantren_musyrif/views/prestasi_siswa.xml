@@ -11,6 +11,7 @@
             <!-- <field name="view_ids" eval="[(5, 0, 0), (0, 0, {'view_mode': 'tree', 'view_id': ref('pesantren_kesantrian.cdn_prestasi_siswa_view_tree')}), 
                 (0, 0, {'view_mode': 'form', 'view_id': ref('pesantren_kesantrian.cdn_prestasi_siswa_view_form')})]"
                 /> -->
+            <field name="context">{'from_musyrif': True}</field>
         </record>
         
         <!-- This Menu Item must have a parent and an action -->
