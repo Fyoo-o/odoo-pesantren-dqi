@@ -10,10 +10,8 @@
                     <field name="row_number" string="No" />
                     <field name="name"/>
                     <field name="tgl"/>
-                    <field name="siswa_id"/>
-                    <field name="halaqoh_id" string="Halaqah"/>
-                    <field name="kehadiran"/>
-                    <field name="keterangan"/>
+                    <field name="kamar_id"/>
+                    <field name="musyrif_id"/>
                     <field name="state"/>
                 </list>
             </field>
@@ -25,23 +23,17 @@
             <field name="model">cdn.absensi_malam</field>
             <field name="arch" type="xml">
                 <search>
-                    <field name="name" string="Data"
-                        filter_domain="[
+                    <field name="name" string="Data" filter_domain="[
                             '|', ('name', 'ilike', self),
                             '|', ('tgl', 'ilike', self),
-                            '|', ('siswa_id.name', 'ilike', self),
-                            '|', ('siswa_id.barcode_santri', 'ilike', self),
-                            '|', ('siswa_id.nis', 'ilike', self),
-                            '|', ('halaqoh_id.name', 'ilike', self),
+                            '|', ('kamar_id.name', 'ilike', self),
+                            '|', ('musyrif_id.name', 'ilike', self),
+                            '|', ('absen_ids.siswa_id.name', 'ilike', self),
+                            '|', ('absen_ids.siswa_id.nis', 'ilike', self),
                             '|', ('state', 'ilike', self),
-                            '|', ('kehadiran', 'ilike', self),
                             ('keterangan', 'ilike', self)
-                        ]"
-                    />
-                    <filter string="Hadir" name="filter_hadir" domain="[('kehadiran','=','hadir')]"/>
-                    <filter string="Alpha" name="filter_alpha" domain="[('kehadiran','=','alpha')]"/>
-                    <filter string="Izin" name="filter_izin" domain="[('kehadiran','=','izin')]"/>
-                    <filter string="Sakit" name="filter_sakit" domain="[('kehadiran','=','sakit')]"/>
+                        ]" />
+                    <filter string="Hari Ini" name="today" domain="[('tgl', '=', context_today())]"/>
                     <separator/>
                     <filter string="Draft" name="filter_draft" domain="[('state','=','draft')]"/>
                     <filter string="Selesai" name="filter_done" domain="[('state','=','done')]"/>
@@ -56,43 +48,43 @@
             <field name="arch" type="xml">
                 <form string="Absensi Malam Santri">
                     <header>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
-                    <button string="Ubah ke Draft" name="action_draft" type="object" class="btn btn-primary"
-                            invisible="state == 'draft'"/>
-                    <button string="Selesai" name="action_confirm" type="object" class="btn btn-primary"
-                            invisible="state == 'done'"/>
+                        <button string="Proses" name="action_proses" type="object" class="oe_highlight" invisible="state in ['proses','done']"/>
+                        <button string="Done" name="action_done" type="object" class="oe_highlight" invisible="state in ['done','draft']"/>
+                        <button string="Ubah ke Draft" name="action_draft" type="object" class="btn btn-secondary" invisible="state == 'draft'"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,proses,done"/>
                     </header>
                     <sheet>
-                        <!-- Data Santri -->
-                        <group string="Data Santri">
+                        <!-- Filter Absensi Malam -->
+                        <group string="Absensi Malam">
                             <group>
-                                <field name="barcode" modifiers="{'readonly': [['state','=','done']]}"/>
-                                <field name="siswa_id" string="Santri"
-                                    options="{'no_create_edit':True, 'no_create':True, 'no_open':True}"
-                                    modifiers="{'readonly': [['state','=','done']]}"/>
-                                <field name="kelas_id"
-                                    options="{'no_create_edit':True, 'no_create':True, 'no_open':True}"/>
+                                <field name="name" readonly="1"/>
+                                <field name="tgl" readonly="state == 'done'"/>
                             </group>
                             <group>
-                                <field name="kamar_id"
-                                    options="{'no_create_edit':True, 'no_create':True, 'no_open':True}"/>
-                                <field name="halaqoh_id" string="Halaqah"
-                                    options="{'no_create_edit':True, 'no_create':True, 'no_open':True}"/>
-                                <field name="musyrif_id"
-                                    options="{'no_create_edit':True, 'no_create':True, 'no_open':True}"/>
+                                <field name="kamar_id" options="{'no_create_edit': True, 'no_create': True}" readonly="state == 'done'"/>
+                                <field name="musyrif_id" options="{'no_create_edit': True, 'no_create': True}" readonly="state == 'done'"/>
+                                <field name="keterangan" readonly="state == 'done'"/>
                             </group>
                         </group>
 
-                        <!-- Absensi Malam -->
-                        <group string="Absensi Malam">
-                            <group>
-                                <field name="tgl" modifiers="{'readonly': [['state','=','done']]}"/>
-                            </group>
-                            <group>
-                                <field name="kehadiran" modifiers="{'readonly': [['state','=','done']]}"/>
-                                <field name="keterangan" modifiers="{'invisible': [['kehadiran','in',['hadir','alpha']]]}"/>
-                            </group>
-                        </group>
+                        <!-- Daftar Kehadiran -->
+                        <notebook>
+                            <page string="Daftar Kehadiran">
+                                <field name="absen_ids" nolabel="1" widget="one2many_list" readonly="state == 'done'">
+                                    <list string="" editable="top">
+                                        <field name="row_number" string="No"/>
+                                        <field name="siswa_id" options="{'no_create_edit': True, 'no_create': True}" string="Santri"/>
+                                        <field name="panggilan" string="Panggilan"/>
+                                        <field name="nis"/>
+                                        <field name="kamar_id"/>
+                                        <field name="kehadiran_absen"/>
+                                        <field name="keterangan"/>
+                                        <field name="keterangan_izin" />
+                                        <button name="action_view_permission" string="Detail" type="object" icon="fa-eye" invisible="(kehadiran_absen != 'Izin' and kehadiran_absen != 'keluar') or not keterangan" class="btn-primary"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
                     </sheet>
                 </form>
             </field>
@@ -119,15 +111,12 @@
                     Klik untuk membuat absensi malam santri baru.
                 </p>
                 <p>
-                    Catat kehadiran santri setiap malam: Hadir, Alpha, Izin, atau Sakit.
+                    Catat kehadiran santri setiap malam secara massal berdasarkan Kamar, Halaqoh, atau Kelas.
                 </p>
             </field>
         </record>
 
         <!-- Menu -->
-        <menuitem id="absensi_malam_menu_act" name="Absensi Malam Santri"
-                  parent="kepesantrenan_kepengasuhan_menu_categ"
-                  action="cdn_absensi_malam_action"
-                  sequence="11"/>
+        <menuitem id="absensi_malam_menu_act" name="Absensi Malam Santri" parent="kepesantrenan_kepengasuhan_menu_categ" action="cdn_absensi_malam_action" sequence="11"/>
     </data>
 </odoo>

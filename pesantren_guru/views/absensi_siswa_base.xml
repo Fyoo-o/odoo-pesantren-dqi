@@ -12,7 +12,7 @@
                     <field name="row_number" string="No"/>
                     <field name="name" optional="show"/>
                     <field name="tanggal" optional="show" />
-                    <field name="jampelajaran_id" optional="show" />
+                    <field name="jampelajaran_id" optional="show" widget="many2many_tags" />
                     <field name="kelas_id" optional="show" />
                     <field name="mapel_id" optional="show" />
                     <field name="guru_id" optional="show" />
@@ -46,7 +46,8 @@
                         <group string="Aktivitas Pelajaran">
                             <group>
                                 <field name="hari" readonly="1" />
-                                <field name="jampelajaran_id" readonly="1" />
+                                <field name="jampelajaran_id" readonly="1" 
+                                widget="many2many_tags" />
                             </group>
                             <group>
                                 <field name="mapel_id" readonly="1" />

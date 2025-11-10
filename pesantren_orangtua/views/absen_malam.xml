@@ -1,44 +1,142 @@
 <?xml version='1.0' encoding='utf-8'?>
 <odoo>
     <data>
-        <!-- Action untuk Absensi Malam (Orang Tua hanya lihat) -->
-        <record id="cdn_absensi_malam_action_orangtua" model="ir.actions.act_window">
-            <field name="name">Absensi Malam</field>
+        <!-- Tree View Khusus untuk Orangtua (cdn.absensi_malam_line) -->
+        <record id="cdn_absensi_malam_line_view_list_orangtua" model="ir.ui.view">
+            <field name="name">cdn.absensi_malam_line.view.list.orangtua</field>
+            <field name="model">cdn.absensi_malam_line</field>
+            <field name="arch" type="xml">
+                <list string="Absensi Malam Santri" create="false" edit="false" delete="false">
+                    <field name="tanggal"/>
+                    <field name="name" string="Nama Santri"/>
+                    <field name="nis"/>
+                    <field name="kamar_id"/>
+                    <field name="musyrif_id"/>
+                    <field name="kehadiran_absen" string="Kehadiran"/>
+                    <field name="keterangan"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form View Khusus untuk Orangtua (cdn.absensi_malam_line) -->
+        <record id="cdn_absensi_malam_line_view_form_orangtua" model="ir.ui.view">
+            <field name="name">cdn.absensi_malam_line.view.form.orangtua</field>
+            <field name="model">cdn.absensi_malam_line</field>
+            <field name="arch" type="xml">
+                <form string="Detail Absensi Malam" create="false" edit="false" delete="false">
+                    <sheet>
+                        <group string="Data Santri">
+                            <group>
+                                <field name="tanggal" readonly="1"/>
+                                <field name="name" string="Nama Santri" readonly="1"/>
+                                <field name="nis" readonly="1"/>
+                                <field name="panggilan" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="kamar_id" readonly="1"/>
+                                <field name="musyrif_id" readonly="1"/>
+                            </group>
+                        </group>
+
+                        <group string="Kehadiran">
+                            <group>
+                                <field name="kehadiran_absen" string="Status Kehadiran" readonly="1"/>
+                                <field name="keterangan" readonly="1" invisible="kehadiran_absen == 'Hadir'"/>
+                            </group>
+                            <group>
+                                <field name="keterangan_izin" widget="image" readonly="1" invisible="not keterangan_izin"/>
+                            </group>
+                        </group>
+
+                        <group string="Referensi Absensi" invisible="1">
+                            <field name="absen_id" readonly="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Search View untuk Orangtua -->
+        <record id="cdn_absensi_malam_line_view_search_orangtua" model="ir.ui.view">
+            <field name="name">cdn.absensi_malam_line.view.search.orangtua</field>
+            <field name="model">cdn.absensi_malam_line</field>
+            <field name="arch" type="xml">
+                <search string="Cari Absensi Malam">
+                    <field name="name" string="Nama Santri"/>
+                    <field name="nis"/>
+                    <field name="tanggal"/>
+                    <field name="kehadiran_absen"/>
+
+                    <filter string="Hari Ini" name="today" domain="[('tanggal', '=', context_today())]"/>
+                    <filter string="Minggu Ini" name="this_week" domain="[
+                                ('tanggal', '&gt;=', (context_today() - relativedelta(weeks=1)).strftime('%Y-%m-%d')),
+                                ('tanggal', '&lt;=', context_today().strftime('%Y-%m-%d'))
+                            ]"/>
+                    <filter string="Bulan Ini" name="this_month" domain="[
+                                ('tanggal', '&gt;=', (context_today().strftime('%Y-%m-01'))),
+                                ('tanggal', '&lt;=', context_today().strftime('%Y-%m-%d'))
+                            ]"/>
+
+                    <separator/>
+                    <filter string="Hadir" name="filter_hadir" domain="[('kehadiran_absen', '=', 'Hadir')]"/>
+                    <filter string="Izin" name="filter_izin" domain="[('kehadiran_absen', '=', 'Izin')]"/>
+                    <filter string="Izin Keluar" name="filter_keluar" domain="[('kehadiran_absen', '=', 'keluar')]"/>
+                    <filter string="Sakit" name="filter_sakit" domain="[('kehadiran_absen', '=', 'Sakit')]"/>
+                    <filter string="Alpa" name="filter_alpa" domain="[('kehadiran_absen', '=', 'Alpa')]"/>
+
+                    <group expand="0" string="Group By">
+                        <filter string="Tanggal" name="group_tanggal" context="{'group_by': 'tanggal'}"/>
+                        <filter string="Kehadiran" name="group_kehadiran" context="{'group_by': 'kehadiran_absen'}"/>
+                        <filter string="Kamar" name="group_kamar" context="{'group_by': 'kamar_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action untuk Absensi Malam Line (Orang Tua) -->
+        <record id="cdn_absensi_malam_line_action_orangtua" model="ir.actions.act_window">
+            <field name="name">Absensi Malam Santri</field>
             <field name="type">ir.actions.act_window</field>
-            <field name="res_model">cdn.absensi_malam</field>
+            <field name="res_model">cdn.absensi_malam_line</field>
             <field name="view_mode">list,form</field>
-            <!-- pakai view dari modul kesantrian -->
-            <field name="view_id" ref="pesantren_kesantrian.cdn_absensi_malam_view_tree"/>
+            <field name="search_view_id" ref="cdn_absensi_malam_line_view_search_orangtua"/>
+            <field name="context">{
+                'search_default_this_month': 1,
+            }</field>
             <!-- filter data hanya untuk anak dari user yang login -->
             <field name="domain">
             [
-                ('siswa_id.orangtua_id.partner_id.user_id','=',uid),
-                ('state','=','done')
+                ('siswa_id.orangtua_id.partner_id.user_id', '=', uid),
+                ('absen_id.state', '=', 'done')
             ]
+            </field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Belum ada data absensi malam untuk santri Anda
+                </p>
+                <p>
+                    Data absensi malam akan muncul setelah musyrif melakukan absensi.
+                </p>
             </field>
         </record>
 
         <!-- Tree View link ke action -->
-        <record id="action_tree_view_cdn_absensi_malam_orangtua" model="ir.actions.act_window.view">
-            <field name="sequence" eval="2"/>
+        <record id="action_list_view_cdn_absensi_malam_line_orangtua" model="ir.actions.act_window.view">
+            <field name="sequence" eval="1"/>
             <field name="view_mode">list</field>
-            <field name="view_id" ref="pesantren_kesantrian.cdn_absensi_malam_view_tree"/>
-            <field name="act_window_id" ref="cdn_absensi_malam_action_orangtua"/>
+            <field name="view_id" ref="cdn_absensi_malam_line_view_list_orangtua"/>
+            <field name="act_window_id" ref="cdn_absensi_malam_line_action_orangtua"/>
         </record>
 
         <!-- Form View link ke action -->
-        <record id="action_form_view_cdn_absensi_malam_orangtua" model="ir.actions.act_window.view">
-            <field name="sequence" eval="3"/>
+        <record id="action_form_view_cdn_absensi_malam_line_orangtua" model="ir.actions.act_window.view">
+            <field name="sequence" eval="2"/>
             <field name="view_mode">form</field>
-            <field name="view_id" ref="pesantren_kesantrian.cdn_absensi_malam_view_form"/>
-            <field name="act_window_id" ref="cdn_absensi_malam_action_orangtua"/>
+            <field name="view_id" ref="cdn_absensi_malam_line_view_form_orangtua"/>
+            <field name="act_window_id" ref="cdn_absensi_malam_line_action_orangtua"/>
         </record>
 
         <!-- Menu di bawah menu Orang Tua > Kesantrian -->
-        <menuitem id="cdn_absensi_malam_menu_orangtua"
-                  name="Absensi Malam"
-                  parent="kesantrian_menu_categ"
-                  action="cdn_absensi_malam_action_orangtua"
-                  sequence="15"/>
+        <menuitem id="cdn_absensi_malam_menu_orangtua" name="Absensi Malam" parent="kesantrian_menu_categ" action="cdn_absensi_malam_line_action_orangtua" sequence="15"/>
     </data>
 </odoo>

@@ -6,7 +6,7 @@
             <field name="name">musyrif.absensi_malam.inherit.view.form</field>
             <field name="model">cdn.absensi_malam</field>
             <field name="inherit_id" ref="pesantren_kesantrian.cdn_absensi_malam_view_form"/>
-            <field name="arch" type="xml">
+            <!-- <field name="arch" type="xml">
                 <xpath expr="//header" position="inside">
                     <button string="Proses"
                             name="action_confirm"
@@ -18,7 +18,7 @@
                             "
                             invisible="state != 'Draft'"/>
                 </xpath>
-            </field>
+            </field> -->
         </record>
 
         <!-- Action window untuk Absensi Malam -->

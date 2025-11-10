@@ -32,7 +32,7 @@
                     <field name="row_number" string="No"/>
                     <field name="name" optional="show"/>
                     <field name="tanggal" optional="show" />
-                    <field name="jampelajaran_id" optional="show" />
+                    <field name="jampelajaran_id" optional="show" widget="many2many_tags" />
                     <field name="kelas_id" optional="show" />
                     <field name="mapel_id" optional="show" />
                     <field name="guru_id" optional="show" />
@@ -71,7 +71,8 @@
                             <group>
                                 <field name="hari" />
                                 <field name="jampelajaran_id"
-                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" /> 
+                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"
+                                    widget="many2many_tags" /> 
                             </group>
                                <group>
                                     <field name="mapel_id"
