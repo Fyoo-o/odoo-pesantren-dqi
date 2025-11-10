@@ -28,6 +28,7 @@
             <field name="view_ids" eval="[(5, 0, 0), (0, 0, {'view_mode': 'list', 'view_id': ref('pesantren_kesantrian.cdn_mutabaah_harian_view_tree')}), 
                 (0, 0, {'view_mode': 'form', 'view_id': ref('pesantren_kesantrian.cdn_mutabaah_harian_view_form')})]"
                 />
+            <field name="context">{'from_musyrif': True}</field>
         </record>
         
         <!-- This Menu Item must have a parent and an action -->

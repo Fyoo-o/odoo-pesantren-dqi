@@ -34,6 +34,7 @@
                 ('siswa.kamar_id.pengganti_ids.user_id','=',uid)
             ]
             </field>
+            <field name="context">{'from_musyrif': True}</field>
         </record>
         
         <!-- This Menu Item must have a parent and an action -->

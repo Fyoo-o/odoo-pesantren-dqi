@@ -1,0 +1,56 @@
+<!-- File: security/musyrif_security.xml -->
+<odoo>
+    <data noupdate="1">
+        <!-- Record Rule: Musyrif hanya lihat santri bimbingannya -->
+        <record id="musyrif_santri_bimbingan_rule" model="ir.rule">
+            <field name="name">Musyrif: Santri Bimbingan Saja</field>
+            <field name="model_id" ref="pesantren_kesantrian.model_cdn_siswa"/>
+            <field name="domain_force">[
+                '|',
+                ('kamar_id.musyrif_id.user_id', '=', user.id),
+                ('kamar_id.pengganti_ids.user_id', '=', user.id)
+            ]</field>
+            <field name="groups" eval="[(4, ref('pesantren_musyrif.group_musyrif_staff'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Record Rule: Guru Quran akses semua -->
+        <record id="guru_quran_all_santri_rule" model="ir.rule">
+            <field name="name">Guru Quran: Akses Semua Santri</field>
+            <field name="model_id" ref="pesantren_kesantrian.model_cdn_siswa"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('pesantren_guruquran.group_guru_quran_staff'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Record Rule: Guru Quran akses semua -->
+        <record id="guru_akademik_all_santri_rule" model="ir.rule">
+            <field name="name">Guru Akademik: Akses Semua Santri</field>
+            <field name="model_id" ref="pesantren_kesantrian.model_cdn_siswa"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('pesantren_guru.group_guru_staff'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Record Rule: Manager akses semua -->
+        <record id="manager_all_santri_rule" model="ir.rule">
+            <field name="name">Manager: Akses Semua Santri</field>
+            <field name="model_id" ref="pesantren_kesantrian.model_cdn_siswa"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('pesantren_kesantrian.group_kesantrian_manager'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+    </data>
+</odoo>

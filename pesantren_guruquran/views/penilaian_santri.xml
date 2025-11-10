@@ -10,7 +10,7 @@
             <field name="arch" type="xml">
                 <list>
                     <field name="name"/>
-                    <field name="halaqoh_id"/>
+                    <field name="halaqoh_id" context="{'from_guru_quran': True}"/>
                     <field name="kategori_penilaian"/>
                     <field name="guru_id"/>
                     <field name="tipe"/>
@@ -40,7 +40,7 @@
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
                                 <field name="halaqoh_id"
                                     domain="[('penanggung_jawab_id','in',[guru_id])]"
-                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
+                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" context="{'from_guru_quran': True}"/>
                             </group>
                             <group>
                                 <field name="kategori_penilaian"
@@ -59,7 +59,7 @@
                                 <!-- <field name="state" invisible="1"/> -->
                                 <field name="santri_id"
                                     domain="[('halaqoh_id', '=', id_halaqoh)]"
-                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
+                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" context="{'from_guru_quran': True}"/>
                                 <field name="panggilan" string="Panggilan"/>
                                 <field name="nilai" widget="integer"/>
                                 <field name="predikat"/>
@@ -92,6 +92,7 @@
             <field name="view_mode">list,form</field>
             <field name="search_view_id" ref="view_penilaian_santri_search"/>
             <!-- <field name="context">{'search_default_my_penilaian': 1}</field> -->
+            <field name="context">{'from_guru_quran': True}</field>
         </record>
 
         <!-- This Menu Item must have a parent and an action -->

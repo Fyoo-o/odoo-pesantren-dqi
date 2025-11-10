@@ -46,17 +46,6 @@ class hr_employee(models.Model):
                 record.password = record.nip[:6]
             else:
                 record.password = ''
-    # @api.depends('nip', 'password_manual')
-    # def _compute_password(self):
-    #     for record in self:
-    #         if record.password_manual:
-    #             # Prioritas: jika manual diisi, pakai itu
-    #             record.password = record.password_manual
-    #         elif record.nip and len(record.nip) >= 6:
-    #             # Fallback: ambil 6 digit pertama NIP
-    #             record.password = record.nip[:6]
-    #         else:
-    #             record.password = ''
     
 # args=None
     def activate_account(self):
@@ -112,9 +101,9 @@ class hr_employee(models.Model):
         elif self.jns_pegawai == 'guru':
             # groups_to_add.append(self.env.ref('pesantren_guru.group_guru_manager'))
             groups_to_add.append(self.env.ref('pesantren_guru.group_guru_staff'))
+            groups_to_add.append(self.env.ref('pesantren_guruquran.group_guru_quran_user'))
             # groups_to_add.append(self.env.ref('pesantren_guru.group_guru_user'))
             # groups_to_add.append(self.env.ref('pesantren_guruquran.group_guru_quran_manager'))
-            groups_to_add.append(self.env.ref('pesantren_guruquran.group_guru_quran_user'))
 
             groups_to_add.append(self.env.ref('pesantren_base.group_sekolah_user'))
             groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_user'))
@@ -135,6 +124,7 @@ class hr_employee(models.Model):
         elif self.jns_pegawai == 'musyrif,guru':
             groups_to_add.append(self.env.ref('pesantren_musyrif.group_musyrif_staff'))
             groups_to_add.append(self.env.ref('pesantren_guru.group_guru_staff'))
+            groups_to_add.append(self.env.ref('pesantren_guruquran.group_guru_quran_user'))
 
             groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_user')) 
             groups_to_add.append(self.env.ref('pesantren_base.group_sekolah_user')) 
@@ -144,6 +134,7 @@ class hr_employee(models.Model):
         elif self.jns_pegawai == 'musyrif,guruquran':
             groups_to_add.append(self.env.ref('pesantren_musyrif.group_musyrif_staff'))
             groups_to_add.append(self.env.ref('pesantren_guruquran.group_guru_quran_staff'))
+            groups_to_add.append(self.env.ref('pesantren_guru.group_guru_user')) 
 
             groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_user')) 
             groups_to_add.append(self.env.ref('pesantren_base.group_sekolah_user')) 

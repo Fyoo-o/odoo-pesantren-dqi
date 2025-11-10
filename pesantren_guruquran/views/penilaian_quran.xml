@@ -8,6 +8,7 @@
             <field name="view_mode">list,form</field>
             <field name="view_id" ref="pesantren_kesantrian.view_penilaian_quran_tree"/>
             <field name="domain" eval="[]"/>
+            <field name="context">{'from_guru_quran': True}</field>
         </record>
 
         <!-- Tree View -->

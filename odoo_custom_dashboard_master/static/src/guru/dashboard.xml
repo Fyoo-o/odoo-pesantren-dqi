@@ -51,7 +51,7 @@
         display: flex;
     }
 
-    </style>
+        </style>
         <div class="container-fluid vh-100 bg-muted mb-5 pb-5">
             <div class="my-1">
                 <div class="col-12">
@@ -61,52 +61,52 @@
                                 <h2 class="text-dark fw-bold header-text">Dashboard Guru</h2>
                             </div>
                             <div class="controls-wrapper d-flex align-items-center">
-                                <!-- <select id="divisiFilter" class="form-select me-2" style="width: 200px;">
-                                    <option value="">Absensi Santri</option>
-                                    <option value="">Absensi Tahfidzh</option>
-                                    <option value="">Absensi Tahsin</option>
-                                    <option value="">Absensi Ekskul</option>
-                                </select> -->
+                                <!-- Date Picker Button -->
                                 <div class="button-popup-wrapper date-button">
-                                    <button id="datePickerButton" class="btn btn-outline-secondary me-2 date-button">
+                                    <button id="datePickerButton" class="btn btn-outline-secondary me-2 date-button" t-on-click="this.toggleDatePicker">
                                         <i class="fas fa-calendar-alt"></i>
-                                        <span id="dateRangeText" class="ms-2">Select Dates</span>
+                                        <t t-if="state.selectedDateRange">
+                                            <span class="ms-2" t-esc="this.formatDateRange(state.selectedDateRange.start, state.selectedDateRange.end)"/>
+                                        </t>
+                                        <t t-else="">Select Dates</t>
                                     </button>
-                                    <div id="datePickerContainer" class="popup-container" style="display: none;">
-                                        <div class="date-range d-flex flex-column me-2">
-                                            <label for="startDate" class="date-label text-center">Dari</label>
-                                            <input id="startDate" type="date" class="form-control date-input" />
-                                        </div>
-                                        <div class="date-range d-flex flex-column">
-                                            <label for="endDate" class="date-label text-center">Sampai</label>
-                                            <input id="endDate" type="date" class="form-control date-input" />
+
+                                    <div t-if="state.showDatePicker" id="datePickerContainer" class="popup-container bg-white p-3 rounded shadow-lg mt-2" style="position: absolute; z-index:1050;">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="date-range d-flex flex-column">
+                                                <label class="date-label text-center">Dari</label>
+                                                <input type="date" class="form-control date-input" t-model="state.tempDateRange.start" t-on-change="applyDateRange"/>
+                                            </div>
+                                            <div class="date-range d-flex flex-column">
+                                                <label class="date-label text-center">Sampai</label>
+                                                <input type="date" class="form-control date-input" t-model="state.tempDateRange.end" t-on-change="applyDateRange"/>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="period-and-timer">
-                                    <select id="periodSelection" class="form-control period-selection">
-                                        <option value="today">Hari Ini</option>
-                                        <option value="yesterday">Kemarin</option>
-                                        <option value="thisWeek">Minggu Ini</option>
-                                        <option value="lastWeek">Minggu Lalu</option>
-                                        <option value="thisMonth">Bulan Ini</option>
-                                        <option value="lastMonth">Bulan Lalu</option>
-                                        <option value="thisYear">Tahun Ini</option>
-                                        <option value="lastYear">Tahun Lalu</option>
+
+                                <!-- Dropdown Periode -->
+                                <div class="period-and-timer ms-2 d-flex align-items-center">
+                                    <select t-ref="periodSelection" class="form-select period-selection" t-on-change="ev => this.setPeriod(ev.target.value)">
+                                        <option value="custom" t-att-selected="state.selectedPeriod==='custom'">Default</option>
+                                        <option value="today" t-att-selected="state.selectedPeriod==='today'">Hari Ini</option>
+                                        <option value="yesterday" t-att-selected="state.selectedPeriod==='yesterday'">Kemarin</option>
+                                        <option value="thisWeek" t-att-selected="state.selectedPeriod==='thisWeek'">Minggu Ini</option>
+                                        <option value="lastWeek" t-att-selected="state.selectedPeriod==='lastWeek'">Minggu Lalu</option>
+                                        <option value="thisMonth" t-att-selected="state.selectedPeriod==='thisMonth'">Bulan Ini</option>
+                                        <option value="lastMonth" t-att-selected="state.selectedPeriod==='lastMonth'">Bulan Lalu</option>
+                                        <option value="thisYear" t-att-selected="state.selectedPeriod==='thisYear'">Tahun Ini</option>
+                                        <option value="lastYear" t-att-selected="state.selectedPeriod==='lastYear'">Tahun Lalu</option>
                                     </select>
-                                    <!-- Tombol untuk memilih rentang tanggal -->
-                                    <!-- Tombol Timer -->
-                                    <button id="timerButton" class="btn btn-outline-secondary timer-button">
+
+                                    <!-- Timer Button -->
+                                    <button id="timerButton" class="btn btn-outline-secondary timer-button ms-2">
                                         <i id="timerIcon" class="fas fa-clock"></i>
                                         <span id="timerCountdown"></span>
                                     </button>
-                                    <!-- <small>
-                                    <a href="https://youtu.be/viwr6v9HHmw" target="_blank" class="ms-2 fa-solid fa-question rounded-circle">
-                                        <i class="fa-solid fa-question"></i>
-                                    </a>
-                                </small> -->
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>

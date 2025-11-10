@@ -9,6 +9,7 @@
             <field name="view_mode">list,form</field>
             <!-- <field name="domain">['|',('siswa_id.kamar_id.musyrif_id.user_id','=',user.id),('siswa_id.kamar_id.pengganti_ids.user_id','=',user.id)]</field>
             <field name="context">{'search_default_group_by_siswa_id':1}</field> -->
+            <field name="context">{'from_musyrif': True}</field>
         </record>
         <!-- This Menu Item must have a parent and an action -->
         <menuitem id="cdn_kesehatan_menu_act" name="Kesehatan Santri" parent="musyrif_aktivitas_menu_categ" action="musyrif_kesehatan_action" sequence="20"/>

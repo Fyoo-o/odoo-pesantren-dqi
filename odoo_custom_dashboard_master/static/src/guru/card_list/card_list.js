@@ -214,13 +214,26 @@ export class GuruList extends BaseDateFilteredListComponent {
             if (this.state.startDate) domain.push(['penilaian_id.tanggal', '>=', this.state.startDate]);
             if (this.state.endDate) domain.push(['penilaian_id.tanggal', '<=', this.state.endDate]);
 
-            // 1️⃣ Ambil semua line penilaian
-            const lineRecords = await this.orm.searchRead(
-                'cdn.penilaian_quran_line',
-                domain,
-                ['id', 'penilaian_id', 'jml_baris']
-            );
+            let lineRecords = [],
+            penilaianRecords = [];
 
+            // 1️⃣ Ambil semua line penilaian
+            try {
+                lineRecords = await this.orm.searchRead(
+                    "cdn.penilaian_quran_line",
+                    domain,
+                    ["id", "penilaian_id", "jml_baris"],
+                    {
+                        context: {
+                        ...this.env.context,
+                        from_guru_quran: true,
+                        },
+                    }
+                );
+            } catch (e) {
+                console.error("Error penilaian_quran_lines:", e);
+            }
+            
             console.log("Jumlah line ditemukan:", lineRecords.length);
 
             if (!lineRecords.length) {
@@ -231,11 +244,21 @@ export class GuruList extends BaseDateFilteredListComponent {
 
             // 2️⃣ Ambil semua penilaian terkait untuk tahu siswa & halaqoh
             const penilaianIds = [...new Set(lineRecords.map(l => l.penilaian_id?.[0]).filter(Boolean))];
-            const penilaianRecords = await this.orm.searchRead(
-                'cdn.penilaian_quran',
-                [['id', 'in', penilaianIds]],
-                ['id', 'siswa_id', 'halaqoh_id']
-            );
+            try {
+                penilaianRecords = await this.orm.searchRead(
+                    "cdn.penilaian_quran",
+                    [["id", "in", penilaianIds]],
+                    ["id", "siswa_id", "halaqoh_id"],
+                    {
+                        context: {
+                        ...this.env.context,
+                        from_guru_quran: true,
+                        },
+                    }
+                );
+            } catch (e) {
+                console.error("Error penilaian_quran:", e);
+            }
 
             const penilaianMap = new Map(penilaianRecords.map(p => [
                 p.id,

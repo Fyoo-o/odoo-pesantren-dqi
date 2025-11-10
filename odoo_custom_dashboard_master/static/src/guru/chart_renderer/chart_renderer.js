@@ -9,6 +9,7 @@ import { session } from "@web/session";
 export class GuruChartRenderer extends Component {
   setup() {
     this.chartRef = useRef("chart");
+    this.periodSelectionRef = useRef("periodSelection");
     this.orm = useService("orm");
     this.actionService = useService("action");
     this.default_period = "thisMonth";
@@ -45,25 +46,36 @@ export class GuruChartRenderer extends Component {
       }
     });
     onMounted(() => {
-      const periodSelection = document.getElementById("periodSelection");
-      if (periodSelection) {
-        periodSelection.value = "thisMonth";
+      // Set default periode "Bulan Ini"
+      if (this.periodSelectionRef.el) {
+        this.periodSelectionRef.el.value = "thisMonth";
       }
-      if (this.props.title === "pie1") {
-        this.attachEventListeners();
-        this.filterDataByPeriod();
+
+      // Set default startDate dan endDate
+      const startDateInput = document.getElementById("startDate");
+      const endDateInput = document.getElementById("endDate");
+
+      if (startDateInput && endDateInput) {
+        const today = new Date();
+        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+        startDateInput.value = startOfMonth.toISOString().split("T")[0];
+        endDateInput.value = endOfMonth.toISOString().split("T")[0];
+
+        this.state.startDate2 = startOfMonth.toISOString().split("T")[0];
+        this.state.endDate2 = endOfMonth.toISOString().split("T")[0];
       }
-      if (this.props.title === "pie2") {
-        this.attachEventListeners();
-        this.filterDataByPeriod();
-      }
-      if (this.props.title === "pie3") {
+
+      // Lanjutkan inisialisasi chart
+      if (["pie1", "pie2", "pie3"].includes(this.props.title)) {
         this.attachEventListeners();
         this.filterDataByPeriod();
       }
 
       this.renderChart();
     });
+
 
     onWillUnmount(() => {
       // COUNTDOWN
@@ -617,7 +629,7 @@ export class GuruChartRenderer extends Component {
       let resModel;
       if (this.props.title === "pie1") {
         resModel = "cdn.absensi_siswa_lines";
-      }  else if (this.props.title === "pie2") {
+      } else if (this.props.title === "pie2") {
         resModel = "cdn.absen_halaqoh_line";
       }
 
@@ -741,243 +753,326 @@ export class GuruChartRenderer extends Component {
     }
   }
 
+  // filterDataByPeriod() {
+  //   const startDateInput = document.getElementById("startDate");
+  //   const endDateInput = document.getElementById("endDate");
+  //   const periodSelection = document.getElementById("periodSelection");
+
+  //   // Langsung eksekusi logic tanpa mendaftarkan event listener baru
+  //   const today = new Date();
+  //   let startDate;
+  //   let endDate;
+  //   const defaultPeriod = "thisMonth"; // Default ke Bulan Ini
+  //   periodSelection.value = defaultPeriod; // Pilih default period pada dropdown
+
+  //   if (periodSelection) {
+  //     periodSelection.addEventListener("change", () => {
+  //       this.showLoading();
+  //       try {
+  //         switch (periodSelection.value) {
+  //           case "today":
+  //             // Hari Ini
+  //             startDate = new Date(
+  //               Date.UTC(
+  //                 today.getUTCFullYear(),
+  //                 today.getUTCMonth(),
+  //                 today.getUTCDate(),
+  //                 0,
+  //                 0,
+  //                 0,
+  //                 1
+  //               )
+  //             );
+  //             endDate = new Date(
+  //               Date.UTC(
+  //                 today.getUTCFullYear(),
+  //                 today.getUTCMonth(),
+  //                 today.getUTCDate(),
+  //                 23,
+  //                 59,
+  //                 59,
+  //                 999
+  //               )
+  //             );
+  //             break;
+  //           case "yesterday":
+  //             // Kemarin
+  //             startDate = new Date(
+  //               Date.UTC(
+  //                 today.getUTCFullYear(),
+  //                 today.getUTCMonth(),
+  //                 today.getUTCDate() - 1,
+  //                 0,
+  //                 0,
+  //                 0,
+  //                 1
+  //               )
+  //             );
+  //             endDate = new Date(
+  //               Date.UTC(
+  //                 today.getUTCFullYear(),
+  //                 today.getUTCMonth(),
+  //                 today.getUTCDate() - 1,
+  //                 23,
+  //                 59,
+  //                 59,
+  //                 999
+  //               )
+  //             );
+  //             break;
+  //           case "thisWeek":
+  //             // Minggu Ini
+  //             const startOfWeek = today.getUTCDate() - today.getUTCDay(); // Set ke hari Minggu
+  //             startDate = new Date(
+  //               Date.UTC(
+  //                 today.getUTCFullYear(),
+  //                 today.getUTCMonth(),
+  //                 startOfWeek,
+  //                 0,
+  //                 0,
+  //                 0,
+  //                 1
+  //               )
+  //             );
+  //             endDate = new Date(
+  //               Date.UTC(
+  //                 today.getUTCFullYear(),
+  //                 today.getUTCMonth(),
+  //                 startOfWeek + 6,
+  //                 23,
+  //                 59,
+  //                 59,
+  //                 999
+  //               )
+  //             );
+  //             break;
+  //           case "lastWeek":
+  //             // Minggu Lalu
+  //             const lastWeekStart = today.getUTCDate() - today.getUTCDay() - 7; // Minggu sebelumnya
+  //             startDate = new Date(
+  //               Date.UTC(
+  //                 today.getUTCFullYear(),
+  //                 today.getUTCMonth(),
+  //                 lastWeekStart,
+  //                 0,
+  //                 0,
+  //                 0,
+  //                 1
+  //               )
+  //             );
+  //             endDate = new Date(
+  //               Date.UTC(
+  //                 today.getUTCFullYear(),
+  //                 today.getUTCMonth(),
+  //                 lastWeekStart + 6,
+  //                 23,
+  //                 59,
+  //                 59,
+  //                 999
+  //               )
+  //             );
+  //             break;
+  //           case "thisMonth":
+  //             // Bulan Ini
+  //             startDate = new Date(
+  //               Date.UTC(
+  //                 today.getUTCFullYear(),
+  //                 today.getUTCMonth(),
+  //                 1,
+  //                 0,
+  //                 0,
+  //                 0,
+  //                 1
+  //               )
+  //             );
+  //             endDate = new Date(
+  //               Date.UTC(
+  //                 today.getUTCFullYear(),
+  //                 today.getUTCMonth() + 1,
+  //                 0,
+  //                 23,
+  //                 59,
+  //                 59,
+  //                 999
+  //               )
+  //             );
+  //             break;
+  //           case "lastMonth":
+  //             // Bulan Lalu
+  //             startDate = new Date(
+  //               Date.UTC(
+  //                 today.getUTCFullYear(),
+  //                 today.getUTCMonth() - 1,
+  //                 1,
+  //                 0,
+  //                 0,
+  //                 0,
+  //                 1
+  //               )
+  //             );
+  //             endDate = new Date(
+  //               Date.UTC(
+  //                 today.getUTCFullYear(),
+  //                 today.getUTCMonth(),
+  //                 0,
+  //                 23,
+  //                 59,
+  //                 59,
+  //                 999
+  //               )
+  //             );
+  //             break;
+  //           case "thisYear":
+  //             // Tahun Ini
+  //             startDate = new Date(
+  //               Date.UTC(today.getUTCFullYear(), 0, 1, 0, 0, 0, 1)
+  //             );
+  //             endDate = new Date(
+  //               Date.UTC(today.getUTCFullYear(), 11, 31, 23, 59, 59, 999)
+  //             );
+  //             break;
+  //           case "lastYear":
+  //             // Tahun Lalu
+  //             startDate = new Date(
+  //               Date.UTC(today.getUTCFullYear() - 1, 0, 1, 0, 0, 0, 1)
+  //             );
+  //             endDate = new Date(
+  //               Date.UTC(today.getUTCFullYear() - 1, 11, 31, 23, 59, 59, 999)
+  //             );
+  //             break;
+  //           default:
+  //             // Default ke Bulan Ini jika tidak ada yang cocok
+  //             startDate = new Date(
+  //               Date.UTC(
+  //                 today.getUTCFullYear(),
+  //                 today.getUTCMonth(),
+  //                 1,
+  //                 0,
+  //                 0,
+  //                 0,
+  //                 1
+  //               )
+  //             );
+  //             endDate = new Date(
+  //               Date.UTC(
+  //                 today.getUTCFullYear(),
+  //                 today.getUTCMonth() + 1,
+  //                 0,
+  //                 23,
+  //                 59,
+  //                 59,
+  //                 999
+  //               )
+  //             );
+  //         }
+
+  //         // Update the input fields and the state
+  //         if (startDate && endDate) {
+  //           this.state.startDate2 = startDate.toISOString().split("T")[0];
+  //           this.state.endDate2 = endDate.toISOString().split("T")[0];
+  //           startDateInput.value = this.state.startDate2;
+  //           endDateInput.value = this.state.endDate2;
+  //           console.log("dates down: ", startDate, "& ", endDate);
+  //           console.log(
+  //             "dates down state: ",
+  //             this.state.startDate2,
+  //             "& ",
+  //             this.state.endDate2
+  //           );
+  //           this.updateDateRangeText();
+  //           this.fetchAndProcessData(startDate, endDate);
+  //         }
+  //       } catch {
+  //         console.log("terjadi error");
+  //       } finally {
+  //         this.hideLoading();
+  //       }
+  //     });
+  //   }
+  // }
   filterDataByPeriod() {
     const startDateInput = document.getElementById("startDate");
     const endDateInput = document.getElementById("endDate");
-    const periodSelection = document.getElementById("periodSelection");
+    const periodSelection = this.periodSelectionRef.el;
 
-    // Langsung eksekusi logic tanpa mendaftarkan event listener baru
+    if (!periodSelection) return;
+
+    // Set default value
+    const defaultPeriod = "thisMonth";
+    periodSelection.value = defaultPeriod;
+
     const today = new Date();
-    let startDate;
-    let endDate;
-    const defaultPeriod = "thisMonth"; // Default ke Bulan Ini
-    periodSelection.value = defaultPeriod; // Pilih default period pada dropdown
 
-    if (periodSelection) {
-      periodSelection.addEventListener("change", () => {
-        this.showLoading();
-        try {
-          switch (periodSelection.value) {
-            case "today":
-              // Hari Ini
-              startDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth(),
-                  today.getUTCDate(),
-                  0,
-                  0,
-                  0,
-                  1
-                )
-              );
-              endDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth(),
-                  today.getUTCDate(),
-                  23,
-                  59,
-                  59,
-                  999
-                )
-              );
-              break;
-            case "yesterday":
-              // Kemarin
-              startDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth(),
-                  today.getUTCDate() - 1,
-                  0,
-                  0,
-                  0,
-                  1
-                )
-              );
-              endDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth(),
-                  today.getUTCDate() - 1,
-                  23,
-                  59,
-                  59,
-                  999
-                )
-              );
-              break;
-            case "thisWeek":
-              // Minggu Ini
-              const startOfWeek = today.getUTCDate() - today.getUTCDay(); // Set ke hari Minggu
-              startDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth(),
-                  startOfWeek,
-                  0,
-                  0,
-                  0,
-                  1
-                )
-              );
-              endDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth(),
-                  startOfWeek + 6,
-                  23,
-                  59,
-                  59,
-                  999
-                )
-              );
-              break;
-            case "lastWeek":
-              // Minggu Lalu
-              const lastWeekStart = today.getUTCDate() - today.getUTCDay() - 7; // Minggu sebelumnya
-              startDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth(),
-                  lastWeekStart,
-                  0,
-                  0,
-                  0,
-                  1
-                )
-              );
-              endDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth(),
-                  lastWeekStart + 6,
-                  23,
-                  59,
-                  59,
-                  999
-                )
-              );
-              break;
-            case "thisMonth":
-              // Bulan Ini
-              startDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth(),
-                  1,
-                  0,
-                  0,
-                  0,
-                  1
-                )
-              );
-              endDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth() + 1,
-                  0,
-                  23,
-                  59,
-                  59,
-                  999
-                )
-              );
-              break;
-            case "lastMonth":
-              // Bulan Lalu
-              startDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth() - 1,
-                  1,
-                  0,
-                  0,
-                  0,
-                  1
-                )
-              );
-              endDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth(),
-                  0,
-                  23,
-                  59,
-                  59,
-                  999
-                )
-              );
-              break;
-            case "thisYear":
-              // Tahun Ini
-              startDate = new Date(
-                Date.UTC(today.getUTCFullYear(), 0, 1, 0, 0, 0, 1)
-              );
-              endDate = new Date(
-                Date.UTC(today.getUTCFullYear(), 11, 31, 23, 59, 59, 999)
-              );
-              break;
-            case "lastYear":
-              // Tahun Lalu
-              startDate = new Date(
-                Date.UTC(today.getUTCFullYear() - 1, 0, 1, 0, 0, 0, 1)
-              );
-              endDate = new Date(
-                Date.UTC(today.getUTCFullYear() - 1, 11, 31, 23, 59, 59, 999)
-              );
-              break;
-            default:
-              // Default ke Bulan Ini jika tidak ada yang cocok
-              startDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth(),
-                  1,
-                  0,
-                  0,
-                  0,
-                  1
-                )
-              );
-              endDate = new Date(
-                Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth() + 1,
-                  0,
-                  23,
-                  59,
-                  59,
-                  999
-                )
-              );
-          }
+    const updateDates = (period) => {
+      let startDate, endDate;
 
-          // Update the input fields and the state
-          if (startDate && endDate) {
-            this.state.startDate2 = startDate.toISOString().split("T")[0];
-            this.state.endDate2 = endDate.toISOString().split("T")[0];
-            startDateInput.value = this.state.startDate2;
-            endDateInput.value = this.state.endDate2;
-            console.log("dates down: ", startDate, "& ", endDate);
-            console.log(
-              "dates down state: ",
-              this.state.startDate2,
-              "& ",
-              this.state.endDate2
-            );
-            this.updateDateRangeText();
-            this.fetchAndProcessData(startDate, endDate);
-          }
-        } catch {
-          console.log("terjadi error");
-        } finally {
-          this.hideLoading();
-        }
-      });
-    }
+      switch (period) {
+        case "today":
+          startDate = new Date(today);
+          endDate = new Date(today);
+          break;
+        case "yesterday":
+          startDate = new Date(today);
+          startDate.setDate(today.getDate() - 1);
+          endDate = new Date(startDate);
+          break;
+        case "thisWeek":
+          startDate = new Date(today);
+          startDate.setDate(today.getDate() - today.getDay());
+          endDate = new Date(startDate);
+          endDate.setDate(startDate.getDate() + 6);
+          break;
+        case "lastWeek":
+          startDate = new Date(today);
+          startDate.setDate(today.getDate() - today.getDay() - 7);
+          endDate = new Date(startDate);
+          endDate.setDate(startDate.getDate() + 6);
+          break;
+        case "thisMonth":
+          startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+          endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+          break;
+        case "lastMonth":
+          startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+          endDate = new Date(today.getFullYear(), today.getMonth(), 0);
+          break;
+        case "thisYear":
+          startDate = new Date(today.getFullYear(), 0, 1);
+          endDate = new Date(today.getFullYear(), 11, 31);
+          break;
+        case "lastYear":
+          startDate = new Date(today.getFullYear() - 1, 0, 1);
+          endDate = new Date(today.getFullYear() - 1, 11, 31);
+          break;
+        default:
+          startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+          endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+      }
+
+      this.state.startDate2 = startDate.toISOString().split("T")[0];
+      this.state.endDate2 = endDate.toISOString().split("T")[0];
+
+      if (startDateInput) startDateInput.value = this.state.startDate2;
+      if (endDateInput) endDateInput.value = this.state.endDate2;
+
+      this.updateDateRangeText();
+      this.fetchAndProcessData(startDate, endDate);
+    };
+
+    // Jalankan sekali untuk default
+    updateDates(defaultPeriod);
+
+    // Event listener untuk perubahan dropdown
+    periodSelection.addEventListener("change", (ev) => {
+      this.showLoading();
+      try {
+        updateDates(ev.target.value);
+      } finally {
+        this.hideLoading();
+      }
+    });
   }
+
 
   updateDateRangeText() {
     const dateRangeText = document.getElementById("dateRangeText");

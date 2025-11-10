@@ -118,29 +118,26 @@
 		</record>
 
 		<!-- Rules SISWA -->
-
-		<record id="group_musyrif_user_rule_siswa" model="ir.rule">
-			<field name="name">User Rule Cek Santri</field>
+		<!-- <record id="group_musyrif_user_rule_siswa_all" model="ir.rule">
+			<field name="name">Musyrif User Akses Santri</field>
 			<field name="model_id" ref="pesantren_kesantrian.model_cdn_siswa"/>
-			<field name = "perm_read" eval = "True" /> 
-   			<field name = "perm_write" eval = "True" /> 
-   			<field name = "perm_create" eval = "False" /> 
-   			<field name = "perm_unlink" eval = "False" /> 
-			<field name="domain_force">
-				[
-                    '|',
-                    ('kamar_id.musyrif_id.user_id','=',user.id),
-                    ('kamar_id.pengganti_ids.user_id','=',user.id)
-                ]
-			</field>
-			<field name="groups" eval="[(4, ref('group_musyrif_user'))]"/>
+			<field name="perm_read" eval="True"/>
+			<field name="perm_write" eval="True"/>
+			<field name="perm_create" eval="False"/>
+			<field name="perm_unlink" eval="False"/>
+			<field name="groups" eval="[(4, ref('pesantren_musyrif.group_musyrif_user'))]"/>
 		</record>
 
-		<!-- <record id="group_musyrif_manager_rule_siswa" model="ir.rule">
-			<field name="name">Manager Rule Cek Santri</field>
-			<field name="model_id" ref="pesantren_kesantrian.model_cdn_siswa"/>
-			<field name="groups" eval="[(4, ref('group_musyrif_manager'))]"/>
+		<record id="group_musyrif_staff_rule_siswa_all" model="ir.rule">
+			<field name="name">Musyrif Staf Akses Santri</field>
+			<field name="model_id" ref="pesantren_base.model_cdn_siswa"/>
+			<field name="perm_read" eval="True"/>
+			<field name="perm_write" eval="True"/>
+			<field name="perm_create" eval="False"/>
+			<field name="perm_unlink" eval="False"/>
+			<field name="groups" eval="[(4, ref('pesantren_musyrif.group_musyrif_staff'))]"/>
 		</record> -->
+
 		<!-- Rules Absensi Malam untuk Musyrif -->
 		<record id="group_musyrif_user_rule_absensi_malam" model="ir.rule">
 			<field name="name">User Rule Absensi Malam</field>

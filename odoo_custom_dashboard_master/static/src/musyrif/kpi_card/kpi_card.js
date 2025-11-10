@@ -201,7 +201,12 @@ export class MusyrifKpiCard extends Component {
                     'cdn.siswa',
                     'search_read',
                     [[], ['id', 'complete_name', 'jns_kelamin', 'penilaian_quran_count', 'create_date']],
-                    { context: this.env.context }
+                    {
+                        context: {
+                        ...this.env.context,
+                        from_musyrif: true,
+                        },
+                    }
                 );
             } catch (error) {
                 console.warn('Error fetching siswa data:', error);
@@ -214,7 +219,12 @@ export class MusyrifKpiCard extends Component {
                     'search_read',
                     [[...dateDomain, ['state', '=', 'Draft']],
                     ['create_date', 'tgl_ijin', 'siswa_id']],
-                    { context: this.env.context }
+                    {
+                        context: {
+                        ...this.env.context,
+                        from_musyrif: true,
+                        },
+                    }
                 );
             } catch (error) {
                 console.warn('Error fetching perijinan data:', error);
@@ -226,7 +236,12 @@ export class MusyrifKpiCard extends Component {
                     'cdn.pelanggaran',
                     'search_read',
                     [dateDomain, ['tgl_pelanggaran', 'siswa_id', 'pelanggaran_id']],
-                    { context: this.env.context }
+                    {
+                        context: {
+                        ...this.env.context,
+                        from_musyrif: true,
+                        },
+                    }
                 );
             } catch (error) {
                 console.warn('Error fetching pelanggaran data:', error);
@@ -241,7 +256,12 @@ export class MusyrifKpiCard extends Component {
                         ...dateDomain,
                         ['state', 'in', ['periksa', 'pengobatan', 'rawat']]
                     ], ['tgl_diperiksa', 'siswa_id', 'keluhan', 'state']],
-                    { context: this.env.context }
+                    {
+                        context: {
+                        ...this.env.context,
+                        from_musyrif: true,
+                        },
+                    }
                 );
             } catch (error) {
                 console.warn('Error fetching kesehatan data:', error);
@@ -322,6 +342,10 @@ export class MusyrifKpiCard extends Component {
                 views: [[false, 'list'], [false, 'form']],
                 target: 'current',
                 domain: domain,
+                context: {
+                    ...this.env.context,
+                    from_musyrif: true,
+                },
             });
         }
     }

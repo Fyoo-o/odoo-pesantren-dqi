@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, SUPERUSER_ID
 from odoo.exceptions import UserError
 
 class Santri(models.Model):
@@ -426,3 +426,94 @@ class Santri(models.Model):
             'context': {'default_siswa_id': self.partner_id.id},
             'domain': [('siswa_id', '=', self.partner_id.id)]
         }
+        
+    # @api.model
+    # def _search(self, domain, offset=0, limit=None, order=None):
+    #     domain = domain or []
+    #     user = self.env.user
+    #     context = self.env.context
+
+    #     # 1. Superuser & Manager → Full
+    #     if self.env.uid == SUPERUSER_ID or user.has_group('pesantren_kesantrian.group_kesantrian_manager'):
+    #         return super()._search(domain, offset, limit, order)
+
+    #     is_guru_quran   = user.has_group('pesantren_guruquran.group_guru_quran_staff')
+    #     is_guru         = user.has_group('pesantren_guru.group_guru_staff')
+    #     is_musyrif      = user.has_group('pesantren_musyrif.group_musyrif_staff')
+
+    #     # 2. DETEKSI CONTEXT - Perbaikan di sini
+    #     from_guru_quran = bool(
+    #         context.get('from_guru_quran') or
+    #         context.get('active_model') in ['cdn.absen_halaqoh', 'cdn.penilaian_quran', 'cdn.halaqoh', 'cdn.penilaian_quran_line', 'cdn.absen_halaqoh_line']
+    #     )
+    #     from_musyrif = bool(
+    #         context.get('from_musyrif') or
+    #         context.get('active_model') in ['cdn.absen_musyrif', 'cdn.kegiatan_musyrif']
+    #     )
+
+    #     # 4. MUSYRIF + CONTEXT → FILTER KAMAR
+    #     if is_musyrif and from_musyrif:
+    #         domain += [
+    #             '|',
+    #             ('kamar_id.musyrif_id.user_id', '=', user.id),
+    #             ('kamar_id.pengganti_ids.user_id', '=', user.id)
+    #         ]
+    #         return super()._search(domain, offset, limit, order)
+        
+    #     # 3. GURU QURAN dan Akademik → FULL ACCESS (tidak perlu cek context lagi)
+    #     if is_guru_quran or is_guru:
+    #         # Guru Quran selalu punya akses penuh ke siswa
+    #         return super()._search(domain, offset, limit, order)
+
+    #     # 5. MUSYRIF ONLY → FILTER
+    #     if is_musyrif:
+    #         domain += [
+    #             '|',
+    #             ('kamar_id.musyrif_id.user_id', '=', user.id),
+    #             ('kamar_id.pengganti_ids.user_id', '=', user.id)
+    #         ]
+    #         return super()._search(domain, offset, limit, order)
+
+    #     # 6. DEFAULT: FULL
+    #     return super()._search(domain, offset, limit, order)
+    @api.model
+    def _search(self, domain, offset=0, limit=None, order=None):
+        domain = domain or []
+        user = self.env.user
+        context = self.env.context
+
+        # 1. Superuser & Manager → Full
+        if self.env.uid == SUPERUSER_ID or user.has_group('pesantren_kesantrian.group_kesantrian_manager'):
+            return super()._search(domain, offset, limit, order)
+
+        is_guru_quran = user.has_group('pesantren_guruquran.group_guru_quran_staff')
+        is_guru       = user.has_group('pesantren_guru.group_guru_staff')
+        is_musyrif    = user.has_group('pesantren_musyrif.group_musyrif_staff')
+
+        # 2. DETEKSI CONTEXT
+        from_guru_quran = bool(
+            context.get('from_guru_quran') or
+            context.get('active_model') in [
+                'cdn.absen_halaqoh', 'cdn.penilaian_quran', 'cdn.halaqoh',
+                'cdn.penilaian_quran_line', 'cdn.absen_halaqoh_line'
+            ]
+        )
+        from_musyrif = bool(
+            context.get('from_musyrif') or
+            context.get('active_model') in ['cdn.absen_musyrif', 'cdn.kegiatan_musyrif']
+        )
+
+        # MUSYRIF + CONTEXT → FILTER KAMAR
+        if is_musyrif and from_musyrif:
+            domain += [
+                '|',
+                ('kamar_id.musyrif_id.user_id', '=', user.id),
+                ('kamar_id.pengganti_ids.user_id', '=', user.id)
+            ]
+            return super()._search(domain, offset, limit, order)
+        
+        if is_guru_quran or is_guru:
+            return super()._search(domain, offset, limit, order)
+
+        # DEFAULT: FULL (untuk role lain)
+        return super()._search(domain, offset, limit, order)

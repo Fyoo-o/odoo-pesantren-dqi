@@ -1,4 +1,5 @@
 from odoo import api, fields, models
+from odoo.exceptions import UserError
 from odoo.tools.translate import _
 
 class OrangTua(models.Model):
@@ -10,6 +11,13 @@ class OrangTua(models.Model):
     def create(self, vals):
         # Membuat record 'OrangTua' menggunakan inheritance
         res = super(OrangTua, self).create(vals)
+        
+        #  VALIDASI DUPLIKAT EMAIL DI res.users
+        if res.email:
+            existing_user = self.env['res.users'].sudo().search([('login', '=', res.email)], limit=1)
+            if existing_user:
+                # Akan menampilkan pop-up dengan judul: "Operasi tidak valid"
+                raise UserError(f"Email '{res.email}' sudah digunakan oleh pengguna lain.")
         
         # VALIDASI & SET DEFAULT PASSWORD (FIX ERROR BOOLEAN)
         if not res.password or not isinstance(res.password, str):

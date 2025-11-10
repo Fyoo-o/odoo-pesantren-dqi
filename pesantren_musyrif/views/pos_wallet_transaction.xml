@@ -68,7 +68,7 @@
                 ('siswa_id.kamar_id.pengganti_ids.user_id','=',uid)
             ]
             </field>
-            <field name="context">{'search_default_group_by_santri':1}</field>
+            <field name="context">{'from_musyrif': True,'search_default_group_by_santri':1}</field>
         </record>
        
         <!-- This Menu Item must have a parent and an action -->

@@ -33,7 +33,6 @@ class siswa(models.Model):
     kamar_id            = fields.Many2one('cdn.kamar_santri', string='Nama Kamar')
     ruang_kelas_id      = fields.Many2one('cdn.ruang_kelas', string="Ruang Kelas")
 
-
     @api.model
     def _get_pilihan_nama_sekolah(self):
         pendidikan = self.env['ubig.pendidikan'].search([])
