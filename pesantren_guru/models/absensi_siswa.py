@@ -36,7 +36,7 @@ class AbsensiSiswa(models.Model):
                             ('6', 'Sabtu'),
                             ('7', 'Minggu'),
                         ], string='Hari', readonly=True, compute='_compute_hari', store=True)
-    jampelajaran_id    = fields.Many2one(comodel_name='cdn.ref_jam_pelajaran', string='Jam Ke', required=True)
+    jampelajaran_id     = fields.Many2many(comodel_name='cdn.ref_jam_pelajaran', string='Jam Ke', required=True)
     start_time          = fields.Float(string='Start Time', related='jampelajaran_id.start_time', readonly=True, store=True)
     end_time            = fields.Float(string='End Time', related='jampelajaran_id.end_time', readonly=True, store=True)
     # data kelas
@@ -78,10 +78,20 @@ class AbsensiSiswa(models.Model):
     def _compute_hari(self):
         for record in self:
             record.hari = str(self.tanggal.weekday() + 1)
+    # @api.depends('tanggal', 'jampelajaran_id')
+    # def _compute_name(self):
+    #     for record in self:
+    #         record.name = '%s/%s/%s' % (record.kelas_id.name.name,record.tanggal, record.jampelajaran_id.name)
     @api.depends('tanggal', 'jampelajaran_id')
     def _compute_name(self):
         for record in self:
-            record.name = '%s/%s/%s' % (record.kelas_id.name.name,record.tanggal, record.jampelajaran_id.name)
+            # ambil semua nama jam pelajaran, pisahkan dengan koma
+            jam_names = ", ".join(record.jampelajaran_id.mapped('name')) if record.jampelajaran_id else "-"
+            record.name = "%s/%s/%s" % (
+                record.kelas_id.name.name,
+                record.tanggal,
+                jam_names
+            )
     @api.depends('mapel_id','kelas_id')
     def _compute_pertemuan_ke(self):
         for record in self:

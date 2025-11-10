@@ -145,8 +145,8 @@
 			<field name="domain_force">
 				[
 					'|',
-					('siswa_id.kamar_id.musyrif_id.user_id', '=', user.id),
-					('siswa_id.kamar_id.pengganti_ids.user_id', '=', user.id)
+					('kamar_id.musyrif_id.user_id', '=', user.id),
+					('kamar_id.pengganti_ids.user_id', '=', user.id)
 				]
 			</field>
 			<field name="groups" eval="[(4, ref('group_musyrif_user'))]"/>
