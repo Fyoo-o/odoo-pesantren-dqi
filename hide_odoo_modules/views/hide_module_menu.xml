@@ -24,4 +24,9 @@
     <record id="stock.menu_stock_root" model="ir.ui.menu">
         <field name="active" eval="False"/>
     </record>
+
+    <!-- Hide Cuti Menu -->
+    <record id="hr_holidays.menu_hr_holidays_root" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
 </odoo>

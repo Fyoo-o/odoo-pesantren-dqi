@@ -13,12 +13,7 @@
             <field name="view_id" ref="pesantren_guruquran.cdn_penilaian_santri_view_tree"/>
 
             <!-- filter data hanya untuk anak dari user login -->
-            <field name="domain">
-            [
-                ('penilaian_santri_ids.santri_id.orangtua_id.partner_id.user_id','=',uid),
-                ('state','=','done')
-            ]
-            </field>
+            <field name="domain">[]</field>
         </record>
 
         <!-- Tree View link ke action -->

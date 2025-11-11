@@ -62,7 +62,14 @@
                                         <field name="siswa_id" string="Siswa"/>
                                         <field name="panggilan" string="Panggilan"/>
                                         <field name="nis" />
-                                        <field name="kehadiran"/>
+                                        <field 
+                                            name="kehadiran"
+                                            decoration-bf="True"
+                                            decoration-danger="kehadiran=='Alpa'" 
+                                            decoration-warning="kehadiran=='Izin' or kehadiran=='keluar'" 
+                                            decoration-success="kehadiran=='Hadir'" 
+                                            decoration-muted="kehadiran=='Sakit'"    
+                                        />
                                         <field name="keterangan"/>
                                     </list>
                                 </field>

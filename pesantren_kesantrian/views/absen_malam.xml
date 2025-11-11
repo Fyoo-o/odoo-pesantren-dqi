@@ -77,7 +77,14 @@
                                         <field name="panggilan" string="Panggilan"/>
                                         <field name="nis"/>
                                         <field name="kamar_id"/>
-                                        <field name="kehadiran_absen"/>
+                                        <field 
+                                            name="kehadiran_absen"
+                                            decoration-bf="True"
+                                            decoration-danger="kehadiran_absen=='Alpa'" 
+                                            decoration-warning="kehadiran_absen=='Izin' or kehadiran_absen=='keluar'" 
+                                            decoration-success="kehadiran_absen=='Hadir'" 
+                                            decoration-muted="kehadiran_absen=='Sakit'"
+                                        />
                                         <field name="keterangan"/>
                                         <field name="keterangan_izin" />
                                         <button name="action_view_permission" string="Detail" type="object" icon="fa-eye" invisible="(kehadiran_absen != 'Izin' and kehadiran_absen != 'keluar') or not keterangan" class="btn-primary"/>
