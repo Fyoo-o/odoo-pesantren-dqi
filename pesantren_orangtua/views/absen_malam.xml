@@ -6,13 +6,21 @@
             <field name="name">cdn.absensi_malam_line.view.list.orangtua</field>
             <field name="model">cdn.absensi_malam_line</field>
             <field name="arch" type="xml">
-                <list string="Absensi Malam Santri" create="false" edit="false" delete="false">
+                <list string="Absensi Malam Santri" create="false" edit="false" delete="false" default_order="id desc">
                     <field name="tanggal"/>
                     <field name="name" string="Nama Santri"/>
                     <field name="nis"/>
                     <field name="kamar_id"/>
                     <field name="musyrif_id"/>
-                    <field name="kehadiran_absen" string="Kehadiran"/>
+                    <field 
+                        name="kehadiran_absen"
+                        widget="badge"
+                        decoration-danger="kehadiran_absen=='Alpa'" 
+                        decoration-warning="kehadiran_absen=='Izin' or kehadiran_absen=='keluar'" 
+                        decoration-success="kehadiran_absen=='Hadir'" 
+                        decoration-muted="kehadiran_absen=='Sakit'"  
+                        string="Kehadiran"  
+                    />
                     <field name="keterangan"/>
                 </list>
             </field>
@@ -40,7 +48,16 @@
 
                         <group string="Kehadiran">
                             <group>
-                                <field name="kehadiran_absen" string="Status Kehadiran" readonly="1"/>
+                                <field 
+                                    name="kehadiran_absen" 
+                                    string="Status Kehadiran" 
+                                    readonly="1"
+                                    decoration-bf="True"
+                                    decoration-danger="kehadiran_absen=='Alpa'" 
+                                    decoration-warning="kehadiran_absen=='Izin' or kehadiran_absen=='keluar'" 
+                                    decoration-success="kehadiran_absen=='Hadir'" 
+                                    decoration-muted="kehadiran_absen=='Sakit'"    
+                                />
                                 <field name="keterangan" readonly="1" invisible="kehadiran_absen == 'Hadir'"/>
                             </group>
                             <group>
@@ -104,12 +121,7 @@
                 'search_default_this_month': 1,
             }</field>
             <!-- filter data hanya untuk anak dari user yang login -->
-            <field name="domain">
-            [
-                ('siswa_id.orangtua_id.partner_id.user_id', '=', uid),
-                ('absen_id.state', '=', 'done')
-            ]
-            </field>
+            <field name="domain">[]</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     Belum ada data absensi malam untuk santri Anda

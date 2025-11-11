@@ -90,7 +90,14 @@
                                         <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
                                         <field name="panggilan" string="Panggilan"/>
                                         <field name="nis" />
-                                        <field name="kehadiran"/>
+                                        <field 
+                                            name="kehadiran"
+                                            decoration-bf="True"
+                                            decoration-danger="kehadiran=='Alpa'" 
+                                            decoration-warning="kehadiran=='Izin' or kehadiran=='keluar'" 
+                                            decoration-success="kehadiran=='Hadir'" 
+                                            decoration-muted="kehadiran=='Sakit'"    
+                                        />
                                         <field name="keterangan"/>
                                         <field name="keterangan_izin" widget="binary" 
                                                 attrs="{'invisible': [('kehadiran', 'in', ['Hadir', 'Alpa'])]}" />

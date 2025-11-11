@@ -8,12 +8,7 @@
             <field name="res_model">cdn.mutabaah_harian</field>
             <field name="view_mode">list,form</field>
             <field name="view_id" ref="pesantren_kesantrian.cdn_mutabaah_harian_view_tree" />
-            <field name="domain">
-            [
-                ('siswa_id.orangtua_id.partner_id.user_id','=',uid),
-                ('state','=','Done')
-            ]
-            </field>
+            <field name="domain">[]</field>
         </record>
         <record id="action_tree_view_cdn_mutabaah_harian" model="ir.actions.act_window.view">
             <field name="sequence" eval="2" />

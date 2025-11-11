@@ -47,7 +47,7 @@
     'license': 'LGPL-3',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','pesantren_base','stock','pesantren_kesantrian','sale', 'purchase','pesantren_keuangan', 'pesantren_guruquran','pesantren_pendaftaran' ,'mail'],
+    'depends': ['base','pesantren_base','stock','pesantren_kesantrian','sale', 'purchase','pesantren_keuangan', 'pesantren_guruquran','pesantren_pendaftaran' ,'mail', 'pesantren_guru'],
 
     # always loaded
     'data': [
@@ -78,7 +78,7 @@
         'views/absen_malam.xml',
         'views/temp.xml',
         'views/inherit_button_pay.xml',
-        'views/penilain_halaqoh.xml',
+        'views/penilaian_halaqoh.xml',
         'views/invoices_wizard.xml',
         # wizard
         

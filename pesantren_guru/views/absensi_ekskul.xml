@@ -54,7 +54,14 @@
                                     <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" string="Santri"/>
                                     <field name="panggilan"/>
                                     <field name="nis"/>
-                                    <field name="kehadiran" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
+                                    <field 
+                                        name="kehadiran"
+                                        decoration-bf="True"
+                                        decoration-danger="kehadiran=='Alpa'" 
+                                        decoration-warning="kehadiran=='Izin' or kehadiran=='keluar'" 
+                                        decoration-success="kehadiran=='Hadir'" 
+                                        decoration-muted="kehadiran=='Sakit'"    
+                                    />
                                     <field name="keterangan"/>
                                     <field name="keterangan_izin" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>    
                                     <button name="action_view_permission"
