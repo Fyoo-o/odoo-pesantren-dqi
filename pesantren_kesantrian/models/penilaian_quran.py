@@ -75,6 +75,23 @@ class TahfidzTahsin(models.Model):
         string='Setoran Tahfidz'
     )
     
+    # === TAB Tahfidz Ujian ===
+    # buku_tahfidz_ujian_id = fields.Many2one(
+    #     'cdn.buku_tahsin',
+    #     string='Buku',
+    #     default=lambda self: self.env['cdn.buku_tahsin'].search([('name', '=', "Al-Qur'an")], limit=1),
+    #     readonly=True
+    # )
+    
+    # # Ambil daftar Juz unik dari cdn.ayat
+    # juz_tahfidz_ujian = fields.Selection(
+    #     selection=lambda self: self._get_juz_selection(),
+    #     string='Juz'
+    # )
+    
+    # halaman_tahfidz_ujian = fields.Char(string='Halaman')
+    # catatan_tahfidz = fields.Text(string='Catatan Murajaah (Harian)')
+    
     # === TAB Riwayat Hafalan ===
     riwayat_hafalan_ids = fields.One2many(
         'cdn.penilaian_quran_line',
@@ -121,7 +138,7 @@ class TahfidzTahsin(models.Model):
         try:
             ayat_records = self.env['cdn.ayat'].search([('juz', '!=', False), ('juz', '!=', 0)])
             juz_values = sorted(set(ayat_records.mapped('juz')))
-            return [(str(j), f"Juz {j}") for j in juz_values]
+            return [(str(j), f"{j}") for j in juz_values]
         except Exception:
             return []
 
