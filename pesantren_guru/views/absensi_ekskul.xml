@@ -5,7 +5,7 @@
         <field name="model">cdn.absensi_ekskul</field>
         <field name="arch" type="xml">
             <list string="Absensi Ekskul">
-                <field name="row_number" string="No" />
+                <field name="row_number" string="#" />
                 <field name="name"/>
                 <field name="ekskul_id"/>
                 <field name="guru"/>
@@ -50,7 +50,7 @@
                         <page string="Absensi Ekskul">
                             <field name="absen_ids" nolabel="1" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}">
                                 <list editable="bottom" create="false">
-                                    <field name="row_number" string="No" />
+                                    <field name="row_number" string="#" />
                                     <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" string="Santri"/>
                                     <field name="panggilan"/>
                                     <field name="nis"/>
@@ -63,7 +63,7 @@
                                         decoration-muted="kehadiran=='Sakit'"    
                                     />
                                     <field name="keterangan"/>
-                                    <field name="keterangan_izin" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>    
+                                    <field name="keterangan_izin" filename="keterangan_izin_filename"/>    
                                     <button name="action_view_permission"
                                             string="Detail"
                                             type="object"

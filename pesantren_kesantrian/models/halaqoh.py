@@ -5,6 +5,7 @@ from odoo.exceptions import UserError
 class Halaqoh(models.Model):
     _name = 'cdn.halaqoh'
     _description = 'Model untuk Pembagian Kelas Halaqoh'
+    _order = 'name asc'
 
     name = fields.Char(string='Nama Halaqoh', required=True)
     keterangan = fields.Char(string='Keterangan')

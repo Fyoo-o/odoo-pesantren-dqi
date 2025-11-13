@@ -2,126 +2,133 @@
 <templates xml:space="preserve">
     <t t-name="owl.OwlGuruDashboard" owl="1">
         <style>
+            @media (max-width: 768px) {
+                .controls-wrapper {
+                flex-direction: column;
+                width: 100%;
+                }
+                .dateButton {
+                width: 100%;
+                }
+                .timerDropdown {
+                display: flex;
+                width: 100%;
+                justify-content: space-between;
+                margin-top: 0.5rem;
+                }
+                .dropdownButton {
+                width: 100%;
+                }
+                .timer-button {
+                width: 30%;
+                }
+                .header-text {
+                font-size: 1.2rem;
+                }
+            }
 
-    @media (max-width: 768px) {
-    .controls-wrapper {
-        flex-direction: column;
-        width: 100%;
-        gap: 0.5rem; /* Uncomment this line */
-    }
-    
-    /* Add this rule to make select elements expand fully */
-    .controls-wrapper select, .form-select {
-        width: 100% !important;
-        margin-right: 0 !important;
-    }
-    
-    /* Your existing CSS */
-    .date-button {
-        width: 100%;
-    }
-    
-    .period-and-timer {
-        display: flex;
-        justify-content: between;
-        margin-top: 0.5rem;
-        width: 100%;
-    }
-    
-    .header-text {
-        font-size: 1.3rem;
-    }
-    
-    .period-selection {
-        width: 100%;
-    }
-    
-    .timer-button {
-        width: 30%;
-        margin: 0 0 0 0.4rem;
-    }
-}
-    
-
-    .timer-button {
-        margin: 0 0 0 0.4rem;
-    }
-
-    .period-and-timer {
-        display: flex;
-    }
-
+            .timerDropdown {
+                display: flex;
+                margin: 1rem;
+            }
         </style>
-        <div class="container-fluid vh-100 bg-muted mb-5 pb-5">
-            <div class="my-1">
+        <div class="container-fluid vh-100">
+            <!-- Header Full Width -->
+            <div class="mx-2 my-1">
                 <div class="col-12">
-                    <div class="pt-4 pb-2">
+                    <div class="p-2">
                         <div class="d-flex flex-wrap align-items-center justify-content-between">
                             <div class="d-flex">
-                                <h2 class="text-dark fw-bold header-text">Dashboard Guru</h2>
+                                <h2 class="text-primary fw-bold header-text">Dashboard Guru</h2>
                             </div>
-                            <div class="controls-wrapper d-flex align-items-center">
-                                <!-- Date Picker Button -->
-                                <div class="button-popup-wrapper date-button">
-                                    <button id="datePickerButton" class="btn btn-outline-secondary me-2 date-button" t-on-click="this.toggleDatePicker">
-                                        <i class="fas fa-calendar-alt"></i>
+                            <div class="controls-wrapper d-flex align-items-center mt-1 position-relative">
+                                <!-- Custom Date Range Button -->
+                                <div class="button-popup-wrapper">
+                                    <button class="btn btn-outline-secondary dateButton" t-on-click="toggleDatePicker">
+                                        <i class="fas fa-calendar"></i>
                                         <t t-if="state.selectedDateRange">
-                                            <span class="ms-2" t-esc="this.formatDateRange(state.selectedDateRange.start, state.selectedDateRange.end)"/>
+                                            <span t-esc="formatDateRange(state.selectedDateRange.start, state.selectedDateRange.end)" class="ms-2" />
                                         </t>
-                                        <t t-else="">Select Dates</t>
                                     </button>
 
-                                    <div t-if="state.showDatePicker" id="datePickerContainer" class="popup-container bg-white p-3 rounded shadow-lg mt-2" style="position: absolute; z-index:1050;">
-                                        <div class="d-flex align-items-center gap-2">
+                                    <div t-if="state.showDatePicker" class="popup-container bg-white p-3 rounded shadow-lg mt-2" style="z-index:1050;">
+                                        <div class="d-flex align-items-center gap-3">
                                             <div class="date-range d-flex flex-column">
                                                 <label class="date-label text-center">Dari</label>
-                                                <input type="date" class="form-control date-input" t-model="state.tempDateRange.start" t-on-change="applyDateRange"/>
+                                                <input type="date" class="form-control date-input" t-model="state.tempDateRange.start" t-on-change="applyDateRange" />
                                             </div>
                                             <div class="date-range d-flex flex-column">
                                                 <label class="date-label text-center">Sampai</label>
-                                                <input type="date" class="form-control date-input" t-model="state.tempDateRange.end" t-on-change="applyDateRange"/>
+                                                <input type="date" class="form-control date-input" t-model="state.tempDateRange.end" t-on-change="applyDateRange" />
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Dropdown Periode -->
-                                <div class="period-and-timer ms-2 d-flex align-items-center">
-                                    <select t-ref="periodSelection" class="form-select period-selection" t-on-change="ev => this.setPeriod(ev.target.value)">
-                                        <option value="custom" t-att-selected="state.selectedPeriod==='custom'">Default</option>
-                                        <option value="today" t-att-selected="state.selectedPeriod==='today'">Hari Ini</option>
-                                        <option value="yesterday" t-att-selected="state.selectedPeriod==='yesterday'">Kemarin</option>
-                                        <option value="thisWeek" t-att-selected="state.selectedPeriod==='thisWeek'">Minggu Ini</option>
-                                        <option value="lastWeek" t-att-selected="state.selectedPeriod==='lastWeek'">Minggu Lalu</option>
-                                        <option value="thisMonth" t-att-selected="state.selectedPeriod==='thisMonth'">Bulan Ini</option>
-                                        <option value="lastMonth" t-att-selected="state.selectedPeriod==='lastMonth'">Bulan Lalu</option>
-                                        <option value="thisYear" t-att-selected="state.selectedPeriod==='thisYear'">Tahun Ini</option>
-                                        <option value="lastYear" t-att-selected="state.selectedPeriod==='lastYear'">Tahun Lalu</option>
-                                    </select>
+                                <div class="timerDropdown">
+                                    <!-- Dropdown Periode -->
+                                    <div class="dropdown me-3 dropdownButton">
+                                        <button class="btn btn-outline-secondary dropdown-toggle dropdownButton" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <span t-esc="getPeriodLabel(state.selectedPeriod)" />
+                                        </button>
+                                        <ul class="dropdown-menu dropdownButton">
+                                            <li>
+                                                <a class="dropdown-item d-flex justify-content-between align-items-center" href="#" t-on-click.prevent="() => this.setPeriod('custom')">
+                          Default
+                                                    <i class="fas fa-check" t-att-class="{'invisible': !isPeriodSelected('custom')}"></i>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="#" t-on-click.prevent="() => this.setPeriod('today')">Hari Ini</a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="#" t-on-click.prevent="() => this.setPeriod('yesterday')">Kemarin</a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="#" t-on-click.prevent="() => this.setPeriod('thisWeek')">Minggu Ini</a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="#" t-on-click.prevent="() => this.setPeriod('lastWeek')">Minggu Lalu</a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="#" t-on-click.prevent="() => this.setPeriod('thisMonth')">Bulan Ini</a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="#" t-on-click.prevent="() => this.setPeriod('lastMonth')">Bulan Lalu</a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="#" t-on-click.prevent="() => this.setPeriod('thisYear')">Tahun Ini</a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="#" t-on-click.prevent="() => this.setPeriod('lastYear')">Tahun Lalu</a>
+                                            </li>
+                                        </ul>
+                                    </div>
 
                                     <!-- Timer Button -->
-                                    <button id="timerButton" class="btn btn-outline-secondary timer-button ms-2">
+                                    <button id="timerButton" class="btn btn-outline-secondary timer-button">
                                         <i id="timerIcon" class="fas fa-clock"></i>
                                         <span id="timerCountdown"></span>
                                     </button>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
             </div>
+
             <!-- KPI Cards -->
             <div class="mx-0 mt-1 mb-2">
-                <GuruKpiCard/>
+                <GuruKpiCard startDate="dateRangeProps.startDate" endDate="dateRangeProps.endDate"/>
             </div>
+
             <div class="row mx-0">
                 <div class="col-lg-6 m-0 ps-0 py-0 pe-lg-1 pe-0">
                     <div class="shadow-sm p-4 bg-white" style="width: 100%; height: 400px;">
                         <div class="d-flex align-items-center justify-content-between">
                             <h5 class="text-dark fw-bold">Absensi Siswa per Kehadiran</h5>
                         </div>
-                        <GuruChartRenderer type="'pie'" title="'pie1'"/>
+                        <GuruChartRenderer type="'pie'" title="'pie1'" startDate="dateRangeProps.startDate" endDate="dateRangeProps.endDate"/>
                     </div>
                 </div>
                 <div class="col-lg-6 m-0 py-0 px-lg-1 px-0 my-lg-0 my-2">
@@ -129,17 +136,17 @@
                         <div class="d-flex align-items-center justify-content-between">
                             <h5 class="text-dark fw-bold">Absen Halaqoh per Kehadiran</h5>
                         </div>
-                        <GuruChartRenderer type="'pie'" title="'pie2'"/>
+                        <GuruChartRenderer type="'pie'" title="'pie2'" startDate="dateRangeProps.startDate" endDate="dateRangeProps.endDate"/>
                     </div>
                 </div>
             </div>
             <div class="row mx-0 my-2 pb-5">
                 <div class="col-lg-6 col-md-12 col-sm-12 m-0 ps-0 pe-lg-1 pe-0">
                     <!-- <TagihanLunasList/> -->
-                    <GuruList/>
+                    <GuruList startDate="dateRangeProps.startDate" endDate="dateRangeProps.endDate"/>
                 </div>
                 <div class="col-lg-6 col-md-12 col-sm-12 m-0 ps-lg-1 ps-0 pe-0 mt-2 mt-lg-0">
-                    <EkskulList/>
+                    <EkskulList startDate="dateRangeProps.startDate" endDate="dateRangeProps.endDate"/>
                 </div>
             </div>
             <!-- Full Width Line Chart -->

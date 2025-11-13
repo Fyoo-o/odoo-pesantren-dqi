@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
     <t t-name="owl.GuruChartRenderer" owl="1">
-        <!-- Conditional rendering for the chart or the "Data tidak ditemukan" message -->
-        <t t-if="hasData === true" class="p-5">
-            <!-- The canvas element for the chart -->
-            <canvas t-ref="chart" style="display: block; margin: 0 auto;" />
+        <t t-if="hasData">
+            <div class="p-3" style="height: 100%;">
+                <canvas t-ref="chart" style="display: block; margin: 0 auto; max-height: 280px;"/>
+            </div>
         </t>
-        <t t-elif="hasData === false">
-            <!-- The message displayed when there's no data -->
-            <div style="text-align: center; font-size: 18px; color: red;">
-                Data tidak ditemukan
+        <t t-else="">
+            <div class="d-flex flex-column align-items-center justify-content-center h-100 p-5">
+                <i class="fa fa-chart-pie fa-3x text-muted mb-3"></i>
+                <p class="text-muted mb-0">Data tidak ditemukan.</p>
             </div>
         </t>
     </t>

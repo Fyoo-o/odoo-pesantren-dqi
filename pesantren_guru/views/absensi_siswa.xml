@@ -29,7 +29,7 @@
             <field name="model">cdn.absensi_siswa</field>
             <field name="arch" type="xml">
                 <list>
-                    <field name="row_number" string="No"/>
+                    <field name="row_number" string="#"/>
                     <field name="name" optional="show"/>
                     <field name="tanggal" optional="show" />
                     <field name="jampelajaran_id" optional="show" widget="many2many_tags" />
@@ -86,7 +86,7 @@
                             <page string="Absensi Siswa">
                                 <field name="absensi_ids" nolable="1">
                                     <list editable="bottom" create="false" delete="false">
-                                        <field name="row_number" string="No"/>
+                                        <field name="row_number" string="#"/>
                                         <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
                                         <field name="panggilan" string="Panggilan"/>
                                         <field name="nis" />
@@ -99,8 +99,7 @@
                                             decoration-muted="kehadiran=='Sakit'"    
                                         />
                                         <field name="keterangan"/>
-                                        <field name="keterangan_izin" widget="binary" 
-                                                attrs="{'invisible': [('kehadiran', 'in', ['Hadir', 'Alpa'])]}" />
+                                        <field name="keterangan_izin" filename="keterangan_izin_filename"/>
                                         <button name="action_view_permission"
                                             string="Detail"
                                             type="object"
@@ -128,13 +127,13 @@
                             </page>
                         </notebook>
                     </sheet>
-                    <div class="oe_chatter" groups="pesantren_guru.group_guru_user">
+                    <!-- <div class="oe_chatter" groups="pesantren_guru.group_guru_user">
                         <chatter>
                             <field name="message_follower_ids" widget="mail_followers" />
                             <field name="activity_ids" widget="mail_activity" />
                             <field name="message_ids" widget="mail_thread" options="{'display_log_button': True}"/>
                         </chatter>
-                    </div>
+                    </div> -->
                 </form>
             </field>
         </record>

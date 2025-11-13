@@ -7,9 +7,10 @@
             <field name="name">cdn.absensi_siswa.view.list.public</field>
             <field name="model">cdn.absensi_siswa</field>
             <field name="arch" type="xml">
-                <list create="false" edit="false" delete="false">
+                <!-- <list create="false" edit="false" delete="false"> -->
+                <list>
                     <!-- <button name="%(pesantren_guru.action_absensi_filter_wizard)d" string="Filter Tanggal Manual" type="action" class="btn-primary"/> -->
-                    <field name="row_number" string="No"/>
+                    <field name="row_number" string="#"/>
                     <field name="name" optional="show"/>
                     <field name="tanggal" optional="show" />
                     <field name="jampelajaran_id" optional="show" widget="many2many_tags" />
@@ -29,7 +30,8 @@
             <field name="name">cdn.absensi_siswa.view.form.public</field>
             <field name="model">cdn.absensi_siswa</field>
             <field name="arch" type="xml">
-                <form string="" create="false" edit="false" delete="false">
+                <!-- <form string="" create="false" edit="false" delete="false"> -->
+                <form string="">
                     <header>
                         <field name="state" widget="statusbar" />
                     </header>
@@ -58,7 +60,7 @@
                             <page string="Absensi Siswa">
                                 <field name="absensi_ids" nolabel="1" readonly="1">
                                     <list create="false" edit="false" delete="false">
-                                        <field name="row_number" string="No"/>
+                                        <field name="row_number" string="#"/>
                                         <field name="siswa_id" string="Siswa"/>
                                         <field name="panggilan" string="Panggilan"/>
                                         <field name="nis" />

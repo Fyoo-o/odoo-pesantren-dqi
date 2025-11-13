@@ -310,6 +310,8 @@ class AbsensiSiswaLine(models.Model):
                             ('Alpa', 'Alpa'),
                         ], string='Kehadiran', default='Hadir')
     keterangan_izin = fields.Binary(string='Foto', attachment=True)
+    keterangan_izin_filename = fields.Char(string="Nama File Foto")
+    
     keterangan      = fields.Char(string='Keterangan')
     panggilan       = fields.Char(string='Nama Panggilan', related='siswa_id.namapanggilan', readonly=True, store=True)
     guru = fields.Many2one('hr.employee',string="Guru", related='absensi_id.guru_id')
@@ -349,7 +351,21 @@ class AbsensiSiswaLine(models.Model):
                             ('state', '=', 'Permission')
                         ], limit=1)
                         
+                        # PERBAIKAN: Ambil foto bukti dari perijinan
+                        foto_bukti = permission.foto_bukti if permission.foto_bukti else False
+                        
+                        # Ambil nama file asli dari perijinan, atau generate jika kosong
+                        if permission.foto_bukti_filename:
+                            nama_file = permission.foto_bukti_filename
+                        elif foto_bukti:
+                            # Generate nama file jika tidak ada
+                            nama_file = f"Bukti_Izin_{siswa.nis}_{siswa.name}_{permission.name}.jpg"
+                        else:
+                            nama_file = False
+                        
                         if permission:
+                            line.keterangan_izin = foto_bukti
+                            line.keterangan_izin_filename = nama_file
                             line.kehadiran = 'keluar'
                             
                             # Format keterangan

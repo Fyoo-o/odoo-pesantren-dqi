@@ -34,6 +34,7 @@ class OwlKesantrianDashboard extends Component {
   // pasang listener setelah komponen mount
   onMounted(() => {
     document.addEventListener("click", this._handleClickOutside);
+    this.setPeriod(this.state.selectedPeriod);
   });
 
   // lepas listener saat unmount

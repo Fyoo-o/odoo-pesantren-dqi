@@ -4,6 +4,7 @@ from odoo.exceptions import UserError
 
 class hr_employee(models.Model):
     _inherit = 'hr.employee'
+    _order   = 'name asc'
 
     nip = fields.Char('NIP')
     lembaga = fields.Selection([ ('paud','PAUD'),
