@@ -1,412 +1,384 @@
-// /** @odoo-module */
-
-// import { useService } from "@web/core/utils/hooks";
-// const { Component, useRef, onWillStart, onMounted, onWillUnmount, useState, onWillUpdateProps } = owl;
-// import { session } from "@web/session";
-
-// // Fungsi animasi nilai
-// function animateValue(element, start, end, duration) {
-//   let startTimestamp = null;
-//   const step = (timestamp) => {
-//     if (!startTimestamp) startTimestamp = timestamp;
-//     const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-//     const value = Math.floor(progress * (end - start) + start);
-//     element.textContent = value.toLocaleString();
-//     if (progress < 1) {
-//       requestAnimationFrame(step);
-//     }
-//   };
-//   requestAnimationFrame(step);
-// }
-
-// export class GuruKpiCard extends Component {
-//   static props = {
-//     startDate: { type: String, optional: true },
-//     endDate: { type: String, optional: true },
-//   };
-
-//   setup() {
-//     this.orm = useService("orm");
-//     this.actionService = useService("action");
-//     this.loadingOverlayRef = useRef("loadingOverlay");
-
-//     this.state = useState({
-//       kpiData: [],
-//       startDate: this.props.startDate || null,
-//       endDate: this.props.endDate || null,
-//       isLoading: false,
-//     });
-
-//     this.countdownInterval = null;
-//     this.refreshInterval = null;
-//     this.countdownTime = 10;
-//     this.isCountingDown = false;
-
-//     onWillUpdateProps(async (nextProps) => {
-//       if (nextProps.startDate !== this.props.startDate || nextProps.endDate !== this.props.endDate) {
-//         this.state.startDate = nextProps.startDate || null;
-//         this.state.endDate = nextProps.endDate || null;
-//         await this.updateKpiData();
-//       }
-//     });
-
-//     onWillStart(async () => {
-//       if (!this.state.startDate || !this.state.endDate) {
-//         const today = new Date();
-//         const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-//         const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-//         this.state.startDate = this.formatDate(firstDay);
-//         this.state.endDate = this.formatDate(lastDay);
-//       }
-//       await this.updateKpiData();
-//     });
-
-//     onMounted(() => {
-//       this.attachEventListeners();
-//       const periodSelection = document.getElementById("periodSelection");
-//       if (periodSelection) {
-//         periodSelection.value = "thisMonth";
-//       }
-//     });
-
-//     onWillUnmount(() => {
-//       this.clearIntervals();
-//       if (this.loadingOverlay && document.body.contains(this.loadingOverlay)) {
-//         document.body.removeChild(this.loadingOverlay);
-//         this.loadingOverlay = null;
-//       }
-//     });
-//   }
-
-//   formatDate(date) {
-//     const yyyy = date.getFullYear();
-//     const mm = String(date.getMonth() + 1).padStart(2, "0");
-//     const dd = String(date.getDate()).padStart(2, "0");
-//     return `${yyyy}-${mm}-${dd}`;
-//   }
-
-
-//   showLoading() {
-//     if (!this.loadingOverlay) {
-//       this.loadingOverlay = document.createElement("div");
-//       this.loadingOverlay.innerHTML = `
-//         <div class="musyrif-loading-overlay" style="
-//             position: fixed;
-//             top: 0;
-//             left: 0;
-//             width: 100%;
-//             height: 100%;
-//             background: rgba(0, 0, 0, 0.3);
-//             display: flex;
-//             justify-content: center;
-//             align-items: center;
-//             z-index: 9999;
-//         ">
-//             <div class="loading-spinner">
-//                 <i class="fas fa-sync-alt fa-spin fa-3x text-white"></i>
-//             </div>
-//         </div>`;
-//       document.body.appendChild(this.loadingOverlay);
-//     }
-//     this.loadingOverlay.style.display = "flex";
-//     this.state.isLoading = true;
-//   }
-
-//   hideLoading() {
-//     if (this.loadingOverlay) {
-//       this.loadingOverlay.style.display = "none";
-//     }
-//     this.state.isLoading = false;
-//   }
-
-//   clearIntervals() {
-//     if (this.countdownInterval) clearInterval(this.countdownInterval);
-//     if (this.refreshInterval) clearInterval(this.refreshInterval);
-//     this.countdownInterval = null;
-//     this.refreshInterval = null;
-//   }
-
-//   async updateKpiData() {
-//     this.showLoading();
-//     try {
-//       const { startDate, endDate } = this.state;
-
-//       // DOMAIN UNTUK SETIAP MODEL
-//       const domainAbsenSiswa = [["kehadiran", "!=", false]];
-//       const domainAbsenHalaqoh = [["kehadiran", "!=", false]];
-//       const domainAbsenEkskul = [["kehadiran", "!=", false]];
-
-//       if (startDate) {
-//         domainAbsenSiswa.push(["tanggal", ">=", startDate + " 00:00:00"]);
-//         domainAbsenHalaqoh.push(["tanggal", ">=", startDate + " 00:00:00"]);
-//         domainAbsenEkskul.push(["tanggal", ">=", startDate + " 00:00:00"]);
-//       }
-//       if (endDate) {
-//         domainAbsenSiswa.push(["tanggal", "<=", endDate + " 23:59:59"]);
-//         domainAbsenHalaqoh.push(["tanggal", "<=", endDate + " 23:59:59"]);
-//         domainAbsenEkskul.push(["tanggal", "<=", endDate + " 23:59:59"]);
-//       }
-
-//       // PEMANGGILAN ORM
-//       let absensiSiswa = [],
-//         absensiHalaqoh = [],
-//         absensiEkskul = [];
-
-//       try {
-//         absensiSiswa = await this.orm.call(
-//           "cdn.absensi_siswa_lines",
-//           "search_read",
-//           [domainAbsenSiswa, ["id", "siswa_id", "kehadiran", "create_date"]],
-//           { context: this.env.context }
-//         );
-//       } catch (e) {
-//         console.error("Error absensi_siswa_lines:", e);
-//       }
-
-//       try {
-//         console.log("Domain Halaqoh:", domainAbsenHalaqoh);
-//         absensiHalaqoh = await this.orm.call(
-//           "cdn.absen_halaqoh_line",
-//           "search_read",
-//           [domainAbsenHalaqoh, ["id", "siswa_id", "kehadiran", "create_date"]],
-//           {
-//             context: this.env.context,
-//           }
-//         );
-//       } catch (e) {
-//         console.error("Error absen_halaqoh_line:", e);
-//       }
-//       console.log("Result Halaqoh:", absensiHalaqoh.length);
-
-//       try {
-//         absensiEkskul = await this.orm.call(
-//           "cdn.absen_ekskul_line",
-//           "search_read",
-//           [domainAbsenEkskul, ["id", "siswa_id", "kehadiran", "create_date"]],
-//           { context: this.env.context }
-//         );
-//       } catch (e) {
-//         console.error("Error absen_ekskul_line:", e);
-//       }
-
-//       // HITUNG TOTAL
-//       const totalAbsenSiswa = absensiSiswa?.length || 0;
-//       const totalAbsenHalaqoh = absensiHalaqoh?.length || 0;
-//       const totalAbsenEkskul = absensiEkskul?.length || 0;
-
-//       // SET STATE KPI
-//       this.state.kpiData = [
-//         {
-//           name: "Absen Siswa",
-//           value: totalAbsenSiswa,
-//           icon: "fa-user-check",
-//           res_model: "cdn.absensi_siswa_lines",
-//           domain: domainAbsenSiswa,
-//         },
-//         {
-//           name: "Absen Halaqoh",
-//           value: totalAbsenHalaqoh,
-//           icon: "fa-quran",
-//           res_model: "cdn.absen_halaqoh_line",
-//           domain: domainAbsenHalaqoh,
-//         },
-//         {
-//           name: "Absen Ekskul",
-//           value: totalAbsenEkskul,
-//           icon: "fa-chalkboard-teacher",
-//           res_model: "cdn.absen_ekskul_line",
-//           domain: domainAbsenEkskul,
-//         },
-//       ];
-
-//       // ANIMASI NILAI
-//       this.state.kpiData.forEach((kpi, index) => {
-//         const el = document.querySelector(`.kpi-value-${index}`);
-//         if (el) {
-//           animateValue(el, 0, kpi.value, 1000);
-//         }
-//       });
-//     } catch (error) {
-//       console.error("❌ Error fetching KPI ", error);
-//     } finally {
-//       this.hideLoading();
-//     }
-//   }
-
-//   attachEventListeners() {
-//     const kpiCards = document.querySelectorAll(".kpi-card");
-//     kpiCards.forEach((card) => {
-//       card.addEventListener("click", (evt) => this.handleKpiCardClick(evt));
-//     });
-
-//     const periodSelection = document.getElementById("periodSelection");
-//     if (periodSelection) {
-//       periodSelection.addEventListener("change", () => this.updateKpiData());
-//     }
-//   }
-
-//   async handleKpiCardClick(evt) {
-//     const cardName = evt.currentTarget.dataset.name;
-//     const cardData = this.state.kpiData.find((kpi) => kpi.name === cardName);
-//     if (cardData) {
-//       await this.actionService.doAction({
-//         name: `${cardName} Details`,
-//         type: "ir.actions.act_window",
-//         res_model: cardData.res_model,
-//         views: [[false, "list"], [false, "form"]],
-//         target: "current",
-//         domain: cardData.domain,
-//       });
-//     }
-//   }
-// }
-
-// GuruKpiCard.template = "owl.GuruKpiCard";
 /** @odoo-module */
+import { Component, onWillStart, onMounted, onWillUpdateProps, onWillUnmount } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
-const { Component, onWillStart, onWillUpdateProps, useState, onMounted, onWillUnmount } = owl;
-
-function animateValue(el, start, end, duration) {
-  let startTime = null;
-  const step = (ts) => {
-    if (!startTime) startTime = ts;
-    const progress = Math.min((ts - startTime) / duration, 1);
-    el.textContent = Math.floor(progress * (end - start) + start).toLocaleString("id-ID");
-    if (progress < 1) requestAnimationFrame(step);
-  };
-  requestAnimationFrame(step);
-}
 
 export class GuruKpiCard extends Component {
-  static props = {
-    startDate: { type: String, optional: true },
-    endDate: { type: String, optional: true }
-  };
-
   setup() {
     this.orm = useService("orm");
     this.actionService = useService("action");
-    this.state = useState({ kpiData: [], isLoading: false });
-    this.loadingOverlay = null;
+
+    this.state = {
+      kpiData: [],
+      animations: {},
+      currentStartDate: this.props.startDate,
+      currentEndDate: this.props.endDate,
+      isFiltered: false,
+    };
+
+    this.countdownInterval = null;
+    this.countdownTime = 10;
+    this.isCountingDown = false;
+
+    // 👇 TAMBAHKAN: Cache & debounce
+    this._fetchPromise = null;
+    this._lastFetchKey = null;
+
+    const today = new Date();
+    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+    this.defaultStartDate = this.getLocalDateString(firstDayOfMonth);
+    this.defaultEndDate = this.getLocalDateString(lastDayOfMonth);
+
+    if (this.props.startDate && this.props.endDate) {
+      this.state.isFiltered = true;
+    }
 
     onWillUpdateProps(async (nextProps) => {
-      if (nextProps.startDate !== this.props.startDate || nextProps.endDate !== this.props.endDate) {
-        await this.updateKpiData(nextProps.startDate, nextProps.endDate);
+      if (nextProps.startDate !== this.props.startDate ||
+        nextProps.endDate !== this.props.endDate) {
+        this.state.currentStartDate = nextProps.startDate;
+        this.state.currentEndDate = nextProps.endDate;
+        this.state.isFiltered = !!(nextProps.startDate && nextProps.endDate);
+        await this.fetchData(this.state.currentStartDate, this.state.currentEndDate);
       }
     });
 
     onWillStart(async () => {
-      const today = new Date();
-      const start = new Date(today.getFullYear(), today.getMonth(), 1);
-      const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-      await this.updateKpiData(
-        this.props.startDate || this.formatDate(start),
-        this.props.endDate || this.formatDate(end)
-      );
+      try {
+        await this.checkModelAccess();
+        await this.fetchData(
+          this.state.currentStartDate || this.defaultStartDate,
+          this.state.currentEndDate || this.defaultEndDate
+        );
+      } catch (error) {
+        console.error("Failed to fetch KPI data:", error);
+      }
     });
 
     onMounted(() => {
-      // Animasi langsung setelah render selesai
-      this._animateKpiValues();
+      const timerButton = document.getElementById("timerButton");
+      if (timerButton) {
+        timerButton.addEventListener("click", () => this.handleTimerClick());
+      }
+
+      // 👇 HANYA animate jika data sudah ada (tidak fetch lagi)
+      if (this.state.kpiData.length > 0) {
+        // Delay kecil agar DOM ready
+        setTimeout(() => this.startKpiAnimations(), 50);
+      }
     });
 
     onWillUnmount(() => {
-      this.hideLoading();
+      this.cleanup();
+      const timerButton = document.getElementById("timerButton");
+      if (timerButton) {
+        timerButton.removeEventListener("click", () => this.handleTimerClick());
+      }
     });
   }
 
-  formatDate(date) {
-    const d = new Date(date);
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-  }
-
-  showLoading() {
-    if (!this.loadingOverlay) {
-      this.loadingOverlay = document.createElement("div");
-      this.loadingOverlay.innerHTML = `
-        <div class="musyrif-loading-overlay" style="
-          position:fixed; top:0; left:0; width:100%; height:100%;
-          background:rgba(0,0,0,0.3); display:flex;
-          justify-content:center; align-items:center; z-index:9999;
-        ">
-          <i class="fas fa-sync-alt fa-spin fa-3x text-white"></i>
-        </div>`;
-      document.body.appendChild(this.loadingOverlay);
+  getLocalDateString(date) {
+    if (!date || isNaN(date.getTime())) {
+      console.error("Invalid date in getLocalDateString:", date);
+      return "";
     }
-    this.loadingOverlay.style.display = "flex";
-    this.state.isLoading = true;
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
   }
 
-  hideLoading() {
-    if (this.loadingOverlay) {
-      this.loadingOverlay.style.display = "none";
-    }
-    this.state.isLoading = false;
-  }
-
-  async updateKpiData(startDate, endDate) {
-    this.showLoading();
+  async checkModelAccess() {
     try {
-      const domainSiswa = [["kehadiran", "!=", false]];
-      const domainHalaqoh = [["kehadiran", "!=", false]];
-      const domainEkskul = [["kehadiran", "!=", false]];
-
-      if (startDate) {
-        domainSiswa.push(["tanggal", ">=", `${startDate} 00:00:00`]);
-        domainHalaqoh.push(["tanggal", ">=", `${startDate} 00:00:00`]);
-        domainEkskul.push(["tanggal", ">=", `${startDate} 00:00:00`]);
+      const models = [
+        "cdn.absensi_siswa_lines",
+        "cdn.absen_halaqoh_line",
+        "cdn.absen_ekskul_line",
+      ];
+      for (const model of models) {
+        await this.orm.call("ir.model.access", "check", [model, "read"], {
+          context: this.env.context,
+        });
       }
-      if (endDate) {
-        domainSiswa.push(["tanggal", "<=", `${endDate} 23:59:59`]);
-        domainHalaqoh.push(["tanggal", "<=", `${endDate} 23:59:59`]);
-        domainEkskul.push(["tanggal", "<=", `${endDate} 23:59:59`]);
+    } catch (error) {
+      console.error("Error checking model access:", error);
+    }
+  }
+
+  handleTimerClick() {
+    if (this.isCountingDown) {
+      this.stopCountdown();
+    } else {
+      this.startCountdown();
+    }
+    this.isCountingDown = !this.isCountingDown;
+  }
+
+  startCountdown() {
+    this.countdownTime = 10;
+    this.updateTimerUI();
+    this.countdownInterval = setInterval(() => {
+      this.countdownTime--;
+      if (this.countdownTime < 0) {
+        this.countdownTime = 10;
+        this.refreshData();
+      }
+      this.updateTimerUI();
+    }, 1000);
+  }
+
+  stopCountdown() {
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+      this.countdownInterval = null;
+    }
+    this.updateTimerUI(true);
+  }
+
+  updateTimerUI(stopped = false) {
+    const timerIcon = document.getElementById("timerIcon");
+    const timerCountdown = document.getElementById("timerCountdown");
+
+    if (timerIcon) {
+      timerIcon.className = stopped ? "fas fa-clock" : "fas fa-stop d-none";
+    }
+    if (timerCountdown) {
+      timerCountdown.textContent = stopped ? "" : this.countdownTime;
+    }
+  }
+
+  cleanup() {
+    this.stopCountdown();
+    Object.values(this.state.animations).forEach((animationId) => {
+      cancelAnimationFrame(animationId);
+    });
+    this.state.animations = {};
+  }
+
+  startKpiAnimations() {
+    this.state.kpiData.forEach((kpi, index) => {
+      const countElement = document.getElementById(`counter-${index}`);
+      if (countElement) {
+        this.animateNumber(countElement, 0, kpi.value);
+      }
+    });
+  }
+
+  animateNumber(element, start, end, duration = 500) {
+    if (!element) return;
+
+    const range = end - start;
+    const minFrame = 16;
+    const steps = Math.max(Math.floor(duration / minFrame), 1);
+    const increment = range / steps;
+    let current = start;
+    let step = 0;
+
+    const animationKey = element.id;
+    if (this.state.animations[animationKey]) {
+      cancelAnimationFrame(this.state.animations[animationKey]);
+    }
+
+    const animate = () => {
+      step++;
+      current += increment;
+
+      if (step <= steps) {
+        element.textContent = Math.round(current).toLocaleString();
+        this.state.animations[animationKey] = requestAnimationFrame(animate);
+      } else {
+        element.textContent = Math.round(end).toLocaleString();
+        delete this.state.animations[animationKey];
+      }
+    };
+
+    this.state.animations[animationKey] = requestAnimationFrame(animate);
+  }
+
+  // 👇 OPTIMIZED fetchData dengan cache
+  async fetchData(startDate, endDate) {
+    const effectiveStartDate = startDate || this.defaultStartDate;
+    const effectiveEndDate = endDate || this.defaultEndDate;
+
+    // 👇 CREATE unique key untuk cache
+    const fetchKey = `${effectiveStartDate}_${effectiveEndDate}`;
+
+    // 👇 RETURN cached promise jika sedang fetch dengan key yang sama
+    if (this._fetchPromise && this._lastFetchKey === fetchKey) {
+      console.log("⚡ GuruKpiCard: Using cached fetch promise");
+      return this._fetchPromise;
+    }
+
+    this._lastFetchKey = fetchKey;
+
+    // 👇 CREATE new promise dan cache
+    this._fetchPromise = this._performFetch(effectiveStartDate, effectiveEndDate);
+
+    try {
+      await this._fetchPromise;
+    } finally {
+      // 👇 Clear cache setelah 100ms
+      setTimeout(() => {
+        this._fetchPromise = null;
+        this._lastFetchKey = null;
+      }, 100);
+    }
+  }
+
+  async _performFetch(effectiveStartDate, effectiveEndDate) {
+    try {
+      console.log("📊 GuruKpiCard: Fetching data", { effectiveStartDate, effectiveEndDate });
+
+      const start = new Date(effectiveStartDate);
+      const end = new Date(effectiveEndDate);
+
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        console.error("Invalid dates provided:", { effectiveStartDate, effectiveEndDate });
+        return;
+      }
+      if (start > end) {
+        console.error("Start date is after end date:", { effectiveStartDate, effectiveEndDate });
+        return;
       }
 
-      const [siswa, halaqoh, ekskul] = await Promise.all([
-        this.orm.searchRead("cdn.absensi_siswa_lines", domainSiswa, ["id"]).catch(() => []),
-        this.orm.searchRead("cdn.absen_halaqoh_line", domainHalaqoh, ["id"]).catch(() => []),
-        this.orm.searchRead("cdn.absen_ekskul_line", domainEkskul, ["id"]).catch(() => []),
+      const domainAbsenSiswa = [["kehadiran", "!=", false]];
+      const domainAbsenHalaqoh = [["kehadiran", "!=", false]];
+      const domainAbsenEkskul = [["kehadiran", "!=", false]];
+
+      if (effectiveStartDate) {
+        domainAbsenSiswa.push(["tanggal", ">=", effectiveStartDate + " 00:00:00"]);
+        domainAbsenHalaqoh.push(["tanggal", ">=", effectiveStartDate + " 00:00:00"]);
+        domainAbsenEkskul.push(["tanggal", ">=", effectiveStartDate + " 00:00:00"]);
+      }
+      if (effectiveEndDate) {
+        domainAbsenSiswa.push(["tanggal", "<=", effectiveEndDate + " 23:59:59"]);
+        domainAbsenHalaqoh.push(["tanggal", "<=", effectiveEndDate + " 23:59:59"]);
+        domainAbsenEkskul.push(["tanggal", "<=", effectiveEndDate + " 23:59:59"]);
+      }
+
+      // 👇 PARALLEL fetch untuk speed
+      const [absensiSiswa, absensiHalaqoh, absensiEkskul] = await Promise.all([
+        this.orm.call(
+          "cdn.absensi_siswa_lines",
+          "search_read",
+          [domainAbsenSiswa, ["id", "siswa_id", "kehadiran", "create_date"]],
+          { context: this.env.context }
+        ).catch(err => {
+          console.warn("Error fetching absensi_siswa_lines:", err);
+          return [];
+        }),
+        this.orm.call(
+          "cdn.absen_halaqoh_line",
+          "search_read",
+          [domainAbsenHalaqoh, ["id", "siswa_id", "kehadiran", "create_date"]],
+          { context: this.env.context }
+        ).catch(err => {
+          console.warn("Error fetching absen_halaqoh_line:", err);
+          return [];
+        }),
+        this.orm.call(
+          "cdn.absen_ekskul_line",
+          "search_read",
+          [domainAbsenEkskul, ["id", "siswa_id", "kehadiran", "create_date"]],
+          { context: this.env.context }
+        ).catch(err => {
+          console.warn("Error fetching absen_ekskul_line:", err);
+          return [];
+        })
       ]);
 
+      const totalAbsenSiswa = absensiSiswa?.length || 0;
+      const totalAbsenHalaqoh = absensiHalaqoh?.length || 0;
+      const totalAbsenEkskul = absensiEkskul?.length || 0;
+
       this.state.kpiData = [
-        { name: "Absen Siswa", value: siswa.length, icon: "fa-user-check", res_model: "cdn.absensi_siswa_lines", domain: domainSiswa },
-        { name: "Absen Halaqoh", value: halaqoh.length, icon: "fa-quran", res_model: "cdn.absen_halaqoh_line", domain: domainHalaqoh },
-        { name: "Absen Ekskul", value: ekskul.length, icon: "fa-chalkboard-teacher", res_model: "cdn.absen_ekskul_line", domain: domainEkskul },
+        {
+          name: "Absen Siswa",
+          value: totalAbsenSiswa,
+          icon: "fa-user-check",
+          color: "#00e396",
+          res_model: "cdn.absensi_siswa_lines",
+          domain: domainAbsenSiswa,
+        },
+        {
+          name: "Absen Halaqoh",
+          value: totalAbsenHalaqoh,
+          icon: "fa-quran",
+          color: "#00e396",
+          res_model: "cdn.absen_halaqoh_line",
+          domain: domainAbsenHalaqoh,
+        },
+        {
+          name: "Absen Ekskul",
+          value: totalAbsenEkskul,
+          icon: "fa-chalkboard-teacher",
+          color: "#00e396",
+          res_model: "cdn.absen_ekskul_line",
+          domain: domainAbsenEkskul,
+        },
       ];
 
-      // Animasi akan dijalankan di onMounted
+      console.log("✅ GuruKpiCard: Data updated");
+
+      // 👇 Trigger animation setelah DOM update
+      setTimeout(() => this.startKpiAnimations(), 50);
+
     } catch (error) {
-      console.error("Error KPI:", error);
-    } finally {
-      this.hideLoading(); // PASTIKAN SELALU DIHIDE
+      console.error("Error in fetchData:", error);
     }
   }
 
-  _animateKpiValues() {
-    // Gunakan setTimeout agar DOM sudah siap
-    setTimeout(() => {
-      this.state.kpiData.forEach((kpi, i) => {
-        const el = document.querySelector(`.kpi-value-${i}`);
-        if (el) {
-          animateValue(el, 0, kpi.value, 1000);
-        }
-      });
-    }, 100);
+  async refreshData() {
+    const startDate = this.state.isFiltered ? this.state.currentStartDate : this.defaultStartDate;
+    const endDate = this.state.isFiltered ? this.state.currentEndDate : this.defaultEndDate;
+
+    console.log("🔄 GuruKpiCard: Refreshing data and triggering event");
+
+    // 👇 Force clear cache untuk refresh
+    this._fetchPromise = null;
+    this._lastFetchKey = null;
+
+    await this.fetchData(startDate, endDate);
+
+    // Dispatch event untuk component lain
+    window.dispatchEvent(new CustomEvent('guru-dashboard-refresh', {
+      detail: { startDate, endDate, timestamp: Date.now() }
+    }));
   }
 
-  handleKpiCardClick(e) {
-    const name = e.currentTarget.dataset.name;
-    const kpi = this.state.kpiData.find(k => k.name === name);
-    if (kpi) {
+  attachEventListeners() {
+    const kpiCards = document.querySelectorAll(".kpi-card");
+    kpiCards.forEach((card) => {
+      card.addEventListener("click", (evt) => {
+        this.handleKpiCardClick(evt);
+      });
+    });
+  }
+
+  handleKpiCardClick(evt) {
+    const cardName = evt.currentTarget.dataset.name;
+    const cardData = this.state.kpiData.find((kpi) => kpi.name === cardName);
+
+    if (cardData) {
+      const { res_model, domain } = cardData;
+
       this.actionService.doAction({
+        name: `${cardName}`,
         type: "ir.actions.act_window",
-        res_model: kpi.res_model,
-        views: [[false, "list"]],
-        domain: kpi.domain,
-        target: "current"
+        res_model: res_model,
+        view_mode: "list,form",
+        views: [[false, "list"], [false, "form"]],
+        target: "current",
+        domain: domain,
       });
     }
   }
 }
 
 GuruKpiCard.template = "owl.GuruKpiCard";
+
+GuruKpiCard.props = {
+  startDate: { type: String, optional: true },
+  endDate: { type: String, optional: true },
+};

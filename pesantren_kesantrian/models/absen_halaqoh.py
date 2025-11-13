@@ -243,10 +243,25 @@ class Absenhalaqoh(models.Model):
                     keperluan_name = permission.keperluan.name if permission.keperluan else 'Tidak ada keterangan'
                     waktu_keluar = self.format_datetime_indonesia(permission.waktu_keluar) if permission.waktu_keluar else 'Tidak tercatat'
                     message = f"Santri Keluar pada {waktu_keluar}, karena {keperluan_name}"
+                    
+                    # PERBAIKAN: Ambil foto bukti dari perijinan
+                    foto_bukti = permission.foto_bukti if permission.foto_bukti else False
+                    
+                    # Ambil nama file asli dari perijinan, atau generate jika kosong
+                    if permission.foto_bukti_filename:
+                        nama_file = permission.foto_bukti_filename
+                    elif foto_bukti:
+                        # Generate nama file jika tidak ada
+                        nama_file = f"Bukti_Izin_{siswa.nis}_{siswa.name}_{permission.name}.jpg"
+                    else:
+                        nama_file = False
+                    
                     absen_ids.append((0, 0, {
                         'siswa_id': siswa.id,
                         'kehadiran': 'keluar',
                         'keterangan': message,
+                        'keterangan_izin': foto_bukti,  # Auto-fill foto bukti
+                        'keterangan_izin_filename': nama_file,  # Auto-fill nama file
                     }))
                 else:
                     absen_ids.append((0, 0, {
@@ -311,7 +326,9 @@ class AbsenTahsinQuranLine(models.Model):
     nis = fields.Char(string='NIS', related='siswa_id.nis', readonly=True, store=True)
     panggilan = fields.Char(string='Nama Panggilan', related='siswa_id.namapanggilan', readonly=True, store=True)
     keterangan = fields.Char(string='Keterangan')
-    keterangan_izin = fields.Char(string='Foto', store=True)
+    keterangan_izin = fields.Binary(string='Foto', attachment=True)
+    keterangan_izin_filename = fields.Char(string="Nama File Foto")
+    
     kehadiran = fields.Selection([
         ('Hadir', 'Hadir'),
         ('Izin', 'Izin'),

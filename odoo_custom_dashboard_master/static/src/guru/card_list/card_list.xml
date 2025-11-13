@@ -18,14 +18,20 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                     <t t-foreach="state.items" t-as="guru" t-key="guru.id">
-                                        <tr style="cursor: pointer;"
-                                            t-att-id="'guru-' + guru.id"
-                                            t-on-click="() => this.openRecord(guru.id)">
-                                            <td><t t-esc="guru.number"/></td>
-                                            <td><t t-esc="guru.nama"/></td>
-                                            <td><t t-esc="guru.halaqoh"/></td>
-                                            <td><t t-esc="guru.baris"/></td>
+                                    <t t-foreach="state.items" t-as="guru" t-key="guru.id">
+                                        <tr style="cursor: pointer;" t-att-id="'guru-' + guru.id" t-on-click="() => this.openRecord(guru.id)">
+                                            <td>
+                                                <t t-esc="guru.number"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="guru.nama"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="guru.halaqoh"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="guru.baris"/>
+                                            </td>
                                         </tr>
                                     </t>
                                 </tbody>
@@ -33,8 +39,8 @@
                         </div>
                     </t>
                     <t t-else="">
-                        <div class="text-center p-3">
-                            <span class="ms-2">Data tidak ditemukan</span>
+                        <div class="text-center p-3 text-muted">
+                            <i class="fa fa-info-circle me-1"></i> Data tidak ditemukan
                         </div>
                     </t>
                 </div>

@@ -5,28 +5,35 @@ import { GuruChartRenderer } from "./chart_renderer/chart_renderer";
 import { EkskulList, GuruList } from "./card_list/card_list";
 import { useState, Component, onMounted, onWillUnmount } from "@odoo/owl";
 
-export class OwlGuruDashboard extends Component {
+class OwlGuruDashboard extends Component {
   setup() {
     this.state = useState({
-      showDatePicker: false,
       selectedDateRange: null,
       tempDateRange: { start: "", end: "" },
-      selectedPeriod: "thisMonth", // default
+      showDatePicker: false,
+      selectedPeriod: "thisMonth",
+      isLoading: false,
     });
+    console.log("Initial state:", this.state);
 
-    // Listener klik di luar popup
+    // Event handler untuk klik di luar
     this._handleClickOutside = (ev) => {
-      const popup = document.getElementById("datePickerContainer");
-      const button = document.getElementById("datePickerButton");
+      const popup = document.querySelector(".popup-container");
+      const button = document.querySelector(".dateButton");
 
-      if (popup && button && !popup.contains(ev.target) && !button.contains(ev.target)) {
+      if (
+        popup &&
+        !popup.contains(ev.target) &&
+        button &&
+        !button.contains(ev.target)
+      ) {
         this.state.showDatePicker = false;
       }
     };
 
     onMounted(() => {
       document.addEventListener("click", this._handleClickOutside);
-      this.setPeriod(this.state.selectedPeriod); // set default saat load
+      this.setPeriod(this.state.selectedPeriod);
     });
 
     onWillUnmount(() => {
@@ -37,47 +44,76 @@ export class OwlGuruDashboard extends Component {
   toggleDatePicker() {
     this.state.showDatePicker = !this.state.showDatePicker;
     if (this.state.showDatePicker && this.state.selectedDateRange) {
-      this.state.tempDateRange = { ...this.state.selectedDateRange };
+      this.state.tempDateRange = {
+        start: this.state.selectedDateRange.start,
+        end: this.state.selectedDateRange.end,
+      };
     }
+    console.log("Toggled date picker, showDatePicker:", this.state.showDatePicker);
   }
 
-  applyDateRange() {
+  closeDatePicker() {
+    this.state.showDatePicker = false;
+    console.log("Closed date picker");
+  }
+
+  async applyDateRange() {
     if (this.state.tempDateRange.start && this.state.tempDateRange.end) {
-      this.state.selectedDateRange = { ...this.state.tempDateRange };
-      this.state.selectedPeriod = "custom"; // otomatis ke custom
-      this.state.showDatePicker = false;
+      const start = new Date(this.state.tempDateRange.start);
+      const end = new Date(this.state.tempDateRange.end);
+      console.log("Applying date range:", { start, end });
+
+      // Validate dates
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        alert("Tanggal tidak valid!");
+        return;
+      }
+      if (start > end) {
+        alert("Tanggal mulai tidak boleh lebih besar dari tanggal akhir!");
+        return;
+      }
+      // Warn if start date is in a previous year
+      const currentYear = new Date().getFullYear();
+      if (start.getFullYear() < currentYear) {
+        if (!confirm("Tanggal mulai berada di tahun sebelumnya. Lanjutkan?")) {
+          return;
+        }
+      }
+
+      this.state.selectedDateRange = {
+        start: this.state.tempDateRange.start,
+        end: this.state.tempDateRange.end,
+      };
+      this.state.selectedPeriod = "custom";
+      this.closeDatePicker();
+      console.log("Custom date range applied:", this.state.selectedDateRange);
+    } else {
+      alert("Harap pilih tanggal mulai dan akhir!");
     }
   }
 
   formatDate(dateString) {
     if (!dateString) return "";
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "";
+    const months = [
+      "Jan", "Feb", "Mar", "Apr", "Mei", "Jun",
+      "Jul", "Ags", "Sep", "Okt", "Nov", "Des",
+    ];
     const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const month = months[date.getMonth()];
     const year = date.getFullYear();
-    return `${year}-${month}-${day}`;
+    return `${day} ${month} ${year}`;
   }
 
-  // Format rentang tanggal untuk tombol
-  formatDateRange() {
-    if (this.state.selectedDateRange && this.state.selectedDateRange.start && this.state.selectedDateRange.end) {
-      const start = new Date(this.state.selectedDateRange.start).toLocaleDateString("id-ID", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      });
-      const end = new Date(this.state.selectedDateRange.end).toLocaleDateString("id-ID", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      });
-      return `${start} - ${end}`;
+  formatDateRange(start, end) {
+    if (!start || !end) return "";
+    if (start === end) {
+      return this.formatDate(start);
     }
-    // Jika tidak ada custom range, tampilkan label periode
-    return this.getPeriodLabel(this.state.selectedPeriod);
+    return `${this.formatDate(start)} - ${this.formatDate(end)}`;
   }
 
-  // Label periode untuk dropdown & fallback
   getPeriodLabel(period) {
     const labels = {
       today: "Hari Ini",
@@ -88,7 +124,8 @@ export class OwlGuruDashboard extends Component {
       lastMonth: "Bulan Lalu",
       thisYear: "Tahun Ini",
       lastYear: "Tahun Lalu",
-      custom: "Rentang Tanggal",
+      custom: "Pilih Periode",
+      all: "Semua Data",
     };
     return labels[period] || "Pilih Periode";
   }
@@ -97,64 +134,110 @@ export class OwlGuruDashboard extends Component {
     return this.state.selectedPeriod === period;
   }
 
-  setPeriod(period) {
-    const now = new Date();
-    let start, end;
+  getLocalDateString(date) {
+    if (!date || isNaN(date.getTime())) {
+      console.error("Invalid date in getLocalDateString:", date);
+      return "";
+    }
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
 
-    // Jangan ubah jika sudah custom dan date range ada
-    if (period === "custom" && this.state.selectedDateRange) {
-      this.state.selectedPeriod = "custom";
+  setPeriod(period) {
+    console.log("setPeriod called with period:", period);
+    if (period === "all") {
+      this.state.selectedDateRange = null;
+      this.state.selectedPeriod = "all";
+      console.log("Set period to 'all', selectedDateRange:", this.state.selectedDateRange);
       return;
     }
 
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    let start, end;
+
     switch (period) {
       case "today":
-        start = end = now;
+        start = todayStart;
+        end = todayStart;
         break;
       case "yesterday":
-        start = end = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+        start = new Date(todayStart);
+        start.setDate(todayStart.getDate() - 1);
+        end = start;
         break;
       case "thisWeek":
-        start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
+        start = new Date(todayStart);
+        start.setDate(todayStart.getDate() - todayStart.getDay());
         end = new Date(start);
         end.setDate(start.getDate() + 6);
         break;
       case "lastWeek":
-        start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay() - 7);
+        start = new Date(todayStart);
+        start.setDate(todayStart.getDate() - todayStart.getDay() - 7);
         end = new Date(start);
         end.setDate(start.getDate() + 6);
         break;
       case "thisMonth":
-        start = new Date(now.getFullYear(), now.getMonth(), 1);
-        end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        start = new Date(todayStart.getFullYear(), todayStart.getMonth(), 1);
+        end = new Date(todayStart.getFullYear(), todayStart.getMonth() + 1, 0);
         break;
       case "lastMonth":
-        start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-        end = new Date(now.getFullYear(), now.getMonth(), 0);
+        start = new Date(todayStart.getFullYear(), todayStart.getMonth() - 1, 1);
+        end = new Date(todayStart.getFullYear(), todayStart.getMonth(), 0);
         break;
       case "thisYear":
-        start = new Date(now.getFullYear(), 0, 1);
-        end = new Date(now.getFullYear(), 11, 31);
+        start = new Date(todayStart.getFullYear(), 0, 1);
+        end = new Date(todayStart.getFullYear(), 11, 31);
         break;
       case "lastYear":
-        start = new Date(now.getFullYear() - 1, 0, 1);
-        end = new Date(now.getFullYear() - 1, 11, 31);
+        start = new Date(todayStart.getFullYear() - 1, 0, 1);
+        end = new Date(todayStart.getFullYear() - 1, 11, 31);
         break;
-      case "custom":
-        if (this.state.selectedDateRange) {
-          start = this.state.selectedDateRange.start;
-          end = this.state.selectedDateRange.end;
-        }
-        break;
+      default:
+        console.warn("Unknown period, defaulting to thisMonth:", period);
+        start = new Date(todayStart.getFullYear(), todayStart.getMonth(), 1);
+        end = new Date(todayStart.getFullYear(), todayStart.getMonth() + 1, 0);
+        period = "thisMonth";
     }
 
     this.state.selectedPeriod = period;
-    if (start && end) {
+    this.state.selectedDateRange = {
+      start: this.getLocalDateString(start),
+      end: this.getLocalDateString(end),
+    };
+
+    if (!this.state.selectedDateRange.start || !this.state.selectedDateRange.end) {
+      console.error("Failed to set date range, resetting to thisMonth");
+      start = new Date(todayStart.getFullYear(), todayStart.getMonth(), 1);
+      end = new Date(todayStart.getFullYear(), todayStart.getMonth() + 1, 0);
       this.state.selectedDateRange = {
-        start: this.formatDate(start),
-        end: this.formatDate(end),
+        start: this.getLocalDateString(start),
+        end: this.getLocalDateString(end),
       };
+      this.state.selectedPeriod = "thisMonth";
     }
+
+    console.log("Period set:", {
+      period: this.state.selectedPeriod,
+      startDate: this.state.selectedDateRange.start,
+      endDate: this.state.selectedDateRange.end,
+      rawStart: start,
+      rawEnd: end,
+    });
+  }
+
+  get dateRangeProps() {
+    console.log("Getting dateRangeProps:", this.state.selectedDateRange);
+    if (!this.state.selectedDateRange) {
+      return { startDate: null, endDate: null };
+    }
+    return {
+      startDate: this.state.selectedDateRange.start,
+      endDate: this.state.selectedDateRange.end,
+    };
   }
 }
 

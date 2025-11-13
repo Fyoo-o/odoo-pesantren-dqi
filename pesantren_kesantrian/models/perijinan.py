@@ -25,7 +25,7 @@ class Perijinan(models.Model):
         }, default=lambda self: fields.Datetime.now())
 
     tgl_kembali = fields.Datetime(string='Tgl Kembali', required=True,
-        states={
+        states={    
             'Draft': [('readonly', False)],
             'Check': [('readonly', False)],
             'Approved': [('readonly', True)],
@@ -75,6 +75,16 @@ class Perijinan(models.Model):
     musyrif_id = fields.Many2one('hr.employee', string='Musyrif', related='siswa_id.musyrif_id', readonly=True)
     
     foto_bukti = fields.Binary(string="Foto Bukti", attachment=True, readonly=False,states={
+        'Draft': [('readonly', False)],
+        'Check': [('readonly', False)],
+        'Approved': [('readonly', True)],
+        'Rejected': [('readonly', True)],
+        'Permission': [('readonly', True)],
+        'Return': [('readonly', True)],
+        'Overdue': [('readonly', True)],
+    })
+    
+    foto_bukti_filename = fields.Char(string="Nama File Foto Bukti", states={
         'Draft': [('readonly', False)],
         'Check': [('readonly', False)],
         'Approved': [('readonly', True)],

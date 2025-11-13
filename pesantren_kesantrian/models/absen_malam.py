@@ -106,25 +106,26 @@ class AbsensiMalam(models.Model):
     _description = 'Absensi Malam Santri'
     _order = 'tgl desc'
 
-    name = fields.Char(string='No. Referensi', readonly=True)
-    tgl = fields.Date(string='Tanggal', required=True, default=lambda self: date.today())
+    name            = fields.Char(string='No. Referensi', readonly=True)
+    tgl             = fields.Date(string='Tanggal', required=True, default=lambda self: date.today())
     
     # Filter untuk kamar atau halaqoh
-    kamar_id = fields.Many2one('cdn.kamar_santri', string='Kamar', domain=lambda self: self._domain_kamar_id())
+    kamar_id        = fields.Many2one('cdn.kamar_santri', string='Kamar', domain=lambda self: self._domain_kamar_id())
+    fiscalyear_id   = fields.Many2one('cdn.ref_tahunajaran', string='Tahun Ajaran', readonly=True, default=lambda self:self.env.user.company_id.tahun_ajaran_aktif.id, states={'Done': [('readonly', True)]})
     
-    musyrif_id = fields.Many2one('hr.employee', string='Musyrif', domain=[('jns_pegawai', 'in', ['musyrif', 'musyrif,guru', 'musyrif,guruquran', 'musyrif,guru,guruquran'])], default=lambda self: self._default_musyrif_id())
+    musyrif_id      = fields.Many2one('hr.employee', string='Musyrif', domain=[('jns_pegawai', 'in', ['musyrif', 'musyrif,guru', 'musyrif,guruquran', 'musyrif,guru,guruquran'])], default=lambda self: self._default_musyrif_id())
     
-    absen_ids = fields.One2many('cdn.absensi_malam_line', 'absen_id', string='Daftar Kehadiran')
+    absen_ids       = fields.One2many('cdn.absensi_malam_line', 'absen_id', string='Daftar Kehadiran')
     
-    keterangan = fields.Char(string='Keterangan')
+    keterangan      = fields.Char(string='Keterangan')
     
-    state = fields.Selection([
+    state           = fields.Selection([
         ('draft', 'Draft'),
         ('proses', 'Proses'),
         ('done', 'Selesai'),
     ], default='draft', string='Status')
     
-    row_number = fields.Integer(string='No', compute='_compute_row_number', store=False)
+    row_number      = fields.Integer(string='No', compute='_compute_row_number', store=False)
 
     def _compute_row_number(self):
         for index, record in enumerate(self):
@@ -141,22 +142,104 @@ class AbsensiMalam(models.Model):
 
     @api.model
     def _domain_kamar_id(self):
-        """Filter kamar sesuai musyrif yang login."""
+        """Filter kamar sesuai musyrif yang login dan tahun ajaran aktif."""
         user = self.env.user
         employee = self.env['hr.employee'].search([('user_id', '=', user.id)], limit=1)
-
-        # Jika admin, tampilkan semua kamar
+        
+        # Ambil tahun ajaran aktif
+        tahun_ajaran = self.env.user.company_id.tahun_ajaran_aktif.id
+        
+        # Base domain: filter berdasarkan tahun ajaran
+        base_domain = [('fiscalyear_id', '=', tahun_ajaran)]
+        
+        # Jika admin, tampilkan semua kamar (hanya filter tahun ajaran)
         if user.has_group('base.group_system'):
-            return []
-
-        # Jika musyrif, hanya tampilkan kamar di bawahnya
-        if employee:
-            kamar_ids = self.env['cdn.kamar_santri'].search([('musyrif_id', '=', employee.id)]).ids
+            return base_domain
+        
+        # Jika musyrif, hanya tampilkan kamar di bawahnya (filter tahun ajaran + musyrif)
+        if employee and 'musyrif' in (employee.jns_pegawai or ''):
+            kamar_ids = self.env['cdn.kamar_santri'].search([
+                ('musyrif_id', '=', employee.id),
+                ('fiscalyear_id', '=', tahun_ajaran)
+            ]).ids
             return [('id', 'in', kamar_ids)]
+        
+        # Default: hanya filter tahun ajaran (untuk user lain)
+        return base_domain
 
-        # Default kosong
-        return [('id', '=', False)]
+    # @api.onchange('kamar_id')
+    # def _onchange_filter_santri(self):
+    #     """Mengisi absen_ids berdasarkan kamar dan mengatur ustadz_id ke pengguna login untuk staff."""
+    #     kamar = self.kamar_id
+    #     if kamar:
+    #         absen_ids = [(5, 0, 0)]
 
+    #         # Ambil semua santri di kamar yang dipilih
+    #         siswa_list = self.env['cdn.siswa'].search([('kamar_id', '=', kamar.id)])
+
+    #         # Jika tidak ada santri, beri peringatan
+    #         if not siswa_list:
+    #             return {
+    #                 'warning': {
+    #                     'title': 'Perhatian',
+    #                     'message': 'Tidak ada santri yang ditemukan dengan kamar tersebut.'
+    #                 },
+    #                 'value': {'absen_ids': [(5, 0, 0)]}
+    #             }
+
+    #         # Isi absen berdasarkan izin atau kehadiran
+    #         for siswa in siswa_list:
+    #             permission = self.env['cdn.perijinan'].search([
+    #                 ('siswa_id', '=', siswa.id),
+    #                 ('state', '=', 'Permission')
+    #             ], limit=1)
+    #             if permission:
+    #                 keperluan_name = permission.keperluan.name if permission.keperluan else 'Tidak ada keterangan'
+    #                 waktu_keluar = self.format_datetime_indonesia(permission.waktu_keluar) if permission.waktu_keluar else 'Tidak tercatat'
+    #                 message = f"Santri Keluar pada {waktu_keluar}, karena {keperluan_name}"
+    #                 absen_ids.append((0, 0, {
+    #                     'siswa_id': siswa.id,
+    #                     'kehadiran_absen': 'keluar',
+    #                     'keterangan': message,
+    #                 }))
+    #             else:
+    #                 absen_ids.append((0, 0, {
+    #                     'siswa_id': siswa.id,
+    #                     'kehadiran_absen': 'Hadir'
+    #                 }))
+
+    #         # Tentukan ustadz_id sesuai user login
+    #         user = self.env.user
+    #         employee = self.env['hr.employee'].search([('user_id', '=', user.id)], limit=1)
+    #         ustadz_id = employee.id if employee else False
+
+    #         # Jika user adalah manager kesantrian, boleh pilih musyrif dari kamar
+    #         if self.env.user.has_group('pesantren_kesantrian.group_kesantrian_manager'):
+    #             musyrif = kamar.musyrif_id | kamar.pengganti_ids
+    #             return {
+    #                 'domain': {
+    #                     'musyrif_id': [('id', 'in', musyrif.ids)]
+    #                 },
+    #                 'value': {
+    #                     'absen_ids': absen_ids,
+    #                     'musyrif_id': musyrif[0].id if musyrif else False
+    #                 }
+    #             }
+
+    #         # Jika bukan manager, musyrif otomatis dari user login
+    #         return {
+    #             'domain': {
+    #                 'musyrif_id': [('id', '=', self.musyrif_id)] if self.musyrif_id else [('id', '=', False)]
+    #             },
+    #             'value': {
+    #                 'absen_ids': absen_ids,
+    #                 'musyrif_id': self.musyrif_id
+    #             }
+    #         }
+
+    #     # Jika kamar tidak dipilih, kosongkan daftar absen
+    #     return {'value': {'absen_ids': [(5, 0, 0)]}}
+    
     @api.onchange('kamar_id')
     def _onchange_filter_santri(self):
         """Mengisi absen_ids berdasarkan kamar dan mengatur ustadz_id ke pengguna login untuk staff."""
@@ -183,14 +266,30 @@ class AbsensiMalam(models.Model):
                     ('siswa_id', '=', siswa.id),
                     ('state', '=', 'Permission')
                 ], limit=1)
+                
                 if permission:
                     keperluan_name = permission.keperluan.name if permission.keperluan else 'Tidak ada keterangan'
                     waktu_keluar = self.format_datetime_indonesia(permission.waktu_keluar) if permission.waktu_keluar else 'Tidak tercatat'
                     message = f"Santri Keluar pada {waktu_keluar}, karena {keperluan_name}"
+                    
+                    # PERBAIKAN: Ambil foto bukti dari perijinan
+                    foto_bukti = permission.foto_bukti if permission.foto_bukti else False
+                    
+                    # Ambil nama file asli dari perijinan, atau generate jika kosong
+                    if permission.foto_bukti_filename:
+                        nama_file = permission.foto_bukti_filename
+                    elif foto_bukti:
+                        # Generate nama file jika tidak ada
+                        nama_file = f"Bukti_Izin_{siswa.nis}_{siswa.name}_{permission.name}.jpg"
+                    else:
+                        nama_file = False
+                    
                     absen_ids.append((0, 0, {
                         'siswa_id': siswa.id,
                         'kehadiran_absen': 'keluar',
                         'keterangan': message,
+                        'keterangan_izin': foto_bukti,  # Auto-fill foto bukti
+                        'keterangan_izin_filename': nama_file,  # Auto-fill nama file
                     }))
                 else:
                     absen_ids.append((0, 0, {
@@ -247,6 +346,15 @@ class AbsensiMalam(models.Model):
         return 'Tidak tercatat'
 
     @api.model
+    def default_get(self, fields_list):
+        """Memastikan tahun ajaran aktif diset."""
+        res = super().default_get(fields_list)
+        tahun_ajaran = self.env['res.company'].search([('id', '=', self.env.ref('base.main_company').id)]).tahun_ajaran_aktif.id
+        if not tahun_ajaran:
+            raise ValidationError('Tahun ajaran belum di set')
+        return res
+
+    @api.model
     def create(self, vals):
         if not vals.get('name'):
             vals['name'] = self.env['ir.sequence'].next_by_code('cdn.absensi_malam') or '/'
@@ -286,7 +394,8 @@ class AbsensiMalamLine(models.Model):
     ], string='Kehadiran', default="Hadir", required=True)
     
     keterangan = fields.Char(string='Keterangan')
-    keterangan_izin = fields.Image(string="Foto", store=True)
+    keterangan_izin = fields.Binary(string="Foto", attachment=True)
+    keterangan_izin_filename = fields.Char(string="Nama File Foto")
     
     row_number = fields.Integer(string='No', compute='_compute_row_number', store=False)
 
