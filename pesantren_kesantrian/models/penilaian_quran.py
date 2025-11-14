@@ -76,21 +76,34 @@ class TahfidzTahsin(models.Model):
     )
     
     # === TAB Tahfidz Ujian ===
-    # buku_tahfidz_ujian_id = fields.Many2one(
-    #     'cdn.buku_tahsin',
-    #     string='Buku',
-    #     default=lambda self: self.env['cdn.buku_tahsin'].search([('name', '=', "Al-Qur'an")], limit=1),
-    #     readonly=True
-    # )
+    buku_tahfidz_ujian_id = fields.Many2one(
+        'cdn.buku_tahsin',
+        string='Buku',
+        default=lambda self: self.env['cdn.buku_tahsin'].search([('name', '=', "Al-Qur'an")], limit=1),
+        readonly=True
+    )
     
-    # # Ambil daftar Juz unik dari cdn.ayat
-    # juz_tahfidz_ujian = fields.Selection(
-    #     selection=lambda self: self._get_juz_selection(),
-    #     string='Juz'
-    # )
+    # Ambil daftar Juz unik dari cdn.ayat
+    juz_tahfidz_ujian = fields.Selection(
+        selection=lambda self: self._get_juz_selection(),
+        string='Juz'
+    )
     
-    # halaman_tahfidz_ujian = fields.Char(string='Halaman')
-    # catatan_tahfidz = fields.Text(string='Catatan Murajaah (Harian)')
+    halaman_tahfidz_ujian = fields.Char(string='Halaman')
+    catatan_tahfidz = fields.Text(string='Catatan Tahfidz (Ujian)')
+    
+    surah_id_ujian_tahfidz = fields.Many2one('cdn.surah', string='Surah', domain="[('id', 'in', available_surah_ids_tahfidz_ujian)]", ondelete='cascade')
+    ayat_awal_ujian_tahfidz = fields.Many2one('cdn.ayat', string='Ayat Awal', domain="[('surah_id','=',surah_id_ujian_tahfidz)]", ondelete='cascade')
+    ayat_akhir_ujian_tahfidz = fields.Many2one('cdn.ayat', string='Ayat Akhir', domain="[('surah_id','=',surah_id_ujian_tahfidz)]", ondelete='cascade')
+    nilai_ujian_tahfidz = fields.Integer(string="Nilai (Ujian)")
+    
+    # Field bantu (computed, tidak disimpan)
+    available_surah_ids_tahfidz_ujian = fields.Many2many(
+        'cdn.surah',
+        compute='_compute_available_surah_ids_tahfidz_ujian',
+        string='Available Surahs',
+        ondelete='cascade'
+    )
     
     # === TAB Riwayat Hafalan ===
     riwayat_hafalan_ids = fields.One2many(
@@ -141,6 +154,15 @@ class TahfidzTahsin(models.Model):
             return [(str(j), f"{j}") for j in juz_values]
         except Exception:
             return []
+
+    @api.depends('juz_tahfidz_ujian')
+    def _compute_available_surah_ids_tahfidz_ujian(self):
+        for rec in self:
+            if rec.juz_tahfidz_ujian:
+                ayat_ids = self.env['cdn.ayat'].search([('juz', '=', rec.juz_tahfidz_ujian)])
+                rec.available_surah_ids_tahfidz_ujian = ayat_ids.mapped('surah_id')
+            else:
+                rec.available_surah_ids_tahfidz_ujian = False
 
     @api.depends('juz_murajaah')
     def _compute_available_surah_ids(self):
