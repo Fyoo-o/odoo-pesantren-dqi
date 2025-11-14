@@ -129,6 +129,32 @@
                             </field>
                         </page>
 
+                        <!-- TAB TAHFIDZ UJIAN -->
+                        <page string="Tahfidz Ujian">
+                            <group string="Buku Halaman">
+                                <group>
+                                    <field name="buku_tahfidz_ujian_id"/>
+                                    <field name="juz_tahfidz_ujian"/>
+                                </group>
+                                <group>
+                                    <field name="halaman_tahfidz_ujian"/>
+                                </group>
+                            </group>
+                            <group string="Penilaian">
+                                <group>
+                                    <field name="surah_id_ujian_tahfidz"/>
+                                    <field name="ayat_awal_ujian_tahfidz"/>
+                                </group>
+                                <group>
+                                    <field name="ayat_akhir_ujian_tahfidz"/>
+                                    <field name="nilai_ujian_tahfidz"/>
+                                </group>
+                            </group>
+                            <group string="Catatan">
+                                <field name="catatan_tahfidz" nolabel="1" placeholder="Catatan untuk tahfidz ujian..."/>
+                            </group>
+                        </page>
+
                         <!-- TAB Murajaah Harian -->
                         <page string="Murajaah Harian">
                             <group string="Informasi Murajaah">
