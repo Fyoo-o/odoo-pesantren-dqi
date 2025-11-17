@@ -336,20 +336,15 @@
                                 <page string="Akun">
                                     <group string="Akun Login" class="o_group">
                                         <group>
-                                            <field name="email" readonly="state in 'diterima,ditolak,batal'" />
+                                            <field name="email" string="Email" placeholder="Masukkan email untuk login" readonly="state in 'diterima,ditolak,batal'" />
                                         </group>
 
                                         <group>
-                                            <field name="nomor_login" readonly="state in 'diterima,ditolak,batal'" />
+                                            <field name="nomor_login" placeholder="Masukkan nomor HP/WA" readonly="state in 'diterima,ditolak,batal'" />
                                         </group>
 
                                         <group>
-                                            <div class="o_form_field o_row">
-                                                <label for="password" string="Kata Sandi"/>
-                                                <field name="password" password="True" class="o_col"/>
-                                                <button name="action_show_password" type="object" string="👁️" class="btn btn-secondary o_col"
-                                                        invisible="not show_password_button"/>
-                                            </div>    
+                                            <field name="password" string="Kata Sandi" widget="password_toggle" placeholder="Masukkan kata sandi"/>
                                         </group>
 
                                       

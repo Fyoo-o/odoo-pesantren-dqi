@@ -41,7 +41,7 @@ class DataPendaftaran(models.Model):
     siswa_id            = fields.Many2one('cdn.siswa',ondelete='cascade' ,string="Data Siswa", readonly=True)
     # Username 
     nik                 = fields.Char(string="NIK", help="Nomor Induk Keluarga Calon santri")
-    email               = fields.Char(string="email", help="Email Calon Santri")
+    email               = fields.Char(string="Email", help="Email Untuk Login")
     password            = fields.Char(string="Kata Sandi", help="Kata Sandi Login")
     nomor_hp            = fields.Char(string="Nomor HP", help="Nomor HP/WhatsApp Calon Santri")
     nomor_login         = fields.Char(string="Nomor HP", help="Nomor HP/WhatsApp Untuk Login")

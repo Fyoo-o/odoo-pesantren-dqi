@@ -26,8 +26,15 @@
                 <field name="ayat_awal" string="Ayat Awal Tahfidz" optional="hide"/>
                 <field name="ayat_akhir" string="Ayat Akhir Tahfidz" optional="hide"/>
                 <field name="last_jml_baris" string="Jumlah Maqra' Tahfidz" optional="hide"/>
-                <field name="last_nilai_hafalan" string="Nilai Hafalan Tahfidz" optional="hide"/>
-                <field name="last_predikat" string="Nilai Predikat Tahfidz" optional="hide"/>
+                <field name="last_nilai_hafalan" string="Nilai Tahfidz" optional="hide"/>
+                <field name="last_predikat" string="Predikat Tahfidz" optional="hide"/>
+
+                <!-- Tahfidz Ujian -->
+                <field name="surah_id_ujian_tahfidz" string="Surat Tahfidz (Ujian)" optional="hide"/>
+                <field name="ayat_awal_ujian_tahfidz" string="Ayat Awal Tahfidz (Ujian)" optional="hide"/>
+                <field name="ayat_akhir_ujian_tahfidz" string="Ayat Akhir Tahfidz (Ujian)" optional="hide"/>
+                <field name="nilai_ujian_tahfidz" string="Nilai Tahfidz (Ujian)" optional="hide"/>
+                <field name="predikat_ujian_tahfidz" string="Predikat Tahfidz (Ujian)" optional="hide"/>
 
                 <!-- Murajaah Harian -->
                 <field name="buku_murajaah_id" string="Buku Murajaah" optional="hide"/>
@@ -43,9 +50,8 @@
                 <field name="surah_id_harian" string="Surat Tahsin (Harian)" optional="hide"/>
                 <field name="ayat_awal_harian" string="Ayat Awal Tahsin (Harian)" optional="hide"/>
                 <field name="ayat_akhir_harian" string="Ayat Akhir Tahsin (Harian)" optional="hide"/>
-                <field name="nilai_tajwid_harian" string="Nilai Tajwid Tahsin (Harian)" optional="hide"/>
-                <field name="nilai_makhroj_harian" string="Nilai Makhroj Tahsin (Harian)" optional="hide"/>
-                <field name="nilai_mad_harian" string="Nilai Mad Tahsin (Harian)" optional="hide"/>
+                <field name="nilai_tahsin_harian" string="Nilai (Harian)" optional="hide"/>
+                <field name="predikat_tahsin_harian" string="Predikat Tahsin (Harian)" optional="hide"/>
 
                 <!-- Tahsin Ujian -->
                 <field name="buku_ujian_id" string="Buku Tahsin (Ujian)" optional="hide"/>
@@ -144,10 +150,11 @@
                                 <group>
                                     <field name="surah_id_ujian_tahfidz"/>
                                     <field name="ayat_awal_ujian_tahfidz"/>
+                                    <field name="ayat_akhir_ujian_tahfidz"/>
                                 </group>
                                 <group>
-                                    <field name="ayat_akhir_ujian_tahfidz"/>
-                                    <field name="nilai_ujian_tahfidz"/>
+                                    <field name="nilai_ujian_tahfidz" string="Nilai"/>
+                                    <field name="predikat_ujian_tahfidz" />
                                 </group>
                             </group>
                             <group string="Catatan">
@@ -191,9 +198,8 @@
                                     <field name="ayat_akhir_harian"/>
                                 </group>
                                 <group invisible="jenjang_display in ['paud','tk','tk/ra']">
-                                    <field name="nilai_tajwid_harian"/>
-                                    <field name="nilai_makhroj_harian"/>
-                                    <field name="nilai_mad_harian"/>
+                                    <field name="nilai_tahsin_harian" />
+                                    <field name="predikat_tahsin_harian" />
                                 </group>
                             </group>
                             <group string="Catatan">

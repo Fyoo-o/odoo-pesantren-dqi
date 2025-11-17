@@ -936,7 +936,6 @@ class hr_employee(models.Model):
                 'title': title,
                 'message': message,
                 'type': notification_type,
-                'sticky': True,  # Biar notifikasinya tetap muncul sampai ditutup manual
             }
         }
 
