@@ -95,7 +95,8 @@ class TahfidzTahsin(models.Model):
     surah_id_ujian_tahfidz = fields.Many2one('cdn.surah', string='Surah', domain="[('id', 'in', available_surah_ids_tahfidz_ujian)]", ondelete='cascade')
     ayat_awal_ujian_tahfidz = fields.Many2one('cdn.ayat', string='Ayat Awal', domain="[('surah_id','=',surah_id_ujian_tahfidz)]", ondelete='cascade')
     ayat_akhir_ujian_tahfidz = fields.Many2one('cdn.ayat', string='Ayat Akhir', domain="[('surah_id','=',surah_id_ujian_tahfidz)]", ondelete='cascade')
-    nilai_ujian_tahfidz = fields.Integer(string="Nilai (Ujian)")
+    nilai_ujian_tahfidz = fields.Integer(string="Nilai")
+    predikat_ujian_tahfidz = fields.Char(string='Predikat', compute='_compute_predikat_ujian_tahfidz', store=True)
     
     # Field bantu (computed, tidak disimpan)
     available_surah_ids_tahfidz_ujian = fields.Many2many(
@@ -184,9 +185,8 @@ class TahfidzTahsin(models.Model):
             ('bsa', '(BSA) Berkembang Sesuai Harapan'),
             ('bsb', '(BSB) Berkembang Sangat Bagus')
         ],string='Nilai (Harian)', default='bb')
-    nilai_tajwid_harian = fields.Integer(string='Nilai Tajwid')
-    nilai_makhroj_harian = fields.Integer(string='Nilai Makhroj')
-    nilai_mad_harian = fields.Integer(string='Nilai Mad')
+    nilai_tahsin_harian = fields.Integer(string="Nilai")
+    predikat_tahsin_harian = fields.Char(string='Predikat', compute='_compute_predikat_tahsin_harian', store=True)
     catatan_harian = fields.Text(string='Catatan (Harian)')
     surah_id_harian = fields.Many2one('cdn.surah', string='Surah', ondelete='cascade')
     ayat_awal_harian = fields.Many2one('cdn.ayat', string='Ayat Awal',domain="[('surah_id','=',surah_id_harian)]", ondelete='cascade')
@@ -244,92 +244,102 @@ class TahfidzTahsin(models.Model):
             else:
                 rec.last_nilai_hafalan = 0
                 rec.last_predikat = ''
+                
+    # === HELPER METHOD UNTUK PREDIKAT ===
+    def _get_predikat(self, nilai, jenjang):
+        """
+        Method helper untuk menghitung predikat berdasarkan nilai dan jenjang.
+        Returns: tuple (predikat, keterangan) atau (False, False)
+        """
+        n = nilai or 0
+        jenjang_lower = (jenjang or '').lower()
+
+        # === PAUD/TK ===
+        if jenjang_lower in ['paud', 'tk', 'tk/ra']:
+            if n >= 90:
+                return 'BSB', 'Berkembang Sangat Bagus'
+            elif n >= 75:
+                return 'BSA', 'Berkembang Sesuai Harapan'
+            elif n >= 60:
+                return 'MB', 'Mulai Berkembang'
+            else:
+                return 'BB', 'Belum Berkembang'
+
+        # === SD ===
+        elif jenjang_lower in ['sd', 'sd/mi', 'sdmi']:
+            if n >= 95:
+                return 'A+', 'Mumtaz'
+            elif n >= 91:
+                return 'A', 'Jayyid Jiddan'
+            elif n >= 80:
+                return 'B+', 'Jayyid'
+            elif n >= 70:
+                return 'B', 'Maqbul'
+            elif n >= 60:
+                return 'C', 'Dhaif'
+            else:
+                return 'D', 'Dhaif Jiddan'
+
+        # === SMP ===
+        elif jenjang_lower in ['smp', 'smp/mts', 'smpmts']:
+            if n >= 90:
+                return 'A', 'Mumtaz'
+            elif n >= 80:
+                return 'B', 'Jayyid Jiddan'
+            elif n >= 70:
+                return 'C', 'Jayyid'
+            else:
+                return 'D', 'Mardud'
+
+        # === SMA ===
+        elif jenjang_lower in ['sma', 'ma', 'smama']:
+            if n >= 96:
+                return 'A+', 'Mumtaz'
+            elif n >= 90:
+                return 'A', 'Mumtaz'
+            elif n >= 80:
+                return 'B+', 'Jayyid Jiddan'
+            elif n >= 75:
+                return 'B', 'Jayyid'
+            elif n >= 70:
+                return 'C', 'Maqbul'
+            elif n >= 60:
+                return 'D', 'Dhaif'
+            else:
+                return 'E', 'Dhaif Jiddan'
+
+        # === Default ===
+        return False, False
+    
     # === COMPUTE ===
     @api.depends('nilai_tahfidz.name', 'jenjang_display')
     def _compute_predikat(self):
+        """Compute predikat untuk Tahfidz"""
         for rec in self:
             n = rec.nilai_tahfidz.name if rec.nilai_tahfidz else 0
-            jenjang = (rec.jenjang_display or '').lower()
+            predikat, keterangan = rec._get_predikat(n, rec.jenjang_display)
+            rec.predikat = predikat
+            rec.keterangan_predikat = keterangan
 
-            # Sistem KB/PAUD/TK pakai BB-MB-BSA-BSB
-            if jenjang in ['paud', 'tk', 'tk/ra']:
-                if n >= 90:
-                    rec.predikat = 'BSB'
-                    rec.keterangan_predikat = 'Berkembang Sangat Bagus'
-                elif n >= 75:
-                    rec.predikat = 'BSA'
-                    rec.keterangan_predikat = 'Berkembang Sesuai Harapan'
-                elif n >= 60:
-                    rec.predikat = 'MB'
-                    rec.keterangan_predikat = 'Mulai Berkembang'
-                else:
-                    rec.predikat = 'BB'
-                    rec.keterangan_predikat = 'Belum Berkembang'
+    @api.depends('nilai_tahsin_harian', 'jenjang_display')
+    def _compute_predikat_tahsin_harian(self):
+        """Compute predikat untuk Tahsin Harian"""
+        for rec in self:
+            predikat, keterangan = rec._get_predikat(rec.nilai_tahsin_harian, rec.jenjang_display)
+            if predikat:
+                rec.predikat_tahsin_harian = f"{predikat} ({keterangan})"
+            else:
+                rec.predikat_tahsin_harian = False
 
-            # Sistem SD
-            elif jenjang in ['sd']:
-                if n >= 95:
-                    rec.predikat = 'A+'
-                    rec.keterangan_predikat = 'Mumtaz'
-                elif n >= 91:
-                    rec.predikat = 'A'
-                    rec.keterangan_predikat = 'Jayyid Jiddan'
-                elif n >= 80:
-                    rec.predikat = 'B+'
-                    rec.keterangan_predikat = 'Jayyid'
-                elif n >= 70:
-                    rec.predikat = 'B'
-                    rec.keterangan_predikat = 'Maqbul'
-                elif n >= 60:
-                    rec.predikat = 'C'
-                    rec.keterangan_predikat = 'Dhaif'
-                else:
-                    rec.predikat = 'D'
-                    rec.keterangan_predikat = 'Dhaif Jiddan'
-                
-            # Sistem SMP  
-            elif jenjang in ['smp']: 
-                if n >= 90:
-                    rec.predikat = 'A'
-                    rec.keterangan_predikat = 'Mumtaz'
-                elif n >= 80:
-                    rec.predikat = 'B'
-                    rec.keterangan_predikat = 'Jayyid Jiddan'
-                elif n >= 70:
-                    rec.predikat = 'C'
-                    rec.keterangan_predikat = 'Jayyid'
-                else:
-                    rec.predikat = 'D'
-                    rec.keterangan_predikat = 'Mardud'
-                    
-            # Sistem SMA
-            elif jenjang in ['sma']:
-                if n >= 96:
-                    rec.predikat = 'A+'
-                    rec.keterangan_predikat = 'Mumtaz'
-                elif n >= 90:
-                    rec.predikat = 'A'
-                    rec.keterangan_predikat = 'Mumtaz'
-                elif n >= 80:
-                    rec.predikat = 'B+'
-                    rec.keterangan_predikat = 'Jayyid Jiddan'
-                elif n >= 75:
-                    rec.predikat = 'B'
-                    rec.keterangan_predikat = 'Jayyid'
-                elif n >= 70:
-                    rec.predikat = 'C'
-                    rec.keterangan_predikat = 'Maqbul'
-                elif n >= 60:
-                    rec.predikat = 'D'
-                    rec.keterangan_predikat = 'Dhaif'
-                else:
-                    rec.predikat = 'E'
-                    rec.keterangan_predikat = 'Dhaif Jiddan'
-                    
-            # Default (jika jenjang tidak dikenali) 
-            else: 
-                rec.predikat = False 
-                rec.keterangan_predikat = False
+    @api.depends('nilai_ujian_tahfidz', 'jenjang_display')
+    def _compute_predikat_ujian_tahfidz(self):
+        """Compute predikat untuk Ujian Tahfidz"""
+        for rec in self:
+            predikat, keterangan = rec._get_predikat(rec.nilai_ujian_tahfidz, rec.jenjang_display)
+            if predikat:
+                rec.predikat_ujian_tahfidz = f"{predikat} ({keterangan})"
+            else:
+                rec.predikat_ujian_tahfidz = False
 
     @api.depends('tahfidz_line_ids', 'tahfidz_line_ids.sequence')
     def _compute_main_fields(self):

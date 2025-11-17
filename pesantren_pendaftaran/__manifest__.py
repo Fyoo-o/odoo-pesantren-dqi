@@ -48,7 +48,7 @@
     'license': 'LGPL-3',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'web', 'pesantren_base',],
+    'depends': ['base', 'web', 'pesantren_base', 'web_password_toggle'],
 
     # always loaded
     'data': [

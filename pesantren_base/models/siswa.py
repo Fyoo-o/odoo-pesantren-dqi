@@ -210,8 +210,9 @@ class siswa(models.Model):
     hobi                = fields.Many2one(comodel_name='cdn.ref_hobi', string='Hobi')
     cita_cita           = fields.Char(string='Cita-Cita')
     
-    nomor_login         = fields.Char(string="Nomor HP", help="Nomor HP/WhatsApp Untuk Login")
-    password            = fields.Char(string="Kata Sandi", help="Kata Sandi Login")
+    email               = fields.Char(string="Email", tracking=True, store=True, readonly=False, related='orangtua_id.email')
+    nomor_login         = fields.Char(string="Nomor HP", help="Nomor HP/WhatsApp Untuk Login", tracking=True, store=True, readonly=False, related='orangtua_id.phone')
+    password            = fields.Char(string="Kata Sandi", help="Kata Sandi Login", tracking=True, store=True, readonly=False, related='orangtua_id.password')
     show_password_button = fields.Boolean(compute='_compute_show_password_button')
     state = fields.Selection([
         ('draft', 'Draft'),
@@ -241,6 +242,87 @@ class siswa(models.Model):
                 record.active_id = record.partner_id  # Bisa disesuaikan dengan field partner_id yang ingin digunakan
             else:
                 record.active_id = 'No Partner'  # Nilai default jika partner_id kosong
+    @api.model
+    def default_get(self, fields_list):
+        """Override default_get untuk set jns_partner"""
+        res = super(siswa, self).default_get(fields_list)
+        res['jns_partner'] = 'siswa'
+        return res
+            
+    def _create_orangtua_from_akun(self):
+        """Buat record orangtua baru dari data akun siswa"""
+        self.ensure_one()
+        
+        if self.orangtua_id:
+            return  # Sudah ada orangtua
+        
+        # Validasi: minimal harus ada email atau nomor_login
+        if not self.email and not self.nomor_login:
+            return
+        
+        # Siapkan data untuk membuat orangtua
+        orangtua_vals = {
+            'name': f"Orang Tua {self.name}",
+            'email': self.email or False,
+            'mobile': self.nomor_login or False,
+            'phone': self.nomor_login or False,
+            'password': self.password or (self.email[:8] if self.email else 'default123'),
+        }
+        
+        # Tambahkan data ayah/ibu jika ada
+        if self.ayah_nama:
+            orangtua_vals.update({
+                'ayah_nama': self.ayah_nama,
+                'ayah_telp': self.ayah_telp,
+                'ayah_email': self.ayah_email
+            })
+            
+        if self.ibu_nama:
+            orangtua_vals.update({
+                'ibu_nama': self.ibu_nama,
+                'ibu_telp': self.ibu_telp,
+                'ibu_email': self.ibu_email
+            })
+        
+        try:
+            # Buat record orangtua baru
+            orangtua = self.env['cdn.orangtua'].sudo().create(orangtua_vals)
+            
+            # Link ke siswa
+            self.orangtua_id = orangtua.id
+            
+            _logger.info(f"Orangtua baru dibuat untuk siswa {self.name}")
+            return orangtua
+            
+        except Exception as e:
+            _logger.error(f"Error creating orangtua: {str(e)}")
+            raise UserError(f"Gagal membuat akun orang tua: {str(e)}")
+        
+    @api.model
+    def create(self, vals):
+        """Override create untuk auto-create orangtua jika belum ada"""
+        res = super(siswa, self).create(vals)
+        
+        # Create orangtua jika data akun diisi tapi orangtua_id kosong
+        if (vals.get('email') or vals.get('nomor_login')) and not vals.get('orangtua_id'):
+            res._create_orangtua_from_akun()
+        
+        return res
+    
+    def write(self, vals):
+        """Override write untuk auto-create orangtua jika belum ada"""
+        res = super(siswa, self).write(vals)
+        
+        # Jika edit akun tapi belum ada orangtua, buat baru
+        akun_fields = ['email', 'nomor_login', 'password']
+        has_akun_changes = any(field in vals for field in akun_fields)
+        
+        if has_akun_changes:
+            for record in self:
+                if not record.orangtua_id and (record.email or record.nomor_login):
+                    record._create_orangtua_from_akun()
+        
+        return res
     
     # Data Orang Tua
     ayah_nama           = fields.Char( string="Nama Ayah",  help="")
@@ -285,7 +367,7 @@ class siswa(models.Model):
     # jenjang_id_moki          = fields.Many2one(comodel_name='ubig.pendaftaran', string='Sekolah')
     
     
-    tingkat             = fields.Many2one(comodel_name="cdn.tingkat",  string="Tingkat", related="ruang_kelas_id.name.tingkat", readonly=True, store=True, help="")
+    tingkat                 = fields.Many2one(comodel_name="cdn.tingkat",  string="Tingkat", related="ruang_kelas_id.name.tingkat", readonly=True, store=True, help="")
 
 
     # @api.model
@@ -427,12 +509,12 @@ class siswa(models.Model):
             }
         }
 
-    def write(self, vals):
-        # Update barcode_santri in res.partner on record update
-        if 'barcode_santri' in vals:
-            for record in self:
-                record.partner_id.write({'barcode_santri': vals['barcode_santri']})
-        return super(siswa, self).write(vals)
+    # def write(self, vals):
+    #     # Update barcode_santri in res.partner on record update
+    #     if 'barcode_santri' in vals:
+    #         for record in self:
+    #             record.partner_id.write({'barcode_santri': vals['barcode_santri']})
+    #     return super(siswa, self).write(vals)
     
     @api.model
     def default_get(self, fields):

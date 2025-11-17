@@ -155,7 +155,7 @@
                             </page>
                             <page name="ortu" string="Orang Tua">
                                 <group string="Akun Orang Tua">
-                                    <field name="orangtua_id"/>
+                                    <field name="orangtua_id" options="{'no_create_edit': True}" placeholder="Pilih orang tua atau isi data akun di bawah"/>
                                 </group>
                                 <group string="Identitas Ayah">
                                     <group>
@@ -207,16 +207,23 @@
                             </page>
                             <page string="Akun">
                                     <group string="Akun Login" class="o_group">
+                                        <group colspan="2">
+                                            <div class="alert alert-info" role="alert">
+                                                <i class="fa fa-info-circle"/> 
+                                                <strong>Info:</strong> Jika belum memilih Orang Tua, 
+                                                data akun yang diisi akan otomatis membuat record Orang Tua baru.
+                                            </div>
+                                        </group>
                                         <group>
-                                            <field name="email" readonly="state in 'diterima,ditolak,batal'" />
+                                            <field name="email" placeholder="Masukkan email untuk login" />
                                         </group>
 
                                         <group>
-                                            <field name="nomor_login" readonly="state in 'diterima,ditolak,batal'" />
+                                            <field name="nomor_login" placeholder="Masukkan nomor HP/WA" />
                                         </group>
 
                                         <group>
-                                            <field name="password" string="Kata Sandi" widget="password_toggle"/>
+                                            <field name="password" string="Kata Sandi" widget="password_toggle" placeholder="Masukkan kata sandi"/>
                                             <!-- <div class="o_form_field o_row">
                                                 <label for="password" string="Kata Sandi"/>
                                                 <field name="password" password="True" class="o_col"/>
@@ -224,6 +231,14 @@
                                                         invisible="not show_password_button"/>
                                             </div>     -->
                                         </group>
+                                        <group colspan="2" invisible="not orangtua_id">
+                                            <div class="alert alert-warning" role="alert">
+                                                <i class="fa fa-warning"/> 
+                                                <strong>Perhatian:</strong> Perubahan data akun akan otomatis 
+                                                meng-update data Orang Tua yang terhubung.
+                                            </div>
+                                        </group>
+
 
                                       
                                         <!-- <label for="password" string="Kata sandi"/>
