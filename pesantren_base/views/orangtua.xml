@@ -144,6 +144,6 @@
             </field>
         </record>
 
-        <menuitem id="menu_cdn_orangtua" name="Orang tua" parent="siswa_menu_categ" action="action_cdn_orangtua" sequence="30"/>
+        <menuitem id="menu_cdn_orangtua" name="Orang Tua" parent="siswa_menu_categ" action="action_cdn_orangtua" sequence="30"/>
     </data>
 </odoo>

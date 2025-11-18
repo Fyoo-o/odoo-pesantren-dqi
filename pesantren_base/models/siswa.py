@@ -515,7 +515,6 @@ class siswa(models.Model):
     #         for record in self:
     #             record.partner_id.write({'barcode_santri': vals['barcode_santri']})
     #     return super(siswa, self).write(vals)
-    
     @api.model
     def default_get(self, fields):
        res = super(siswa,self).default_get(fields)

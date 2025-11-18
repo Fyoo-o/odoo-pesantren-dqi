@@ -238,7 +238,7 @@ export class SekolahKpiCard extends Component {
       // Update KPI data state with animations
       this.state.kpiData = [
         {
-          name: "Santri",
+          name: "Siswa",
           value: siswa,
           icon: "fa-user-graduate",
           res_model: "cdn.siswa",

@@ -237,7 +237,7 @@
 
                         <!-- TAB Riwayat Hafalan -->
                         <page string="Riwayat Hafalan">
-                            <field name="riwayat_hafalan_ids">
+                            <field name="riwayat_hafalan_ids" nolabel="1" mode="list,form">
                                 <list default_order="tanggal_penilaian desc, sequence desc">
                                     <field name="tanggal_penilaian" string="Tanggal"/>
                                     <field name="surah_id" string="Surah"/>
@@ -246,6 +246,26 @@
                                     <field name="nilai_hafalan" string="Nilai Hafalan"/>
                                     <field name="predikat" string="Predikat Hafalan"/>
                                 </list>
+                                <form>
+                                    <group>
+                                        <group>
+                                            <field name="penilaian_id" />
+                                            <field name="tanggal_penilaian" />
+                                            <field name="halaqoh_id" />
+                                            <field name="sesi_id" />
+                                            <field name="ustadz_id" />
+                                            <field name="keterangan" />
+                                        </group>        
+                                        <group>
+                                            <field name="surah_id" />
+                                            <field name="ayat_awal" />
+                                            <field name="ayat_akhir" />
+                                            <field name="jml_baris" />
+                                            <field name="nilai_hafalan" />
+                                            <field name="predikat" />
+                                        </group>                            
+                                    </group>
+                                </form>
                             </field>
                         </page>
                     </notebook>
@@ -338,6 +358,94 @@
         </field>
     </record>
 
+    <record id="view_penilaian_quran_line_tree" model="ir.ui.view">
+        <field name="name">cdn.penilaian_quran_line.tree</field>
+        <field name="model">cdn.penilaian_quran_line</field>
+        <field name="arch" type="xml">
+            <list string="" 
+                  default_order="tanggal_penilaian desc, sequence asc" 
+                  create="false" 
+                  edit="false" 
+                  delete="false">
+                <field name="penilaian_id" string="Referensi" optional="show"/>
+                <field name="tanggal_penilaian" string="Tanggal"/>
+                <field name="halaqoh_id" string="Halaqoh"/>
+                <field name="sesi_id" string="Sesi"/>
+                <field name="ustadz_id" string="Ustadz" optional="hide"/>
+                <field name="surah_id" string="Surah"/>
+                <field name="ayat_awal" string="Ayat Awal"/>
+                <field name="ayat_akhir" string="Ayat Akhir"/>
+                <field name="jml_baris" string="Jumlah Maqra'"/>
+                <field name="nilai_hafalan" string="Nilai Hafalan"/>
+                <field name="predikat" string="Predikat"/>
+                <field name="keterangan" string="Keterangan" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_penilaian_quran_line_form" model="ir.ui.view">
+        <field name="name">cdn.penilaian_quran_line.form</field>
+        <field name="model">cdn.penilaian_quran_line</field>
+        <field name="arch" type="xml">
+            <form string="" create="false" edit="false" delete="false">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="penilaian_id" readonly="1" force_save="0"/>
+                            <field name="tanggal_penilaian" readonly="1" force_save="0"/>
+                            <field name="halaqoh_id" readonly="1" force_save="0"/>
+                            <field name="sesi_id" readonly="1" force_save="0"/>
+                            <field name="ustadz_id" readonly="1" force_save="0"/>
+                            <field name="keterangan" readonly="1" force_save="0"/>
+                        </group>
+                        <group>
+                            <field name="surah_id" readonly="1" force_save="0"/>
+                            <field name="ayat_awal" readonly="1" force_save="0"/>
+                            <field name="ayat_akhir" readonly="1" force_save="0"/>
+                            <field name="jml_baris" readonly="1" force_save="0"/>
+                            <field name="nilai_hafalan" readonly="1" force_save="0"/>
+                            <field name="predikat" readonly="1" force_save="0"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_penilaian_quran_line_search" model="ir.ui.view">
+        <field name="name">cdn.penilaian_quran_line.search</field>
+        <field name="model">cdn.penilaian_quran_line</field>
+        <field name="arch" type="xml">
+            <search string="Cari Riwayat Hafalan">
+                <field name="penilaian_id" string="Referensi"/>
+                <field name="surah_id" string="Surah"/>
+                <field name="halaqoh_id" string="Halaqoh"/>
+                <field name="ustadz_id" string="Ustadz"/>
+                <field name="tanggal_penilaian" string="Tanggal"/>
+                
+                <separator/>
+                
+                <!-- Filter berdasarkan tanggal -->
+                <filter name="filter_today" string="Hari Ini" 
+                        domain="[('tanggal_penilaian','=',context_today().strftime('%Y-%m-%d'))]"/>
+                <filter name="filter_this_week" string="Minggu Ini" 
+                        domain="[('tanggal_penilaian','&gt;=',(context_today()-relativedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+                <filter name="filter_this_month" string="Bulan Ini" 
+                        domain="[('tanggal_penilaian','&gt;=',(context_today()-relativedelta(months=1)).strftime('%Y-%m-%d'))]"/>
+                
+                <separator/>
+                
+                <!-- Group By -->
+                <group expand="0" string="Group By">
+                    <filter name="group_tanggal" string="Tanggal" context="{'group_by': 'tanggal_penilaian'}"/>
+                    <filter name="group_surah" string="Surah" context="{'group_by': 'surah_id'}"/>
+                    <filter name="group_halaqoh" string="Halaqoh" context="{'group_by': 'halaqoh_id'}"/>
+                    <filter name="group_ustadz" string="Ustadz" context="{'group_by': 'ustadz_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
     <!-- Action Window -->
     <record id="action_penilaian_quran" model="ir.actions.act_window">
         <field name="name">Penilaian Halaqoh</field>
@@ -350,6 +458,21 @@
             </p>
         </field>
         <field name="context">{'from_guru_quran': True}</field>
+    </record>
+
+    <record id="action_penilaian_quran_line" model="ir.actions.act_window">
+        <field name="name">Riwayat Hafalan</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cdn.penilaian_quran_line</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_penilaian_quran_line_tree"/>
+        <field name="search_view_id" ref="view_penilaian_quran_line_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Tidak ada riwayat hafalan
+            </p>
+        </field>
+        <field name="context">{'create': False, 'edit': False, 'delete': False}</field>
     </record>
 
     <!-- Menu Item -->

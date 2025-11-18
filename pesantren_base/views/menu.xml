@@ -4,7 +4,7 @@
 		<menuitem id="sekolah_sub_menu" name="Operations" sequence="40" parent="sekolah_top_menu" />
 		<menuitem id="sekolah_config_menu" name="Pengaturan" sequence="60" parent="sekolah_top_menu" />
 		<!-- This Menu Item Must have a parent -->
-		<menuitem id="siswa_menu_categ" name="Santri" parent="sekolah_top_menu" sequence="10"/>
+		<menuitem id="siswa_menu_categ" name="Siswa" parent="sekolah_top_menu" sequence="10"/>
 		<!-- This Menu Item Must have a parent -->
 		<!-- <menuitem id="guru_menu_categ" name="Guru" parent="sekolah_top_menu" sequence="20"/> -->
 		<!-- This Menu Item Must have a parent -->

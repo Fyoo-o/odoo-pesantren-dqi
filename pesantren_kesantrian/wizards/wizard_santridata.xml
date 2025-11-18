@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data> 
-        <record id="cdn_siswa_inherit_list_view" model="ir.ui.view">
-            <field name="name">cdn.siswa.inherit.view.list</field>
+        <record id="cdn_santri_inherit_list_view" model="ir.ui.view">
+            <field name="name">cdn.santri.inherit.view.list</field>
             <field name="model">cdn.siswa</field>
-            <field name="inherit_id" ref="pesantren_base.view_cdn_siswa_tree" />
+            <field name="inherit_id" ref="pesantren_kesantrian.view_cdn_santri_tree" />
             <field name="priority" eval="17" />
             <field name="arch" type="xml">
                 <!-- <xpath expr="//field[@name='ruang_kelas_id']" position="after">
