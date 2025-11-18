@@ -61,7 +61,7 @@
                             <h1><field name="name"/></h1>
                         </div> -->
                         <div class="oe_title">
-                            <label for="name" class="oe_edit_only" string="Nama Lengkap Santri"/>
+                            <label for="name" class="oe_edit_only" string="Nama Lengkap Siswa"/>
                             <h1>
                                 <field name="name" style="width:50%"/>
                             </h1>
@@ -73,15 +73,15 @@
                                 <field name="street2" string="RT / RW"/>
                                 <field name="zip" string="Kode Pos" />
                                 <!-- <field name="jns_partner" readonly="1" string="Jenis Partner"/> -->
-                                <field name="barcode_santri" string="Kartu Santri" readonly="True"/>
+                                <field name="barcode_santri" string="Kartu Siswa" readonly="True"/>
                                 <!-- <field name="partner_id" readonly="1" required="False"/> -->
                                 <!-- <field name="barcode"/>  -->
                             </group>
                             <group>
-                                <field name="kecamatan_id" domain="[('kota_id','=',kota_id)]" />
-                                <field name="kota_id" domain="[('propinsi_id','=',propinsi_id)]" />
                                 <field name="propinsi_id"/>
-                                <field name="qr_code_image" widget="image" class="oe_avatar" options="{'preview_image': 'qr_code_image'}" string="QR Code" style="width: 120px; height: 120px;"/>
+                                <field name="kota_id" domain="[('propinsi_id','=',propinsi_id)]" />
+                                <field name="kecamatan_id" domain="[('kota_id','=',kota_id)]" />
+                                <!-- <field name="qr_code_image" widget="image" class="oe_avatar" options="{'preview_image': 'qr_code_image'}" string="QR Code" style="width: 120px; height: 120px;"/> -->
                             </group>
                             <!-- <field name="tinggal_di"/> -->
                         </group>
@@ -91,7 +91,7 @@
                             <field name="pesantren_telp"/>
                         </group> -->
                         <notebook>
-                            <page name="info_siswa" string="Santri">
+                            <page name="info_siswa" string="Info Siswa">
                                 <group string="Akademik">
                                     <group>
                                         <field name="nis"/>
@@ -109,7 +109,7 @@
                                         <field name="kewarganegaraan" />
                                     </group>
                                 </group>
-                                <group string="Santri">
+                                <group string="Siswa">
                                     <group>
                                         <field name="panggilan" string="Panggilan"/>
                                         <field name="tgl_lahir"/>
@@ -137,7 +137,7 @@
                                         <field name="telp_asal_sek" string="No Telp" />
                                         <field name="alamat_asal_sek" string="Alamat" />
                                         <field name="prestasi_sebelum" />
-                                        <field name="bakat" string="Bakat Santri" widget="many2many_tags"/>
+                                        <field name="bakat" string="Bakat Siswa" widget="many2many_tags"/>
                                     </group>
                                 </group>
                                 <group string="Nilai Rata-Rata Raport Kelas">
@@ -196,7 +196,7 @@
                                         <field name="wali_nama" />
                                         <field name="wali_tgl_lahir" string="Tgl Lahir"/>
                                         <field name="wali_email" string="Email" widget="email"/>
-                                        <field name="wali_hubungan" string="Hubungan dg Santri" />
+                                        <field name="wali_hubungan" string="Hubungan dg Siswa" />
                                     </group>
                                     <group>
                                         <field name="wali_tmp_lahir" string="Tempat Lahir"/>
@@ -207,11 +207,18 @@
                             </page>
                             <page string="Akun">
                                     <group string="Akun Login" class="o_group">
-                                        <group colspan="2">
+                                        <group colspan="2" style="margin-bottom: 8px;">
                                             <div class="alert alert-info" role="alert">
-                                                <i class="fa fa-info-circle"/> 
+                                                <i class="fa fa-info-circle me-1"/> 
                                                 <strong>Info:</strong> Jika belum memilih Orang Tua, 
                                                 data akun yang diisi akan otomatis membuat record Orang Tua baru.
+                                            </div>
+                                        </group>
+                                        <group colspan="2" style="margin-top: -8px;" invisible="not orangtua_id">
+                                            <div class="alert alert-warning" role="alert">
+                                                <i class="fa fa-warning me-1"/> 
+                                                <strong>Perhatian:</strong> Perubahan data akun akan otomatis 
+                                                meng-update data Orang Tua yang terhubung.
                                             </div>
                                         </group>
                                         <group>
@@ -231,15 +238,6 @@
                                                         invisible="not show_password_button"/>
                                             </div>     -->
                                         </group>
-                                        <group colspan="2" invisible="not orangtua_id">
-                                            <div class="alert alert-warning" role="alert">
-                                                <i class="fa fa-warning"/> 
-                                                <strong>Perhatian:</strong> Perubahan data akun akan otomatis 
-                                                meng-update data Orang Tua yang terhubung.
-                                            </div>
-                                        </group>
-
-
                                       
                                         <!-- <label for="password" string="Kata sandi"/>
                                          <div class="o_row">
@@ -481,7 +479,15 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.siswa</field>
             <field name="view_mode">list,kanban,form</field>
-            <field name="context">{'search_default_group_by_jenjang': 1, 'search_default_group_by': 'jenjang'}</field>            
+            <field name="views">[
+                (ref('view_cdn_siswa_tree'), 'list'),
+                (ref('view_cdn_siswa_form'), 'form')
+            ]</field>
+            <field name="context">{
+                'search_default_group_by_jenjang': 1, 
+                'search_default_group_by': 'jenjang',
+                'form_view_ref': 'pesantren_base.view_cdn_siswa_form',
+            }</field>            
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
                 Click to add a new Siswa
@@ -491,6 +497,6 @@
                 </p>
             </field>
         </record>
-        <menuitem id="menu_cdn_siswa" name="Santri" parent="siswa_menu_categ" action="action_cdn_siswa" sequence="10"/>
+        <menuitem id="menu_cdn_siswa" name="Siswa" parent="siswa_menu_categ" action="action_cdn_siswa" sequence="10"/>
     </data>
 </odoo>

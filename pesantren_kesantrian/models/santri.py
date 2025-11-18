@@ -70,6 +70,32 @@ class Santri(models.Model):
     uang_saku_formatted = fields.Integer(string='Uang Saku (Format)', compute='_compute_uang_saku_formatted')
     catatan_akun        = fields.Text(string="Catatan")
     alasan_akun         = fields.Char(string="Alasan")
+    riwayat_hafalan_santri_ids = fields.One2many(
+        'cdn.penilaian_quran_line',
+        compute='_compute_riwayat_hafalan_santri',
+        string='Riwayat Hafalan Santri',
+        readonly=True
+    )
+    
+    @api.depends('tahfidz_quran_ids', 'tahfidz_quran_ids.state', 'tahfidz_quran_ids.tahfidz_line_ids')
+    def _compute_riwayat_hafalan_santri(self):
+        for santri in self:
+            if not santri.id:
+                santri.riwayat_hafalan_santri_ids = False
+                continue
+            
+            # Ambil semua penilaian quran yang sudah done untuk santri ini
+            penilaian_ids = self.env['cdn.penilaian_quran'].search([
+                ('siswa_id', '=', santri.id),
+                ('state', '=', 'done')
+            ]).ids
+            
+            # Ambil semua line dari penilaian tersebut
+            riwayat_lines = self.env['cdn.penilaian_quran_line'].search([
+                ('penilaian_id', 'in', penilaian_ids)
+            ])
+            
+            santri.riwayat_hafalan_santri_ids = riwayat_lines
 
     def _compute_count_kesehatan(self):
         for siswa in self:
@@ -84,10 +110,21 @@ class Santri(models.Model):
     #     for siswa in self:
     #         siswa.tahfidz_quran_count = self.env['cdn.tahfidz_quran'].search_count([('siswa_id', '=', siswa.id)])
 
+    # def _compute_count_penilaian_quran(self):
+    #     for siswa in self:
+    #         siswa.penilaian_quran_count = self.env['cdn.penilaian_quran'].search_count([
+    #             ('siswa_id', '=', siswa.id)
+    #         ])
     def _compute_count_penilaian_quran(self):
         for siswa in self:
-            siswa.penilaian_quran_count = self.env['cdn.penilaian_quran'].search_count([
-                ('siswa_id', '=', siswa.id)
+            # Hitung berdasarkan penilaian_quran_line yang statusnya done
+            penilaian_ids = self.env['cdn.penilaian_quran'].search([
+                ('siswa_id', '=', siswa.id),
+                ('state', '=', 'done')
+            ]).ids
+            
+            siswa.penilaian_quran_count = self.env['cdn.penilaian_quran_line'].search_count([
+                ('penilaian_id', 'in', penilaian_ids)
             ])
     @api.depends('tahfidz_quran_ids.state', 'tahfidz_quran_ids.tanggal')
     def _compute_tahfidz_terakhir(self):
@@ -390,20 +427,46 @@ class Santri(models.Model):
     #         },
     #         'domain': [('siswa_id', '=', self.id)]
     #     }
+    # def action_tahfidz_quran(self):
+    #     return {
+    #         'name': 'Tahfidz Quran',
+    #         'view_type': 'form',
+    #         'view_mode': 'list,form',
+    #         'res_model': 'cdn.penilaian_quran',
+    #         'type': 'ir.actions.act_window',
+    #         'target': 'current',
+    #         'context': {
+    #             'default_siswa_id': self.id,
+    #         },
+    #         'domain': [('siswa_id', '=', self.id)]
+    #     }
     def action_tahfidz_quran(self):
+        self.ensure_one()
+        
+        # Ambil semua penilaian yang sudah done untuk santri ini
+        penilaian_ids = self.env['cdn.penilaian_quran'].search([
+            ('siswa_id', '=', self.id),
+            ('state', '=', 'done')
+        ]).ids
+        
         return {
-            'name': 'Tahfidz Quran',
-            'view_type': 'form',
-            'view_mode': 'list,form',
-            'res_model': 'cdn.penilaian_quran',
+            'name': f'Tahfidz Al-Quran - {self.name}',
             'type': 'ir.actions.act_window',
+            'res_model': 'cdn.penilaian_quran_line',
+            'view_mode': 'list,form',
             'target': 'current',
+            'views': [
+                (self.env.ref('pesantren_kesantrian.view_penilaian_quran_line_tree').id, 'list'),
+                (self.env.ref('pesantren_kesantrian.view_penilaian_quran_line_form').id, 'form'),
+            ],
+            'search_view_id': self.env.ref('pesantren_kesantrian.view_penilaian_quran_line_search').id,
+            'domain': [('penilaian_id', 'in', penilaian_ids)],
             'context': {
-                'default_siswa_id': self.id,
+                'create': False,
+                'edit': False,
+                'delete': False,
             },
-            'domain': [('siswa_id', '=', self.id)]
         }
-
 
     # def action_saldo_tagihan(self):
     #     return {

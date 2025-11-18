@@ -629,6 +629,27 @@ class PenilaianQuranLine(models.Model):
         related='penilaian_id.tanggal',
         store=True
     )
+    halaqoh_id = fields.Many2one(
+        'cdn.halaqoh',
+        string='Halaqoh',
+        related='penilaian_id.halaqoh_id',
+        store=True,
+        readonly=True
+    )
+    sesi_id = fields.Many2one(
+        'cdn.sesi_halaqoh',
+        string='Sesi',
+        related='penilaian_id.sesi_id',
+        store=True,
+        readonly=True
+    )
+    ustadz_id = fields.Many2one(
+        'hr.employee',
+        string='Ustadz',
+        related='penilaian_id.ustadz_id',
+        store=True,
+        readonly=True
+    )
 
     predikat = fields.Char(string='Predikat', compute='_compute_predikat', store=True)
     keterangan = fields.Char(string='Keterangan')
