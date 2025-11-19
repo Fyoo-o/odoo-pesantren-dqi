@@ -1,0 +1,60 @@
+// /* KPI Card Styling */
+// .kpi-card {
+//   transition: all 0.3s ease;
+//   cursor: pointer;
+//   background: #ffffff;
+// }
+
+// .kpi-card:hover {
+//   transform: translateY(-5px);
+//   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
+// }
+
+// .kpi-card .card-body {
+//   position: relative;
+// }
+
+// /* KPI Value Styling */
+// .kpi-value {
+//   font-size: 2rem;
+//   font-weight: 700;
+//   color: #0cba3e;
+//   line-height: 1.2;
+//   margin-bottom: 0.5rem;
+//   transition: all 0.3s ease;
+//   transform: scale(1);
+//   transform-origin: left center; /* Agar scale dari kiri tengah */
+// }
+
+// .kpi-card:hover .kpi-value {
+//   transform: scale(1.1); /* Lebih smooth dengan 1.1 */
+// }
+
+// .kpi-value span {
+//   display: inline-block;
+// }
+
+// /* KPI Label Styling */
+// .kpi-label {
+//   font-size: 0.875rem;
+//   color: #6b7280;
+//   font-weight: 500;
+//   text-transform: capitalize;
+// }
+
+// /* Icon Circle Styling */
+// .icon-circle {
+//   width: 50px;
+//   height: 50px;
+//   background: #0cba3e;
+//   border-radius: 50%;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   box-shadow: 0 4px 8px rgba(12, 186, 62, 0.3);
+// }
+
+// /* Clickable cursor */
+// .clickable {
+//   cursor: pointer;
+// }

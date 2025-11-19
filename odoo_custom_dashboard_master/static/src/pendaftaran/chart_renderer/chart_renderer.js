@@ -352,10 +352,10 @@ export class PendaftaranChartRenderer extends Component {
       const stateCounts = aggregateDataByJobId(pie2);
 
       this.state.originalLabels = Object.keys(stateCounts).map((state) => {
-        if (state === "sdmi") return "Sd/MI";
-        if (state === "smpmts") return "Smp/Mts";
-        if (state === "smama") return "Sma/Ma";
-        if (state === "smk") return "Smk";
+        if (state === "sdmi") return "SD/MI";
+        if (state === "smpmts") return "SMP/MTs";
+        if (state === "smama") return "SMA/MA";
+        if (state === "smk") return "SMK";
         return state;
       });
 

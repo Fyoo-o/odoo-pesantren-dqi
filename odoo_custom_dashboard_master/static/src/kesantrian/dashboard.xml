@@ -150,9 +150,9 @@
       </div>
 
       <!-- Charts -->
-      <div class="row mx-0 my-3">
+      <div class="row mx-0 my-2">
         <div class="col-lg-6 col-md-12 col-sm-12 m-0 p-2">
-          <div class="shadow-sm border p-4 bg-white h-100">
+          <div class="shadow-sm p-4 bg-white h-100">
             <h2 class="mb-5">Absensi Halaqoh per Status Kehadiran</h2>
             <ChartRenderer
               type="'donutChart'"
@@ -163,7 +163,7 @@
           </div>
         </div>
         <div class="col-lg-6 col-md-12 col-sm-12 m-0 p-2">
-          <div class="shadow-sm border p-4 bg-white h-100">
+          <div class="shadow-sm p-4 bg-white h-100">
             <h2 class="mb-5">Absensi Halaqoh per Halaqoh</h2>
             <ChartRenderer
               type="'chart'"
@@ -175,7 +175,7 @@
         </div>
       </div>
 
-      <div class="row mx-0 my-3">
+      <div class="row mx-0 my-2 pb-4">
         <!-- Pelanggaran Card -->
         <div class="col-lg-6 col-md-12 col-sm-12 m-0 p-2">
           <div class="shadow-sm bg-white h-100" style="border-radius: 0.375rem; overflow: hidden">

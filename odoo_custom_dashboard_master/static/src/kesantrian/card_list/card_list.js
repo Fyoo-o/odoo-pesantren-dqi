@@ -117,8 +117,9 @@ export class PelanggaranCardList extends Component {
             const studentMap = new Map(students.map(s => [s.id, s]));
 
             this.state.pelanggarans = pelanggaranRecords
-                .map(p => {
+                .map((p,index) => {
                     const pelanggaran = {
+                        number: index + 1,
                         student_name: studentMap.get(p.siswa_id[0])?.name || "N/A",
                         pelanggaran_name: p.pelanggaran_id[1] || "N/A",
                         kategori: p.kategori || "N/A",

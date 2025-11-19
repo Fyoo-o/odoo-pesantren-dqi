@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates xml:space="preserve">
     <t t-name="owl.GuruKpiCard" owl="1">
-        <div class="container-fluid px-6">
+        <div>
             <div class="row g-4">
                 <t t-foreach="state.kpiData" t-as="kpi" t-key="kpi.name">
                     <div class="col-lg-4 col-md-6">

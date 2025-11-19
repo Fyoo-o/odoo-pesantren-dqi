@@ -34,25 +34,45 @@
             width: 30%;
             margin: 0 0 0 0.4rem;
         }
+        /* Padding untuk mobile */
+        .dashboard-container {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
     }
 
     .timer-button {
-        margin: 0 0 0 0.4rem;
+        margin: 1rem 0.4rem;
+    }
+
+    .period-selection {
+        margin: 1rem 0.4rem;
     }
 
     .period-and-timer {
         display: flex;
     }
 
+    /* Padding untuk container utama */
+    .dashboard-container {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+    .grafik-kiri {
+        padding-left: 0 !important;
+    }
+    .grafik-kanan {
+        padding-right: 0 !important;
+    }
     </style>
-        <div class="container-fluid vh-100 bg-muted mb-5 pb-5">
+        <div class="container-fluid vh-100 bg-muted mb-5 pb-5 dashboard-container">
             <!-- Header Full Width -->
             <div class="my-1">
                 <div class="col-12">
-                    <div class="pt-4 pb-2">
+                    <div class="pt-3 pb-2">
                         <div class="d-flex flex-wrap align-items-center justify-content-between">
                             <div class="d-flex">
-                                <h2 class="text-dark fw-bold header-text">Dashboard Pendaftaran</h2>
+                                <h2 class="text-primary fw-bold header-text">Dashboard Pendaftaran</h2>
                             </div>
                             <div class="controls-wrapper d-flex align-items-center">
                                  <div class="button-popup-wrapper date-button">
@@ -88,18 +108,11 @@
                                     <option value="lastYear">Tahun Lalu</option>
                                 </select>
 
-                                <!-- Tombol untuk memilih rentang tanggal -->
-
                                 <!-- Tombol Timer -->
                                 <button id="timerButton" class="btn btn-outline-secondary timer-button">
                                     <i id="timerIcon" class="fas fa-clock"></i>
                                     <span id="timerCountdown"></span>
                                 </button>
-                                <!-- <small>
-                                    <a href="https://youtu.be/viwr6v9HHmw" target="_blank" class="ms-2 fa-solid fa-question rounded-circle">
-                                        <i class="fa-solid fa-question"></i>
-                                    </a>
-                                </small> -->
                                 </div>
                             </div>
                         </div>
@@ -109,14 +122,13 @@
 
 
             <!-- KPI Cards -->
-            <div class="mx-2 mt-1 mb-2">
+            <div class="mx-1 my-0">
               <PendaftaranKpiCard/>
             </div>
 
             <!-- Pie, Donut, Bar Charts -->
-            <div class="row mx-0">
-                <!-- Top Products (Pie Chart) -->
-                <div class="col-lg-6 m-0 ps-0 py-0 pe-lg-1 pe-0">
+            <div class="row mx-0 my-2">
+                <div class="col-lg-6 col-md-12 col-sm-12 m-0 pr-2 py-2 grafik-kiri">
                     <div class="shadow-sm p-4 bg-white" style="width: 100%; height: 400px;">
                         <div class="d-flex align-items-center justify-content-between">
                             <h5 class="text-dark fw-bold">Status Penerimaan</h5>
@@ -125,51 +137,21 @@
                     </div>
                 </div>
 
-                <!-- Top Sales Revenue (Donut Chart) -->
-                <div class="col-lg-6 m-0 py-0 px-lg-1 px-0 my-lg-0 my-2">
+                <div class="col-lg-6 col-md-12 col-sm-12 m-0 pl-2 py-2 grafik-kanan">
                     <div class="shadow-sm p-4 bg-white" style="width: 100%; height: 400px;">
                         <div class="d-flex align-items-center justify-content-between">
                             <h5 class="text-dark fw-bold">Jenjang</h5>
                         </div>
-                        <!-- <SekolahChartRenderer type="'pie'" title="'pie2'"/> -->
                         <PendaftaranChartRenderer type="'pie'" title="'pie2'"/>
                     </div>
                 </div>
-
-                <!-- <div class="col-lg-4 m-0 py-0 pe-0 ps-lg-1 ps-0">
-                    <div class="shadow-sm p-4 bg-white" style="width: 100%; height: 400px;">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <h5 class="text-dark fw-bold">Status Tagihan</h5>
-                        </div>
-                        <SekolahChartRenderer type="'pie'" title="'pie3'"/>
-                        <KaryawanChartRenderer type="'pie'" title="'pie3'"/>
-                    </div>
-                </div> -->
             </div>
 
-            <div class="row mx-0 my-2 pb-5">
-                <div class="col-lg-12 col-md-12 col-sm-12 m-0 ps-0 pe-lg-1 pe-0">
-                    <!-- <TagihanLunasList/> -->
+            <div class="row mx-0 my-2 pb-4">
+                <div class="col-lg-12 col-md-12 col-sm-12 m-0 px-0">
                     <PendaftaranList/>
                 </div>
-                <!-- <div class="col-lg-6 col-md-12 col-sm-12 m-0 ps-lg-1 ps-0 pe-0 mt-2 mt-lg-0">
-                    <StockCardList2 />
-                    <TagihanBelumLunasList/>
-                    <KaryawanListDua/>
-                </div> -->
             </div>
-
-            <!-- Full Width Line Chart -->
-            <!-- <div class="row mx-0 my-3">
-                <div class="col-lg-12 col-md-12 col-sm-12 m-0 p-2">
-                    <div class="shadow-sm p-4 pb-5 bg-white" style="width: 100%; height: 400px;">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <h3 class="text-dark fw-bold">Tanggal Pemasokan</h3>
-                        </div>
-                        <StockChartRenderer type="'line'" class="w-100"/>
-                    </div>
-                </div>
-            </div> -->
         </div>
     </t>
 </templates>
