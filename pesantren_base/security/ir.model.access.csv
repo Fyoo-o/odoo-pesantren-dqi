@@ -92,3 +92,4 @@ access_kenaikan_kelas_line_manager,access.kenaikan.kelas.line.manager,model_cdn_
 access_cdn_komponen_biaya_manager,cdn_komponen_biaya_manager,model_cdn_komponen_biaya,,1,1,1,1
 
 access_hr_employee_readonly,access.hr.employee.readonly,model_hr_employee,group_hr_employee_readonly,1,0,0,0
+access_activation_result_wizard,activation.result.wizard,model_activation_result_wizard,base.group_user,1,1,1,1

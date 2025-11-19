@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_activation_result_wizard_form" model="ir.ui.view">
+        <field name="name">activation.result.wizard.form</field>
+        <field name="model">activation.result.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Result">
+                <group>
+                    <field name="message" widget="text" nolabel="1" readonly="1" options="{'style': 'white-space: pre-wrap; font-family: monospace;'}"/>
+                </group>
+                <footer>
+                    <button string="OK" class="btn-primary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

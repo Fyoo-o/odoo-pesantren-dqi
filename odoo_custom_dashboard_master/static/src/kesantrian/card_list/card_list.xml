@@ -20,6 +20,7 @@
                         <table class="table table-hover table-striped mb-0">
                             <thead style="position: sticky; top: 0; background-color: white; z-index: 1;">
                                 <tr>
+                                    <th>#</th>
                                     <th>Nama Santri</th>
                                     <th>Pelanggaran</th>
                                     <th>Kategori</th>
@@ -31,6 +32,7 @@
                                 <t t-foreach="state.pelanggarans" t-as="pelanggaran" t-key="pelanggaran_index">
                                     <tr class="cursor-pointer hover:bg-gray-100" 
                                         t-on-click="() => pelanggaran.onClick()">
+                                        <td><t t-esc="pelanggaran.number"/></td>
                                         <td><t t-esc="pelanggaran.student_name"/></td>
                                         <td><t t-esc="pelanggaran.pelanggaran_name"/></td>
                                         <td><t t-esc="pelanggaran.kategori"/></td>
@@ -72,7 +74,7 @@
                         <table class="table table-hover table-striped mb-0">
                             <thead style="position: sticky; top: 0; background-color: white; z-index: 1;">
                                 <tr>
-                                    <th>No</th>
+                                    <th>#</th>
                                     <th>Nama Santri</th>
                                     <th>Kelas</th>
                                     <th>Maqrok</th>

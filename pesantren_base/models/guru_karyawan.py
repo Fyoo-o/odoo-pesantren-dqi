@@ -940,7 +940,7 @@ class hr_employee(models.Model):
     #     }
     def activate_account_action(self):
         """
-        Aktivasi massal akun karyawan — VERSI SUPER CEPAT + PROGRESS BAR
+        Aktivasi massal akun karyawan — VERSI SUPER CEPAT + PROGRESS BAR + QUEUE_JOB
         """
         total = len(self)
         if not total:
@@ -1024,11 +1024,8 @@ class hr_employee(models.Model):
 
         success_count = 0
         skipped_records = []
-        emails_to_send = []  # Kumpulkan semua email dulu
+        emails_to_send = []
 
-        # ===================================================================
-        # 2. LOOP DENGAN PROGRESS BAR
-        # ===================================================================
         for rec in self.with_progress(
             msg=f"Sedang mengaktifkan akun karyawan ({total} akun)...",
             total=total,
@@ -1093,68 +1090,80 @@ class hr_employee(models.Model):
                     'reason': str(e)[:100]
                 })
 
-        # ===================================================================
-        # 3. KIRIM SEMUA EMAIL SEKALIGUS (mass create + mass send)
-        # ===================================================================
         if emails_to_send:
-            mail_values = []
-            for data in emails_to_send:
-                mail_values.append({
-                    'subject': 'Akun Anda Telah Diaktifkan',
-                    'email_to': data['email_to'],
-                    'body_html': f'''
-                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; background:#f9f9f9; padding:20px; border-radius:10px;">
-                            <h2 style="color:#0078d7;">Assalamualaikum Wr. Wb,</h2>
-                            <p>Selamat! Akun Anda telah berhasil diaktifkan.</p>
-                            <table style="width:100%; background:white; padding:15px; border-radius:8px;">
-                                <tr><td><strong>Email</strong></td><td>{data['email_to']}</td></tr>
-                                <tr><td><strong>Password</strong></td><td>{data['masked_password']}</td></tr>
-                                <tr><td><strong>Jenis Akun</strong></td><td>{data['jenis']}</td></tr>
-                                <tr><td><strong>Tanggal</strong></td><td>{fields.Datetime.now().strftime("%d/%m/%Y %H:%M")}</td></tr>
-                            </table>
-                            <p style="text-align:center; margin:20px 0;">
-                                <a href="https://aplikasi.dqi.ac.id/login" style="background:#0078d7; color:white; padding:12px 30px; text-decoration:none; border-radius:6px;">
-                                    Masuk Sekarang
-                                </a>
-                            </p>
-                            <p>Hubungi tim IT (0822 5207 9785) jika ada kendala.</p>
-                            <hr>
-                            <small>&copy; 2025 Pesantren Tahfizh Daarul Qur'an Istiqomah</small>
-                        </div>
-                    '''
-                })
-
-            mails = self.env['mail.mail'].sudo().create(mail_values)
-            mails.send()  # Mass send — jauh lebih cepat dari loop send()
-
-        # ===================================================================
-        # 4. NOTIFIKASI AKHIR
-        # ===================================================================
+            self.with_delay(priority=10).send_activation_emails_batch(emails_to_send)
+        
         message_parts = []
         if success_count:
-            message_parts.append(f'Success: {success_count} akun berhasil diaktifkan')
+            message_parts.append(f'✓ Success: {success_count} akun berhasil diaktifkan')
         if skipped_records:
-            message_parts.append(f'Warning: {len(skipped_records)} akun dilewati:')
-            for s in skipped_records[:7]:
-                message_parts.append(f"   • {s['name']}: {s['reason']}")
+            message_parts.append(f'\n\n⚠ Warning: {len(skipped_records)} akun dilewati:')
+            for i, s in enumerate(skipped_records[:7], 1):
+                message_parts.append(f'\n  • {s["name"]}: {s["reason"]}')
             if len(skipped_records) > 7:
-                message_parts.append(f"   ... dan {len(skipped_records)-7} lainnya")
+                message_parts.append(f'\n  • ... dan {len(skipped_records) - 7} lainnya')
+        if emails_to_send:
+            message_parts.append('\n\nℹ Info: Email sedang dikirim di latar belakang...')
+            message_parts.append('\n(Anda dapat melanjutkan pekerjaan tanpa perlu menunggu)')
+        if success_count and not skipped_records:
+            message_parts.append('\n\n✓ Semua akun berhasil diaktifkan!')
 
-        message = "\n".join(message_parts) if message_parts else "Tidak ada perubahan."
+        message = ''.join(message_parts) if message_parts else 'Tidak ada perubahan.'
+        title = 'Aktivasi Akun Selesai!' if success_count else 'Tidak Ada yang Diaktifkan'
 
-        notif_type = 'success' if success_count and not skipped_records else 'warning' if success_count else 'danger'
-        title = "Aktivasi Selesai" if success_count else "Tidak Ada yang Diaktifkan"
+        # Buat wizard record
+        wizard = self.env['activation.result.wizard'].create({
+            'message': message,
+        })
 
+        # Return wizard pop-up
         return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'title': title,
-                'message': message,
-                'type': notif_type,
-                'sticky': True,
-            }
+            'name': title,
+            'type': 'ir.actions.act_window',
+            'res_model': 'activation.result.wizard',
+            'res_id': wizard.id,
+            'view_mode': 'form',
+            'target': 'new',
+            'context': self.env.context,
         }
+
+    @api.model
+    def send_activation_emails_batch(self, emails_data):
+        """
+        Method yang di-queue untuk kirim email batch di background.
+        Dipanggil via with_delay() → tidak blocking UI!
+        """
+        mail_values = []
+        for data in emails_data:
+            mail_values.append({
+                'subject': 'Akun Anda Telah Diaktifkan',
+                'email_to': data['email_to'],
+                'body_html': f'''
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; background:#f9f9f9; padding:20px; border-radius:10px;">
+                        <h2 style="color:#0078d7;">Assalamualaikum Wr. Wb,</h2>
+                        <p>Selamat! Akun Anda telah berhasil diaktifkan.</p>
+                        <table style="width:100%; background:white; padding:15px; border-radius:8px;">
+                            <tr><td><strong>Email</strong></td><td>{data['email_to']}</td></tr>
+                            <tr><td><strong>Password</strong></td><td>{data['masked_password']}</td></tr>
+                            <tr><td><strong>Jenis Akun</strong></td><td>{data['jenis']}</td></tr>
+                            <tr><td><strong>Tanggal</strong></td><td>{fields.Datetime.now().strftime("%d/%m/%Y %H:%M")}</td></tr>
+                        </table>
+                        <p style="text-align:center; margin:20px 0;">
+                            <a href="https://aplikasi.dqi.ac.id/login" style="background:#0078d7; color:white; padding:12px 30px; text-decoration:none; border-radius:6px;">
+                                Masuk Sekarang
+                            </a>
+                        </p>
+                        <p>Hubungi tim IT (0822 5207 9785) jika ada kendala.</p>
+                        <hr>
+                        <small>&copy; 2025 Pesantren Tahfizh Daarul Qur'an Istiqomah</small>
+                    </div>
+                '''
+            })
+
+        if mail_values:
+            mails = self.env['mail.mail'].sudo().create(mail_values)
+            mails.send()
+            _logger.info("Batch email aktivasi berhasil dikirim untuk %d penerima", len(emails_data))
 
 class pendidikan_guru(models.Model):
     _name               = 'edu.employee'
