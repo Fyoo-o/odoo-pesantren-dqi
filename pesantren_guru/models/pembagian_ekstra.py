@@ -7,15 +7,29 @@ class PembagianEkstra(models.Model) :
     # _rec_name = 'display_name'
 
     def _get_domain_guru(self):
+        admin_user_ids = self.env.ref('base.group_system').users.ids
+        
         return [
-            ('jns_pegawai','in',['guru','guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])
+            '|',
+            ('user_id', '=', admin_user_ids),
+            ('jns_pegawai', 'in', [
+                'guru',
+                'guru,guruquran', 
+                'musyrif,guruquran', 
+                'musyrif,guru,guruquran',
+                'superadmin'
+            ])
         ]
-
     
     name                = fields.Many2one("cdn.ekstrakulikuler", string="Ekstrakulikuler")
     # name              = fields.Char(string="Nama",compute="_compute_name", readonly=False ,store=True)
     siswa_ids           = fields.Many2many('cdn.siswa', string='Daftar Siswa', ondelete='cascade')
-    penanggung_id       = fields.Many2one("hr.employee",  string="Penanggung Jawab",  help="", domain=_get_domain_guru)
+    penanggung_id       = fields.Many2one(
+        "hr.employee",  
+        string="Penanggung Jawab",  
+        help="", 
+        domain=lambda self: self.env['cdn.pembagian_ekstra']._get_domain_guru()
+        )
     # display_name      = fields.Char(string="Nama Tampilan", compute="_compute_display_name", store=True)
 
 

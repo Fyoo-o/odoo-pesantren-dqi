@@ -180,15 +180,15 @@ class WalletRechargeMass(models.TransientModel):
 
 
         if insufficient_balance_students:
-            raise models.ValidationError(
+            raise models.UserError(
                 f"Saldo Uang Saku tidak mencukupi untuk santri berikut:\n- " + "\n- ".join(insufficient_balance_students)
             )
 
         if self.recharge_amount < 1000:
-            raise models.ValidationError('Nilai recharge dompet harus lebih dari 1000 Rupiah.')
+            raise models.UserError('Nilai recharge dompet harus lebih dari 1000 Rupiah.')
 
         if not self.journal_id:
-            raise models.ValidationError("Journal tidak ditemukan, harap pilih journal yang valid.")
+            raise models.UserError("Journal tidak ditemukan, harap pilih journal yang valid.")
 
         AccountPayment = self.env['account.payment']
         date_now = datetime.strftime(datetime.now(), '%Y-%m-%d')

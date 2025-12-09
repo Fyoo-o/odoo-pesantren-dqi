@@ -29,7 +29,7 @@
     'company': 'Cybrosys Techno Solutions',
     'maintainer': 'Cybrosys Techno Solutions',
     'website': 'https://www.cybrosys.com',
-    'depends': ['base', 'contacts', 'account', 'point_of_sale','web','base_setup'],
+    'depends': ['base', 'contacts', 'account', 'point_of_sale','web','base_setup', 'pesantren_kesantrian'],
     'data': [
         'security/ir.model.access.csv',
         'data/ir_sequence_data.xml',

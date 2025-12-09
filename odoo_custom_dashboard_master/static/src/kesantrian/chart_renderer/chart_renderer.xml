@@ -1,19 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
     <t t-name="owl.ChartRenderer" owl="1">
-        <div class="chart-container clickable">
-            <t t-if="props.type === 'chart'">
-                <div t-ref="chart" class="h-full w-full"/>
+        <!-- Bar Chart -->
+        <t t-if="props.type === 'chart'">
+            <t t-if="state.hasData">
+                <div class="p-3" style="height: 100%;">
+                    <div t-ref="chart" style="height: 300px; width: 100%;"/>
+                </div>
             </t>
-            <t t-if="props.type === 'donutChart'">
-                <div t-ref="donutChart" />
+            <t t-else="">
+                <div class="d-flex flex-column align-items-center justify-content-center h-100 p-5">
+                    <i class="fa fa-chart-bar fa-3x text-muted mb-3"></i>
+                    <p class="text-muted mb-0">Data tidak ditemukan.</p>
+                </div>
             </t>
-            <t t-if="props.type === 'chart2'">
-                <div t-ref="chart2" class="h-full w-full"/>
+        </t>
+
+        <!-- Donut/Pie Chart -->
+        <t t-if="props.type === 'donutChart'">
+            <t t-if="state.hasData">
+                <div class="p-3" style="height: 100%;">
+                    <div t-ref="donutChart" style="height: 300px; width: 100%;"/>
+                </div>
             </t>
-            <t t-if="props.type === 'donutChart2'">
-                <div t-ref="donutChart2" />
+            <t t-else="">
+                <div class="d-flex flex-column align-items-center justify-content-center h-100 p-5">
+                    <i class="fa fa-chart-pie fa-3x text-muted mb-3"></i>
+                    <p class="text-muted mb-0">Data tidak ditemukan.</p>
+                </div>
             </t>
-        </div>
+        </t>
+
+        <!-- Chart 2 (Optional) -->
+        <t t-if="props.type === 'chart2'">
+            <t t-if="state.hasData">
+                <div class="p-3" style="height: 100%;">
+                    <div t-ref="chart2" style="height: 300px; width: 100%;"/>
+                </div>
+            </t>
+            <t t-else="">
+                <div class="d-flex flex-column align-items-center justify-content-center h-100 p-5">
+                    <i class="fa fa-chart-bar fa-3x text-muted mb-3"></i>
+                    <p class="text-muted mb-0">Data tidak ditemukan.</p>
+                </div>
+            </t>
+        </t>
+
+        <!-- Donut Chart 2 (Optional) -->
+        <t t-if="props.type === 'donutChart2'">
+            <t t-if="state.hasData">
+                <div class="p-3" style="height: 100%;">
+                    <div t-ref="donutChart2" style="height: 300px; width: 100%;"/>
+                </div>
+            </t>
+            <t t-else="">
+                <div class="d-flex flex-column align-items-center justify-content-center h-100 p-5">
+                    <i class="fa fa-chart-pie fa-3x text-muted mb-3"></i>
+                    <p class="text-muted mb-0">Data tidak ditemukan.</p>
+                </div>
+            </t>
+        </t>
     </t>
 </templates>

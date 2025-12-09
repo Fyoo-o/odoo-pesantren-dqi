@@ -11,7 +11,7 @@ class WalletRechargeMass(models.TransientModel):
     def action_confirm_mass_recharge(self):
         """Proses isi ulang saldo untuk banyak siswa"""
         if self.recharge_amount <= 1000:
-            raise exceptions.ValidationError('Nilai isi ulang harus lebih dari 1000 Rupiah.')
+            raise exceptions.UserError('Nilai isi ulang harus lebih dari 1000 Rupiah.')
 
         for siswa in self.siswa_ids:
             siswa.write({'wallet_balance': siswa.wallet_balance + self.recharge_amount})

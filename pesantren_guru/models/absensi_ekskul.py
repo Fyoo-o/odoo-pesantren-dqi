@@ -6,9 +6,9 @@ import logging
 _logger = logging.getLogger(__name__)
 
 class AbsensiEkskul(models.Model):
-    _name = 'cdn.absensi_ekskul'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
-    _description = 'Data Absensi Ekstrakurikuler'
+    _name           = 'cdn.absensi_ekskul'
+    _inherit        = ['mail.thread', 'mail.activity.mixin']
+    _description    = 'Data Absensi Ekstrakurikuler'
 
     # Default & Domain Helper
     def _get_default_guru(self):
@@ -30,28 +30,44 @@ class AbsensiEkskul(models.Model):
         return [('penanggung_id', '=', employee.id)] if employee else [('id', '=', False)]
 
     # Fields
-    search = fields.Char(string="Pencarian")
-    name = fields.Date(
+    search  = fields.Char(string="Pencarian")
+    name    = fields.Date(
         string='Tanggal Absen',
         required=True,
         default=fields.Date.context_today
     )
+    
     fiscalyear_id = fields.Many2one(
         'cdn.ref_tahunajaran',
         string='Tahun Ajaran',
         readonly=True,
         default=lambda self: self.env.user.company_id.tahun_ajaran_aktif.id
     )
-    guru = fields.Many2one(
+    guru    = fields.Many2one(
         'hr.employee',
         string="Guru Pengampu",
         required=True,
         default=_get_default_guru,
+        domain=lambda self: self.env['cdn.absensi_ekskul']._domain_guru(),
         compute='_compute_guru',
         readonly=True,
         store=True
     )
 
+    def _domain_guru(self):
+        admin_user_ids = self.env.ref('base.group_system').users.ids
+
+        return [
+            '|',
+            ('user_id', 'in', admin_user_ids),
+            ('jns_pegawai', 'in', [
+                'guru',
+                'guru,guruquran',
+                'musyrif,guru',
+                'musyrif,guru,guruquran',
+                'superadmin'
+            ]),
+        ]
     @api.depends('ekskul_id')
     def _compute_guru(self):
         for record in self:
@@ -64,28 +80,29 @@ class AbsensiEkskul(models.Model):
                 else:
                     raise UserError("Guru Pengampu tidak dapat ditentukan. Pastikan ekstrakurikuler memiliki Penanggung Jawab atau akun Anda terkait dengan data Guru.")
 
-    penanggung_id = fields.Many2one(
+    penanggung_id   = fields.Many2one(
         "hr.employee",
         string="Penanggung Jawab",
         readonly=True,
         help="Penanggung jawab ekskul, diisi otomatis dari ekskul"
     )
-    ekskul_id = fields.Many2one(
+    ekskul_id       = fields.Many2one(
         'cdn.pembagian_ekstra',
         string="Ekstrakurikuler",
         required=True,
         domain=lambda self: self._get_domain_ekskul()
     )
-    absen_ids = fields.One2many(
+    absen_ids       = fields.One2many(
         'cdn.absen_ekskul_line',
         'absen_id',
         string='Daftar Absensi'
     )
-    states = fields.Selection([
+    states          = fields.Selection([
         ('Proses', 'Proses'),
         ('Done', 'Selesai'),
     ], default='Proses', string='Status', tracking=True)
-    row_number = fields.Integer(string='No', compute='_compute_row_number', store=False)
+    row_number      = fields.Integer(string='No', compute='_compute_row_number', store=False)
+    company_id      = fields.Many2one('res.company', string='Lembaga', default=lambda self: self.env.company)
 
     def _compute_row_number(self):
         for index, record in enumerate(self):
@@ -161,11 +178,13 @@ class AbsensiEkskul(models.Model):
                         'keterangan': message,
                         'keterangan_izin': foto_bukti,
                         'keterangan_izin_filename': nama_file,
+                        'company_id': self.company_id.id,
                     }))
                 else:
                     absen_list.append((0, 0, {
                         'siswa_id': siswa.id,
                         'kehadiran': 'Hadir',
+                        'company_id': self.company_id.id,
                     }))
             return {'value': {'absen_ids': absen_list}}
         return {}
@@ -246,6 +265,7 @@ class AbsenEkskulLine(models.Model):
     guru = fields.Many2one('hr.employee', string="Guru", related='absen_id.guru')
     ekskul = fields.Many2one('cdn.pembagian_ekstra', string="Ekskul", related='absen_id.ekskul_id')
     row_number = fields.Integer(string='No', compute='_compute_row_number', store=False)
+    company_id = fields.Many2one('res.company', string='Lembaga', related='absen_id.company_id', store=True)
 
     def _compute_row_number(self):
         for index, record in enumerate(self):

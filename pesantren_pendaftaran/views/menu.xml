@@ -24,70 +24,68 @@
         parent="pendaftaran_menu_root" 
         sequence="50"/>
     <menuitem 
+        id="pengaturan_umum_menu" 
+        name="Pengaturan Umum"
+        parent="pendaftaran_pengaturan" 
+        sequence="1"/>
+    <menuitem 
             id="pengaturan_setting" 
             name="Pengaturan PSB"
             parent="pengaturan_umum_menu"
             action="res_config_settings_action" 
             sequence="20"/>
+    <menuitem 
+        id="menu_jenjang" 
+        name="Jenjang Pendidikan" 
+        parent="pengaturan_umum_menu" 
+        action="action_ubig_pendidikan" 
+        sequence="1"/>
+
+    <menuitem 
+        id="keuangan_menu" 
+        name="Keuangan"
+        parent="pendaftaran_pengaturan" 
+        sequence="2"/>
+    <menuitem 
+        id="menu_rincian_biaya" 
+        name="Rincian Biaya" 
+        parent="keuangan_menu" 
+        action="action_ubig_rincian_biaya" 
+        sequence="1"/>
+    <menuitem 
+        id="menu_komponen_biaya" 
+        name="Komponen Biaya" 
+        parent="keuangan_menu" 
+        action="action_ubig_komponen_biaya" 
+        sequence="2"/>
+    <menuitem 
+        id="menu_daftar_ulang" 
+        name="Biaya per Jenjang Pendidikan" 
+        parent="keuangan_menu" 
+        action="action_ubig_biaya_daftarulang" 
+        sequence="3"/>
+    <!-- <menuitem 
+        id="menu_bank" 
+        name="Bank" 
+        parent="keuangan_menu" 
+        action="action_bank" 
+        sequence="4"/> -->
 
         <menuitem 
-            id="pengaturan_umum_menu" 
-            name="Pengaturan Umum"
-            parent="pendaftaran_pengaturan" 
+        id="referensi_data_menu" 
+        name="Penilaian Seleksi"
+        parent="pendaftaran_pengaturan" 
+        sequence="3"/>
+        <menuitem 
+            id="menu_soal" 
+            name="Soal Seleksi" 
+            parent="referensi_data_menu" 
+            action="action_soal_seleksi" 
             sequence="1"/>
-            <menuitem 
-                id="menu_jenjang" 
-                name="Jenjang Pendidikan" 
-                parent="pengaturan_umum_menu" 
-                action="action_ubig_pendidikan" 
-                sequence="1"/>
-
         <menuitem 
-            id="keuangan_menu" 
-            name="Keuangan"
-            parent="pendaftaran_pengaturan" 
+            id="menu_penilaian" 
+            name="Penilaian Seleksi" 
+            parent="referensi_data_menu" 
+            action="action_penilaian_seleksi" 
             sequence="2"/>
-            <menuitem 
-                id="menu_rincian_biaya" 
-                name="Rincian Biaya" 
-                parent="keuangan_menu" 
-                action="action_ubig_rincian_biaya" 
-                sequence="1"/>
-            <menuitem 
-                id="menu_komponen_biaya" 
-                name="Komponen Biaya" 
-                parent="keuangan_menu" 
-                action="action_ubig_komponen_biaya" 
-                sequence="2"/>
-            <menuitem 
-                id="menu_daftar_ulang" 
-                name="Biaya per Jenjang Pendidikan" 
-                parent="keuangan_menu" 
-                action="action_ubig_biaya_daftarulang" 
-                sequence="3"/>
-            <!-- <menuitem 
-                id="menu_bank" 
-                name="Bank" 
-                parent="keuangan_menu" 
-                action="action_bank" 
-                sequence="4"/> -->
-                
-
-            <menuitem 
-            id="referensi_data_menu" 
-            name="Penilaian Seleksi"
-            parent="pendaftaran_pengaturan" 
-            sequence="3"/>
-                <menuitem 
-                    id="menu_soal" 
-                    name="Soal Seleksi" 
-                    parent="referensi_data_menu" 
-                    action="action_soal_seleksi" 
-                    sequence="1"/>
-                <menuitem 
-                    id="menu_penilaian" 
-                    name="Penilaian Seleksi" 
-                    parent="referensi_data_menu" 
-                    action="action_penilaian_seleksi" 
-                    sequence="2"/>
 </odoo>

@@ -26,7 +26,28 @@ class MataPelajaran(models.Model):
                   ], string='Jenjang Pendidikan', required=True)
   tingkat_id    = fields.Many2one('cdn.tingkat', string='Kelas')
   jurusan_id    = fields.Many2one(comodel_name='cdn.master_jurusan', string='Jurusan / Peminatan')
-  guru_ids      = fields.Many2many(comodel_name='hr.employee', string='Guru')
+  guru_ids      = fields.Many2many(
+    comodel_name='hr.employee', 
+    string='Guru', 
+    domain=lambda self: self.env['cdn.mata_pelajaran']._get_domain_guru()
+  )
+  
+  def _get_domain_guru(self):
+        admin_user_ids = self.env.ref('base.group_system').users.ids
+        
+        return [
+            '|',
+            ('user_id', '=', admin_user_ids),
+            ('jns_pegawai', 'in', [
+                'guru',
+                'guruquran',
+                'guru,guruquran',
+                'musyrif,guru',
+                'musyrif,guruquran', 
+                'musyrif,guru,guruquran',
+                'superadmin',
+            ])
+        ]
 
   @api.model
   def create(self, vals):

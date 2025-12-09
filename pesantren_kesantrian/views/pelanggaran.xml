@@ -17,6 +17,7 @@
                     <field name="kategori" />
                     <field name="poin" />
                     <field name="tindakan_id" />
+                    <field name="company_id" optional="hide"/>
                     <field name="state" />
                 </list>
             </field>
@@ -58,6 +59,8 @@
                             <group>
                                 <field name="tgl_pelanggaran" readonly="state in ['confirmed', 'approved']" />
                                 <field name="pelanggaran_id" readonly="state in ['confirmed', 'approved']" />
+                                <field name="company_id"
+                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="1" />
                             </group>
                             <group>
                                 <field name="poin" readonly="state in ['confirmed', 'approved']" force_save="1" />

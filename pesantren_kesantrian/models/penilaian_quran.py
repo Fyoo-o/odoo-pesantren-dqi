@@ -34,6 +34,7 @@ class TahfidzTahsin(models.Model):
     # Umum
     # ustadz_id = fields.Many2one('hr.employee', string='Ustadz', required=True)
     jenjang_display = fields.Selection(related='siswa_id.jenjang', string='Jenjang', store=True)
+    company_id      = fields.Many2one('res.company', string='Lembaga', default=lambda self: self.env.company)
 
     sesi_id = fields.Many2one('cdn.sesi_halaqoh', string='Sesi')
     state = fields.Selection([

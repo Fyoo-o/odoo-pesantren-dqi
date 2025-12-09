@@ -7,6 +7,21 @@ class ruang_kelas(models.Model):
     _description = "Tabel Data Ruang Kelas"
     _order = "tingkat_urutan, nama_kelas, id"  # Tambahan: urutan berdasarkan tingkat
 
+    def _get_domain_guru(self):
+        admin_user_ids = self.env.ref('base.group_system').users.ids
+        
+        return [
+            '|',
+            ('user_id', '=', admin_user_ids),
+            ('jns_pegawai', 'in', [
+                'guru',
+                'guru,guruquran', 
+                'musyrif,guruquran', 
+                'musyrif,guru,guruquran',
+                'superadmin'
+            ])
+        ]
+
     name = fields.Many2one(
         comodel_name="cdn.master_kelas",  
         string="Rombongan Belajar", 
@@ -44,11 +59,18 @@ class ruang_kelas(models.Model):
     walikelas_id = fields.Many2one(
         comodel_name="hr.employee",  
         string="Wali Kelas",  
-        domain="[('jns_pegawai','in',['guru', 'musyrif,guru', 'guru,guruquran','musyrif,guru,guruquran'])]"  # Memperluas domain untuk memasukkan musyrif
+        domain=lambda self: self.env['cdn.ruang_kelas']._get_domain_guru()  # Memperluas domain untuk memasukkan musyrif
     )
     jenjang = fields.Selection(
-        selection=[('paud','PAUD'),('tk','TK/RA'),('sd','SD/MI'),
-                   ('smp','SMP/MTS'),('sma','SMA/MA/SMK'), ('nonformal', 'Non formal'), ('rtq', 'Rumah Tahfidz Quran')],
+        selection=[
+            ('paud','PAUD'),
+            ('tk','TK/RA'),
+            ('sd','SD/MI'),
+            ('smp','SMP/MTS'),
+            ('sma','SMA/MA/SMK'), 
+            ('nonformal', 'Non formal'), 
+            ('rtq', 'Rumah Tahfidz Quran')
+        ],
         string="Jenjang", 
         related='name.jenjang', 
         store=True,
@@ -103,7 +125,6 @@ class ruang_kelas(models.Model):
         string="Angkatan",
         default=lambda self: self._get_default_angkatan(),
     )
-        
         
     def _get_default_angkatan(self):
         today = date.today()

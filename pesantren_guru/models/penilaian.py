@@ -6,22 +6,54 @@ class Penilaian(models.Model):
     _name               = 'cdn.penilaian'
     _description        = 'Tabel Data Penilaian Siswa'
     
-    
     @api.model
     def _get_action_domain(self):
         if not self.env.user.has_group('base.group_system'):
             return [('guru_id.user_id', '=', self.env.uid)]
         return []
     # domain
+    # def _domain_guru(self):
+    #     domain = ['&',('jns_pegawai','in',['guru','guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])]
+    #     if self.env.user.has_group('pesantren_guru.group_guru_manager'):
+    #         domain.append(('id','!=',False))
+    #     elif self.env.user.has_group('pesantren_guru.group_guru_staff'):
+    #         domain.append(('user_id','=',self.env.uid))
+    #     else:
+    #         domain.append(('id','=',False))
+    #     return domain
     def _domain_guru(self):
-        domain = ['&',('jns_pegawai','in',['guru','guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])]
+        # dapatkan semua user yang merupakan administrator
+        admin_user_ids = self.env.ref('base.group_system').users.ids
+
+        # domain guru normal
+        guru_domain = [
+            ('jns_pegawai', 'in', [
+                'guru',
+                'guru,guruquran',
+                'musyrif,guru',
+                'musyrif,guru,guruquran',
+                'superadmin'
+            ])
+        ]
+
+        # domain employee milik admin
+        admin_domain = [('user_id', 'in', admin_user_ids)]
+
+        # --- bangun domain OR: admin OR guru ---
+        base_domain = ['|'] + admin_domain + guru_domain
+
+        # tambahan domain berdasarkan role user sekarang
         if self.env.user.has_group('pesantren_guru.group_guru_manager'):
-            domain.append(('id','!=',False))
+            # manager boleh lihat semua guru + admin
+            return base_domain
+
         elif self.env.user.has_group('pesantren_guru.group_guru_staff'):
-            domain.append(('user_id','=',self.env.uid))
+            # staff hanya melihat diri sendiri + admin
+            return [('user_id', '=', self.env.uid)]
+
         else:
-            domain.append(('id','=',False))
-        return domain
+            # user lain tidak boleh lihat apapun
+            return [('id', '=', False)]
     # def _get_domain_kelas(self):
     #     guru = self.env['hr.employee'].search([
     #         ('user_id', '=', self.env.uid),
@@ -48,7 +80,7 @@ class Penilaian(models.Model):
         'hr.employee',
         string='Guru',
         required=True,
-        domain=_domain_guru,
+        domain=lambda self: self.env['cdn.penilaian']._domain_guru(),
         default=lambda self: self.env['hr.employee'].search([
             ('user_id', '=', self.env.uid),
             ('jns_pegawai', 'in', ['guru','guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])
@@ -63,6 +95,7 @@ class Penilaian(models.Model):
                             ('Ujian Nasional','Ujian Nasional')], required=True)
     state               = fields.Selection(string='Status', selection=[('draft', 'Draft'), ('done', 'Done')], default='draft')
     penilaian_ids       = fields.One2many(comodel_name='cdn.penilaian_lines', inverse_name='penilaian_id', string='Penilaian')
+    company_id          = fields.Many2one('res.company', string='Lembaga', default=lambda self: self.env.company)
     
     @api.depends('kelas_id')
     def _compute_tingkat_id(self):
@@ -96,6 +129,7 @@ class Penilaian(models.Model):
             lines.append((0, 0, {
                 'siswa_id': siswa.id,
                 'nilai': 0,
+                'company_id': self.company_id.id,
             }))
         return {
             'value': {'penilaian_ids': lines},
@@ -176,6 +210,7 @@ class PenilaianLines(models.Model):
     id_penilaian        = fields.Integer(string='Penilaian ID', compute='_compute_id_penilaian')
 
     panggilan       = fields.Char(string='Nama Panggilan', related='siswa_id.namapanggilan', readonly=True, store=True)
+    company_id      = fields.Many2one('res.company', string='Lembaga', related='penilaian_id.company_id', readonly=True, store=True)
 
 
     # compute

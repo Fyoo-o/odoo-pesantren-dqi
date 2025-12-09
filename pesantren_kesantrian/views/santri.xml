@@ -21,6 +21,7 @@
                     <field name="tahunajaran_id"/>
                     <field name="ruang_kelas_id"/>
                     <field name="jenjang"/>
+                    <field name="company_id" optional="hide"/>
                     <field name="status_akun" widget="badge" decoration-success="status_akun == 'aktif'" decoration-warning="status_akun == 'nonaktif'" decoration-danger="status_akun == 'blokir'"/>
                 </list>
             </field>

@@ -9,7 +9,7 @@ class HrEmployee(models.Model):
         # Check if a user with the same email already exists
         existing_user = self.env['res.users'].search([('login', '=', values.get('work_email'))])
         if existing_user:
-            raise exceptions.ValidationError(f"The email {values.get('work_email')} is already in use.")
+            raise exceptions.UserError(f"The email {values.get('work_email')} is already in use.")
 
         res = super(HrEmployee, self).create(values)
 

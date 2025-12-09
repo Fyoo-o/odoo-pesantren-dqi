@@ -50,14 +50,38 @@ class PenilaianAkhir(models.Model):
             return [('id','in',ruang_kelas.siswa_ids.ids)]
         return [('id','=',False)]
     def _get_domain_walikelas(self):
-        domain = [('jns_pegawai','in',['guru','guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])]
+        # dapatkan semua user yang merupakan administrator
+        admin_user_ids = self.env.ref('base.group_system').users.ids
+
+        # domain guru normal
+        guru_domain = [
+            ('jns_pegawai', 'in', [
+                'guru',
+                'guru,guruquran',
+                'musyrif,guru',
+                'musyrif,guru,guruquran',
+                'superadmin'
+            ])
+        ]
+
+        # domain employee milik admin
+        admin_domain = [('user_id', 'in', admin_user_ids)]
+
+        # --- bangun domain OR: admin OR guru ---
+        base_domain = ['|'] + admin_domain + guru_domain
+
+        # tambahan domain berdasarkan role user sekarang
         if self.env.user.has_group('pesantren_guru.group_guru_manager'):
-            domain.append(('id','!=',False))
+            # manager boleh lihat semua guru + admin
+            return base_domain
+
         elif self.env.user.has_group('pesantren_guru.group_guru_staff'):
-            domain.append(('user_id','=',self.env.uid))
+            # staff hanya melihat diri sendiri + admin
+            return [('user_id', '=', self.env.uid)]
+
         else:
-            domain.append(('user_id','=',False))
-        return domain
+            # user lain tidak boleh lihat apapun
+            return [('id', '=', False)]
     def _get_default_walikelas(self):
         return self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1)
     
@@ -79,7 +103,7 @@ class PenilaianAkhir(models.Model):
     comodel_name='hr.employee',
     string='Wali Kelas',
     required=True,
-    domain=_get_domain_walikelas,
+    domain=lambda self: self.env['cdn.penilaian_akhir']._get_domain_walikelas(),
     default=_get_default_walikelas,
     readonly=True  # Opsional: agar tidak bisa diganti
     )
@@ -87,6 +111,7 @@ class PenilaianAkhir(models.Model):
     penilaianakhir_ids  = fields.One2many('cdn.penilaian_akhir_lines', 'penilaianakhir_id', string='Nilai Raport', domain=[('penilaianguru_id.state', '=', 'confirm')])
     ekstrakulikuler_ids = fields.One2many('cdn.penilaian_ekstrakulikuler','penilaianakhir_id',string='Nilai Ekstrakulikuler')
     organisasi_ids      = fields.One2many('cdn.organisasi_penilaian_akhir','penilaianakhir_id',string='Organisasi')
+    company_id          = fields.Many2one('res.company', string='Lembaga', default=lambda self: self.env.company)
 
     def act_confirm(self):
         self.state =  'confirm'
@@ -111,7 +136,10 @@ class PenilaianAkhir(models.Model):
         ekstrakulikuler = [(5,0,0)]
         organisasi = [(5,0,0)]
         for ekstra in self.siswa_id.ekstrakulikuler_ids:
-            ekstrakulikuler.append((0,0,{'name':ekstra.name,'is_wajib':ekstra.is_wajib}))
+            ekstrakulikuler.append((0,0,{
+                'name':ekstra.name,
+                'is_wajib':ekstra.is_wajib,
+            }))
         for o in self.siswa_id.partner_id.organisasi_ids:
             organisasi.append((0,0,{'name':o.organisasi_id.name,'position':o.position}))
         if nilai_akhir:
@@ -165,7 +193,6 @@ class PenilaianAkhirLines(models.Model):
     aspek5              = fields.Char(string='Aspek 5')
     aspek6              = fields.Char(string='Aspek 6')
 
-
     @api.onchange('nilai1','nilai2')
     def _onchange_nilai1(self):
         message = {
@@ -192,10 +219,4 @@ class PenilaianAkhirLines(models.Model):
         if nilai < 0 or nilai > 100:
             return False
         return True
-    
-
-
-
-    
-    
     

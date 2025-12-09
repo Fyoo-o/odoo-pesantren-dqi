@@ -15,6 +15,7 @@
           <field name="keluhan"/>
           <field name="obat"/>
           <field name="diperiksa_oleh"/>
+          <field name="company_id" optional="hide"/>
           <field name="state"/>
           <field name="catatan"/>
         </list>
@@ -94,6 +95,12 @@
               </group>
               <group string="Tanggal Sembuh" readonly="1" >
                 <field name="tgl_selesai" string="Tanggal Sembuh"/>
+              </group>
+            </group>
+
+            <group>
+              <group string="Lembaga">
+                <field name="company_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="1" />
               </group>
             </group>
 

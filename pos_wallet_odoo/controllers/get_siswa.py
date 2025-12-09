@@ -161,7 +161,7 @@
 
 from odoo import http,fields
 from odoo.http import request
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import logging
@@ -211,7 +211,7 @@ class SiswaController(http.Controller):
         """
         try:
             if amount <= 0:
-                raise ValidationError("Jumlah yang dikurangi harus lebih besar dari nol.")
+                raise UserError("Jumlah yang dikurangi harus lebih besar dari nol.")
                 
             # Cari partner berdasarkan ID
             partner = request.env['res.partner'].sudo().browse(partner_id)
@@ -273,11 +273,11 @@ class SiswaController(http.Controller):
             
             # Validasi jika partner ditemukan
             if not partner.exists():
-                raise ValidationError("Siswa dengan ID tersebut tidak ditemukan.")
+                raise UserError("Siswa dengan ID tersebut tidak ditemukan.")
                 
             # Validasi jika saldo mencukupi
             if partner.saldo_uang_saku < amount:
-                raise ValidationError("Saldo tidak mencukupi untuk melakukan pengurangan.")
+                raise UserError("Saldo tidak mencukupi untuk melakukan pengurangan.")
             
             nama_santri = santri.name or "Santri"
 
@@ -310,7 +310,7 @@ class SiswaController(http.Controller):
                 })
             
             return {'success': True, 'new_balance': partner.saldo_uang_saku}
-        except ValidationError as e:
+        except UserError as e:
             return {'error': str(e)}
         except Exception as e:
             return {'error': 'Terjadi kesalahan: ' + str(e)}

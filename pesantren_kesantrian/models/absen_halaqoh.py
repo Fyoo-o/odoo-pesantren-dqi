@@ -1,5 +1,6 @@
 from odoo import api, fields, models
 from datetime import date, datetime
+from odoo.exceptions import UserError
 
 class Absenhalaqoh(models.Model):
     _name           = 'cdn.absen_halaqoh'
@@ -36,8 +37,18 @@ class Absenhalaqoh(models.Model):
         return [('fiscalyear_id', '=', tahun_ajaran)]
 
     def _get_domain_guru(self):
+        admin_user_ids = self.env.ref('base.group_system').users.ids
+        
         return [
-            ('jns_pegawai', 'in', ['guruquran','guru,guruquran', 'musyrif,guruquran', 'musyrif,guru,guruquran'])
+            '|',
+            ('user_id', '=', admin_user_ids),
+            ('jns_pegawai', 'in', [
+                'guruquran',
+                'guru,guruquran', 
+                'musyrif,guruquran', 
+                'musyrif,guru,guruquran',
+                'superadmin'
+            ])
         ]
 
     # def _get_default_guru(self):
@@ -59,7 +70,7 @@ class Absenhalaqoh(models.Model):
     ustadz_id = fields.Many2one(
         'hr.employee',
         string='Ustadz',
-        domain=_get_domain_guru,
+        domain=lambda self: self.env['cdn.absen_halaqoh']._get_domain_guru(),
         default=_get_default_guru,
         required=True,
         states={'Done': [('readonly', True)]}
@@ -75,6 +86,7 @@ class Absenhalaqoh(models.Model):
     sesi_id         = fields.Many2one('cdn.sesi_halaqoh', string='Sesi', states={'Done': [('readonly', True)]})
     keterangan      = fields.Char(string='Keterangan')
     row_number      = fields.Integer(string='No', compute='_compute_row_number', store=False)
+    company_id      = fields.Many2one('res.company', string='Lembaga', default=lambda self: self.env.company)
 
     def _compute_row_number(self):
         for index, record in enumerate(self):
@@ -102,6 +114,7 @@ class Absenhalaqoh(models.Model):
                 ('siswa_id', '=', absen.siswa_id.id),
                 ('halaqoh_id', '=', self.halaqoh_id.id),
                 ('sesi_id', '=', self.sesi_id.id),
+                ('company_id', '=', self.company_id.id),
             ], limit=1)
             if not existing:
                 Penilaian.create({
@@ -111,6 +124,7 @@ class Absenhalaqoh(models.Model):
                     'ustadz_id': self.ustadz_id.id,
                     'sesi_id': self.sesi_id.id,
                     'state': 'draft',
+                    'company_id': self.company_id.id,
                 })
 
     def action_confirm(self):
@@ -147,6 +161,7 @@ class Absenhalaqoh(models.Model):
                     ('siswa_id', '=', line.siswa_id.id),
                     ('halaqoh_id', '=', record.halaqoh_id.id),  # Gunakan halaqoh_id dari absen
                     ('sesi_id', '=', record.sesi_id.id),
+                    ('company_id', '=', record.company_id.id),
                 ], limit=1)
                 if not existing:
                     Penilaian.create({
@@ -156,6 +171,7 @@ class Absenhalaqoh(models.Model):
                         'ustadz_id': record.ustadz_id.id,
                         'sesi_id': record.sesi_id.id,
                         'state': 'draft',
+                        'company_id': record.company_id.id,
                     })
                     
         return {
@@ -279,7 +295,8 @@ class Absenhalaqoh(models.Model):
                     },
                     'value': {
                         'absen_ids': absen_ids,
-                        'ustadz_id': ustadz[0].id if ustadz else False
+                        'ustadz_id': ustadz[0].id if ustadz else False,
+                        'company_id': halaqoh.company_id.id,
                     }
                 }
             return {
@@ -288,7 +305,8 @@ class Absenhalaqoh(models.Model):
                 },
                 'value': {
                     'absen_ids': absen_ids,
-                    'ustadz_id': ustadz_id
+                    'ustadz_id': ustadz_id,
+                    'company_id': halaqoh.company_id.id,
                 }
             }
     
@@ -298,13 +316,33 @@ class Absenhalaqoh(models.Model):
     #     if not tahun_ajaran:
     #         raise models.ValidationError('Tahun ajaran belum di set')
     #     return super().default_get(fields_tree)
+    # @api.model
+    # def default_get(self, fields_list):
+    #     """Memastikan tahun ajaran aktif diset."""
+    #     res = super().default_get(fields_list)
+    #     tahun_ajaran = self.env['res.company'].search([('id', '=', self.env.ref('base.main_company').id)]).tahun_ajaran_aktif.id
+    #     if not tahun_ajaran:
+    #         raise UserError('Tahun ajaran belum di set')
+    #     return res
     @api.model
     def default_get(self, fields_list):
-        """Memastikan tahun ajaran aktif diset."""
+        """Memastikan tahun ajaran aktif diset dari company yang sedang aktif."""
         res = super().default_get(fields_list)
-        tahun_ajaran = self.env['res.company'].search([('id', '=', self.env.ref('base.main_company').id)]).tahun_ajaran_aktif.id
+        
+        # PERBAIKAN: Gunakan company aktif user, bukan selalu main_company
+        current_company = self.env.company  # Company yang sedang aktif
+        tahun_ajaran = current_company.tahun_ajaran_aktif
+        
         if not tahun_ajaran:
-            raise ValidationError('Tahun ajaran belum di set')
+            raise UserError(
+                f'Tahun ajaran belum diset untuk {current_company.name}. '
+                'Silakan set tahun ajaran aktif di menu Settings > Companies.'
+            )
+        
+        # Optional: Set fiscalyear_id di res jika diperlukan
+        if 'fiscalyear_id' in fields_list:
+            res['fiscalyear_id'] = tahun_ajaran.id
+        
         return res
     
     @api.model
@@ -314,31 +352,31 @@ class Absenhalaqoh(models.Model):
     
     
 class AbsenTahsinQuranLine(models.Model):
-    _name = 'cdn.absen_halaqoh_line'
-    _description = 'Tabel Absen Halaqoh Line'
+    _name           = 'cdn.absen_halaqoh_line'
+    _description    = 'Tabel Absen Halaqoh Line'
 
-    absen_id = fields.Many2one('cdn.absen_halaqoh', string='Absen', ondelete='cascade')
-    tanggal = fields.Date(string='Tgl Absen', related='absen_id.name', readonly=True, store=True)
-    halaqoh_id = fields.Many2one('cdn.halaqoh', string='Halaqoh', related='absen_id.halaqoh_id', readonly=True, store=True)
-    siswa_id = fields.Many2one('cdn.siswa', string='Siswa', ondelete='cascade')
+    absen_id    = fields.Many2one('cdn.absen_halaqoh', string='Absen', ondelete='cascade')
+    tanggal     = fields.Date(string='Tgl Absen', related='absen_id.name', readonly=True, store=True)
+    halaqoh_id  = fields.Many2one('cdn.halaqoh', string='Halaqoh', related='absen_id.halaqoh_id', readonly=True, store=True)
+    siswa_id    = fields.Many2one('cdn.siswa', string='Siswa', ondelete='cascade')
     
-    name = fields.Char(string='Nama', related='siswa_id.name', readonly=True, store=True)
-    nis = fields.Char(string='NIS', related='siswa_id.nis', readonly=True, store=True)
-    panggilan = fields.Char(string='Nama Panggilan', related='siswa_id.namapanggilan', readonly=True, store=True)
-    keterangan = fields.Char(string='Keterangan')
-    keterangan_izin = fields.Binary(string='Foto', attachment=True)
-    keterangan_izin_filename = fields.Char(string="Nama File Foto")
-    
-    kehadiran = fields.Selection([
+    name                        = fields.Char(string='Nama', related='siswa_id.name', readonly=True, store=True)
+    nis                         = fields.Char(string='NIS', related='siswa_id.nis', readonly=True, store=True)
+    panggilan                   = fields.Char(string='Nama Panggilan', related='siswa_id.namapanggilan', readonly=True, store=True)
+    keterangan                  = fields.Char(string='Keterangan')
+    keterangan_izin             = fields.Binary(string='Foto', attachment=True)
+    keterangan_izin_filename    = fields.Char(string="Nama File Foto")
+    company_id                  = fields.Many2one('res.company', string='Lembaga', related='absen_id.company_id', readonly=True, store=True)
+    kehadiran                   = fields.Selection([
         ('Hadir', 'Hadir'),
         ('Izin', 'Izin'),
         ('keluar', 'Izin Keluar'),
         ('Sakit', 'Sakit'),
         ('Alpa', 'Alpa'),
     ], string='Kehadiran', required=True)
-    penanggung_jawab_id = fields.Many2one('hr.employee', string='Penanggung Jawab', related='halaqoh_id.penanggung_jawab_id', readonly=True, store=True)
-    row_number      = fields.Integer(string='No', compute='_compute_row_number', store=False)
-    ustadz_id = fields.Many2one(
+    penanggung_jawab_id         = fields.Many2one('hr.employee', string='Penanggung Jawab', related='halaqoh_id.penanggung_jawab_id', readonly=True, store=True)
+    row_number                  = fields.Integer(string='No', compute='_compute_row_number', store=False)
+    ustadz_id                   = fields.Many2one(
         'hr.employee',
         string='Ustadz',
         related='absen_id.ustadz_id',

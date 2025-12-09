@@ -1,5 +1,6 @@
 from odoo import api, fields, models
 from datetime import date, datetime
+from odoo.exceptions import UserError
 
 class AbsenTahsinQuran(models.Model):
     _name           = 'cdn.absen_tahsin_quran'
@@ -138,7 +139,7 @@ class AbsenTahsinQuran(models.Model):
     def default_get(self, fields_tree):
         tahun_ajaran = self.env['res.company'].search([('id', '=', self.env.ref('base.main_company').id)]).tahun_ajaran_aktif.id
         if not tahun_ajaran:
-            raise models.ValidationError('Tahun ajaran belum di set')
+            raise models.UserError('Tahun ajaran belum di set')
         return super().default_get(fields_tree)
     
     

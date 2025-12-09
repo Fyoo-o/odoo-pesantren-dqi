@@ -42,7 +42,9 @@ class Penilaian(models.Model):
         default=lambda self: self.env['hr.employee'].search([
             ('user_id', '=', self.env.uid),
             ('jns_pegawai', 'in', ['guruquran','guru,guruquran', 'musyrif,guruquran', 'musyrif,guru,guruquran'])
-        ], limit=1)
+        ],
+        limit=1),
+        domain=lambda self: self.env['cdn.penilaian_santri']._domain_guruquran()
     )
     tipe = fields.Selection(string='Tipe', selection=[
     ('Ujian Juz', 'Ujian Juz'),
@@ -54,6 +56,22 @@ class Penilaian(models.Model):
     ], required=True)
     state               = fields.Selection(string='Status', selection=[('draft', 'Draft'), ('done', 'Done')], default='draft')
     penilaian_santri_ids       = fields.One2many(comodel_name='cdn.penilaian_santri_lines', inverse_name='penilaian_santri_id', string='Penilaian Santri')
+    company_id      = fields.Many2one('res.company', string='Lembaga', default=lambda self: self.env.company)
+
+    def _domain_guruquran(self):
+        admin_user_ids = self.env.ref('base.group_system').users.ids
+        
+        return [
+            '|',
+            ('user_id', '=', admin_user_ids),
+            ('jns_pegawai', 'in', [
+                'guruquran',
+                'guru,guruquran', 
+                'musyrif,guruquran', 
+                'musyrif,guru,guruquran',
+                'superadmin'
+            ])
+        ]
 
     @api.depends('tipe')
     def _compute_name(self):
@@ -75,6 +93,7 @@ class Penilaian(models.Model):
             lines.append((0, 0, {
                 'santri_id': santri.id,
                 'nilai': 0,
+                'company_id': self.company_id.id,
             }))
         return {
             'value': {'penilaian_santri_ids': lines},
@@ -136,6 +155,7 @@ class PenilaianSantriLines(models.Model):
     panggilan           = fields.Char(string='Nama Panggilan', related='santri_id.namapanggilan', readonly=True, store=True)
     id_halaqoh         = fields.Integer(string='Halaqoh ID', compute='_compute_id_halaqoh')
     id_penilaian_santri = fields.Integer(string='Penilaian Santri ID', compute='_compute_id_penilaian_santri')
+    company_id      = fields.Many2one('res.company', string='Lembaga', related='penilaian_santri_id.company_id', readonly=True, store=True)
 
     # compute
     @api.depends('penilaian_santri_id')

@@ -15,8 +15,9 @@
                         <field name="nis"/>
                         <field name="tahunajaran_id"/>
                         <field name="semester"/>
-                        <field name="state"/>
                         <field name="tgl_disetujui"/>
+                        <field name="company_id" optional="hide"/>
+                        <field name="state"/>
                     </list>
                 </field>
             </record>
@@ -49,6 +50,7 @@
                                     <field name="tahunajaran_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
                                     <field name="semester"/>
                                     <field name="tgl_disetujui"/>
+                                    <field name="company_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="1"/>
                                 </group>
                             </group>
 

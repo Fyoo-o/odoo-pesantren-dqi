@@ -21,6 +21,9 @@ access_soal_seleksi_manager,soal.seleksi.manager,model_seleksi_soal,pesantren_pe
 access_penilaian_user,cdn.penilaian.user,model_seleksi_penilaian,base.group_public,1,0,0,0
 access_penilaian_manager,cdn.penilaian.manager,model_seleksi_penilaian,pesantren_pendaftaran.group_pendaftaran_manager,1,1,1,1
 
+access_penilaian_rel_user,cdn.penilaian.rel.user,model_seleksi_penilaian_soal_rel,base.group_public,1,0,0,0
+access_penilaian_rel_manager,cdn.penilaian.rel.manager,model_seleksi_penilaian_soal_rel,pesantren_pendaftaran.group_pendaftaran_manager,1,1,1,1
+
 access_rincian_biaya_user,ubig.rincian_biaya.user,model_ubig_rincian_biaya,base.group_public,1,0,0,0
 access_rincian_biaya_manager,ubig.rincian_biaya.manager,model_ubig_rincian_biaya,pesantren_pendaftaran.group_pendaftaran_manager,1,1,1,1
 

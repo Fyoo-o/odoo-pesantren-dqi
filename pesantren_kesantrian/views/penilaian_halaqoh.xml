@@ -65,6 +65,7 @@
                 <field name="nilai_mad_ujian" string="Nilai Mad Tahsin (Ujian)" optional="hide"/>
 
                 <!-- Status -->
+                <field name="company_id" optional="hide"/>
                 <field name="state" optional="show"/>
             </list>
         </field>
@@ -101,6 +102,8 @@
                         <group>
                             <field name="tanggal"/>
                             <field name="ustadz_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="company_id" 
+                                options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="1"/>
                         </group>
                         <group>
                             <field name="sesi_id"/>

@@ -1698,7 +1698,7 @@ class PesantrenPendaftaran(http.Controller):
             		<ul style="list-style-type: none; display: flex; text-transform: uppercase; font-size: 13px;" class="fw-semibold">
             			<li><a href="/psb" class="me-4" style="text-decoration: none; color: black;">Home</a></li>
             			<li><a href="/beranda" class="me-4" style="text-decoration: none; color: black;" target="_blank">Info Pondok</a></li>
-            			<li><a href="https://drive.google.com/drive/mobile/folders/1EYat5411joyoOmH_DkJ3g2DeJKgyyuBQ?usp=share_link&fbclid=IwY2xjawGflGlleHRuA2FlbQIxMQABHTusVv9hD3VRDSLW9-671QhOL86e3KMv30smsAYW0DHkkWf7zwPlcBlbeA_aem_XXofAY-ay0syx043L5BLvw" class="me-4" style="text-decoration: none; color:black;" target="_blank">Brosur</a></li>
+            			<li><a href="https://drive.google.com/drive/folders/1C5U4oDSJlOe1qO7tbw0wZgYenHKEHUVM?usp=sharing" class="me-4" style="text-decoration: none; color:black;" target="_blank">Brosur</a></li>
             			<li><a href="" class="me-4" style="text-decoration: none; color: black;">Panduan</a></li>
             		</ul>
             	</div>
@@ -1920,7 +1920,7 @@ class UbigPendaftaranController(http.Controller):
             <ul style="list-style-type: none; display: flex; text-transform: uppercase; font-size: 13px;" class="fw-semibold">
                 <li><a href="/psb" class="me-4" style="text-decoration: none; color: white;">Home</a></li>
                 <li><a href="/beranda" class="me-4" style="text-decoration: none; color: white;" target="_blank">Info Pondok</a></li>
-                <li><a href="https://drive.google.com/drive/mobile/folders/1EYat5411joyoOmH_DkJ3g2DeJKgyyuBQ?usp=share_link" class="me-4" style="text-decoration: none; color: white;" target="_blank">Brosur</a></li>
+                <li><a href="https://drive.google.com/drive/folders/1C5U4oDSJlOe1qO7tbw0wZgYenHKEHUVM?usp=sharing" class="me-4" style="text-decoration: none; color: white;" target="_blank">Brosur</a></li>
                 <li><a href="" class="me-4" style="text-decoration: none; color: white;">Panduan</a></li>
             </ul>
         </div>
@@ -2879,7 +2879,7 @@ class PesantrenPsbBantuan(http.Controller):
                     <ul style="list-style-type: none; display: flex; text-transform: uppercase; font-size: 13px;" class="fw-semibold">
                         <li><a href="/psb" class="me-4 effect" style="text-decoration: none; color: black !important;">Home</a></li>
                         <li><a href="/beranda" class="me-4 effect" style="text-decoration: none; color: black !important;" target="_blank">Info Pondok</a></li>
-                        <li><a href="https://drive.google.com/drive/mobile/folders/1EYat5411joyoOmH_DkJ3g2DeJKgyyuBQ?usp=share_link&fbclid=IwY2xjawGflGlleHRuA2FlbQIxMQABHTusVv9hD3VRDSLW9-671QhOL86e3KMv30smsAYW0DHkkWf7zwPlcBlbeA_aem_XXofAY-ay0syx043L5BLvw" class="me-4 effect" style="text-decoration: none; color: black !important;" target="_blank">Brosur</a></li>
+                        <li><a href="https://drive.google.com/drive/folders/1C5U4oDSJlOe1qO7tbw0wZgYenHKEHUVM?usp=sharing" class="me-4 effect" style="text-decoration: none; color: black !important;" target="_blank">Brosur</a></li>
                         <li><a href="#" class="me-4 effect" style="text-decoration: none; color: black !important;">Panduan</a></li>
                     </ul>
                 </div>
@@ -4057,7 +4057,7 @@ class PortalOrangTua(http.Controller):
                     <ul style="list-style-type: none; display: flex; text-transform: uppercase; font-size: 13px;" class="fw-semibold">
                         <li><a href="/psb" class="me-4" style="text-decoration: none; color: white;">Home</a></li>
                         <li><a href="/beranda" class="me-4" style="text-decoration: none; color: white;" target="_blank">Info Pondok</a></li>
-                        <li><a href="https://drive.google.com/drive/mobile/folders/1EYat5411joyoOmH_DkJ3g2DeJKgyyuBQ?usp=share_link&fbclid=IwY2xjawGflGlleHRuA2FlbQIxMQABHTusVv9hD3VRDSLW9-671QhOL86e3KMv30smsAYW0DHkkWf7zwPlcBlbeA_aem_XXofAY-ay0syx043L5BLvw" class="me-4" style="text-decoration: none; color: white;" target="_blank">Brosur</a></li>
+                        <li><a href="https://drive.google.com/drive/folders/1C5U4oDSJlOe1qO7tbw0wZgYenHKEHUVM?usp=sharing" class="me-4" style="text-decoration: none; color: white;" target="_blank">Brosur</a></li>
                         <li><a href="" class="me-4" style="text-decoration: none; color: white;">Panduan</a></li>
                     </ul>
                     </ul>

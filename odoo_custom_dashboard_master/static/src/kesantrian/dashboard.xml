@@ -33,7 +33,7 @@
       }
     </style>
 
-    <div class="container-fluid vh-100">
+    <div class="container-fluid vh-100 mb-5 pb-5">
       <!-- Header Full Width -->
       <div class="mx-2 my-1">
         <div class="col-12">
@@ -45,42 +45,22 @@
               <div class="controls-wrapper d-flex align-items-center mt-1 position-relative">
                 <!-- Custom Date Range Button -->
                 <div class="button-popup-wrapper">
-                  <button
-                    class="btn btn-outline-secondary dateButton"
-                    t-on-click="toggleDatePicker"
-                  >
+                  <button class="btn btn-outline-secondary dateButton" t-on-click="toggleDatePicker">
                     <i class="fas fa-calendar"></i>
                     <t t-if="state.selectedDateRange">
-                      <span
-                        t-esc="formatDateRange(state.selectedDateRange.start, state.selectedDateRange.end)"
-                        class="ms-2"
-                      />
+                      <span t-esc="formatDateRange(state.selectedDateRange.start, state.selectedDateRange.end)" class="ms-2" />
                     </t>
                   </button>
 
-                  <div
-                    t-if="state.showDatePicker"
-                    class="popup-container bg-white p-3 rounded shadow-lg mt-2"
-                    style="z-index:1050;"
-                  >
+                  <div t-if="state.showDatePicker" class="popup-container bg-white p-3 rounded shadow-lg mt-2" style="z-index:1050;">
                     <div class="d-flex align-items-center gap-3">
                       <div class="date-range d-flex flex-column">
                         <label class="date-label text-center">Dari</label>
-                        <input
-                          type="date"
-                          class="form-control date-input"
-                          t-model="state.tempDateRange.start"
-                          t-on-change="applyDateRange"
-                        />
+                        <input type="date" class="form-control date-input" t-model="state.tempDateRange.start" t-on-change="applyDateRange" />
                       </div>
                       <div class="date-range d-flex flex-column">
                         <label class="date-label text-center">Sampai</label>
-                        <input
-                          type="date"
-                          class="form-control date-input"
-                          t-model="state.tempDateRange.end"
-                          t-on-change="applyDateRange"
-                        />
+                        <input type="date" class="form-control date-input" t-model="state.tempDateRange.end" t-on-change="applyDateRange" />
                       </div>
                     </div>
                   </div>
@@ -89,18 +69,12 @@
                 <div class="timerDropdown">
                   <!-- Dropdown Periode -->
                   <div class="dropdown me-3 dropdownButton">
-                    <button
-                      class="btn btn-outline-secondary dropdown-toggle dropdownButton"
-                      type="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
+                    <button class="btn btn-outline-secondary dropdown-toggle dropdownButton" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                       <span t-esc="getPeriodLabel(state.selectedPeriod)" />
                     </button>
                     <ul class="dropdown-menu dropdownButton">
                       <li>
-                        <a class="dropdown-item d-flex justify-content-between align-items-center"
-                           href="#" t-on-click.prevent="() => this.setPeriod('bawaan')">
+                        <a class="dropdown-item d-flex justify-content-between align-items-center" href="#" t-on-click.prevent="() => this.setPeriod('bawaan')">
                           Default
                           <i class="fas fa-check" t-att-class="{'invisible': !isPeriodSelected('bawaan')}"></i>
                         </a>
@@ -153,24 +127,16 @@
       <div class="row mx-0 my-2">
         <div class="col-lg-6 col-md-12 col-sm-12 m-0 p-2">
           <div class="shadow-sm p-4 bg-white h-100">
-            <h2 class="mb-5">Absensi Halaqoh per Status Kehadiran</h2>
-            <ChartRenderer
-              type="'donutChart'"
-              period="state.selectedPeriod"
-              startDate="state.selectedDateRange?.start"
-              endDate="state.selectedDateRange?.end"
-            />
+            <div class="d-flex align-items-center justify-content-between">
+              <h4 class="text-dark fw-bold">Absensi Halaqoh per Status Kehadiran</h4>
+            </div>
+            <ChartRenderer type="'donutChart'" period="state.selectedPeriod" startDate="state.selectedDateRange?.start" endDate="state.selectedDateRange?.end" />
           </div>
         </div>
         <div class="col-lg-6 col-md-12 col-sm-12 m-0 p-2">
           <div class="shadow-sm p-4 bg-white h-100">
-            <h2 class="mb-5">Absensi Halaqoh per Halaqoh</h2>
-            <ChartRenderer
-              type="'chart'"
-              period="state.selectedPeriod"
-              startDate="state.selectedDateRange?.start"
-              endDate="state.selectedDateRange?.end"
-            />
+            <h2 class="mb-4">Absensi Halaqoh per Halaqoh</h2>
+            <ChartRenderer type="'chart'" period="state.selectedPeriod" startDate="state.selectedDateRange?.start" endDate="state.selectedDateRange?.end" />
           </div>
         </div>
       </div>
@@ -179,20 +145,14 @@
         <!-- Pelanggaran Card -->
         <div class="col-lg-6 col-md-12 col-sm-12 m-0 p-2">
           <div class="shadow-sm bg-white h-100" style="border-radius: 0.375rem; overflow: hidden">
-            <PelanggaranCardList
-              startDate="state.selectedDateRange?.start"
-              endDate="state.selectedDateRange?.end"
-            />
+            <PelanggaranCardList startDate="state.selectedDateRange?.start" endDate="state.selectedDateRange?.end" />
           </div>
         </div>
 
         <!-- Penilaian / Hafalan Card (opsional, jika masih relevan) -->
         <div class="col-lg-6 col-md-12 col-sm-12 m-0 p-2">
           <div class="shadow-sm bg-white h-100" style="border-radius: 0.375rem; overflow: hidden">
-            <TahfidzCardList
-              startDate="state.selectedDateRange?.start"
-              endDate="state.selectedDateRange?.end"
-            />
+            <TahfidzCardList startDate="state.selectedDateRange?.start" endDate="state.selectedDateRange?.end" />
           </div>
         </div>
       </div>
