@@ -13,6 +13,7 @@
           <field name="urut"/>
           <field name="kategori"/>
           <field name="jenjang"/>
+          <field name="tingkat_id"/>
           <field name="guru_ids" widget="many2many_tags"/>
         </list>
       </field>
