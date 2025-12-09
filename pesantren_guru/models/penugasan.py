@@ -8,14 +8,39 @@ class Penugasan(models.Model):
 
 
   def _domain_guru(self):
-      domain = ['&',('jns_pegawai','in',['guru','guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])]
-      if self.env.user.has_group('pesantren_guru.group_guru_manager'):
-          domain.append(('id','!=',False))
-      elif self.env.user.has_group('pesantren_guru.group_guru_staff'):
-          domain.append(('user_id','=',self.env.uid))
-      else:
-          domain.append(('id','=',False))
-      return domain
+    # dapatkan semua user yang merupakan administrator
+    admin_user_ids = self.env.ref('base.group_system').users.ids
+
+    # domain guru normal
+    guru_domain = [
+        ('jns_pegawai', 'in', [
+            'guru',
+            'guru,guruquran',
+            'musyrif,guru',
+            'musyrif,guru,guruquran',
+            'superadmin'
+        ])
+    ]
+
+    # domain employee milik admin
+    admin_domain = [('user_id', 'in', admin_user_ids)]
+
+    # --- bangun domain OR: admin OR guru ---
+    base_domain = ['|'] + admin_domain + guru_domain
+
+    # tambahan domain berdasarkan role user sekarang
+    if self.env.user.has_group('pesantren_guru.group_guru_manager'):
+        # manager boleh lihat semua guru + admin
+        return base_domain
+
+    elif self.env.user.has_group('pesantren_guru.group_guru_staff'):
+        # staff hanya melihat diri sendiri + admin
+        return [('user_id', '=', self.env.uid)]
+
+    else:
+        # user lain tidak boleh lihat apapun
+        return [('id', '=', False)]
+
 
   # name           = fields.Char(string='Nama')
   kelas_id       = fields.Many2one('cdn.ruang_kelas', string='Ruang Kelas', required=True)
@@ -34,12 +59,13 @@ class Penugasan(models.Model):
         'hr.employee',
         string='Guru',
         required=True,
-        domain=_domain_guru,
+        domain=lambda self: self.env['cdn.penugasan']._domain_guru(),
         default=lambda self: self.env['hr.employee'].search([
             ('user_id', '=', self.env.uid),
             ('jns_pegawai', 'in', ['guru','guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])
         ], limit=1)
     )
+  company_id    = fields.Many2one('res.company', string='Lembaga', default=lambda self: self.env.company)
   # jadwal_pelajaran_lines_ids = fields.Many2many(comodel_name='cdn.jadwal_pelajaran_lines', string='Jadwal Pelajaran Lines')
   
   def action_proses(self):
@@ -59,6 +85,7 @@ class Penugasan(models.Model):
             tugas_line_ids.append((0, 0, {
               'siswa_id': siswa.id,
               'nilai': 0,
+              'company_id': self.company_id.id,
             }))
         return {'domain': {
           'kelas_id': [('id', '=', self.kelas_id.id)],
@@ -119,3 +146,4 @@ class Penugasan(models.Model):
                     ], default='draft', string='Status', related='penugasan_id.state', readonly=True, store=True)
 
     panggilan     = fields.Char(string='Nama Panggilan', related='siswa_id.namapanggilan', readonly=True, store=True)
+    company_id    = fields.Many2one('res.company', string='Lembaga', related='penugasan_id.company_id', readonly=True, store=True)

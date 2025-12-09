@@ -14,6 +14,7 @@
                         <field name="jns_prestasi_id"/>
                         <field name="tingkat_prestasi"/>
                         <field name="joara"/>
+                        <field name="company_id" optional="hide"/>
                     </list>
                 </field>
             </record>
@@ -51,6 +52,8 @@
                                 <group>
                                     <field name="joara"/>
                                     <field name="keterangan"/>
+                                    <field name="company_id"
+                                        options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="1" />
                                 </group>
                             </group>
 

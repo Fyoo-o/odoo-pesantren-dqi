@@ -27,10 +27,7 @@ class Prestasi_siswa(models.Model):
     kamar_id    = fields.Many2one('cdn.kamar_santri', string='Kamar', related='siswa_id.kamar_id', readonly=True)
     halaqoh_id  = fields.Many2one('cdn.halaqoh', string='Halaqoh', related='siswa_id.halaqoh_id', readonly=True)
     musyrif_id  = fields.Many2one('hr.employee', string='Musyrif', related='siswa_id.musyrif_id', readonly=True)
-
-
-    
-
+    company_id  = fields.Many2one('res.company', string='Lembaga', default=lambda self: self.env.company)
     
     @api.model
     def create(self, vals):

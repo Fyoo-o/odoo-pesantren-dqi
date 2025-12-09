@@ -45,7 +45,7 @@ class QueueJobChannel(models.Model):
     def parent_required(self):
         for record in self:
             if record.name != "root" and not record.parent_id:
-                raise exceptions.ValidationError(_("Parent channel required."))
+                raise exceptions.UserError(_("Parent channel required."))
 
     @api.model_create_multi
     def create(self, vals_list):

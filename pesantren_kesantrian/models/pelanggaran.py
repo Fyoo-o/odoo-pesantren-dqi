@@ -66,6 +66,8 @@ class Pelanggaran(models.Model):
             'confirmed': [('readonly', True)],
             'approved': [('readonly', True)],
         })
+    
+    company_id      = fields.Many2one('res.company', string='Lembaga', default=lambda self: self.env.company)
 
     #data tindakan
     tindakan_id = fields.Many2one(comodel_name='cdn.tindakan_hukuman', string='Tindakan',

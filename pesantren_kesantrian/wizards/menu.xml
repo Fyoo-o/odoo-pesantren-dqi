@@ -3,6 +3,7 @@
     <data> 
         <!-- Index -->
         <menuitem id="wizard_cari_santri" groups="pesantren_base.group_sekolah_admin" action="odoo_custom_dashboard_master.action_owl_wallet_dashboard" name="Santri" web_icon="pesantren_base,static/description/santri.png" sequence="5"/>
+        <!-- <menuitem id="wizard_cari_santri" groups="pesantren_base.group_sekolah_admin" name="Santri" web_icon="pesantren_base,static/description/santri.png" sequence="5"/> -->
 
         <!-- Santri -->
         <menuitem id="wizard_get_santri" name="Santri" parent="wizard_cari_santri" action="action_wizard_get_santri" sequence="5"/>

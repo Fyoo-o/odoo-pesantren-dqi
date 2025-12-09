@@ -447,7 +447,7 @@ class isiSaldo(models.Model):
         ]).mapped('amount_out')) + self.recharge_amount
 
         if total_pengisian > batas_saldo:
-            raise models.ValidationError(
+            raise models.UserError(
                 f"Total pengisian untuk {self.recharge_type} melebihi batas Rp {batas_saldo}. Sisa yang bisa diisi: Rp {batas_saldo - (total_pengisian - self.recharge_amount)}."
             )
 

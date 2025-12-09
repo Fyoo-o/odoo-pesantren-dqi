@@ -531,7 +531,7 @@ class PesantrenBeranda(http.Controller):
                             <h1 class="fw-bold">Pendaftaran Santri Baru</h1>
                             <h3 class="fw-500 pb-3">Pondok Pesantren Daarul Qur'an Istiqomah</h3>
                             <h5>Daarul Qur'an Istiqomah Boarding School for Education and Science</h5>
-                            <h5 class="fw-bold">Tahun Ajaran 2025 - 2026</h5>
+                            <h5 class="fw-bold">Tahun Ajaran 2026 - 2027</h5>
                             <div class="home-btn">
                                 <a href="/psb" class="btn btn-1">Daftar Sekarang</a>
                             </div>

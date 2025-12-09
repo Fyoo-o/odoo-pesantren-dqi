@@ -100,6 +100,7 @@
 
 from odoo import api, fields, models
 from datetime import date
+from odoo.exceptions import UserError
 
 class AbsensiMalam(models.Model):
     _name = 'cdn.absensi_malam'
@@ -113,7 +114,11 @@ class AbsensiMalam(models.Model):
     kamar_id        = fields.Many2one('cdn.kamar_santri', string='Kamar', domain=lambda self: self._domain_kamar_id())
     fiscalyear_id   = fields.Many2one('cdn.ref_tahunajaran', string='Tahun Ajaran', readonly=True, default=lambda self:self.env.user.company_id.tahun_ajaran_aktif.id, states={'Done': [('readonly', True)]})
     
-    musyrif_id      = fields.Many2one('hr.employee', string='Musyrif', domain=[('jns_pegawai', 'in', ['musyrif', 'musyrif,guru', 'musyrif,guruquran', 'musyrif,guru,guruquran'])], default=lambda self: self._default_musyrif_id())
+    musyrif_id      = fields.Many2one(
+        'hr.employee', 
+        string='Musyrif', 
+        domain=lambda self: self.env['cdn.absensi_malam']._domain_musyrif(), 
+        default=lambda self: self.env['cdn.absensi_malam']._default_musyrif_id())
     
     absen_ids       = fields.One2many('cdn.absensi_malam_line', 'absen_id', string='Daftar Kehadiran')
     
@@ -126,12 +131,27 @@ class AbsensiMalam(models.Model):
     ], default='draft', string='Status')
     
     row_number      = fields.Integer(string='No', compute='_compute_row_number', store=False)
+    company_id      = fields.Many2one('res.company', string='Lembaga', default=lambda self: self.env.company)
 
     def _compute_row_number(self):
         for index, record in enumerate(self):
             record.row_number = index + 1
 
     # ---------- DEFAULT & DOMAIN FUNCTION ----------
+    def _domain_musyrif(self):
+        admin_user_ids = self.env.ref('base.group_system').users.ids
+
+        return [
+            '|',
+            ('user_id', 'in', admin_user_ids),
+            ('jns_pegawai', 'in', [
+                'musyrif',
+                'musyrif,guru',
+                'musyrif,guruquran',
+                'musyrif,guru,guruquran',
+                'superadmin'
+            ]),
+        ]
     @api.model
     def _default_musyrif_id(self):
         """Set default musyrif sesuai user login."""
@@ -290,11 +310,13 @@ class AbsensiMalam(models.Model):
                         'keterangan': message,
                         'keterangan_izin': foto_bukti,  # Auto-fill foto bukti
                         'keterangan_izin_filename': nama_file,  # Auto-fill nama file
+                        'company_id': self.company_id.id,
                     }))
                 else:
                     absen_ids.append((0, 0, {
                         'siswa_id': siswa.id,
-                        'kehadiran_absen': 'Hadir'
+                        'kehadiran_absen': 'Hadir',
+                        'company_id': self.company_id.id,
                     }))
 
             # Tentukan ustadz_id sesuai user login
@@ -351,7 +373,7 @@ class AbsensiMalam(models.Model):
         res = super().default_get(fields_list)
         tahun_ajaran = self.env['res.company'].search([('id', '=', self.env.ref('base.main_company').id)]).tahun_ajaran_aktif.id
         if not tahun_ajaran:
-            raise ValidationError('Tahun ajaran belum di set')
+            raise UserError('Tahun ajaran belum di set')
         return res
 
     @api.model
@@ -371,19 +393,19 @@ class AbsensiMalam(models.Model):
 
 
 class AbsensiMalamLine(models.Model):
-    _name = 'cdn.absensi_malam_line'
-    _description = 'Detail Absensi Malam Santri'
+    _name           = 'cdn.absensi_malam_line'
+    _description    = 'Detail Absensi Malam Santri'
 
-    absen_id = fields.Many2one('cdn.absensi_malam', string='Absen', ondelete='cascade', required=True)
-    tanggal = fields.Date(string='Tgl Absen', related='absen_id.tgl', readonly=True, store=True)
+    absen_id    = fields.Many2one('cdn.absensi_malam', string='Absen', ondelete='cascade', required=True)
+    tanggal     = fields.Date(string='Tgl Absen', related='absen_id.tgl', readonly=True, store=True)
     
-    siswa_id = fields.Many2one('cdn.siswa', string='Santri', ondelete='cascade')
-    name = fields.Char(string='Nama', related='siswa_id.name', readonly=True, store=True)
-    nis = fields.Char(string='NIS', related='siswa_id.nis', readonly=True, store=True)
-    panggilan = fields.Char(string='Nama Panggilan', related='siswa_id.namapanggilan', readonly=True, store=True)
+    siswa_id    = fields.Many2one('cdn.siswa', string='Santri', ondelete='cascade')
+    name        = fields.Char(string='Nama', related='siswa_id.name', readonly=True, store=True)
+    nis         = fields.Char(string='NIS', related='siswa_id.nis', readonly=True, store=True)
+    panggilan   = fields.Char(string='Nama Panggilan', related='siswa_id.namapanggilan', readonly=True, store=True)
     
-    kamar_id = fields.Many2one('cdn.kamar_santri', string='Kamar', related='siswa_id.kamar_id', readonly=True, store=True)
-    musyrif_id = fields.Many2one('hr.employee', string='Musyrif', related='siswa_id.musyrif_id', readonly=True, store=True)
+    kamar_id    = fields.Many2one('cdn.kamar_santri', string='Kamar', related='siswa_id.kamar_id', readonly=True, store=True)
+    musyrif_id  = fields.Many2one('hr.employee', string='Musyrif', related='siswa_id.musyrif_id', readonly=True, store=True)
     
     kehadiran_absen = fields.Selection([
         ('Hadir', 'Hadir'),
@@ -393,11 +415,11 @@ class AbsensiMalamLine(models.Model):
         ('Alpa', 'Alpa'),
     ], string='Kehadiran', default="Hadir", required=True)
     
-    keterangan = fields.Char(string='Keterangan')
-    keterangan_izin = fields.Binary(string="Foto", attachment=True)
-    keterangan_izin_filename = fields.Char(string="Nama File Foto")
-    
-    row_number = fields.Integer(string='No', compute='_compute_row_number', store=False)
+    keterangan                  = fields.Char(string='Keterangan')
+    keterangan_izin             = fields.Binary(string="Foto", attachment=True)
+    keterangan_izin_filename    = fields.Char(string="Nama File Foto")
+    company_id                  = fields.Many2one('res.company', string='Lembaga', related='absen_id.company_id', readonly=True, store=True)
+    row_number                  = fields.Integer(string='No', compute='_compute_row_number', store=False)
 
     def _compute_row_number(self):
         for index, record in enumerate(self):

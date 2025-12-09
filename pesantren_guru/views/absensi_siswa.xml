@@ -36,10 +36,11 @@
                     <field name="kelas_id" optional="show" />
                     <field name="mapel_id" optional="show" />
                     <field name="guru_id" optional="show" />
-                    <field name="state" optional="show" />
                     <field name="tema" optional="hide" />
                     <field name="materi" optional="hide" />
                     <field name="rpp_id" optional="hide" />
+                    <field name="company_id" optional="hide" />
+                    <field name="state" optional="show" />
                 </list>
             </field>
         </record>
@@ -73,10 +74,11 @@
                                 <field name="jampelajaran_id"
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"
                                     widget="many2many_tags" /> 
+                                <field name="company_id" 
+                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="1"/>
                             </group>
                                <group>
                                     <field name="mapel_id"
-                                        domain="[('tingkat_id', '=', tingkat_id)]"
                                         options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
                                     <field name="guru_id"
                                         options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />

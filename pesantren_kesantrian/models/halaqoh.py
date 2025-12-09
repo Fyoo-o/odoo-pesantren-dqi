@@ -22,11 +22,19 @@ class Halaqoh(models.Model):
         'halaqoh_m2m_id', 'siswa_id',
         string='Siswa'
     )   
-    penanggung_jawab_id = fields.Many2one('hr.employee', string='Penanggung jawab', required=True)
-    pengganti_ids = fields.Many2many('hr.employee', string='Ustadz Pengganti')
+    penanggung_jawab_id = fields.Many2one(
+        'hr.employee', 
+        string='Penanggung jawab', 
+        required=True, 
+        domain=lambda self: self.env['cdn.halaqoh']._domain_penanggung_jawab()
+    )
+    pengganti_ids   = fields.Many2many(
+        'hr.employee', 
+        string='Ustadz Pengganti', 
+        domain=lambda self: self.env['cdn.halaqoh']._domain_penanggung_jawab())
     status          = fields.Selection(string='Status', selection=[('draft', 'Draft'), ('konfirm', 'Terkonfirmasi')], default="draft")
     jml_siswa       = fields.Integer(string='Jumlah Siswa', compute='_compute_jml_siswa', store=True)
-
+    company_id      = fields.Many2one('res.company', string='Lembaga', default=lambda self: self.env.company)
 
     #test
     # def unlink(self):
@@ -40,6 +48,23 @@ class Halaqoh(models.Model):
     #             if siswa.halaqoh_id == rec:
     #                 siswa.halaqoh_id = False        # reset Many2one jika sama
     #     return super().unlink()
+    def _domain_penanggung_jawab(self):
+        admin_user_ids = self.env.ref('base.group_system').users.ids
+        
+        return [
+            '|',
+            ('user_id', '=', admin_user_ids),  # superadmin
+            ('jns_pegawai', 'in', [
+                'guruquran',
+                'musyrif',
+                'guru,guruquran',
+                'musyrif,guruquran',
+                'musyrif,guru',
+                'musyrif,guru,guruquran',
+                'superadmin'
+            ])
+        ]
+        
     def unlink(self):
         for rec in self:
             for siswa in rec.siswa_ids:

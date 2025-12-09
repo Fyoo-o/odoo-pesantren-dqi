@@ -368,7 +368,12 @@ class siswa(models.Model):
     
     
     tingkat                 = fields.Many2one(comodel_name="cdn.tingkat",  string="Tingkat", related="ruang_kelas_id.name.tingkat", readonly=True, store=True, help="")
+    
+    row_number      = fields.Integer(string='No', compute='_compute_row_number', store=False)
 
+    def _compute_row_number(self):
+        for index, record in enumerate(self):
+            record.row_number = index + 1
 
     # @api.model
     # def _get_jenjang_from_ubig(self):

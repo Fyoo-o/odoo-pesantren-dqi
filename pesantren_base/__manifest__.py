@@ -47,7 +47,7 @@
     'license': 'LGPL-3',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','l10n_id','l10n_id_efaktur','mail','hr','sale','account','muk_web_theme', 'pos_wallet_odoo','hr_attendance','hr_holidays', 'web_password_toggle','web_progress','queue_job'],
+    'depends': ['base','l10n_id','l10n_id_efaktur','mail','hr','sale','account','muk_web_theme','hr_attendance','hr_holidays', 'web_password_toggle','web_progress','queue_job'],
     #test
     # always loaded
     'data': [

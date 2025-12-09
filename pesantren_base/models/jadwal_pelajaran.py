@@ -109,7 +109,25 @@ class JadwalPelajaranLine(models.Model):
     start_time = fields.Float(string='Jam Mulai', related='jampelajaran_id.start_time', readonly=True, widget="float_time")
     end_time = fields.Float(string='Jam Selesai', related='jampelajaran_id.end_time', readonly=True, widget="float_time")
     matapelajaran_id = fields.Many2one('cdn.mata_pelajaran', string='Mata Pelajaran', domain="[('jenjang', '=', jenjang)]")
-    guru_id = fields.Many2many('hr.employee', string='Guru', domain=[('jns_pegawai','in',['guru', 'guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])])
+    guru_id = fields.Many2many(
+        'hr.employee', 
+        string='Guru', 
+        domain=lambda self: self.env['cdn.jadwal_pelajaran_lines']._get_domain_guru())
+
+    def _get_domain_guru(self):
+        admin_user_ids = self.env.ref('base.group_system').users.ids
+        
+        return [
+            '|',
+            ('user_id', '=', admin_user_ids),
+            ('jns_pegawai', 'in', [
+                'guru',
+                'guru,guruquran', 
+                'musyrif,guruquran', 
+                'musyrif,guru,guruquran',
+                'superadmin'
+            ])
+        ]
 
     # @api.onchange('matapelajaran_id')
     # def _onchange_matapelajaran_id(self):

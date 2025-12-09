@@ -12,6 +12,7 @@
                     <field name="sesi_id" />
                     <field name="halaqoh_id" string="Halaqah" context="{'from_guru_quran': True}" />
                     <field name="ustadz_id" />
+                    <field name="company_id" optional="hide"/>
                     <field name="state" />
                 </list>
             </field>
@@ -35,7 +36,7 @@
                         <button string="Done" type="object" name="action_confirm" 
                                 invisible="state != 'draft' or state != 'done'"/> -->
                     <!-- <field name="state" widget="statusbar"/>         -->
-                        <button string="Proses" name="action_proses" type="object" class="oe_highlight"  invisible="state != 'Draft'" context="{'from_guru_quran': True}"/>
+                        <button string="Proses" name="action_proses" type="object" class="oe_highlight" invisible="state != 'Draft'" context="{'from_guru_quran': True}"/>
                         <button string="Selesai" name="action_confirm" type="object" class="oe_highlight" invisible="state != 'Proses'"/>
                         <button string="Sinkronkan Penilaian" name="action_sync_penilaian" type="object" class="oe_highlight" invisible="state == 'Draft'" context="{'from_guru_quran': True}"/>
                         <field name="state" widget="statusbar" />
@@ -46,6 +47,8 @@
                                 <field name="name"/>
                                 <field name="fiscalyear_id" readonly="1"/>
                                 <field name="sesi_id"/>
+                                <field name="company_id"
+                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="1"/>
                             </group>
                             <group>
                                 <field name="halaqoh_id" options="{'no_create_edit': True, 'no_create': True}"/>

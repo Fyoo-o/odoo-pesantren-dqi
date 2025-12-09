@@ -15,6 +15,7 @@
                     <field name="guru_id"/>
                     <field name="semester"/>
                     <field name="tipe"/>
+                    <field name="company_id" optional="hide"/>
                     <field name="state"/>
                 </list>
             </field>
@@ -48,6 +49,8 @@
                             <group>
                                 <field name="semester"/>
                                 <field name="tipe"/>
+                                <field name="company_id" 
+                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="1"/>
                             </group>
                         </group>
 
@@ -87,7 +90,7 @@
 
         <!-- cdn.penilaian action window -->
         <record id="cdn_penilaian_action" model="ir.actions.act_window">
-            <field name="name">Data Penilaian Siswa</field>
+            <field name="name">Penilaian Siswa</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.penilaian</field>
             <field name="view_mode">list,form</field>

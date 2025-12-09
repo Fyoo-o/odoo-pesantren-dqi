@@ -938,13 +938,208 @@ class hr_employee(models.Model):
     #             'type': notification_type,
     #         }
     #     }
+    # def activate_account_action(self):
+    #     """
+    #     Aktivasi massal akun karyawan — VERSI SUPER CEPAT + PROGRESS BAR + QUEUE_JOB
+    #     """
+    #     total = len(self)
+    #     if not total:
+    #         raise UserError("Tidak ada karyawan yang dipilih untuk diaktifkan.")
+
+    #     # ===================================================================
+    #     # 1. CACHE SEMUA GROUP SEKALI DI AWAL (PENTING BANGET!)
+    #     # ===================================================================
+    #     group_refs = {
+    #         'base.group_user': self.env.ref('base.group_user'),
+    #         'base.group_system': self.env.ref('base.group_system'),
+    #         'hr.group_hr_manager': self.env.ref('hr.group_hr_manager'),
+    #         'hr_attendance.group_hr_attendance_officer': self.env.ref('hr_attendance.group_hr_attendance_officer'),
+    #         'pesantren_pendaftaran.group_pendaftaran_manager': self.env.ref('pesantren_pendaftaran.group_pendaftaran_manager'),
+    #         'pesantren_base.group_sekolah_manager': self.env.ref('pesantren_base.group_sekolah_manager'),
+    #         'pesantren_kesantrian.group_kesantrian_manager': self.env.ref('pesantren_kesantrian.group_kesantrian_manager'),
+    #         'pesantren_guru.group_guru_manager': self.env.ref('pesantren_guru.group_guru_manager'),
+    #         'pesantren_guruquran.group_guru_quran_manager': self.env.ref('pesantren_guruquran.group_guru_quran_manager'),
+    #         'pesantren_musyrif.group_musyrif_manager': self.env.ref('pesantren_musyrif.group_musyrif_manager'),
+    #         'pesantren_kesantrian.group_kesantrian_kesehatan': self.env.ref('pesantren_kesantrian.group_kesantrian_kesehatan'),
+    #         'pesantren_kesantrian.group_kesantrian_keamanan': self.env.ref('pesantren_kesantrian.group_kesantrian_keamanan'),
+    #         'account.group_account_manager': self.env.ref('account.group_account_manager'),
+    #         'base.group_partner_manager': self.env.ref('base.group_partner_manager'),
+    #         'base.group_allow_export': self.env.ref('base.group_allow_export'),
+
+    #         # Staff & User groups
+    #         'pesantren_guruquran.group_guru_quran_staff': self.env.ref('pesantren_guruquran.group_guru_quran_staff'),
+    #         'pesantren_guru.group_guru_staff': self.env.ref('pesantren_guru.group_guru_staff'),
+    #         'pesantren_musyrif.group_musyrif_staff': self.env.ref('pesantren_musyrif.group_musyrif_staff'),
+    #         'pesantren_guru.group_guru_user': self.env.ref('pesantren_guru.group_guru_user'),
+    #         'pesantren_guruquran.group_guru_quran_user': self.env.ref('pesantren_guruquran.group_guru_quran_user'),
+    #         'pesantren_kesantrian.group_kesantrian_user': self.env.ref('pesantren_kesantrian.group_kesantrian_user'),
+    #         'pesantren_base.group_sekolah_user': self.env.ref('pesantren_base.group_sekolah_user'),
+    #         'pesantren_base.group_hr_employee_readonly': self.env.ref('pesantren_base.group_hr_employee_readonly'),
+    #     }
+
+    #     # Mapping jenis pegawai → list XMLID group
+    #     GROUP_MAPPING = {
+    #         'superadmin': [
+    #             'base.group_system', 'hr.group_hr_manager', 'hr_attendance.group_hr_attendance_officer',
+    #             'pesantren_pendaftaran.group_pendaftaran_manager', 'pesantren_base.group_sekolah_manager',
+    #             'pesantren_kesantrian.group_kesantrian_manager', 'pesantren_guru.group_guru_manager',
+    #             'pesantren_guruquran.group_guru_quran_manager', 'pesantren_musyrif.group_musyrif_manager',
+    #             'pesantren_kesantrian.group_kesantrian_kesehatan', 'pesantren_kesantrian.group_kesantrian_keamanan',
+    #             'account.group_account_manager', 'base.group_partner_manager', 'base.group_allow_export',
+    #         ],
+    #         'guruquran': ['pesantren_guruquran.group_guru_quran_staff', 'pesantren_guru.group_guru_user',
+    #                       'pesantren_kesantrian.group_kesantrian_user', 'pesantren_base.group_sekolah_user',
+    #                       'pesantren_base.group_hr_employee_readonly', 'base.group_allow_export'],
+    #         'guru': ['pesantren_guru.group_guru_staff', 'pesantren_guruquran.group_guru_quran_user',
+    #                  'pesantren_base.group_sekolah_user', 'pesantren_kesantrian.group_kesantrian_user',
+    #                  'pesantren_base.group_hr_employee_readonly', 'base.group_allow_export'],
+    #         'guru,guruquran': ['pesantren_guru.group_guru_staff', 'pesantren_guruquran.group_guru_quran_staff',
+    #                            'pesantren_kesantrian.group_kesantrian_user', 'pesantren_base.group_sekolah_user',
+    #                            'pesantren_base.group_hr_employee_readonly', 'base.group_allow_export'],
+    #         'musyrif,guru': ['pesantren_musyrif.group_musyrif_staff', 'pesantren_guru.group_guru_staff',
+    #                          'pesantren_guruquran.group_guru_quran_user', 'pesantren_kesantrian.group_kesantrian_user',
+    #                          'pesantren_base.group_sekolah_user', 'pesantren_base.group_hr_employee_readonly',
+    #                          'base.group_allow_export'],
+    #         'musyrif,guruquran': ['pesantren_musyrif.group_musyrif_staff', 'pesantren_guruquran.group_guru_quran_staff',
+    #                               'pesantren_guru.group_guru_user', 'pesantren_kesantrian.group_kesantrian_user',
+    #                               'pesantren_base.group_sekolah_user', 'pesantren_base.group_hr_employee_readonly',
+    #                               'base.group_allow_export'],
+    #         'musyrif,guru,guruquran': ['pesantren_musyrif.group_musyrif_staff', 'pesantren_guru.group_guru_staff',
+    #                                    'pesantren_guruquran.group_guru_quran_staff', 'pesantren_kesantrian.group_kesantrian_user',
+    #                                    'pesantren_base.group_sekolah_user', 'pesantren_base.group_hr_employee_readonly',
+    #                                    'base.group_allow_export'],
+    #         'musyrif': ['pesantren_musyrif.group_musyrif_staff', 'pesantren_kesantrian.group_kesantrian_user',
+    #                     'pesantren_base.group_sekolah_user', 'pesantren_base.group_hr_employee_readonly',
+    #                     'base.group_allow_export'],
+    #         'keamanan': ['pesantren_kesantrian.group_kesantrian_keamanan', 'pesantren_kesantrian.group_kesantrian_user',
+    #                      'pesantren_base.group_sekolah_user', 'pesantren_base.group_hr_employee_readonly',
+    #                      'base.group_allow_export'],
+    #     }
+
+    #     # Default groups (jika jenis pegawai tidak cocok)
+    #     DEFAULT_GROUPS = [
+    #         'pesantren_base.group_sekolah_user', 'pesantren_kesantrian.group_kesantrian_user',
+    #         'pesantren_base.group_hr_employee_readonly', 'base.group_allow_export'
+    #     ]
+
+    #     success_count = 0
+    #     skipped_records = []
+    #     emails_to_send = []
+
+    #     for rec in self.with_progress(
+    #         msg=f"Sedang mengaktifkan akun karyawan ({total} akun)...",
+    #         total=total,
+    #         cancellable=True
+    #     ):
+    #         # Validasi wajib
+    #         if not rec.work_email or not rec.password or not rec.name:
+    #             skipped_records.append({
+    #                 'name': rec.name or 'Tanpa Nama',
+    #                 'reason': 'Email / Password / Nama belum diisi'
+    #             })
+    #             continue
+
+    #         user = self.env['res.users'].sudo().search([('login', '=', rec.work_email)], limit=1)
+    #         if not user:
+    #             skipped_records.append({
+    #                 'name': rec.name,
+    #                 'reason': f'User tidak ditemukan: {rec.work_email}'
+    #             })
+    #             continue
+
+    #         try:
+    #             # Tentukan group yang harus diberikan
+    #             jenis = rec.jns_pegawai or ''
+    #             group_xmlids = ['base.group_user']  # selalu ada
+
+    #             # Cari mapping yang cocok (bisa multi, misal "guru,guruquran")
+    #             for key in GROUP_MAPPING:
+    #                 if key in jenis:
+    #                     group_xmlids.extend(GROUP_MAPPING[key])
+
+    #             # Jika tidak ada yang cocok → pakai default
+    #             if len(group_xmlids) == 1:
+    #                 group_xmlids.extend(DEFAULT_GROUPS)
+
+    #             # Konversi ke ID nyata
+    #             final_group_ids = [group_refs[x].id for x in group_xmlids if x in group_refs]
+
+    #             # UPDATE USER — SEKALI JALAN (super cepat!)
+    #             user.write({
+    #                 'groups_id': [(6, 0, final_group_ids)],
+    #                 'password': rec.password,
+    #             })
+
+    #             # Mask password untuk email
+    #             pwd = rec.password
+    #             masked = pwd[:2] + '*' * max(0, len(pwd) - 4) + pwd[-2:] if len(pwd) > 4 else '*' * len(pwd)
+
+    #             emails_to_send.append({
+    #                 'email_to': rec.work_email,
+    #                 'name': rec.name,
+    #                 'jenis': rec.jns_pegawai or '-',
+    #                 'masked_password': masked,
+    #             })
+
+    #             success_count += 1
+
+    #         except Exception as e:
+    #             _logger.exception("Error aktivasi akun untuk %s", rec.name)
+    #             skipped_records.append({
+    #                 'name': rec.name or 'Tanpa Nama',
+    #                 'reason': str(e)[:100]
+    #             })
+
+    #     if emails_to_send:
+    #         self.with_delay(priority=10).send_activation_emails_batch(emails_to_send)
+        
+    #     message_parts = []
+    #     if success_count:
+    #         message_parts.append(f'✓ Success: {success_count} akun berhasil diaktifkan')
+    #     if skipped_records:
+    #         message_parts.append(f'\n\n⚠ Warning: {len(skipped_records)} akun dilewati:')
+    #         for i, s in enumerate(skipped_records[:7], 1):
+    #             message_parts.append(f'\n  • {s["name"]}: {s["reason"]}')
+    #         if len(skipped_records) > 7:
+    #             message_parts.append(f'\n  • ... dan {len(skipped_records) - 7} lainnya')
+    #     if emails_to_send:
+    #         message_parts.append('\n\nℹ Info: Email sedang dikirim di latar belakang...')
+    #         message_parts.append('\n(Anda dapat melanjutkan pekerjaan tanpa perlu menunggu)')
+    #     if success_count and not skipped_records:
+    #         message_parts.append('\n\n✓ Semua akun berhasil diaktifkan!')
+
+    #     message = ''.join(message_parts) if message_parts else 'Tidak ada perubahan.'
+    #     title = 'Aktivasi Akun Selesai!' if success_count else 'Tidak Ada yang Diaktifkan'
+
+    #     # Buat wizard record
+    #     wizard = self.env['activation.result.wizard'].create({
+    #         'message': message,
+    #     })
+
+    #     # Return wizard pop-up
+    #     return {
+    #         'name': title,
+    #         'type': 'ir.actions.act_window',
+    #         'res_model': 'activation.result.wizard',
+    #         'res_id': wizard.id,
+    #         'view_mode': 'form',
+    #         'target': 'new',
+    #         'context': self.env.context,
+    #     }
     def activate_account_action(self):
         """
         Aktivasi massal akun karyawan — VERSI SUPER CEPAT + PROGRESS BAR + QUEUE_JOB
         """
-        total = len(self)
+        # ✅ FILTER EMPLOYEE ADMIN DI AWAL - SKIP EMPLOYEE ID=1
+        records_to_process = self.filtered(lambda r: r.id != 1)
+        admin_records = self - records_to_process
+        
+        total = len(records_to_process)
         if not total:
-            raise UserError("Tidak ada karyawan yang dipilih untuk diaktifkan.")
+            if admin_records:
+                raise UserError("Tidak dapat mengaktifkan akun Employee ID=1 (Administrator). Silakan pilih karyawan lain.")
+            else:
+                raise UserError("Tidak ada karyawan yang dipilih untuk diaktifkan.")
 
         # ===================================================================
         # 1. CACHE SEMUA GROUP SEKALI DI AWAL (PENTING BANGET!)
@@ -988,32 +1183,32 @@ class hr_employee(models.Model):
                 'account.group_account_manager', 'base.group_partner_manager', 'base.group_allow_export',
             ],
             'guruquran': ['pesantren_guruquran.group_guru_quran_staff', 'pesantren_guru.group_guru_user',
-                          'pesantren_kesantrian.group_kesantrian_user', 'pesantren_base.group_sekolah_user',
-                          'pesantren_base.group_hr_employee_readonly', 'base.group_allow_export'],
+                        'pesantren_kesantrian.group_kesantrian_user', 'pesantren_base.group_sekolah_user',
+                        'pesantren_base.group_hr_employee_readonly', 'base.group_allow_export'],
             'guru': ['pesantren_guru.group_guru_staff', 'pesantren_guruquran.group_guru_quran_user',
-                     'pesantren_base.group_sekolah_user', 'pesantren_kesantrian.group_kesantrian_user',
-                     'pesantren_base.group_hr_employee_readonly', 'base.group_allow_export'],
+                    'pesantren_base.group_sekolah_user', 'pesantren_kesantrian.group_kesantrian_user',
+                    'pesantren_base.group_hr_employee_readonly', 'base.group_allow_export'],
             'guru,guruquran': ['pesantren_guru.group_guru_staff', 'pesantren_guruquran.group_guru_quran_staff',
-                               'pesantren_kesantrian.group_kesantrian_user', 'pesantren_base.group_sekolah_user',
-                               'pesantren_base.group_hr_employee_readonly', 'base.group_allow_export'],
+                            'pesantren_kesantrian.group_kesantrian_user', 'pesantren_base.group_sekolah_user',
+                            'pesantren_base.group_hr_employee_readonly', 'base.group_allow_export'],
             'musyrif,guru': ['pesantren_musyrif.group_musyrif_staff', 'pesantren_guru.group_guru_staff',
-                             'pesantren_guruquran.group_guru_quran_user', 'pesantren_kesantrian.group_kesantrian_user',
-                             'pesantren_base.group_sekolah_user', 'pesantren_base.group_hr_employee_readonly',
-                             'base.group_allow_export'],
+                            'pesantren_guruquran.group_guru_quran_user', 'pesantren_kesantrian.group_kesantrian_user',
+                            'pesantren_base.group_sekolah_user', 'pesantren_base.group_hr_employee_readonly',
+                            'base.group_allow_export'],
             'musyrif,guruquran': ['pesantren_musyrif.group_musyrif_staff', 'pesantren_guruquran.group_guru_quran_staff',
-                                  'pesantren_guru.group_guru_user', 'pesantren_kesantrian.group_kesantrian_user',
-                                  'pesantren_base.group_sekolah_user', 'pesantren_base.group_hr_employee_readonly',
-                                  'base.group_allow_export'],
+                                'pesantren_guru.group_guru_user', 'pesantren_kesantrian.group_kesantrian_user',
+                                'pesantren_base.group_sekolah_user', 'pesantren_base.group_hr_employee_readonly',
+                                'base.group_allow_export'],
             'musyrif,guru,guruquran': ['pesantren_musyrif.group_musyrif_staff', 'pesantren_guru.group_guru_staff',
-                                       'pesantren_guruquran.group_guru_quran_staff', 'pesantren_kesantrian.group_kesantrian_user',
-                                       'pesantren_base.group_sekolah_user', 'pesantren_base.group_hr_employee_readonly',
-                                       'base.group_allow_export'],
+                                    'pesantren_guruquran.group_guru_quran_staff', 'pesantren_kesantrian.group_kesantrian_user',
+                                    'pesantren_base.group_sekolah_user', 'pesantren_base.group_hr_employee_readonly',
+                                    'base.group_allow_export'],
             'musyrif': ['pesantren_musyrif.group_musyrif_staff', 'pesantren_kesantrian.group_kesantrian_user',
                         'pesantren_base.group_sekolah_user', 'pesantren_base.group_hr_employee_readonly',
                         'base.group_allow_export'],
             'keamanan': ['pesantren_kesantrian.group_kesantrian_keamanan', 'pesantren_kesantrian.group_kesantrian_user',
-                         'pesantren_base.group_sekolah_user', 'pesantren_base.group_hr_employee_readonly',
-                         'base.group_allow_export'],
+                        'pesantren_base.group_sekolah_user', 'pesantren_base.group_hr_employee_readonly',
+                        'base.group_allow_export'],
         }
 
         # Default groups (jika jenis pegawai tidak cocok)
@@ -1026,7 +1221,7 @@ class hr_employee(models.Model):
         skipped_records = []
         emails_to_send = []
 
-        for rec in self.with_progress(
+        for rec in records_to_process.with_progress(
             msg=f"Sedang mengaktifkan akun karyawan ({total} akun)...",
             total=total,
             cancellable=True
@@ -1052,13 +1247,11 @@ class hr_employee(models.Model):
                 jenis = rec.jns_pegawai or ''
                 group_xmlids = ['base.group_user']  # selalu ada
 
-                # Cari mapping yang cocok (bisa multi, misal "guru,guruquran")
-                for key in GROUP_MAPPING:
-                    if key in jenis:
-                        group_xmlids.extend(GROUP_MAPPING[key])
-
-                # Jika tidak ada yang cocok → pakai default
-                if len(group_xmlids) == 1:
+                # 🔧 PERBAIKAN: Gunakan exact match agar konsisten dengan activate_account()
+                if jenis in GROUP_MAPPING:
+                    group_xmlids.extend(GROUP_MAPPING[jenis])
+                else:
+                    # Jika tidak ada exact match → pakai default
                     group_xmlids.extend(DEFAULT_GROUPS)
 
                 # Konversi ke ID nyata
@@ -1089,6 +1282,13 @@ class hr_employee(models.Model):
                     'name': rec.name or 'Tanpa Nama',
                     'reason': str(e)[:100]
                 })
+
+        # Tambahkan admin records ke skipped jika ada
+        for admin_rec in admin_records:
+            skipped_records.append({
+                'name': admin_rec.name or 'Administrator',
+                'reason': 'Employee ID=1 (Administrator) tidak dapat dimodifikasi'
+            })
 
         if emails_to_send:
             self.with_delay(priority=10).send_activation_emails_batch(emails_to_send)

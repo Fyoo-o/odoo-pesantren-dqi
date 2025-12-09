@@ -125,6 +125,8 @@ class Perijinan(models.Model):
             'Return': [('readonly', True)],
             'Overdue': [('readonly', True)],
         }, tracking=True )
+    
+    company_id      = fields.Many2one('res.company', string='Lembaga', default=lambda self: self.env.company)
 
      # --- fields for overdue evidence ---
     # keterangan_terlambat = fields.Text("Keterangan Terlambat", states={

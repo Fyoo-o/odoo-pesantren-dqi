@@ -53,6 +53,8 @@ class Kesehatan(models.Model):
     )
 
     barcode = fields.Char(string="Kartu Santri",readonly=True)
+    
+    company_id      = fields.Many2one('res.company', string='Lembaga', default=lambda self: self.env.company)
 
     @api.onchange('siswa_id')
     def _onchange_siswa_id(self):

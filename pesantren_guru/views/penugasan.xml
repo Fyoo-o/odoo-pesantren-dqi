@@ -8,10 +8,14 @@
       <field name="arch" type="xml">
         <list>
           <!-- Add your fields here -->
-          <field name="kelas_id"/>
-          <field name="tugas_ujian"/>
           <field name="tanggal"/>
           <field name="deadline"/>
+          <field name="kelas_id"/>
+          <field name="guru_id"/>
+          <field name="matpel_id"/>
+          <field name="tugas_ujian"/>
+          <field name="company_id" optional="hide"/>
+          <field name="state"/>
         </list>
       </field>
     </record>
@@ -45,6 +49,7 @@
                   domain="[('tingkat_id', '=', tingkat_id)]"
                   options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
                 <field name="tugas_ujian" />  
+                <field name="company_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="1"/>
               </group>
               <group>
                  <field name="guru_id"

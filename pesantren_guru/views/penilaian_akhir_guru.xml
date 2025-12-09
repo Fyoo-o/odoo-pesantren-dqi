@@ -12,6 +12,7 @@
                     <field name="semester"/>
                     <field name="guru_id"/>
                     <field name="mapel_id"/>
+                    <field name="company_id" optional="hide"/>
                     <field name="state"/>
                 </list>
             </field>
@@ -48,6 +49,8 @@
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
                                 <field name="semester"
                                     readonly="state == 'confirm'"/>
+                                <field name="company_id"
+                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="1"/>
                             </group>
                         </group>
 

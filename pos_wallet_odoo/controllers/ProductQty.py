@@ -1,6 +1,6 @@
 from odoo import http
 from odoo.http import request
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 
 class PublicStockController(http.Controller):
 
@@ -23,11 +23,11 @@ class PublicStockController(http.Controller):
             product_records = request.env['product.product'].sudo().search_read(domain, ['name', 'qty_available'], limit=limit)
 
             if not product_records:
-                raise ValidationError("Product not found or no data available.")
+                raise UserError("Product not found or no data available.")
 
             return product_records
-        except ValidationError as e:
-            # Tangkap ValidationError untuk pesan error yang lebih terstruktur
+        except UserError as e:
+            # Tangkap UserError untuk pesan error yang lebih terstruktur
             return {'error': str(e)}
         except Exception as e:
             # Tangkap error lain untuk debugging

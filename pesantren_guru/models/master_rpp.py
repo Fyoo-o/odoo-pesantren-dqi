@@ -25,5 +25,5 @@ class MasterRPP(models.Model):
       if record.dokumen:
         header_byte = record.dokumen[:4]
         if header_byte.hex() != '4a564245':
-          raise models.ValidationError('Dokumen harus berformat PDF')
+          raise models.UserError('Dokumen harus berformat PDF')
 

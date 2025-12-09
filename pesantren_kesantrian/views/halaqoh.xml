@@ -12,6 +12,7 @@
                     <field name="penanggung_jawab_id" />
                     <field name="jml_siswa" />
                     <field name="keterangan" />
+                    <field name="company_id" optional="hide"/>
                     <field name="status" />
                 </list>
             </field>
@@ -34,17 +35,12 @@
 
                             <group>
                                 <field name="name" readonly="status ==  'konfirm'"/>
-                                <field name="penanggung_jawab_id" domain="[
-                                        ('id','!=',penanggung_jawab_id),
-                                        ('jns_pegawai', 'in', ['guruquran','musyrif','guru,guruquran', 'musyrif,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])
-                                    ]"
+                                <field name="penanggung_jawab_id"
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="status == 'konfirm'"/>
                                 <field name="pengganti_ids" widget="many2many_tags"
-                                    domain="[
-                                        ('id','!=',penanggung_jawab_id),
-                                        ('jns_pegawai', 'in', ['guruquran','musyrif','guru,guruquran','musyrif,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])
-                                    ]"
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="status == 'konfirm'"/>
+                                <field name="company_id" 
+                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="status ==  'konfirm'"/>
                             </group>
 
                             <group>
@@ -99,6 +95,7 @@
                                     readonly="1"
                                     mode="list">
                                     <list create="false" delete="false" edit="false">
+                                        <field name="row_number" string="#"/>
                                         <field name="nis"/>
                                         <field name="name"/>
                                         <field name="namapanggilan" string="Panggilan"/>

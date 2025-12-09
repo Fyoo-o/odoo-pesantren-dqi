@@ -15,19 +15,19 @@ class Mutabaah_harian(models.Model):
     siswa_id    = fields.Many2one('cdn.siswa', string='Santri',  ondelete='cascade', required=True)
     halaqoh_id  = fields.Many2one('cdn.halaqoh', string='Halaqoh', readonly=True, related='siswa_id.halaqoh_id')
     
-    barcode          = fields.Char(string="Kartu Santri", readonly=False)
+    barcode         = fields.Char(string="Kartu Santri", readonly=False)
 
-    kamar_id    = fields.Many2one('cdn.kamar_santri', string='Kamar', related='siswa_id.kamar_id', readonly=True)
-    musyrif_id  = fields.Many2one('hr.employee', string='Musyrif', related='siswa_id.musyrif_id', readonly=True)
+    kamar_id        = fields.Many2one('cdn.kamar_santri', string='Kamar', related='siswa_id.kamar_id', readonly=True)
+    musyrif_id      = fields.Many2one('hr.employee', string='Musyrif', related='siswa_id.musyrif_id', readonly=True)
     kelas_id        = fields.Many2one('cdn.ruang_kelas', string='Kelas', related='siswa_id.ruang_kelas_id', readonly=True, store=True)
-    halaqoh_id  = fields.Many2one('cdn.halaqoh', string='Halaqoh', related='siswa_id.halaqoh_id', readonly=True)
-
+    halaqoh_id      = fields.Many2one('cdn.halaqoh', string='Halaqoh', related='siswa_id.halaqoh_id', readonly=True)
+    company_id      = fields.Many2one('res.company', string='Lembaga', default=lambda self: self.env.company)
     
-    mutabaah_lines = fields.One2many('cdn.mutabaah_line', 'mutabaah_harian_id', string='Check Aktivitas')
+    mutabaah_lines  = fields.One2many('cdn.mutabaah_line', 'mutabaah_harian_id', string='Check Aktivitas')
 
-    total_skor = fields.Integer(string='Total Skor', compute='_compute_total_skor', store=True)
-    total_skor_display = fields.Char(string='Skor Mutabaah', compute='_compute_total_skor_display')
-    state = fields.Selection([
+    total_skor          = fields.Integer(string='Total Skor', compute='_compute_total_skor', store=True)
+    total_skor_display  = fields.Char(string='Skor Mutabaah', compute='_compute_total_skor_display')
+    state               = fields.Selection([
         ('Draft', 'Draft'),
         ('Done','Selesai'),
     ], default='Draft', string='Status')

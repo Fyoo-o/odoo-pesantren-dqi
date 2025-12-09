@@ -31,6 +31,7 @@ export class ChartRenderer extends Component {
       currentStartDate: this.props.startDate,
       currentEndDate: this.props.endDate,
       isFiltered: !!(this.props.startDate && this.props.endDate),
+      hasData: false, // Track if data exists
     };
 
     this.chartInstance = null;
@@ -59,7 +60,8 @@ export class ChartRenderer extends Component {
     onWillStart(async () => {
       this.showLoading();
       try {
-        await loadJS("https://cdn.jsdelivr.net/npm/apexcharts");
+        // Load Chart.js
+        await loadJS("https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js");
         await this.fetchHalaqohAttendanceData(
           this.state.currentStartDate,
           this.state.currentEndDate
@@ -147,6 +149,15 @@ export class ChartRenderer extends Component {
         [domain, ["name", "halaqoh_id", "tanggal", "kehadiran"]]
       );
 
+      // Check if data exists
+      this.state.hasData = data && data.length > 0;
+
+      if (!this.state.hasData) {
+        this.state.chartData = { series: [], labels: [] };
+        this.state.donutChartData = { labels: [], series: [] };
+        return;
+      }
+
       // Group by halaqoh
       const halaqohMap = {};
       const statusCount = {};
@@ -186,12 +197,18 @@ export class ChartRenderer extends Component {
       this.renderChartIfNeeded();
     } catch (error) {
       console.error("Error fetching halaqoh attendance data:", error);
+      this.state.hasData = false;
       this.state.chartData = { series: [], labels: [] };
       this.state.donutChartData = { labels: [], series: [] };
     }
   }
 
   renderChartIfNeeded() {
+    // Only render if data exists
+    if (!this.state.hasData) {
+      return;
+    }
+
     if (this.props.type === "chart") {
       this.renderChart();
     } else if (this.props.type === "donutChart") {
@@ -199,98 +216,124 @@ export class ChartRenderer extends Component {
     }
   }
 
-  getChartConfig() {
-    return {
-      chart: {
-        type: "bar",
-        height: "100%",
-        stacked: false,
-        toolbar: { show: false },
-        animations: { enabled: true, easing: "easeinout", speed: 800 },
-        events: {
-          dataPointSelection: (event, chartContext, config) =>
-            this.onChartClick(event, chartContext, config),
-        },
-      },
-      colors: [
-        "#16a34a", "#0891b2", "#22c55e", "#06b6d4", "#15803d",
-        "#0e7490", "#86efac", "#67e8f9", "#166534", "#155e75"
-      ],
-      legend: { position: "bottom" },
-      xaxis: {
-        type: "category",
-        categories: this.state.chartData.labels,
-        labels: {
-          style: { fontSize: "12px", fontFamily: "Inter, sans-serif" },
-          rotate: -45,
-          formatter: (val) => (val.length > 15 ? val.substring(0, 15) + "..." : val),
-        },
-      },
-      plotOptions: {
-        bar: {
-          columnWidth: "55%",
-          borderRadius: 4,
-          groupPadding: 0.3,
-        },
-      },
-      stroke: { width: 2, colors: ["transparent"] },
-      dataLabels: { enabled: false },
-      yaxis: {
-        labels: { formatter: (val) => Math.round(val) },
-      },
-      tooltip: {
-        shared: true,
-        intersect: false,
-        y: { formatter: (val) => Math.round(val) },
-      },
-      noData: {
-        text: "Tidak ada data",
-        align: "center",
-        verticalAlign: "middle",
-        style: { color: "#1f2937", fontSize: "16px", fontFamily: "Inter" },
-      },
-    };
-  }
-
-  getDonutChartConfig() {
-    return {
-      chart: {
-        type: "pie",
-        height: "100%",
-        toolbar: { show: false },
-        animations: { enabled: true, easing: "easeinout", speed: 800 },
-        events: {
-          dataPointSelection: (event, chartContext, config) =>
-            this.onDonutClick(event, chartContext, config),
-        },
-      },
-      legend: { position: "top", horizontalAlign: "center" },
-      dataLabels: { enabled: false },
-      colors: [
-        "#16a34a", "#0891b2", "#22c55e", "#06b6d4", "#15803d",
-        "#0e7490", "#86efac", "#67e8f9", "#166534", "#155e75"
-      ],
-      labels: this.state.donutChartData.labels,
-      series: this.state.donutChartData.series,
-      tooltip: {
-        y: { formatter: (val) => val + " orang" },
-      },
-      noData: {
-        text: "Tidak ada data",
-        align: "center",
-        verticalAlign: "middle",
-        style: { color: "#1f2937", fontSize: "16px", fontFamily: "Inter" },
-      },
-    };
+  getChartColors() {
+    return [
+      "#16a34a", "#0891b2", "#22c55e", "#06b6d4", "#15803d",
+      "#0e7490", "#86efac", "#67e8f9", "#166534", "#155e75"
+    ];
   }
 
   renderChart() {
     if (!this.chartRef.el) return;
     this.cleanupChartOnly();
-    const config = { ...this.getChartConfig(), series: this.state.chartData.series };
+
+    const canvas = document.createElement('canvas');
+    this.chartRef.el.innerHTML = '';
+    this.chartRef.el.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+
+    const colors = this.getChartColors();
+    const datasets = this.state.chartData.series.map((series, index) => ({
+      label: series.name,
+      data: series.data,
+      backgroundColor: colors[index % colors.length],
+      borderColor: colors[index % colors.length],
+      borderWidth: 1,
+      borderRadius: 4,
+      associated_ids: series.associated_ids,
+    }));
+
     try {
-      this.chartInstance = new ApexCharts(this.chartRef.el, config);
-      this.chartInstance.render();
+      this.chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: this.state.chartData.labels,
+          datasets: datasets,
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false,
+          },
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                padding: 15,
+                font: {
+                  size: 12,
+                  family: 'Inter, sans-serif',
+                },
+                boxWidth: 15,
+                boxHeight: 15,
+              },
+            },
+            tooltip: {
+              backgroundColor: 'rgba(0, 0, 0, 0.8)',
+              padding: 12,
+              titleFont: {
+                size: 13,
+              },
+              bodyFont: {
+                size: 12,
+              },
+              callbacks: {
+                label: function (context) {
+                  return context.dataset.label + ': ' + Math.round(context.parsed.y);
+                }
+              }
+            },
+          },
+          scales: {
+            x: {
+              grid: {
+                display: false,
+              },
+              ticks: {
+                font: {
+                  size: 12,
+                  family: 'Inter, sans-serif',
+                },
+              },
+            },
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function (value) {
+                  return Math.round(value);
+                },
+                font: {
+                  size: 12,
+                },
+              },
+              grid: {
+                color: 'rgba(0, 0, 0, 0.05)',
+              },
+            },
+          },
+          onClick: (event, elements) => {
+            if (elements.length > 0) {
+              const element = elements[0];
+              const datasetIndex = element.datasetIndex;
+              const associatedIds = datasets[datasetIndex].associated_ids;
+
+              if (associatedIds && associatedIds.length > 0) {
+                this.actionService.doAction({
+                  type: "ir.actions.act_window",
+                  name: "Detail Absensi Halaqoh",
+                  res_model: "cdn.absen_halaqoh_line",
+                  view_mode: "list,form",
+                  domain: [["id", "in", associatedIds]],
+                  views: [[false, "list"], [false, "form"]],
+                  target: "current",
+                });
+              }
+            }
+          },
+        },
+      });
     } catch (error) {
       console.error("Error rendering bar chart:", error);
     }
@@ -299,12 +342,90 @@ export class ChartRenderer extends Component {
   renderDonutChart() {
     if (!this.donutChartRef.el) return;
     this.cleanupDonutOnly();
-    const config = this.getDonutChartConfig();
+
+    const canvas = document.createElement('canvas');
+    this.donutChartRef.el.innerHTML = '';
+    this.donutChartRef.el.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+
+    const colors = this.getChartColors();
+
     try {
-      this.donutChartInstance = new ApexCharts(this.donutChartRef.el, config);
-      this.donutChartInstance.render();
+      this.donutChartInstance = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: this.state.donutChartData.labels,
+          datasets: [{
+            data: this.state.donutChartData.series,
+            backgroundColor: colors.slice(0, this.state.donutChartData.labels.length),
+            borderColor: '#ffffff',
+            borderWidth: 2,
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: {
+                padding: 15,
+                font: {
+                  size: 12,
+                  family: 'Inter, sans-serif',
+                },
+                boxWidth: 15,
+                boxHeight: 15,
+              },
+            },
+            tooltip: {
+              backgroundColor: 'rgba(0, 0, 0, 0.8)',
+              padding: 12,
+              titleFont: {
+                size: 13,
+              },
+              bodyFont: {
+                size: 12,
+              },
+              callbacks: {
+                label: function (context) {
+                  const label = context.label || '';
+                  const value = context.parsed || 0;
+                  return label + ': ' + value + ' orang';
+                }
+              }
+            },
+          },
+          onClick: (event, elements) => {
+            if (elements.length > 0) {
+              const element = elements[0];
+              const index = element.index;
+              const status = this.state.donutChartData.labels[index];
+
+              const domain = [["kehadiran", "=", status]];
+
+              if (this.state.currentStartDate && this.state.currentEndDate) {
+                domain.push(
+                  ["tanggal", ">=", this.state.currentStartDate],
+                  ["tanggal", "<=", this.state.currentEndDate]
+                );
+              }
+
+              this.actionService.doAction({
+                type: "ir.actions.act_window",
+                name: `Absensi Halaqoh - ${status}`,
+                res_model: "cdn.absen_halaqoh_line",
+                view_mode: "list,form",
+                domain: domain,
+                views: [[false, "list"], [false, "form"]],
+                target: "current",
+              });
+            }
+          },
+        },
+      });
     } catch (error) {
-      console.error("Error rendering donut chart:", error);
+      console.error("Error rendering pie chart:", error);
     }
   }
 
@@ -320,49 +441,6 @@ export class ChartRenderer extends Component {
       this.donutChartInstance.destroy();
       this.donutChartInstance = null;
     }
-  }
-
-  onChartClick(event, chartContext, config) {
-    const { dataPointIndex, seriesIndex } = config;
-    if (dataPointIndex === -1) return;
-
-    const associatedIds = this.state.chartData.series[seriesIndex].associated_ids;
-    if (!associatedIds || associatedIds.length === 0) return;
-
-    this.actionService.doAction({
-      type: "ir.actions.act_window",
-      name: "Detail Absensi Halaqoh",
-      res_model: "cdn.absen_halaqoh_line",
-      view_mode: "list,form",
-      domain: [["id", "in", associatedIds]],
-      views: [[false, "list"], [false, "form"]],
-      target: "current",
-    });
-  }
-
-  onDonutClick(event, chartContext, config) {
-    const dataPointIndex = config.dataPointIndex;
-    if (dataPointIndex === -1) return;
-
-    const status = this.state.donutChartData.labels[dataPointIndex];
-    const domain = [["kehadiran", "=", status]];
-
-    if (this.state.currentStartDate && this.state.currentEndDate) {
-      domain.push(
-        ["tanggal", ">=", this.state.currentStartDate],
-        ["tanggal", "<=", this.state.currentEndDate]
-      );
-    }
-
-    this.actionService.doAction({
-      type: "ir.actions.act_window",
-      name: `Absensi Halaqoh - ${status}`,
-      res_model: "cdn.absen_halaqoh_line",
-      view_mode: "list,form",
-      domain: domain,
-      views: [[false, "list"], [false, "form"]],
-      target: "current",
-    });
   }
 }
 

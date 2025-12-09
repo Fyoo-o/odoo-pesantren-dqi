@@ -38,14 +38,8 @@
 
                             <group>
                                 <field name="kamar_id" options="{'no_create_edit':True, 'no_create':True}" readonly="status ==  'konfirm'"/>
-                                <field name="musyrif_id" options="{'no_create_edit':True, 'no_create':True}" domain="[
-                                        ('jns_pegawai', 'in', ['musyrif','ustadz', 'musyrif,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])
-                                    ]" readonly="status ==  'konfirm'"/>
+                                <field name="musyrif_id" options="{'no_create_edit':True, 'no_create':True}" readonly="status ==  'konfirm'"/>
                                 <field name="pengganti_ids" widget="many2many_tags"
-                                    domain="[
-                                        ('id','!=',musyrif_id),
-                                        ('jns_pegawai', 'in', ['musyrif','ustadz', 'musyrif,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])
-                                    ]"
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="status ==  'konfirm'"/>
                             </group>
 
@@ -60,9 +54,51 @@
                         </group>
                         <!-- siswa -->
                         <notebook>
-                            <page string="Santri ">
-								<field name="siswa_ids" readonly="status ==  'konfirm'">
-									<list editable="top">
+                            <page string="Santri">
+                                <div class="card mb-3" style="border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" invisible="status == 'konfirm'">
+                                    <div class="card-body">
+                                        <div class="row align-items-start">
+                                            <!-- Field Section (60%) -->
+                                            <div class="col-lg-7">
+                                                <h6 class="mb-2" style="color: #6c757d;">
+                                                    <i class="fa fa-search"/> Cari dan Tambah Santri
+                                                </h6>
+                                                <field name="siswa_ids" 
+                                                    widget="many2many_tags" 
+                                                    placeholder="Ketik nama atau NIS santri untuk menambahkan..."
+                                                    options="{
+                                                        'no_create': True, 
+                                                        'no_create_edit': True,
+                                                        'no_open': True
+                                                    }"
+                                                    nolabel="1"
+                                                    class="o_field_many2many_tags"/>
+                                            </div>
+                                            
+                                            <!-- Info Section (40%) -->
+                                            <div class="col-lg-5">
+                                                <div style="background: #e7f5ef; border-left: 4px solid #0f9f62; padding: 12px; border-radius: 6px;">
+                                                    <div class="text-primary" style="font-size: 1em;">
+                                                        <i class="fa fa-lightbulb-o"/> <strong>Cara Menggunakan:</strong>
+                                                    </div>
+                                                    <div class="text-muted" style="font-size: 0.9em; margin-top: 5px;">
+                                                        Ketik nama → Pilih → Ketik atau cari lagi untuk tambah santri berikutnya
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <separator string="Daftar Santri Terpilih"/>
+
+								<field 
+                                    name="siswa_ids" 
+                                    readonly="1"
+                                    nolabel="1"
+                                    mode="list">
+									<list create="false" delete="false" edit="false">
+                                        <field name="row_number" string="#"/>
 										<field name="nis"/>
 										<field name="name"/>
                                         <field name="namapanggilan" string="Panggilan"/>

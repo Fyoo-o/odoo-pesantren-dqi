@@ -27,17 +27,49 @@ class PenilaianAkhirGuru(models.Model):
         return '1'  # fallback ke semester 1
 
     # Domain Methods
+    # def _get_domain_guru(self):
+    #     user = self.env.user
+    #     if user.has_group('base.group_system'):  # Admin bebas semua guru
+    #         return [('jns_pegawai', 'in', ['guru','guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])]
+    #     elif user.has_group('pesantren_guru.group_guru_manager'):
+    #         return [('jns_pegawai', 'in', ['guru','guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])]
+    #     elif user.has_group('pesantren_guru.group_guru_staff'):
+    #         employee = self.env['hr.employee'].search([('user_id', '=', user.id)], limit=1)
+    #         return [('id', '=', employee.id)]
+    #     return [('id', '=', False)]
     def _get_domain_guru(self):
-        user = self.env.user
-        if user.has_group('base.group_system'):  # Admin bebas semua guru
-            return [('jns_pegawai', 'in', ['guru','guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])]
-        elif user.has_group('pesantren_guru.group_guru_manager'):
-            return [('jns_pegawai', 'in', ['guru','guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])]
-        elif user.has_group('pesantren_guru.group_guru_staff'):
-            employee = self.env['hr.employee'].search([('user_id', '=', user.id)], limit=1)
-            return [('id', '=', employee.id)]
-        return [('id', '=', False)]
+        # dapatkan semua user yang merupakan administrator
+        admin_user_ids = self.env.ref('base.group_system').users.ids
 
+        # domain guru normal
+        guru_domain = [
+            ('jns_pegawai', 'in', [
+                'guru',
+                'guru,guruquran',
+                'musyrif,guru',
+                'musyrif,guru,guruquran',
+                'superadmin'
+            ])
+        ]
+
+        # domain employee milik admin
+        admin_domain = [('user_id', 'in', admin_user_ids)]
+
+        # --- bangun domain OR: admin OR guru ---
+        base_domain = ['|'] + admin_domain + guru_domain
+
+        # tambahan domain berdasarkan role user sekarang
+        if self.env.user.has_group('pesantren_guru.group_guru_manager'):
+            # manager boleh lihat semua guru + admin
+            return base_domain
+
+        elif self.env.user.has_group('pesantren_guru.group_guru_staff'):
+            # staff hanya melihat diri sendiri + admin
+            return [('user_id', '=', self.env.uid)]
+
+        else:
+            # user lain tidak boleh lihat apapun
+            return [('id', '=', False)]
 
     # def _get_domain_kelas(self):
     #     guru = self.env['hr.employee'].search([
@@ -59,7 +91,7 @@ class PenilaianAkhirGuru(models.Model):
         'hr.employee',
         string='Guru',
         required=True,
-        domain=_get_domain_guru,
+        domain=lambda self: self.env['cdn.penilaian_akhir_guru']._get_domain_guru(),
         default=_get_default_guru
     )
     kelas_id = fields.Many2one(
@@ -104,6 +136,7 @@ class PenilaianAkhirGuru(models.Model):
         inverse_name='penilaianguru_id',
         string='Penilaian Siswa'
     )
+    company_id = fields.Many2one('res.company', string='Lembaga', default=lambda self: self.env.company)
 
     # Actions
     def act_confirm(self):

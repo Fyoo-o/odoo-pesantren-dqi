@@ -13,6 +13,7 @@
                     <field name="ekskul_id"/>
                     <field name="guru"/>
                     <field name="fiscalyear_id"/>
+                    <field name="company_id" optional="hide"/>
                     <field name="states"/>
                 </list>
             </field>
