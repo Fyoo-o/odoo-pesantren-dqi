@@ -63,6 +63,21 @@ class AbsensiSiswa(models.Model):
     absensi_ids     = fields.One2many(comodel_name='cdn.absensi_siswa_lines', inverse_name='absensi_id', string='Absensi Siswa')
     row_number      = fields.Integer(string='No', compute='_compute_row_number', store=False)
     company_id      = fields.Many2one('res.company', string='Lembaga', default=lambda self: self.env.company)
+    jenjang = fields.Selection(
+        selection=[
+            ('paud','PAUD'),
+            ('tk','TK/RA'),
+            ('sd','SD/MI'),
+            ('smp','SMP/MTS'),
+            ('sma','SMA/MA/SMK'), 
+            ('nonformal', 'Non formal'), 
+            ('rtq', 'Rumah Tahfidz Quran')
+        ],
+        string="Jenjang",
+        related='kelas_id.jenjang',
+        store=True,
+        readonly=True
+    )
 
     def _domain_guru(self):
         admin_user_ids = self.env.ref('base.group_system').users.ids
