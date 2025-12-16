@@ -46,7 +46,7 @@
             <group string="Penugasan">
               <group>
                <field name="matpel_id"
-                  domain="[('tingkat_id', '=', tingkat_id)]"
+                  domain="[('jenjang', '=', jenjang), '|', ('tingkat_id', '=', False), ('tingkat_id', '=', tingkat_id)]"
                   options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
                 <field name="tugas_ujian" />  
                 <field name="company_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="1"/>

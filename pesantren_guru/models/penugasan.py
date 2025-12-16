@@ -66,6 +66,21 @@ class Penugasan(models.Model):
         ], limit=1)
     )
   company_id    = fields.Many2one('res.company', string='Lembaga', default=lambda self: self.env.company)
+  jenjang = fields.Selection(
+        selection=[
+            ('paud','PAUD'),
+            ('tk','TK/RA'),
+            ('sd','SD/MI'),
+            ('smp','SMP/MTS'),
+            ('sma','SMA/MA/SMK'), 
+            ('nonformal', 'Non formal'), 
+            ('rtq', 'Rumah Tahfidz Quran')
+        ],
+        string="Jenjang",
+        related='kelas_id.jenjang',
+        store=True,
+        readonly=True
+    )
   # jadwal_pelajaran_lines_ids = fields.Many2many(comodel_name='cdn.jadwal_pelajaran_lines', string='Jadwal Pelajaran Lines')
   
   def action_proses(self):

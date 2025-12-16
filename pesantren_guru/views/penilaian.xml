@@ -43,7 +43,7 @@
                                 <field name="kelas_id"
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
                                 <field name="mapel_id"
-                                    domain="[('tingkat_id','=', tingkat_id), ('guru_ids','in',[guru_id])]" 
+                                    domain="[('jenjang', '=', jenjang), '|', ('tingkat_id', '=', False), ('tingkat_id', '=', tingkat_id), ('guru_ids','in',[guru_id])]"
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
                             </group>
                             <group>
