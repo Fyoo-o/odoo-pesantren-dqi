@@ -96,6 +96,21 @@ class Penilaian(models.Model):
     state               = fields.Selection(string='Status', selection=[('draft', 'Draft'), ('done', 'Done')], default='draft')
     penilaian_ids       = fields.One2many(comodel_name='cdn.penilaian_lines', inverse_name='penilaian_id', string='Penilaian')
     company_id          = fields.Many2one('res.company', string='Lembaga', default=lambda self: self.env.company)
+    jenjang = fields.Selection(
+        selection=[
+            ('paud','PAUD'),
+            ('tk','TK/RA'),
+            ('sd','SD/MI'),
+            ('smp','SMP/MTS'),
+            ('sma','SMA/MA/SMK'), 
+            ('nonformal', 'Non formal'), 
+            ('rtq', 'Rumah Tahfidz Quran')
+        ],
+        string="Jenjang",
+        related='kelas_id.jenjang',
+        store=True,
+        readonly=True
+    )
     
     @api.depends('kelas_id')
     def _compute_tingkat_id(self):
