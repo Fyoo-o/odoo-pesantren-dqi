@@ -276,8 +276,8 @@ export class GuruChartRenderer extends Component {
             {
               label: this.props.title === "pie1" ? "Jumlah" : "Total",
               data: this.state.chartData.series,
-              backgroundColor: this.state.chartData.labels.map((_, index) =>
-                this.getDiverseColor(index, this.state.chartData.labels.length)
+              backgroundColor: this.state.chartData.labels.map((status) =>
+                this.getColorByStatus(status)
               ),
               borderColor: "#ffffff",
               borderWidth: 1,
@@ -315,13 +315,17 @@ export class GuruChartRenderer extends Component {
     }
   }
 
-  getDiverseColor(index, totalItems) {
-    const colors = [
-      "#16a34a", "#0891b2", "#22c55e", "#06b6d4", "#15803d",
-      "#0e7490", "#86efac", "#67e8f9", "#166534", "#155e75",
-    ];
-    return colors[index % colors.length];
-  }
+  getColorByStatus(status) {
+  const colorMap = {
+    "hadir": "#16a34a",     // hijau
+    "sakit": "#f97316",     // orange
+    "izin": "#7c3aed",      // ungu
+    "keluar": "#2563eb",    // biru
+    "alpa": "#dc2626",     // merah
+  };
+
+  return colorMap[status.toLowerCase()] || "#9ca3af"; // abu-abu default
+}
 
   handleChartClick(evt) {
     const activePoints = this.chartInstance.getElementsAtEventForMode(

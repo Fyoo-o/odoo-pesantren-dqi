@@ -216,12 +216,14 @@ export class ChartRenderer extends Component {
     }
   }
 
-  getChartColors() {
-    return [
-      "#16a34a", "#0891b2", "#22c55e", "#06b6d4", "#15803d",
-      "#0e7490", "#86efac", "#67e8f9", "#166534", "#155e75"
-    ];
+  getChartColors(total = 100) {
+  const colors = [];
+  for (let i = 0; i < total; i++) {
+    const hue = Math.round((360 / total) * i);
+    colors.push(`hsl(${hue}, 65%, 45%)`);
   }
+  return colors;
+}
 
   renderChart() {
     if (!this.chartRef.el) return;
@@ -232,7 +234,8 @@ export class ChartRenderer extends Component {
     this.chartRef.el.appendChild(canvas);
     const ctx = canvas.getContext('2d');
 
-    const colors = this.getChartColors();
+    const totalSeries = this.state.chartData.series.length;
+    const colors = this.getChartColors(totalSeries);
     const datasets = this.state.chartData.series.map((series, index) => ({
       label: series.name,
       data: series.data,
@@ -357,7 +360,9 @@ export class ChartRenderer extends Component {
           labels: this.state.donutChartData.labels,
           datasets: [{
             data: this.state.donutChartData.series,
-            backgroundColor: colors.slice(0, this.state.donutChartData.labels.length),
+            backgroundColor: this.state.donutChartData.labels.map(
+  status => this.getAttendanceColor(status)
+  ),
             borderColor: '#ffffff',
             borderWidth: 2,
           }],
@@ -435,6 +440,20 @@ export class ChartRenderer extends Component {
       this.chartInstance = null;
     }
   }
+ getAttendanceColor(status) {
+  const colors = {
+    "Hadir": "#16a34a",       // Hijau (tenang, positif)
+    "Sakit": "rgb(234, 179, 8)",       // Kuning tua (tidak silau)
+    "Izin": "rgb(168, 85, 247)",       // Ungu (resmi)
+    "keluar": "rgb(249, 115, 22)",     // Oranye (izin keluar / acara keluarga)
+    "Alpa": "rgb(153, 27, 27)",        // Merah tua (tegas, tidak mencolok)
+  };
+
+  return colors[status] || "rgb(100, 116, 139)"; // fallback slate
+}
+
+
+
 
   cleanupDonutOnly() {
     if (this.donutChartInstance) {
