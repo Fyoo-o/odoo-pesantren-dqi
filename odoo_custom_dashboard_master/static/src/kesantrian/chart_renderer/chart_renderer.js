@@ -8,6 +8,8 @@ const {
   onMounted,
   onWillUnmount,
   onWillUpdateProps,
+  onPatched,
+  useState,
 } = owl;
 import { useService } from "@web/core/utils/hooks";
 
@@ -25,14 +27,15 @@ export class ChartRenderer extends Component {
     this.orm = useService("orm");
     this.actionService = useService("action");
 
-    this.state = {
+    this.state = useState({
       chartData: { series: [], labels: [] },
       donutChartData: { labels: [], series: [] },
       currentStartDate: this.props.startDate,
       currentEndDate: this.props.endDate,
       isFiltered: !!(this.props.startDate && this.props.endDate),
       hasData: false, // Track if data exists
-    };
+      needsRender: false, // Flag to trigger re-render after DOM update
+    });
 
     this.chartInstance = null;
     this.donutChartInstance = null;
@@ -73,6 +76,14 @@ export class ChartRenderer extends Component {
 
     onMounted(() => {
       this.renderChartIfNeeded();
+    });
+
+    // Re-render chart after OWL patches the DOM (when hasData changes)
+    onPatched(() => {
+      if (this.state.needsRender) {
+        this.state.needsRender = false;
+        this.renderChartIfNeeded();
+      }
     });
 
     onWillUnmount(() => {
@@ -155,6 +166,7 @@ export class ChartRenderer extends Component {
       if (!this.state.hasData) {
         this.state.chartData = { series: [], labels: [] };
         this.state.donutChartData = { labels: [], series: [] };
+        this.state.needsRender = true; // Trigger cleanup on next patch
         return;
       }
 
@@ -194,7 +206,8 @@ export class ChartRenderer extends Component {
         series: Object.values(statusCount),
       };
 
-      this.renderChartIfNeeded();
+      // Set flag to trigger render after DOM updates
+      this.state.needsRender = true;
     } catch (error) {
       console.error("Error fetching halaqoh attendance data:", error);
       this.state.hasData = false;
@@ -204,11 +217,20 @@ export class ChartRenderer extends Component {
   }
 
   renderChartIfNeeded() {
-    // Only render if data exists
+    // Always cleanup old chart instances first
+    if (this.props.type === "chart") {
+      this.cleanupChartOnly();
+    } else if (this.props.type === "donutChart") {
+      this.cleanupDonutOnly();
+    }
+
+    // If no data, the template's t-else will show the "no data" message
+    // No need to manipulate innerHTML - just cleanup and return
     if (!this.state.hasData) {
       return;
     }
 
+    // Render the appropriate chart type
     if (this.props.type === "chart") {
       this.renderChart();
     } else if (this.props.type === "donutChart") {
@@ -217,13 +239,13 @@ export class ChartRenderer extends Component {
   }
 
   getChartColors(total = 100) {
-  const colors = [];
-  for (let i = 0; i < total; i++) {
-    const hue = Math.round((360 / total) * i);
-    colors.push(`hsl(${hue}, 65%, 45%)`);
+    const colors = [];
+    for (let i = 0; i < total; i++) {
+      const hue = Math.round((360 / total) * i);
+      colors.push(`hsl(${hue}, 65%, 45%)`);
+    }
+    return colors;
   }
-  return colors;
-}
 
   renderChart() {
     if (!this.chartRef.el) return;
@@ -361,8 +383,8 @@ export class ChartRenderer extends Component {
           datasets: [{
             data: this.state.donutChartData.series,
             backgroundColor: this.state.donutChartData.labels.map(
-  status => this.getAttendanceColor(status)
-  ),
+              status => this.getAttendanceColor(status)
+            ),
             borderColor: '#ffffff',
             borderWidth: 2,
           }],
@@ -440,17 +462,17 @@ export class ChartRenderer extends Component {
       this.chartInstance = null;
     }
   }
- getAttendanceColor(status) {
-  const colors = {
-    "Hadir": "#16a34a",       // Hijau (tenang, positif)
-    "Sakit": "rgb(234, 179, 8)",       // Kuning tua (tidak silau)
-    "Izin": "rgb(168, 85, 247)",       // Ungu (resmi)
-    "keluar": "rgb(249, 115, 22)",     // Oranye (izin keluar / acara keluarga)
-    "Alpa": "rgb(153, 27, 27)",        // Merah tua (tegas, tidak mencolok)
-  };
+  getAttendanceColor(status) {
+    const colors = {
+      "Hadir": "#16a34a",       // Hijau (tenang, positif)
+      "Sakit": "rgb(234, 179, 8)",       // Kuning tua (tidak silau)
+      "Izin": "rgb(168, 85, 247)",       // Ungu (resmi)
+      "keluar": "rgb(249, 115, 22)",     // Oranye (izin keluar / acara keluarga)
+      "Alpa": "rgb(153, 27, 27)",        // Merah tua (tegas, tidak mencolok)
+    };
 
-  return colors[status] || "rgb(100, 116, 139)"; // fallback slate
-}
+    return colors[status] || "rgb(100, 116, 139)"; // fallback slate
+  }
 
 
 
