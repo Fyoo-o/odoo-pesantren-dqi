@@ -34,6 +34,12 @@ class TahfidzTahsin(models.Model):
     # Umum
     # ustadz_id = fields.Many2one('hr.employee', string='Ustadz', required=True)
     jenjang_display = fields.Selection(related='siswa_id.jenjang', string='Jenjang', store=True)
+    is_jenjang_paud_tk = fields.Boolean(
+        string='Is PAUD/TK',
+        compute='_compute_is_jenjang_paud_tk',
+        store=True,
+        help='True jika jenjang adalah PAUD, TK, atau TK/RA'
+    )
     company_id      = fields.Many2one('res.company', string='Lembaga', default=lambda self: self.env.company)
 
     sesi_id = fields.Many2one('cdn.sesi_halaqoh', string='Sesi')
@@ -112,6 +118,22 @@ class TahfidzTahsin(models.Model):
         'cdn.penilaian_quran_line',
         compute='_compute_riwayat_hafalan',
         string='Riwayat Hafalan',
+        readonly=True
+    )
+
+    # === TAB Riwayat Tahsin Harian ===
+    riwayat_tahsin_harian_ids = fields.Many2many(
+        'cdn.penilaian_quran',
+        compute='_compute_riwayat_tahsin_harian',
+        string='Riwayat Tahsin Harian',
+        readonly=True
+    )
+
+    # === TAB Riwayat Tahsin Ujian ===
+    riwayat_tahsin_ujian_ids = fields.Many2many(
+        'cdn.penilaian_quran',
+        compute='_compute_riwayat_tahsin_ujian',
+        string='Riwayat Tahsin Ujian',
         readonly=True
     )
 
@@ -232,6 +254,43 @@ class TahfidzTahsin(models.Model):
                 ('penilaian_id', 'in', penilaian_ids)
             ])
             rec.riwayat_hafalan_ids = riwayat_lines
+
+    @api.depends('siswa_id')
+    def _compute_riwayat_tahsin_harian(self):
+        """Compute riwayat tahsin harian dari penilaian yang sudah done dan memiliki data buku_harian_id"""
+        for rec in self:
+            if not rec.siswa_id:
+                rec.riwayat_tahsin_harian_ids = False
+                continue
+            # Ambil semua penilaian_quran yang done dan ada tahsin harian untuk santri ini
+            riwayat = self.env['cdn.penilaian_quran'].search([
+                ('siswa_id', '=', rec.siswa_id.id),
+                ('state', '=', 'done'),
+                ('buku_harian_id', '!=', False)
+            ])
+            rec.riwayat_tahsin_harian_ids = riwayat
+
+    @api.depends('siswa_id')
+    def _compute_riwayat_tahsin_ujian(self):
+        """Compute riwayat tahsin ujian dari penilaian yang sudah done dan memiliki data buku_ujian_id"""
+        for rec in self:
+            if not rec.siswa_id:
+                rec.riwayat_tahsin_ujian_ids = False
+                continue
+            # Ambil semua penilaian_quran yang done dan ada tahsin ujian untuk santri ini
+            riwayat = self.env['cdn.penilaian_quran'].search([
+                ('siswa_id', '=', rec.siswa_id.id),
+                ('state', '=', 'done'),
+                ('buku_ujian_id', '!=', False)
+            ])
+            rec.riwayat_tahsin_ujian_ids = riwayat
+
+    @api.depends('jenjang_display')
+    def _compute_is_jenjang_paud_tk(self):
+        """Compute boolean untuk mengecek apakah jenjang PAUD/TK"""
+        for rec in self:
+            jenjang = (rec.jenjang_display or '').lower()
+            rec.is_jenjang_paud_tk = jenjang in ['paud', 'tk', 'tk/ra']
 
     @api.depends('tahfidz_line_ids', 'tahfidz_line_ids.nilai_hafalan', 'tahfidz_line_ids.penilaian_id.jenjang_display')
     def _compute_last_nilai_predikat(self):
