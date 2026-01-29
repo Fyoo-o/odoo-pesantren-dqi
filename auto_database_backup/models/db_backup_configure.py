@@ -48,7 +48,7 @@ ONEDRIVE_SCOPE = ['offline_access openid Files.ReadWrite.All']
 MICROSOFT_GRAPH_END_POINT = "https://graph.microsoft.com"
 GOOGLE_AUTH_ENDPOINT = 'https://accounts.google.com/o/oauth2/auth'
 GOOGLE_TOKEN_ENDPOINT = 'https://accounts.google.com/o/oauth2/token'
-GOOGLE_API_BASE_URL = 'https://www.googleapis.com'  
+GOOGLE_API_BASE_URL = 'https://www.googleapis.com'
 
 
 class DbBackupConfigure(models.Model):
@@ -345,7 +345,7 @@ class DbBackupConfigure(models.Model):
         url_return = f"{base_url}/web#id={self.id}&action={action_id}&view_type=form&model=db.backup.configure"
         state = {
             'backup_config_id': self.id,
-            'url_return': url_return }
+            'url_return': url_return}
         params = {
             'response_type': 'code',
             'client_id': self.onedrive_client_key,
@@ -370,7 +370,7 @@ class DbBackupConfigure(models.Model):
         url_return = f"{base_url}/web#id={self.id}&action={action_id}&view_type=form&model=db.backup.configure"
         state = {
             'backup_config_id': self.id,
-            'url_return': url_return }
+            'url_return': url_return}
         params = {
             'response_type': 'code',
             'client_id': self.gdrive_client_key,
@@ -412,7 +412,8 @@ class DbBackupConfigure(models.Model):
                     'onedrive_token_validity': fields.Datetime.now() + timedelta(seconds=expires_in),
                 })
         except requests.HTTPError as error:
-            _logger.exception("Bad Microsoft OneDrive request: %s", error.response.content)
+            _logger.exception(
+                "Bad Microsoft OneDrive request: %s", error.response.content)
             raise error
 
     def get_onedrive_tokens(self, authorize_code):
@@ -440,7 +441,8 @@ class DbBackupConfigure(models.Model):
                     'onedrive_token_validity': fields.Datetime.now() + timedelta(seconds=expires_in),
                 })
         except requests.HTTPError as error:
-            _logger.exception("Bad Microsoft OneDrive request: %s", error.response.content)
+            _logger.exception(
+                "Bad Microsoft OneDrive request: %s", error.response.content)
             raise error
 
     def generate_gdrive_refresh_token(self):
@@ -453,7 +455,8 @@ class DbBackupConfigure(models.Model):
             'grant_type': 'refresh_token',
         }
         try:
-            res = requests.post(GOOGLE_TOKEN_ENDPOINT, data=data, headers=headers)
+            res = requests.post(GOOGLE_TOKEN_ENDPOINT,
+                                data=data, headers=headers)
             res.raise_for_status()
             response = res.json() if res.ok else {}
             if response:
@@ -486,7 +489,8 @@ class DbBackupConfigure(models.Model):
             'redirect_uri': f"{base_url}/google_drive/authentication",
         }
         try:
-            res = requests.post(GOOGLE_TOKEN_ENDPOINT, data=data, headers=headers)
+            res = requests.post(GOOGLE_TOKEN_ENDPOINT,
+                                data=data, headers=headers)
             res.raise_for_status()
             response = res.json() if res.ok else {}
             if response:
@@ -599,7 +603,8 @@ class DbBackupConfigure(models.Model):
                     backup_file = os.path.join(rec.backup_path,
                                                backup_filename)
                     f = open(backup_file, "wb")
-                    self.dump_data(rec.db_name, f, rec.backup_format, rec.backup_frequency)
+                    self.dump_data(
+                        rec.db_name, f, rec.backup_format, rec.backup_frequency)
                     f.close()
                     # Remove older backups
                     if rec.auto_remove:
@@ -611,7 +616,8 @@ class DbBackupConfigure(models.Model):
                             if backup_duration.days >= rec.days_to_remove:
                                 os.remove(file)
                     if rec.notify_user:
-                        mail_template_success.send_mail(rec.id, force_send=True)
+                        mail_template_success.send_mail(
+                            rec.id, force_send=True)
                 except Exception as e:
                     rec.generated_exception = e
                     _logger.info('FTP Exception: %s', e)
@@ -633,7 +639,7 @@ class DbBackupConfigure(models.Model):
                         ftp_server.cwd(rec.ftp_path)
                     with open(temp.name, "wb+") as tmp:
                         self.dump_data(rec.db_name, tmp,
-                                                rec.backup_format, rec.backup_frequency)
+                                       rec.backup_format, rec.backup_frequency)
                     ftp_server.storbinary('STOR %s' % backup_filename,
                                           open(temp.name, "rb"))
                     if rec.auto_remove:
@@ -643,7 +649,7 @@ class DbBackupConfigure(models.Model):
                                 ftp_server.sendcmd('MDTM ' + file)[4:],
                                 "%Y%m%d%H%M%S")
                             diff_days = (
-                                    fields.datetime.now() - create_time).days
+                                fields.datetime.now() - create_time).days
                             if diff_days >= rec.days_to_remove:
                                 ftp_server.delete(file)
                     ftp_server.quit()
@@ -668,7 +674,8 @@ class DbBackupConfigure(models.Model):
                     temp = tempfile.NamedTemporaryFile(
                         suffix='.%s' % rec.backup_format)
                     with open(temp.name, "wb+") as tmp:
-                        self.dump_data(rec.db_name, tmp, rec.backup_format, rec.backup_frequency)
+                        self.dump_data(rec.db_name, tmp,
+                                       rec.backup_format, rec.backup_frequency)
                     try:
                         sftp.chdir(rec.sftp_path)
                     except IOError as e:
@@ -705,7 +712,7 @@ class DbBackupConfigure(models.Model):
                         suffix='.%s' % rec.backup_format)
                     with open(temp.name, "wb+") as tmp:
                         self.dump_data(rec.db_name, tmp,
-                                                rec.backup_format, rec.backup_frequency)
+                                       rec.backup_format, rec.backup_frequency)
                     try:
                         headers = {
                             "Authorization": "Bearer %s" % rec.gdrive_access_token}
@@ -733,11 +740,11 @@ class DbBackupConfigure(models.Model):
                                     "https://www.googleapis.com/drive/v3/files/%s?fields=createdTime" %
                                     file['id'], headers=headers)
                                 create_time = file_date_req.json()[
-                                                  'createdTime'][
-                                              :19].replace('T', ' ')
+                                    'createdTime'][
+                                    :19].replace('T', ' ')
                                 diff_days = (
-                                        fields.datetime.now() - fields.datetime.strptime(
-                                    create_time, '%Y-%m-%d %H:%M:%S')).days
+                                    fields.datetime.now() - fields.datetime.strptime(
+                                        create_time, '%Y-%m-%d %H:%M:%S')).days
                                 if diff_days >= rec.days_to_remove:
                                     requests.delete(
                                         "https://www.googleapis.com/drive/v3/files/%s" %
@@ -765,7 +772,7 @@ class DbBackupConfigure(models.Model):
                     suffix='.%s' % rec.backup_format)
                 with open(temp.name, "wb+") as tmp:
                     self.dump_data(rec.db_name, tmp,
-                                            rec.backup_format, rec.backup_frequency)
+                                   rec.backup_format, rec.backup_frequency)
                 try:
                     dbx = dropbox.Dropbox(
                         app_key=rec.dropbox_client_key,
@@ -780,7 +787,7 @@ class DbBackupConfigure(models.Model):
                         expired_files = list(filter(
                             lambda fl: (fields.datetime.now() -
                                         fl.client_modified).days >=
-                                       rec.days_to_remove,
+                            rec.days_to_remove,
                             file_entries))
                         for file in expired_files:
                             dbx.files_delete_v2(file.path_display)
@@ -799,7 +806,8 @@ class DbBackupConfigure(models.Model):
                 temp = tempfile.NamedTemporaryFile(
                     suffix='.%s' % rec.backup_format)
                 with open(temp.name, "wb+") as tmp:
-                    self.dump_data(rec.db_name, tmp, rec.backup_format, rec.backup_frequency)
+                    self.dump_data(rec.db_name, tmp,
+                                   rec.backup_format, rec.backup_frequency)
                 headers = {
                     'Authorization': 'Bearer %s' % rec.onedrive_access_token,
                     'Content-Type': 'application/json'}
@@ -811,7 +819,8 @@ class DbBackupConfigure(models.Model):
                     upload_url = upload_session.json().get('uploadUrl')
                     requests.put(upload_url, data=temp.read())
                     if rec.auto_remove:
-                        list_url = MICROSOFT_GRAPH_END_POINT + "/v1.0/me/drive/items/%s/children" % rec.onedrive_folder_key
+                        list_url = MICROSOFT_GRAPH_END_POINT + \
+                            "/v1.0/me/drive/items/%s/children" % rec.onedrive_folder_key
                         response = requests.get(list_url, headers=headers)
                         files = response.json().get('value')
                         for file in files:
@@ -819,11 +828,11 @@ class DbBackupConfigure(models.Model):
                                 'T',
                                 ' ')
                             diff_days = (
-                                    fields.datetime.now() - fields.datetime.strptime(
-                                create_time, '%Y-%m-%d %H:%M:%S')).days
+                                fields.datetime.now() - fields.datetime.strptime(
+                                    create_time, '%Y-%m-%d %H:%M:%S')).days
                             if diff_days >= rec.days_to_remove:
                                 delete_url = MICROSOFT_GRAPH_END_POINT + "/v1.0/me/drive/items/%s" % \
-                                             file['id']
+                                    file['id']
                                 requests.delete(delete_url, headers=headers)
                     if rec.notify_user:
                         mail_template_success.send_mail(rec.id,
@@ -894,10 +903,10 @@ class DbBackupConfigure(models.Model):
                                 suffix='.%s' % rec.backup_format)
                             with open(temp.name, "wb+") as tmp:
                                 self.dump_data(rec.db_name, tmp,
-                                                        rec.backup_format, rec.backup_frequency)
+                                               rec.backup_format, rec.backup_frequency)
                             backup_file_name = temp.name
                             remote_file_path = f"/{folder_name}/{rec.db_name}_" \
-                                               f"{backup_time}.{rec.backup_format}"
+                                f"{backup_time}.{rec.backup_format}"
                             nc.put_file(remote_file_path, backup_file_name)
                         else:
                             # Dump the database to a temporary file
@@ -905,10 +914,10 @@ class DbBackupConfigure(models.Model):
                                 suffix='.%s' % rec.backup_format)
                             with open(temp.name, "wb+") as tmp:
                                 self.dump_data(rec.db_name, tmp,
-                                                        rec.backup_format, rec.backup_frequency)
+                                               rec.backup_format, rec.backup_frequency)
                             backup_file_name = temp.name
                             remote_file_path = f"/{folder_name}/{rec.db_name}_" \
-                                               f"{backup_time}.{rec.backup_format}"
+                                f"{backup_time}.{rec.backup_format}"
                             nc.put_file(remote_file_path, backup_file_name)
                 except Exception:
                     raise ValidationError('Please check connection')
@@ -965,10 +974,10 @@ class DbBackupConfigure(models.Model):
                                 suffix='.%s' % rec.backup_format)
                             with open(temp.name, "wb+") as tmp:
                                 self.dump_data(rec.db_name, tmp,
-                                                        rec.backup_format, rec.backup_frequency)
+                                               rec.backup_format, rec.backup_frequency)
                             backup_file_name = temp.name
                             remote_file_path = f"{rec.aws_folder_name}/{rec.db_name}_" \
-                                               f"{backup_time}.{rec.backup_format}"
+                                f"{backup_time}.{rec.backup_format}"
                             s3.Object(rec.bucket_file_name,
                                       remote_file_path).upload_file(
                                 backup_file_name)
@@ -985,23 +994,26 @@ class DbBackupConfigure(models.Model):
                         # If notify_user is enabled, email the user
                         # notifying them about the failed backup
                         if rec.notify_user:
-                            mail_template_failed.send_mail(rec.id, force_send=True)
+                            mail_template_failed.send_mail(
+                                rec.id, force_send=True)
 
     def dump_data(self, db_name, stream, backup_format, backup_frequency):
         """Dump database `db` into file-like object `stream` if stream is None
         return a file object with the dump. """
-        cron_user_id = self.env.ref(f'auto_database_backup.ir_cron_auto_db_backup_{backup_frequency}').user_id.id
+        cron_user_id = self.env.ref(
+            f'auto_database_backup.ir_cron_auto_db_backup_{backup_frequency}').user_id.id
         if cron_user_id != self.env.user.id:
             _logger.error(
                 'Unauthorized database operation. Backups should only be available from the cron job.')
-            raise ValidationError("Unauthorized database operation. Backups should only be available from the cron job.")
+            raise ValidationError(
+                "Unauthorized database operation. Backups should only be available from the cron job.")
         _logger.info('DUMP DB: %s format %s', db_name, backup_format)
         cmd = [find_pg_tool('pg_dump'), '--no-owner', db_name]
         env = exec_pg_environ()
         if backup_format == 'zip':
             with tempfile.TemporaryDirectory() as dump_dir:
                 filestore = odoo.tools.config.filestore(db_name)
-                cmd.insert(-1,'--file=' + os.path.join(dump_dir, 'dump.sql'))
+                cmd.insert(-1, '--file=' + os.path.join(dump_dir, 'dump.sql'))
                 subprocess.run(cmd, env=env, stdout=subprocess.DEVNULL,
                                stderr=subprocess.STDOUT, check=True)
                 if os.path.exists(filestore):
@@ -1015,16 +1027,16 @@ class DbBackupConfigure(models.Model):
                     odoo.tools.osutil.zip_dir(dump_dir, stream,
                                               include_dir=False,
                                               fnct_sort=lambda
-                                                  file_name: file_name != 'dump.sql')
+                                              file_name: file_name != 'dump.sql')
                 else:
                     t = tempfile.TemporaryFile()
                     odoo.tools.osutil.zip_dir(dump_dir, t, include_dir=False,
                                               fnct_sort=lambda
-                                                  file_name: file_name != 'dump.sql')
+                                              file_name: file_name != 'dump.sql')
                     t.seek(0)
                     return t
         else:
-            cmd.insert(-1,'--format=c')
+            cmd.insert(-1, '--format=c')
             process = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE)
             stdout, _ = process.communicate()
             if stream:
@@ -1034,7 +1046,8 @@ class DbBackupConfigure(models.Model):
 
     def _dump_db_manifest(self, cr):
         """ This function generates a manifest dictionary for database dump."""
-        pg_version = "%d.%d" % divmod(cr._obj.connection.server_version / 100, 100)
+        pg_version = "%d.%d" % divmod(
+            cr._obj.connection.server_version / 100, 100)
         cr.execute(
             "SELECT name, latest_version FROM ir_module_module WHERE state = 'installed'")
         modules = dict(cr.fetchall())

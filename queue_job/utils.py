@@ -13,7 +13,8 @@ def must_run_without_delay(env):
     :param env: `odoo.api.Environment` instance
     """
     if os.getenv("QUEUE_JOB__NO_DELAY"):
-        _logger.warning("`QUEUE_JOB__NO_DELAY` env var found. NO JOB scheduled.")
+        _logger.warning(
+            "`QUEUE_JOB__NO_DELAY` env var found. NO JOB scheduled.")
         return True
 
     if env.context.get("queue_job__no_delay"):

@@ -69,7 +69,7 @@ export class ProgressMenu extends Component {
                 document.querySelector('.o_progress_systray_item button.dropdown-toggle');
             if (globalDropdown &&
                 globalDropdown.closest('.o_progress_systray_item').querySelector('i.fa-refresh')) {
-                const clickEvent = new Event('click', {bubbles: true});
+                const clickEvent = new Event('click', { bubbles: true });
                 globalDropdown.dispatchEvent(clickEvent);
             }
         }, 200);

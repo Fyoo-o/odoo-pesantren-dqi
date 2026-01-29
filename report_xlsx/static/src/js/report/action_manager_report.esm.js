@@ -1,7 +1,7 @@
 /** @odoo-module **/
 
-import {download} from "@web/core/network/download";
-import {registry} from "@web/core/registry";
+import { download } from "@web/core/network/download";
+import { registry } from "@web/core/registry";
 
 registry
     .category("ir.actions.report handlers")
@@ -42,8 +42,8 @@ registry
             const onClose = options.onClose;
             if (action.close_on_report_download) {
                 return env.services.action.doAction(
-                    {type: "ir.actions.act_window_close"},
-                    {onClose}
+                    { type: "ir.actions.act_window_close" },
+                    { onClose }
                 );
             } else if (onClose) {
                 onClose();

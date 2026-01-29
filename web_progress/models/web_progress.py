@@ -39,6 +39,7 @@ class RestoreEnvToComputeToWrite(Exception):
     Used to restore the towrite and to compute of an old env
     """
 
+
 class WebProgress(models.TransientModel):
     _name = 'web.progress'
     _description = "Operation Progress"
@@ -118,7 +119,8 @@ class WebProgress(models.TransientModel):
         if code:
             domain.append(('code', '=', code))
         if domain:
-            progress_id = self.search(domain, order='create_date DESC,recur_depth DESC', limit=1)
+            progress_id = self.search(
+                domain, order='create_date DESC,recur_depth DESC', limit=1)
         else:
             progress_id = self.env[self._name]
         # check progress of parent operations
@@ -171,8 +173,9 @@ class WebProgress(models.TransientModel):
         GROUP BY code
         """.format(
             recency=recency or 0,
-            user_id=not self.is_progress_admin() and "AND create_uid = {user_id}"
-                .format(
+            user_id=not self.is_progress_admin(
+            ) and "AND create_uid = {user_id}"
+            .format(
                 user_id=self.env.user.id,
             ) or '')
         # superuser has right to see (and cancel) progress of everybody
@@ -218,7 +221,7 @@ class WebProgress(models.TransientModel):
             # cache user name at the beginning of the base-level progress
                 user_name[code] = self.env.user.name
         params = dict(done=0, progress=0.0, state='ongoing', code=code, total=total, msg=msg, recur_depth=recur_depth,
-                          cancellable=cancellable, log_level=log_level)
+                      cancellable=cancellable, log_level=log_level)
         precise_code = self._get_precise_code(params)
         with lock:
             progress_data[precise_code] = dict(params)
@@ -266,7 +269,8 @@ class WebProgress(models.TransientModel):
         try:
             with Registry(self.env.cr.dbname).cursor() as new_cr:
                 # Create a new environment with a new cursor
-                new_env = api.Environment(new_cr, self.env.uid, self.env.context)
+                new_env = api.Environment(
+                    new_cr, self.env.uid, self.env.context)
                 # clear whatever is to be computed or written
                 # it will be restored later on
                 new_env.clear()
@@ -276,7 +280,8 @@ class WebProgress(models.TransientModel):
                 # notify bus
                 if notify:
                     progress_notif = progress_obj.get_progress(code)
-                    new_env['bus.bus']._sendone('web_progress', 'web_progress', progress_notif)
+                    new_env['bus.bus']._sendone(
+                        'web_progress', 'web_progress', progress_notif)
                 # isolated transaction to commit
                 new_env.cr.commit()
                 # restore main transaction's data
@@ -348,9 +353,12 @@ class WebProgress(models.TransientModel):
             if pogress_total > 0:
                 time_per_percent = (time_now - first_ts) / pogress_total
                 progress_left = 100.0 - pogress_total
-                time_left = self._format_time(progress_left * time_per_percent.total_seconds())
-                time_total = self._format_time(100.0 * time_per_percent.total_seconds())
-                time_elapsed = self._format_time((time_now - first_ts).total_seconds())
+                time_left = self._format_time(
+                    progress_left * time_per_percent.total_seconds())
+                time_total = self._format_time(
+                    100.0 * time_per_percent.total_seconds())
+                time_elapsed = self._format_time(
+                    (time_now - first_ts).total_seconds())
         return time_left, time_total, time_elapsed
 
     def _get_progress_total(self, params):
@@ -368,7 +376,8 @@ class WebProgress(models.TransientModel):
                 params_prec = progress_data.get(precise_code)
             if not params_prec or 'done' not in params_prec or 'total' not in params_prec or params_prec['total'] == 0:
                 continue
-            progress_total += float(params_prec['progress']) * progress_depth / 100
+            progress_total += float(params_prec['progress']
+                                    ) * progress_depth / 100
             progress_depth /= params_prec['total']
         return progress_total
 
@@ -411,7 +420,8 @@ class WebProgress(models.TransientModel):
                 first_report_time[code] = time_now
             last_ts = last_report_time.get(code)
             if not last_ts:
-                last_ts = (time_now - timedelta(seconds=self._progress_period_secs + 1))
+                last_ts = (
+                    time_now - timedelta(seconds=self._progress_period_secs + 1))
             progress_data[precise_code] = dict(params)
             progress_total = self._get_progress_total(params)
             self._set_attrib_for_all(params, 'progress_total', progress_total)
@@ -421,8 +431,10 @@ class WebProgress(models.TransientModel):
             if params.get('cancellable', True):
                 user_id = self._check_cancelled(params)
                 if user_id:
-                    raise CancelledProgress(_("Operation has been cancelled by") + " " + user_id.sudo().name)
-            time_left, time_total, time_elapsed = self._get_time_left(params, time_now, first_ts)
+                    raise CancelledProgress(
+                        _("Operation has been cancelled by") + " " + user_id.sudo().name)
+            time_left, time_total, time_elapsed = self._get_time_left(
+                params, time_now, first_ts)
             if time_left:
                 self._set_attrib_for_all(params, 'time_left', time_left)
             if time_total:
@@ -507,15 +519,20 @@ class WebProgress(models.TransientModel):
                 logger_cmd = _logger.info
             if first_line and "progress_total" in my_progress_data:
                 log_message_pre = \
-                    "Progress {code} total {progress_total:.02f}%".format(**my_progress_data)
+                    "Progress {code} total {progress_total:.02f}%".format(
+                        **my_progress_data)
                 if "time_left" in my_progress_data:
-                    log_message_pre += ", est. time left {}".format(my_progress_data.get('time_left'))
+                    log_message_pre += ", est. time left {}".format(
+                        my_progress_data.get('time_left'))
                 if "time_total" in my_progress_data:
-                    log_message_pre += ", est. time total {}".format(my_progress_data.get('time_total'))
+                    log_message_pre += ", est. time total {}".format(
+                        my_progress_data.get('time_total'))
                 if "time_elapsed" in my_progress_data:
-                    log_message_pre += ", elapsed time {}".format(my_progress_data.get('time_elapsed'))
+                    log_message_pre += ", elapsed time {}".format(
+                        my_progress_data.get('time_elapsed'))
                 logger_cmd(log_message_pre)
             logger_cmd(log_message)
-            vals_list.append(self._report_progress_prepare_vals(my_progress_data))
+            vals_list.append(
+                self._report_progress_prepare_vals(my_progress_data))
             first_line = False
         self._create_progress(vals_list)

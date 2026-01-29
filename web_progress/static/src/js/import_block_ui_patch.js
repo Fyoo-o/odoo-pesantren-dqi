@@ -3,7 +3,7 @@
 import { ImportBlockUI } from "@base_import/import_block_ui";
 import { patch } from "@web/core/utils/patch";
 import { useService } from "@web/core/utils/hooks";
-import {useState, xml} from "@odoo/owl";
+import { useState, xml } from "@odoo/owl";
 import { ProgressBar } from "./progress_bar";
 
 

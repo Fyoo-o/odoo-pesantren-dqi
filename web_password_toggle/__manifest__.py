@@ -16,7 +16,7 @@
         Usage in any view:
         <field name="password_field" widget="password_toggle"/>
     """,
-    'depends': ['web','hr'],
+    'depends': ['web', 'hr'],
     'assets': {
         'web.assets_backend': [
             'web_password_toggle/static/src/js/password_toggle.js',

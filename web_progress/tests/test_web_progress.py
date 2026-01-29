@@ -16,7 +16,8 @@ class WebProgressTest(common.TransactionCase):
         """
         Check that all global progress data is empty after tests
         """
-        self.assertFalse(last_report_time, msg="Global variable last_report_time shall be empty by now")
+        self.assertFalse(
+            last_report_time, msg="Global variable last_report_time shall be empty by now")
 
     def setUp(self):
         super(WebProgressTest, self).setUp()
@@ -28,7 +29,8 @@ class WebProgressTest(common.TransactionCase):
         for idx in range(20):
             self.partner_vals[idx] = dict(name='Test{}'.format(idx),
                                           email='email{}@test.me'.format(idx))
-            self.partner_ids |= self.partner_obj.create(dict(self.partner_vals[idx]))
+            self.partner_ids |= self.partner_obj.create(
+                dict(self.partner_vals[idx]))
         self.addCleanup(self.check_all_progress_data_empty)
 
     def _check_web_progress_iter_recordset(self, total, recur_level=0):
@@ -38,20 +40,27 @@ class WebProgressTest(common.TransactionCase):
         """
         progress_iter = self.partner_ids[:total].with_progress(msg="Total {} Level {}".format(total,
                                                                                               recur_level))
-        self.assertEqual(len(progress_iter), total, msg="Length shall be accessible")
+        self.assertEqual(len(progress_iter), total,
+                         msg="Length shall be accessible")
         if total > 0:
-            self.assertEqual(progress_iter[0], self.partner_ids[0], msg="Indexing shall be accessible")
-            self.assertEqual(progress_iter._name, self.partner_ids._name, msg="Attributes shall be accessible")
+            self.assertEqual(
+                progress_iter[0], self.partner_ids[0], msg="Indexing shall be accessible")
+            self.assertEqual(progress_iter._name, self.partner_ids._name,
+                             msg="Attributes shall be accessible")
         if total == len(self.partner_ids):
-            self.assertEqual(progress_iter.ids, self.partner_ids.ids, msg="Attributes shall be accessible")
+            self.assertEqual(progress_iter.ids, self.partner_ids.ids,
+                             msg="Attributes shall be accessible")
         count = 0
-        for idx, partner_id in zip(range(total),progress_iter):
-            self.assertEqual(partner_id.name, self.partner_vals[idx]['name'].format(idx), msg="Wrong name")
-            self.assertEqual(partner_id.email, self.partner_vals[idx]['email'].format(idx), msg="Wrong email")
+        for idx, partner_id in zip(range(total), progress_iter):
+            self.assertEqual(
+                partner_id.name, self.partner_vals[idx]['name'].format(idx), msg="Wrong name")
+            self.assertEqual(partner_id.email, self.partner_vals[idx]['email'].format(
+                idx), msg="Wrong email")
             count += 1
             if recur_level > 0:
                 self._check_web_progress_iter_recordset(total, recur_level - 1)
-        self.assertEqual(count, total, msg="Not all elements are yielded from a collection")
+        self.assertEqual(
+            count, total, msg="Not all elements are yielded from a collection")
 
     def _check_web_progress_iter_recordset_many(self, recur_level=0):
         """
@@ -59,9 +68,11 @@ class WebProgressTest(common.TransactionCase):
         :param recur_level: recursion level of iterations
         """
         # iterate all partners
-        self._check_web_progress_iter_recordset(len(self.partner_ids), recur_level)
+        self._check_web_progress_iter_recordset(
+            len(self.partner_ids), recur_level)
         # iterate half of all partners
-        self._check_web_progress_iter_recordset(round(len(self.partner_ids)/2), recur_level)
+        self._check_web_progress_iter_recordset(
+            round(len(self.partner_ids)/2), recur_level)
         # iterate again all partners (no recursion)
         self._check_web_progress_iter_recordset(len(self.partner_ids))
         # iterate one partner
@@ -76,7 +87,8 @@ class WebProgressTest(common.TransactionCase):
         code = self.partner_ids._context.get('progress_code', None)
         self.assertIsNotNone(code, msg="Progress code shall be in the context")
         cancelled = self.web_progress_obj._check_cancelled(dict(code=code))
-        self.assertTrue(cancelled, msg="Currect operation should have been cancelled")
+        self.assertTrue(
+            cancelled, msg="Currect operation should have been cancelled")
 
     def test_web_progress_iter_without_web_progress_code(self):
         """
@@ -90,7 +102,8 @@ class WebProgressTest(common.TransactionCase):
         Check that web_progress_iter works correctly with a progress_code in context
         """
         progress_code = str(uuid.uuid4())
-        self.partner_ids = self.partner_ids.with_context(progress_code=progress_code)
+        self.partner_ids = self.partner_ids.with_context(
+            progress_code=progress_code)
         self._check_web_progress_iter_recordset_many(0)
         self._check_web_progress_iter_recordset_many(1)
 
@@ -99,7 +112,8 @@ class WebProgressTest(common.TransactionCase):
         Check that cancel request is respected by web_progress_iter
         """
         progress_code = str(uuid.uuid4())
-        self.partner_ids = self.partner_ids.with_context(progress_code=progress_code)
+        self.partner_ids = self.partner_ids.with_context(
+            progress_code=progress_code)
         self._check_web_progress_iter_recordset_many(0)
         self.partner_ids.web_progress_cancel()
         self._check_web_progress_cancelled()
@@ -113,7 +127,8 @@ class WebProgressTest(common.TransactionCase):
         Check web_progress_percent
         """
         progress_code = str(uuid.uuid4())
-        self.partner_ids = self.partner_ids.with_context(progress_code=progress_code)
+        self.partner_ids = self.partner_ids.with_context(
+            progress_code=progress_code)
         self.partner_ids.web_progress_percent(0, "Start")
         self.partner_ids.web_progress_percent(50, "Middle")
         self.partner_ids.web_progress_percent(100, "End")
@@ -130,7 +145,8 @@ class WebProgressTestAllProgress(common.TransactionCase):
         Verify if the parameter is properly escaped in the internal SQL query.
         """
         progress_code = str(uuid.uuid4())
-        partner_obj = self.env['res.partner'].with_context(progress_code=progress_code)
+        partner_obj = self.env['res.partner'].with_context(
+            progress_code=progress_code)
         partner_obj.web_progress_percent(0, "Start")
         with registry(self.env.cr.dbname).cursor() as new_cr:
             # Create a new environment with a new cursor

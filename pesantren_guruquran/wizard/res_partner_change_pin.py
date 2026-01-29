@@ -20,9 +20,5 @@ class ResPartnerChangePin(models.TransientModel):
     def change_pin(self):
         Partner = self.env['res.partner'].browse(self._get_partner_id())
         Partner.write({
-            'wallet_pin':self.wallet_pin
+            'wallet_pin': self.wallet_pin
         })
-
-
-
-

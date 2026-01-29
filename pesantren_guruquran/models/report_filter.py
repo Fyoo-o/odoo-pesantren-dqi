@@ -1,10 +1,12 @@
 from odoo import models, fields, api
 
+
 class ReportFilterWizard(models.TransientModel):
     _name = 'report.filter.wizard'
     _description = 'Wizard untuk memfilter data berdasarkan bulan'
 
-    start_month = fields.Integer(string='Bulan Mulai', required=True, default=5)
+    start_month = fields.Integer(
+        string='Bulan Mulai', required=True, default=5)
     end_month = fields.Integer(string='Bulan Akhir', required=True, default=10)
 
     @api.constrains('start_month', 'end_month')
@@ -13,7 +15,8 @@ class ReportFilterWizard(models.TransientModel):
             if not (1 <= record.start_month <= 12) or not (1 <= record.end_month <= 12):
                 raise ValueError("Bulan harus di antara 1 hingga 12.")
             if record.start_month > record.end_month:
-                raise ValueError("Bulan mulai tidak boleh lebih besar dari bulan akhir.")
+                raise ValueError(
+                    "Bulan mulai tidak boleh lebih besar dari bulan akhir.")
 
     def action_print_report(self):
         """
@@ -23,7 +26,7 @@ class ReportFilterWizard(models.TransientModel):
         siswa_records = self.env['cdn.siswa'].search([
             ('bulan', '>=', self.start_month),
             ('bulan', '<=', self.end_month),
-        ]) 
+        ])
 
         # Panggil method `action_print_sertifikat` untuk setiap siswa yang ditemukan
         actions = []
@@ -36,4 +39,5 @@ class ReportFilterWizard(models.TransientModel):
         if actions:
             return actions[0]  # Contoh: Mengembalikan action pertama
         else:
-            raise ValueError("Tidak ada data siswa yang sesuai dengan filter bulan.")
+            raise ValueError(
+                "Tidak ada data siswa yang sesuai dengan filter bulan.")

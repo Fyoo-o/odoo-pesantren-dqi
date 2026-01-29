@@ -11,7 +11,8 @@ class IrActionsReport(models.Model):
         """
         if 'progress_code' in self._context and values and 'docs' in values:
             new_values = values.copy()
-            new_values['docs'] = self.web_progress_iter(values.get('docs'), "Generating HTML")
+            new_values['docs'] = self.web_progress_iter(
+                values.get('docs'), "Generating HTML")
         else:
             new_values = values
         return super(IrActionsReport, self)._render_template(template, values=new_values)

@@ -50,10 +50,12 @@ class ReportAction(models.Model):
         if not self.attachment:
             return
         if len(docids) != 1:  # unlike PDFs, here we don't have multiple streams
-            _logger.warning(f"{self.name}: No records to save attachments onto.")
+            _logger.warning(
+                f"{self.name}: No records to save attachments onto.")
             return
         record = self.env[self.model].browse(docids)
-        attachment_name = safe_eval(self.attachment, {"object": record, "time": time})
+        attachment_name = safe_eval(
+            self.attachment, {"object": record, "time": time})
         if not attachment_name:
             return  # same as for PDFs, get out silently when name fails
         attachment_values = {

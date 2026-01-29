@@ -5,12 +5,13 @@
         <field name="arch" type="xml">
             <form string="Filter Report">
                 <group>
-                    <field name="start_month"/>
-                    <field name="end_month"/>
+                    <field name="start_month" />
+                    <field name="end_month" />
                 </group>
                 <footer>
-                    <button string="Print Report" type="object" name="action_print_report" class="btn-primary"/>
-                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    <button string="Print Report" type="object" name="action_print_report"
+                        class="btn-primary" />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
                 </footer>
             </form>
         </field>

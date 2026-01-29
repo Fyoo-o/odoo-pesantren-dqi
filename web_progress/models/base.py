@@ -133,9 +133,11 @@ class Base(models.AbstractModel):
         Add progress reporting to collection used in base_import.import
         It adds progress reporting to all standard imports and additionally makes them cancellable
         """
-        extracted = super(Base, self)._extract_records(fields_, data, log=log, limit=limit)
+        extracted = super(Base, self)._extract_records(
+            fields_, data, log=log, limit=limit)
         if 'progress_code' in self._context:
-            total = min(limit, len(data) - len(self._context.get('skip_records', [])))
+            total = min(limit, len(data) -
+                        len(self._context.get('skip_records', [])))
             return self.web_progress_iter(extracted, _("importing to {}").
                                           format(self._description.lower()), total=total, cancellable=True,
                                           log_level="info")
@@ -153,13 +155,14 @@ class Base(models.AbstractModel):
                 from the cache after it's been iterated in full
                 """
                 for idx in self.web_progress_iter(range(0, len(rs), 1000), _("exporting batches of 1000 lines") +
-                                                                           " ({})".format(self._description)):
+                                                  " ({})".format(self._description)):
                     sub = rs[idx:idx + 1000]
                     yield sub
                     sub.invalidate_recordset()
 
             ret = []
             for sub in splittor(self):
-                ret += super(Base, sub)._export_rows(fields, _is_toplevel_call=_is_toplevel_call)
+                ret += super(Base, sub)._export_rows(fields,
+                                                     _is_toplevel_call=_is_toplevel_call)
             return ret
         return super(Base, self)._export_rows(fields, _is_toplevel_call=_is_toplevel_call)

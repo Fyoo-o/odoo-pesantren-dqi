@@ -209,7 +209,8 @@ class Job:
         """
         stored = cls.db_records_from_uuids(env, [job_uuid])
         if not stored:
-            raise NoSuchJobError(f"Job {job_uuid} does no longer exist in the storage.")
+            raise NoSuchJobError(
+                f"Job {job_uuid} does no longer exist in the storage.")
         return cls._load_from_db_record(stored)
 
     @classmethod
@@ -329,7 +330,8 @@ class Job:
         job_.identity_key = stored.identity_key
         job_.worker_pid = stored.worker_pid
 
-        job_.__depends_on_uuids.update(stored.dependencies.get("depends_on", []))
+        job_.__depends_on_uuids.update(
+            stored.dependencies.get("depends_on", []))
         job_.__reverse_depends_on_uuids.update(
             stored.dependencies.get("reverse_depends_on", [])
         )
@@ -416,7 +418,8 @@ class Job:
         self.job_model_name = "queue.job"
 
         self.job_config = (
-            self.env["queue.job.function"].sudo().job_config(self.job_function_name)
+            self.env["queue.job.function"].sudo(
+            ).job_config(self.job_function_name)
         )
 
         self.state = PENDING
@@ -505,7 +508,8 @@ class Job:
                 # traceback and message:
                 # http://blog.ianbicking.org/2007/09/12/re-raising-exceptions/
                 new_exc = FailedJobError(
-                    "Max. retries (%d) reached: %s" % (self.max_retries, value or type_)
+                    "Max. retries (%d) reached: %s" % (
+                        self.max_retries, value or type_)
                 )
                 raise new_exc from err
             raise
@@ -549,7 +553,8 @@ class Job:
 
     def cancel_dependent_jobs(self):
         sql = self._get_common_dependent_jobs_query()
-        self.env.cr.execute(sql, (CANCELLED, self.uuid, CANCELLED, WAIT_DEPENDENCIES))
+        self.env.cr.execute(
+            sql, (CANCELLED, self.uuid, CANCELLED, WAIT_DEPENDENCIES))
         self.env["queue.job"].invalidate_model(["state"])
 
     def store(self):
@@ -637,7 +642,8 @@ class Job:
 
         vals_from_model = self._store_values_from_model()
         # Sanitize values: make sure you cannot screw core values
-        vals_from_model = {k: v for k, v in vals_from_model.items() if k not in vals}
+        vals_from_model = {k: v for k,
+                           v in vals_from_model.items() if k not in vals}
         vals.update(vals_from_model)
         return vals
 
