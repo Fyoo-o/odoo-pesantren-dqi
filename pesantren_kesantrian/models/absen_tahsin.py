@@ -2,11 +2,12 @@ from odoo import api, fields, models
 from datetime import date, datetime
 from odoo.exceptions import UserError
 
-class AbsenTahsinQuran(models.Model):
-    _name           = 'cdn.absen_tahsin_quran'
-    _description    = 'Tabel Absen Tahsin Quran'
 
-    #get domain 
+class AbsenTahsinQuran(models.Model):
+    _name = 'cdn.absen_tahsin_quran'
+    _description = 'Tabel Absen Tahsin Quran'
+
+    # get domain
     def _domain_halaqoh_id(self):
         tahun_ajaran = self.env.user.company_id.tahun_ajaran_aktif.id
         user = self.env.user
@@ -17,7 +18,8 @@ class AbsenTahsinQuran(models.Model):
                 ('fiscalyear_id', '=', tahun_ajaran)
             ]
     # Cari employee dari user
-        employee = self.env['hr.employee'].search([('user_id', '=', user.id)], limit=1)
+        employee = self.env['hr.employee'].search(
+            [('user_id', '=', user.id)], limit=1)
 
         if employee:
             # Guru Qur’an: hanya halaqoh yang dia pegang atau dia jadi pengganti
@@ -33,30 +35,38 @@ class AbsenTahsinQuran(models.Model):
 
     def _get_domain_guru(self):
         return [
-            ('jns_pegawai', 'in', ['guruquran','guru,guruquran', 'musyrif,guruquran', 'musyrif,guru,guruquran'])
+            ('jns_pegawai', 'in', [
+             'guruquran', 'guru,guruquran', 'musyrif,guruquran', 'musyrif,guru,guruquran'])
         ]
 
     def _get_default_guru(self):
         user = self.env.user
         if user.has_group('pesantren_guru.group_guru_staff'):
-            user = self.env['hr.employee'].search([('user_id', '=', user.id)])  
+            user = self.env['hr.employee'].search([('user_id', '=', user.id)])
             return user.id
         return False
 
-
-    name            = fields.Date(string='Tgl Absen', required=True, default=fields.Date.context_today, states={'Done': [('readonly', True)]})
-    halaqoh_id      = fields.Many2one('cdn.halaqoh', string='Halaqoh', required=True, domain=_domain_halaqoh_id, states={'Done': [('readonly', True)]})
-    ustadz_id       = fields.Many2one('hr.employee', string='Ustadz',domain=_get_domain_guru, default=_get_default_guru ,required=True, states={'Done': [('readonly', True)]})
-    fiscalyear_id   = fields.Many2one('cdn.ref_tahunajaran', string='Tahun Ajaran', readonly=True, default=lambda self:self.env.user.company_id.tahun_ajaran_aktif.id, states={'Done': [('readonly', True)]})
-    absen_ids       = fields.One2many('cdn.absen_tahsin_quran_line', 'absen_id', string='Absen', states={'Done': [('readonly', True)]})
-    state           = fields.Selection([
+    name = fields.Date(string='Tgl Absen', required=True,
+                       default=fields.Date.context_today, states={'Done': [('readonly', True)]})
+    halaqoh_id = fields.Many2one('cdn.halaqoh', string='Halaqoh', required=True,
+                                 domain=_domain_halaqoh_id, states={'Done': [('readonly', True)]})
+    ustadz_id = fields.Many2one('hr.employee', string='Ustadz', domain=_get_domain_guru,
+                                default=_get_default_guru, required=True, states={'Done': [('readonly', True)]})
+    fiscalyear_id = fields.Many2one('cdn.ref_tahunajaran', string='Tahun Ajaran', readonly=True,
+                                    default=lambda self: self.env.user.company_id.tahun_ajaran_aktif.id, states={'Done': [('readonly', True)]})
+    absen_ids = fields.One2many('cdn.absen_tahsin_quran_line', 'absen_id', string='Absen', states={
+                                'Done': [('readonly', True)]})
+    state = fields.Selection([
         ('Draft', 'Draft'),
         ('Proses', 'Proses'),
-        ('Done','Selesai'),
+        ('Done', 'Selesai'),
     ], default='Draft', string='Status')
-    penanggung_jawab_id = fields.Many2one('hr.employee', string='Penanggung Jawab', related='halaqoh_id.penanggung_jawab_id', readonly=True, store=True)
-    sesi_id         = fields.Many2one('cdn.sesi_tahsin', string='Sesi',states={'Done': [('readonly', True)]})
-    keterangan      = fields.Char(string='Keterangan')
+    penanggung_jawab_id = fields.Many2one(
+        'hr.employee', string='Penanggung Jawab', related='halaqoh_id.penanggung_jawab_id', readonly=True, store=True)
+    sesi_id = fields.Many2one('cdn.sesi_tahsin', string='Sesi', states={
+                              'Done': [('readonly', True)]})
+    keterangan = fields.Char(string='Keterangan')
+
     def action_proses(self):
         self.state = 'Proses'
         for absen in self.absen_ids:
@@ -74,7 +84,6 @@ class AbsenTahsinQuran(models.Model):
     def action_confirm(self):
         self.state = 'Done'
 
-
     @staticmethod
     def format_datetime_indonesia(dt):
         bulan_dict = {
@@ -89,13 +98,13 @@ class AbsenTahsinQuran(models.Model):
             jam_menit = dt.strftime('%H:%M')
             nama_bulan = bulan_dict.get(bulan_angka, bulan_angka)
             return f"{hari} {nama_bulan} {tahun} {jam_menit}"
-        return 'Tidak tercatat'    
+        return 'Tidak tercatat'
 
     @api.onchange('halaqoh_id')
     def _onchange_halaqoh_id(self):
         halaqoh = self.halaqoh_id
         if halaqoh:
-            absen_ids = [(5, 0, 0)] 
+            absen_ids = [(5, 0, 0)]
             for siswa in halaqoh.siswa_ids:
 
                 permission = self.env['cdn.perijinan'].search([
@@ -105,12 +114,14 @@ class AbsenTahsinQuran(models.Model):
 
                 if permission:
                     keperluan_name = permission.keperluan.name if permission.keperluan else 'Tidak ada keterangan'
-                    waktu_keluar = self.format_datetime_indonesia(permission.waktu_keluar) if permission.waktu_keluar else 'Tidak tercatat'
-                    message = f"Santri Keluar pada {waktu_keluar}, karena {keperluan_name}".encode()
+                    waktu_keluar = self.format_datetime_indonesia(
+                        permission.waktu_keluar) if permission.waktu_keluar else 'Tidak tercatat'
+                    message = f"Santri Keluar pada {waktu_keluar}, karena {keperluan_name}".encode(
+                    )
 
-                    absen_ids.append((0,0, {
+                    absen_ids.append((0, 0, {
                         'siswa_id': siswa.id,
-                        'kehadiran' : 'keluar',
+                        'kehadiran': 'keluar',
                         'keterangan': message,
                     }))
 
@@ -119,12 +130,12 @@ class AbsenTahsinQuran(models.Model):
                         'siswa_id': siswa.id,
                         'kehadiran': 'Hadir'
                     }))
-        
+
             ustadz = halaqoh.penanggung_jawab_id | halaqoh.pengganti_ids
-            
+
             if not self.env.user.has_group('pesantren_kesantrian.group_kesantrian_manager'):
                 ustadz = ustadz.filtered(lambda x: x.user_id == self.env.user)
-            
+
             return {
                 'domain': {
                     'ustadz_id': [('id', 'in', ustadz.ids)]
@@ -134,29 +145,29 @@ class AbsenTahsinQuran(models.Model):
                     'ustadz_id': ustadz[0].id if ustadz else False
                 }
             }
-    
+
     @api.model
     def default_get(self, fields_tree):
-        tahun_ajaran = self.env['res.company'].search([('id', '=', self.env.ref('base.main_company').id)]).tahun_ajaran_aktif.id
+        tahun_ajaran = self.env['res.company'].search(
+            [('id', '=', self.env.ref('base.main_company').id)]).tahun_ajaran_aktif.id
         if not tahun_ajaran:
             raise models.UserError('Tahun ajaran belum di set')
         return super().default_get(fields_tree)
-    
-    
+
     # @api.model
     # def _search(self, domain, offset=0, limit=None, order=None, count=False):
     #     # Handle empty  domain
     #     if not domain:
     #         return super(AbsenTahsinQuran, self)._search(domain, offset=offset, limit=limit, order=order, )
-        
+
     #     # Periksa domain untuk mencegah error
     #     if isinstance(domain, list):
-            
+
     #         new_domain = []
     #         for item in domain:
     #             if isinstance(item, (list, tuple)) and len(item) == 3:
     #                 field, operator, value = item
-                    
+
     #                 # Handle selection fields untuk pencarian label dan bukan hanya value
     #                 if field == 'state' and operator == 'ilike' and value:
     #                     if 'draft' in value.lower() or 'Draft' in value.lower() or 'draf' in value.lower():
@@ -165,23 +176,23 @@ class AbsenTahsinQuran(models.Model):
     #                         new_domain.append(('state', '=', 'Proses'))
     #                     elif 'Done' in value.lower() or 'selesai' in value.lower():
     #                         new_domain.append(('state', '=', 'Done'))
-    #                     else: 
+    #                     else:
     #                         new_domain.append(item)
-                            
+
     #                 # Handle tanggal
     #                 elif field in ['name'] and operator == 'ilike' and value:
     #                     try:
     #                         # Coba parsing format tanggal yang umum
     #                         date_formats = ['%d/%m/%Y', '%Y-%m-%d', '%d-%m-%Y', '%d.%m.%Y']
     #                         parsed_date = None
-                            
+
     #                         for fmt in date_formats:
     #                             try:
     #                                 parsed_date = datetime.strptime(value, fmt)
     #                                 break
     #                             except ValueError:
     #                                 continue
-                            
+
     #                         if parsed_date:
     #                             start_date = datetime.combine(parsed_date.date(), datetime.min.time())
     #                             end_date = datetime.combine(parsed_date.date(), datetime.max.time())
@@ -194,18 +205,18 @@ class AbsenTahsinQuran(models.Model):
     #                     except Exception:
     #                         # Fallback ke pencarian biasa jika ada error
     #                         new_domain.append(item)
-                    
+
     #                 else:
     #                     new_domain.append(item)
     #             else:
     #                 new_domain.append(item)
-            
+
     #         domain = new_domain
-            
+
     #         # Filter hanya domain valid (list/tuple dengan panjang 3)
     #         # valid_domain = []
     #         # or_count = 0
-            
+
     #         # for item in domain:
     #         #     if isinstance(item, (list, tuple)) and len(item) == 3:
     #         #         valid_domain.append(item)
@@ -213,18 +224,18 @@ class AbsenTahsinQuran(models.Model):
     #         #         if item == '|':
     #         #             or_count += 1
     #         #         valid_domain.append(item)
-            
+
     #         # # Ensure proper balancing for OR operators
     #         # if or_count > 0 and len(valid_domain) < (or_count * 2 + 1):
     #         #     # Domain is invalid, fall back to simple name search
     #         #     return super(AbsenTahfidzQuran, self)._search([('name', 'ilike', '')], offset=offset, limit=limit, order=order, )
-            
+
     #         # domain = valid_domain if valid_domain else domain
-            
+
     #         valid_domain = []
     #         has_barcode_search = False
     #         barcode_value = None
-            
+
     #         for item in domain:
     #             if isinstance(item, (list, tuple)) and len(item) == 3:
     #                 field, operator, value = item
@@ -241,7 +252,7 @@ class AbsenTahsinQuran(models.Model):
     #                     valid_domain.append(item)
     #             elif isinstance(item, str) and item in ['&', '|', '!']:
     #                 valid_domain.append(item)
-            
+
     #         # Jika ditemukan format barcode, tambahkan domain untuk pencarian barcode
     #         if has_barcode_search:
     #             # Cari ID siswa berdasarkan barcode
@@ -252,23 +263,29 @@ class AbsenTahsinQuran(models.Model):
     #                 if absen_line_ids:
     #                     # Tambahkan domain untuk filter berdasarkan ID absen
     #                     return super(AbsenTahsinQuran, self)._search([('id', 'in', absen_line_ids)], offset=offset, limit=limit, order=order)
-            
+
     #         domain = valid_domain if valid_domain else domain
-            
+
     #     return super(AbsenTahsinQuran, self)._search(domain, offset=offset, limit=limit, order=order, )
-    
+
 
 class AbsenTahsinQuranLine(models.Model):
     _name = 'cdn.absen_tahsin_quran_line'
     _description = 'Tabel Absen Tahsin Quran Line'
 
-    absen_id = fields.Many2one('cdn.absen_tahsin_quran', string='Absen', ondelete='cascade')
-    tanggal = fields.Date(string='Tgl Absen', related='absen_id.name', readonly=True, store=True)
-    halaqoh_id = fields.Many2one('cdn.halaqoh', string='Halaqoh', related='absen_id.halaqoh_id', readonly=True, store=True)
+    absen_id = fields.Many2one(
+        'cdn.absen_tahsin_quran', string='Absen', ondelete='cascade')
+    tanggal = fields.Date(string='Tgl Absen',
+                          related='absen_id.name', readonly=True, store=True)
+    halaqoh_id = fields.Many2one('cdn.halaqoh', string='Halaqoh',
+                                 related='absen_id.halaqoh_id', readonly=True, store=True)
     siswa_id = fields.Many2one('cdn.siswa', string='Siswa', ondelete='cascade')
-    name = fields.Char(string='Nama', related='siswa_id.name', readonly=True, store=True)
-    nis = fields.Char(string='NIS', related='siswa_id.nis', readonly=True, store=True)
-    panggilan = fields.Char(string='Nama Panggilan', related='siswa_id.namapanggilan', readonly=True, store=True)
+    name = fields.Char(string='Nama', related='siswa_id.name',
+                       readonly=True, store=True)
+    nis = fields.Char(string='NIS', related='siswa_id.nis',
+                      readonly=True, store=True)
+    panggilan = fields.Char(
+        string='Nama Panggilan', related='siswa_id.namapanggilan', readonly=True, store=True)
     keterangan = fields.Char(string='Keterangan')
     keterangan_izin = fields.Char(string='Foto', store=True)
     kehadiran = fields.Selection([
@@ -278,30 +295,31 @@ class AbsenTahsinQuranLine(models.Model):
         ('Sakit', 'Sakit'),
         ('Alpa', 'Alpa'),
     ], string='Kehadiran', required=True)
-    penanggung_jawab_id = fields.Many2one('hr.employee', string='Penanggung Jawab', related='halaqoh_id.penanggung_jawab_id', readonly=True, store=True)
-    
+    penanggung_jawab_id = fields.Many2one(
+        'hr.employee', string='Penanggung Jawab', related='halaqoh_id.penanggung_jawab_id', readonly=True, store=True)
+
     def action_view_permission(self):
         """Open permission form for this student"""
         if not self.siswa_id or not self.tanggal:
             return
-            
+
         permission = self.env['cdn.perijinan'].search([
             ('siswa_id', '=', self.siswa_id.id),
             ('state', '=', 'Permission')
         ], limit=1)
-        
+
         if not permission:
             return {
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
                 'params': {
-                    'title' : '❌ Tidak Dapat Menemukan Data !',
+                    'title': '❌ Tidak Dapat Menemukan Data !',
                     'message': 'Data perizinan tidak ditemukan, mungkin santri telah kembali.',
                     'type': 'danger',
                     'sticky': False,
                 }
             }
-        
+
         return {
             'type': 'ir.actions.act_window',
             'name': 'Detail Perijinan',
@@ -310,4 +328,3 @@ class AbsenTahsinQuranLine(models.Model):
             'view_mode': 'form',
             'target': 'current',
         }
-
