@@ -21,7 +21,8 @@ class TestReport(common.TransactionCase):
             active_model="res.partner"
         )
         self.report_name = "report_xlsx.partner_xlsx"
-        self.report = self.report_object._get_report_from_name(self.report_name)
+        self.report = self.report_object._get_report_from_name(
+            self.report_name)
         self.docs = self.env["res.company"].search([], limit=1).partner_id
 
     def test_report(self):
@@ -56,7 +57,8 @@ class TestReport(common.TransactionCase):
 
         # Typical call from WebUI
         objs = self.xlsx_report._get_objs_for_report(
-            self.docs.ids, {"data": [self.report_name, self.report.report_type]}
+            self.docs.ids, {
+                "data": [self.report_name, self.report.report_type]}
         )
         self.assertEqual(objs, self.docs)
 

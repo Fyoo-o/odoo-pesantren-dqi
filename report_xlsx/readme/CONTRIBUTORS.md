@@ -1,3 +1,5 @@
+# CONTRIBUTORS
+
 - Adrien Peiffer \<<adrien.peiffer@acsone.eu>\>
 - Sébastien Alix \<<sebastien.alix@osiell.com>\>
 - Stéphane Bidoul \<<stephane.bidoul@acsone.eu>\>

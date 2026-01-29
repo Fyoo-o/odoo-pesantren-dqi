@@ -120,7 +120,8 @@ class JobDecoder(json.JSONDecoder):
             return obj
         type_ = obj["_type"]
         if type_ == "odoo_recordset":
-            model = self.env(user=obj.get("uid"), su=obj.get("su"))[obj["model"]]
+            model = self.env(user=obj.get("uid"), su=obj.get("su"))[
+                obj["model"]]
             if obj.get("context"):
                 model = model.with_context(**obj.get("context"))
             return model.browse(obj["ids"])

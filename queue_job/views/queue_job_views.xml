@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="view_queue_job_form" model="ir.ui.view">
         <field name="name">queue.job.form</field>
@@ -87,12 +87,14 @@
                     <group colspan="4">
                         <div colspan="2">
                             <label for="retry" string="Current try / max. retries" />
-                            <field name="retry" class="oe_inline" /> /
-                            <field name="max_retries" class="oe_inline" />
+                            <field
+                                name="retry" class="oe_inline" /> / <field name="max_retries"
+                                class="oe_inline" />
                             <br />
                             <span
-                            class="oe_grey oe_inline"
-                        > If the max. retries is 0, the number of retries is infinite.</span>
+                                class="oe_grey oe_inline"
+                            > If the max. retries is 0, the number of
+                            retries is infinite.</span>
                         </div>
                     </group>
                     <notebook>
@@ -327,10 +329,10 @@
         <field name="res_model">queue.job</field>
         <field name="view_mode">list,form,pivot,graph</field>
         <field name="context">{'search_default_wait_dependencies': 1,
-                               'search_default_pending': 1,
-                               'search_default_enqueued': 1,
-                               'search_default_started': 1,
-                               'search_default_failed': 1}</field>
+            'search_default_pending': 1,
+            'search_default_enqueued': 1,
+            'search_default_started': 1,
+            'search_default_failed': 1}</field>
         <field name="view_id" ref="view_queue_job_tree" />
         <field name="search_view_id" ref="view_queue_job_search" />
     </record>

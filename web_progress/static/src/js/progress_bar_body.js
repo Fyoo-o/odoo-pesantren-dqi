@@ -1,8 +1,8 @@
 /** @odoo-module **/
 
 import { Component } from "@odoo/owl";
-import {ProgressBarHeader} from "./progress_bar_header";
-import {ProgressBarSubList} from "./progress_bar_sub_list";
+import { ProgressBarHeader } from "./progress_bar_header";
+import { ProgressBarSubList } from "./progress_bar_sub_list";
 
 export class ProgressBarBody extends Component {
     static template = "web_progress.ProgressBarBody";

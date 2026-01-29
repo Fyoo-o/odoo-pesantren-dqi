@@ -49,7 +49,8 @@ try:
                 if duplicated_secuence > 99:
                     raise xlsxwriter.exceptions.DuplicateWorksheetName  # noqa: B904
                 if duplicated_secuence:
-                    sheetname = re.sub(pattern, deduplicated_secuence, sheetname)
+                    sheetname = re.sub(
+                        pattern, deduplicated_secuence, sheetname)
                 elif len(sheetname) <= 28:
                     sheetname += deduplicated_secuence
                 else:

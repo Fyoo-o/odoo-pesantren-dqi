@@ -10,9 +10,9 @@
             <field name="view_id" ref="pesantren_kesantrian.cdn_perijinan_view_tree" />
             <field name="domain">
                 [
-                    '|',
-                    ('halaqoh_id.penanggung_jawab_id.user_id','=',uid),
-                    ('halaqoh_id.pengganti_ids.user_id','=',uid)
+                '|',
+                ('halaqoh_id.penanggung_jawab_id.user_id','=',uid),
+                ('halaqoh_id.pengganti_ids.user_id','=',uid)
                 ]
             </field>
         </record>
@@ -29,6 +29,7 @@
             <field name="act_window_id" ref="cdn_perijinan_action" />
         </record>
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="cdn_perijinan_menu_act" name="Periksa Izin" parent="kepesantrenan_menu_categ" action="cdn_perijinan_action" sequence="0"/>
+        <menuitem id="cdn_perijinan_menu_act" name="Periksa Izin" parent="kepesantrenan_menu_categ"
+            action="cdn_perijinan_action" sequence="0" />
     </data>
 </odoo>

@@ -12,9 +12,11 @@ class BaseImport(models.TransientModel):
         Re-raise all other errors
         """
         try:
-            ret = super(BaseImport, self).execute_import(fields, columns, options, dryrun=dryrun)
+            ret = super(BaseImport, self).execute_import(
+                fields, columns, options, dryrun=dryrun)
         except UserError as e:
-            ret = {'messages': [{'record': False, 'type': 'warning', 'message': e.args[0], }]}
+            ret = {'messages': [
+                {'record': False, 'type': 'warning', 'message': e.args[0], }]}
         except Exception:
             raise
         return ret

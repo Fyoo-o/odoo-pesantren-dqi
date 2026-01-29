@@ -17,7 +17,7 @@ function _download(options) {
         var data = false;
         if (options.data.context) {
             // reports
-            data = {'context': JSON.parse(options.data.context)};
+            data = { 'context': JSON.parse(options.data.context) };
             data.context.progress_code = pseudoUuid();
             options.data.context = JSON.stringify(data.context);
         } else if (options.data.data) {

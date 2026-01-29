@@ -2,6 +2,7 @@ from odoo import http
 from odoo.http import request
 from datetime import datetime
 
+
 class SiswaController(http.Controller):
 
     @http.route('/cetak_sertifikat', type='http', auth='public', methods=['GET'])
@@ -20,10 +21,9 @@ class SiswaController(http.Controller):
         record_ids = [int(i) for i in record_ids.split(',')]
 
         # Mencari record siswa berdasarkan ID yang diberikan
-        records = request.env['cdn.siswa'].sudo().search([('id', 'in', record_ids)])
+        records = request.env['cdn.siswa'].sudo().search(
+            [('id', 'in', record_ids)])
 
-
-        
         # Jika tidak ditemukan record siswa, return 404
         if not records:
             return request.not_found()
@@ -32,9 +32,9 @@ class SiswaController(http.Controller):
         content = ""
         for record in records:
             # Mencari absen untuk siswa
-            absen = request.env['cdn.absen_tahfidz_quran_line'].sudo().search([('siswa_id', '=', record.id)])
-            
-            
+            absen = request.env['cdn.absen_tahfidz_quran_line'].sudo().search(
+                [('siswa_id', '=', record.id)])
+
             # records_tahsin = request.env['cdn.tahsin_quran'].sudo().search([('siswa_id', 'in', record_ids),('state','=','done')])
             records_tahsin = request.env['cdn.tahsin_quran'].sudo().search([
                 ('siswa_id', '=', record.id),
@@ -113,7 +113,6 @@ class SiswaController(http.Controller):
             # Format tanggal
             tanggal_formatted = f"{hari}, {tanggal_sekarang.day} {bulan} {tanggal_sekarang.year}"
 
-
             # Mendapatkan data siswa
             data = {
                 'name': record.name,
@@ -123,9 +122,9 @@ class SiswaController(http.Controller):
                 'penanggung_jawab': record.penanggung_jawab_id.name,
                 'orangtua': record.ayah_nama,
                 'tahfidz': record.tahfidz_quran_ids,
-                'catatan_ortu':record.catatan_ortu or 'Ananda menunjukkan kemajuan baik dalam hafalan, namun perlu memperbaiki tajwid dan memperkuat murojaah harian. Bacaan cukup lancar, dengan sikap yang santun dan disiplin selama belajar. Mohon dukungan orang tua untuk rutin memantau hafalan di rumah.',
-                'catatan':record.catatan or 'Disarankan untuk meningkatkan murojaah harian agar hafalan lebih kuat. Dari segi adab, santri sudah menunjukkan sikap yang baik dan disiplin selama sesi halaqoh.' ,
-                'adab_ke_guru':record.adab_ke_guru or 'B',
+                'catatan_ortu': record.catatan_ortu or 'Ananda menunjukkan kemajuan baik dalam hafalan, namun perlu memperbaiki tajwid dan memperkuat murojaah harian. Bacaan cukup lancar, dengan sikap yang santun dan disiplin selama belajar. Mohon dukungan orang tua untuk rutin memantau hafalan di rumah.',
+                'catatan': record.catatan or 'Disarankan untuk meningkatkan murojaah harian agar hafalan lebih kuat. Dari segi adab, santri sudah menunjukkan sikap yang baik dan disiplin selama sesi halaqoh.',
+                'adab_ke_guru': record.adab_ke_guru or 'B',
                 'adab_ke_teman': record.adab_ke_guru or 'B',
                 'kedisiplinan': record.kedisiplinan or 'B',
                 'peringkat': record.peringkat,
@@ -143,8 +142,10 @@ class SiswaController(http.Controller):
                 if tahfidz.state == 'done':
                     surah_name = tahfidz.surah_id.name
                     surah_start = 1
-                    surah_end = int(tahfidz.ayat_akhir.name)  # Ayat terakhir dari surah
-                    surah_range = int(tahfidz.jml_ayat)  # Jumlah total ayat dalam surah
+                    # Ayat terakhir dari surah
+                    surah_end = int(tahfidz.ayat_akhir.name)
+                    # Jumlah total ayat dalam surah
+                    surah_range = int(tahfidz.jml_ayat)
 
                     # Mengecek apakah surah terakhir (surah_end lebih besar dari range sebelumnya)
                     if surah_name not in last_surahs or surah_end < surah_range:
@@ -155,7 +156,7 @@ class SiswaController(http.Controller):
                             'predikat': tahfidz.predikat,
                             'nilai_id_name': tahfidz.nilai_id.name
                         }
-                    else :
+                    else:
                         last_surahs[surah_name] = {
                             'range': f"{surah_name} ({surah_range})",
                             'end': surah_end,
@@ -166,7 +167,7 @@ class SiswaController(http.Controller):
 
             # Menambahkan baris ke content berdasarkan data terakhir untuk setiap surah
             for surah_name, surah_data in last_surahs.items():
-                if(nomor_urut<=5):
+                if (nomor_urut <= 5):
                     content_data += f"""
                         <tr>
                             <td>{nomor_urut}</td>
@@ -185,11 +186,12 @@ class SiswaController(http.Controller):
                         </tr>
                     """
                 nomor_urut += 1
-            
+
             # Pastikan 'hadir' ada di dictionary dan total tidak nol
             persen_hadir = 0
             if 'hadir' in kehadiran and sum(kehadiran.values()) > 0:
-                persen_hadir = int((kehadiran['hadir'] / sum(kehadiran.values())) * 100)
+                persen_hadir = int(
+                    (kehadiran['hadir'] / sum(kehadiran.values())) * 100)
             else:
                 persen_hadir = 0  # Default nilai jika tidak valid
 

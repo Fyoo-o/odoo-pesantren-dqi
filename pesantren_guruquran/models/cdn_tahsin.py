@@ -1,5 +1,6 @@
 from odoo import models, fields
 
+
 class CdnSiswa(models.Model):
     _inherit = 'cdn.tahsin_quran'
 

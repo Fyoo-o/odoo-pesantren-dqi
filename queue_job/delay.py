@@ -155,7 +155,8 @@ class Graph:
         return set(self._graph.keys()) - dependency_vertices
 
     def __repr__(self):
-        paths = [path for vertex in self.root_vertices() for path in self.paths(vertex)]
+        paths = [path for vertex in self.root_vertices()
+                 for path in self.paths(vertex)]
         lines = []
         for path in paths:
             lines.append(" → ".join(repr(vertex) for vertex in path))
@@ -237,7 +238,8 @@ class DelayableGraph(Graph):
         else:
             graph_uuids = {job.graph_uuid for job in jobs if job.graph_uuid}
             if len(graph_uuids) > 1:
-                raise ValueError("Jobs cannot have dependencies between several graphs")
+                raise ValueError(
+                    "Jobs cannot have dependencies between several graphs")
             elif len(graph_uuids) == 1:
                 graph_uuid = graph_uuids.pop()
             else:
@@ -254,7 +256,8 @@ class DelayableGraph(Graph):
         for vertex in vertices:
             vertex._build_job()
 
-        self._ensure_same_graph_uuid([vertex._generated_job for vertex in vertices])
+        self._ensure_same_graph_uuid(
+            [vertex._generated_job for vertex in vertices])
 
         if self._has_to_execute_directly(vertices):
             self._execute_graph_direct(graph)
@@ -491,7 +494,8 @@ class Delayable:
 
     def __del__(self):
         if not self._generated_job:
-            _logger.warning("Delayable %s was prepared but never delayed", self)
+            _logger.warning(
+                "Delayable %s was prepared but never delayed", self)
 
     def _set_from_dict(self, properties):
         for key, value in properties.items():
@@ -537,7 +541,7 @@ class Delayable:
 
         delayables = []
         for index in range(0, total_records, size):
-            recordset = self.recordset[index : index + size]
+            recordset = self.recordset[index: index + size]
             delayable = Delayable(
                 recordset,
                 priority=self.priority,
@@ -548,7 +552,8 @@ class Delayable:
                 identity_key=self.identity_key,
             )
             # Update the __self__
-            delayable._job_method = getattr(recordset, self._job_method.__name__)
+            delayable._job_method = getattr(
+                recordset, self._job_method.__name__)
             delayable._job_args = self._job_args
             delayable._job_kwargs = self._job_kwargs
 

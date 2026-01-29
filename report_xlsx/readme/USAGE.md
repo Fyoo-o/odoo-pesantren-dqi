@@ -1,3 +1,5 @@
+# USAGE
+
 An example of XLSX report for partners on a module called
 \`module_name\`:
 

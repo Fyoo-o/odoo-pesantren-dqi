@@ -27,7 +27,8 @@ class ReportController(ReportController):
     @route()
     def report_routes(self, reportname, docids=None, converter=None, **data):
         if converter == "xlsx":
-            report = request.env["ir.actions.report"]._get_report_from_name(reportname)
+            report = request.env["ir.actions.report"]._get_report_from_name(
+                reportname)
             context = dict(request.env.context)
             if docids:
                 docids = [int(i) for i in docids.split(",")]
@@ -90,7 +91,8 @@ class ReportController(ReportController):
                     obj = request.env[report.model].browse(ids)
                     if report.print_report_name and not len(obj) > 1:
                         report_name = safe_eval(
-                            report.print_report_name, {"object": obj, "time": time}
+                            report.print_report_name, {
+                                "object": obj, "time": time}
                         )
                         filename = f"{report_name}.xlsx"
                 if not response.headers.get("Content-Disposition"):
@@ -99,7 +101,8 @@ class ReportController(ReportController):
                     )
                 return response
             except Exception as e:
-                _logger.exception("Error while generating report %s", reportname)
+                _logger.exception(
+                    "Error while generating report %s", reportname)
                 se = _serialize_exception(e)
                 error = {"code": 200, "message": "Odoo Server Error", "data": se}
                 return request.make_response(html_escape(json.dumps(error)))
