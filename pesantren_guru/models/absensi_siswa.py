@@ -13,11 +13,12 @@ class AbsensiSiswa(models.Model):
 
     def _get_domain_guru(self):
         user = self.env.user
+        guru_domain = [('jns_pegawai_ids.code', 'in', ['guru'])]
         if user.has_group('pesantren_guru.group_guru_manager'):
-            return [('user_id', '=', self.env.user.id), ('jns_pegawai', 'in', ['guru', 'guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])]
+            return [('user_id', '=', self.env.user.id)] + guru_domain
         elif user.has_group('pesantren_guru.group_guru_staff'):
             user = self.env['hr.employee'].search([('user_id', '=', user.id)])
-            return [('user_id', '=', self.env.user.id), ('jns_pegawai', 'in', ['guru', 'guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])]
+            return [('user_id', '=', self.env.user.id)] + guru_domain
         return [('id', '=', False)]
 
     def _get_default_guru(self):
@@ -85,13 +86,7 @@ class AbsensiSiswa(models.Model):
         return [
             '|',
             ('user_id', 'in', admin_user_ids),
-            ('jns_pegawai', 'in', [
-                'guru',
-                'guru,guruquran',
-                'musyrif,guru',
-                'musyrif,guru,guruquran',
-                'superadmin'
-            ]),
+            ('jns_pegawai_ids.code', 'in', ['guru', 'superadmin'])
         ]
 
     def _compute_row_number(self):
@@ -231,7 +226,7 @@ class AbsensiSiswa(models.Model):
     def _onchange_guru_domain(self):
         return {
             'domain': {
-                'guru_id': [('jns_pegawai', 'in', ['guru', 'guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])]
+                'guru_id': [('jns_pegawai_ids.code', 'in', ['guru'])]
             }
         }
 

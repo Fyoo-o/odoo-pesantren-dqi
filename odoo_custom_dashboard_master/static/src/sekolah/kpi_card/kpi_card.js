@@ -208,7 +208,7 @@ export class SekolahKpiCard extends Component {
         guruData = await this.orm.call(
           'hr.employee',
           'search_read',
-          [[["jns_pegawai", "=", "guru"]], ['id', 'jns_pegawai']],
+          [[["jns_pegawai_ids.code", "=", "guru"]], ['id', 'jns_pegawai_ids']],
           { context: this.env.context }
         );
       } catch (error) {
@@ -263,7 +263,7 @@ export class SekolahKpiCard extends Component {
           icon: 'fa-chalkboard-user',
           color: '#16a34a',
           res_model: 'hr.employee',
-          domain: [...domain, ['jns_pegawai', '=', 'guru']],
+          domain: [...domain, ['jns_pegawai_ids.code', '=', 'guru']],
         },
         {
           name: 'Kelas',

@@ -144,19 +144,13 @@ class AbsensiMalam(models.Model):
         return [
             '|',
             ('user_id', 'in', admin_user_ids),
-            ('jns_pegawai', 'in', [
-                'musyrif',
-                'musyrif,guru',
-                'musyrif,guruquran',
-                'musyrif,guru,guruquran',
-                'superadmin'
-            ]),
+            ('jns_pegawai_ids.code', 'in', ['musyrif', 'superadmin'])
         ]
     @api.model
     def _default_musyrif_id(self):
         """Set default musyrif sesuai user login."""
         employee = self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1)
-        if employee and 'musyrif' in (employee.jns_pegawai or ''):
+        if employee and (employee.has_role('musyrif') or employee.has_role('superadmin')):
             return employee.id
         return False
 
@@ -177,7 +171,7 @@ class AbsensiMalam(models.Model):
             return base_domain
         
         # Jika musyrif, hanya tampilkan kamar di bawahnya (filter tahun ajaran + musyrif)
-        if employee and 'musyrif' in (employee.jns_pegawai or ''):
+        if employee and (employee.has_role('musyrif') or employee.has_role('superadmin')):
             kamar_ids = self.env['cdn.kamar_santri'].search([
                 ('musyrif_id', '=', employee.id),
                 ('fiscalyear_id', '=', tahun_ajaran)

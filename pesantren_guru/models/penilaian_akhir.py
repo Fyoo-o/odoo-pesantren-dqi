@@ -54,15 +54,7 @@ class PenilaianAkhir(models.Model):
         admin_user_ids = self.env.ref('base.group_system').users.ids
 
         # domain guru normal
-        guru_domain = [
-            ('jns_pegawai', 'in', [
-                'guru',
-                'guru,guruquran',
-                'musyrif,guru',
-                'musyrif,guru,guruquran',
-                'superadmin'
-            ])
-        ]
+        guru_domain = [('jns_pegawai_ids.code', 'in', ['guru', 'superadmin'])]
 
         # domain employee milik admin
         admin_domain = [('user_id', 'in', admin_user_ids)]

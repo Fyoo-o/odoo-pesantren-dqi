@@ -26,15 +26,7 @@ class Penilaian(models.Model):
         admin_user_ids = self.env.ref('base.group_system').users.ids
 
         # domain guru normal
-        guru_domain = [
-            ('jns_pegawai', 'in', [
-                'guru',
-                'guru,guruquran',
-                'musyrif,guru',
-                'musyrif,guru,guruquran',
-                'superadmin'
-            ])
-        ]
+        guru_domain = [('jns_pegawai_ids.code', 'in', ['guru', 'superadmin'])]
 
         # domain employee milik admin
         admin_domain = [('user_id', 'in', admin_user_ids)]
@@ -83,7 +75,7 @@ class Penilaian(models.Model):
         domain=lambda self: self.env['cdn.penilaian']._domain_guru(),
         default=lambda self: self.env['hr.employee'].search([
             ('user_id', '=', self.env.uid),
-            ('jns_pegawai', 'in', ['guru','guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])
+            ('jns_pegawai_ids.code', 'in', ['guru'])
         ], limit=1)
     )
     semester            = fields.Selection(selection=[('1', 'Ganjil'), ('2', 'Genap')], string='Semester', required=True)
@@ -181,7 +173,7 @@ class Penilaian(models.Model):
         if not vals.get('guru_id'):
             guru = self.env['hr.employee'].search([
                 ('user_id', '=', self.env.uid),
-                ('jns_pegawai', 'in', ['guru','guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])
+                ('jns_pegawai_ids.code', 'in', ['guru'])
             ], limit=1) 
             if guru:
                 vals['guru_id'] = guru.id

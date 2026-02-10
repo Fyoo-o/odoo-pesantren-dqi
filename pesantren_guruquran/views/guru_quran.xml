@@ -7,9 +7,9 @@
             <field name="res_model">hr.employee</field>
             <field name="view_mode">list,form</field>
             <field name="view_id" ref="hr.view_employee_tree" />
-            <field name="domain"
-                eval="[('jns_pegawai', 'in', ['guruquran', 'guru,guruquran', 'musyrif,guruquran', 'musyrif,guru,guruquran'])]" />
-            <field name="context" eval="{'default_jns_pegawai': 'guruquran'}" />
+            <field name="domain" eval="[('jns_pegawai_ids.code', 'in', ['guruquran'])]" />
+            <field name="context"
+                eval="{'default_jns_pegawai': 'guruquran', 'default_jns_pegawai_ids': [(4, ref('pesantren_base.jenis_pegawai_guruquran'))]}" />
         </record>
 
 

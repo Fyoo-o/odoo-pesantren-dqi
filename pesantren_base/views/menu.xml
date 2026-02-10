@@ -10,6 +10,8 @@
 		<!-- This Menu Item Must have a parent -->
 		<menuitem id="pengaturan_umum_menu_categ" name="Pengaturan Umum" parent="sekolah_config_menu" sequence="10"/>
 		<menuitem id="pengaturan_ref_menu_categ" name="Data Referensi" parent="sekolah_config_menu" sequence="20"/>
+		<menuitem id="menu_jenis_pegawai" name="Jenis Pegawai" parent="pengaturan_ref_menu_categ" 
+		          action="pesantren_base.action_jenis_pegawai" sequence="100"/>
 		<menuitem id="pengaturan_admkeu_menu_categ" name="Administrasi Keuangan" parent="sekolah_config_menu" sequence="30"/>
 		<menuitem id="pengaturan_akademik_menu_categ" name="Pengaturan Akademik" parent="sekolah_config_menu" sequence="40"/>
 		<menuitem id="pengaturan_mobile_menu_categ" name="Mobile Apps" parent="sekolah_config_menu" sequence="50"/>

@@ -132,6 +132,7 @@ class HrJob(models.Model):
         string="Rate Gaji", 
         help="Format: Rp 10.000 - Rp 20.000"
     )
+    color = fields.Integer(string='Color', default=0)
 
     @api.onchange('salary_range')
     def _onchange_salary_range(self):

@@ -38,15 +38,7 @@ class MataPelajaran(models.Model):
         return [
             '|',
             ('user_id', '=', admin_user_ids),
-            ('jns_pegawai', 'in', [
-                'guru',
-                'guruquran',
-                'guru,guruquran',
-                'musyrif,guru',
-                'musyrif,guruquran', 
-                'musyrif,guru,guruquran',
-                'superadmin',
-            ])
+            ('jns_pegawai_ids.code', 'in', ['guru', 'guruquran', 'superadmin'])
         ]
 
   @api.model

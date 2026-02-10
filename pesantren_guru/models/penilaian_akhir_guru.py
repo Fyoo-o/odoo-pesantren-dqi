@@ -13,7 +13,7 @@ class PenilaianAkhirGuru(models.Model):
     def _get_default_guru(self):
         emp = self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1)
         if not emp:
-            emp = self.env['hr.employee'].search([('jns_pegawai', 'in', ['guru','guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])], limit=1)
+            emp = self.env['hr.employee'].search([('jns_pegawai_ids.code', 'in', ['guru'])], limit=1)
         return emp.id if emp else False
 
     def _get_default_semester(self):
@@ -42,15 +42,7 @@ class PenilaianAkhirGuru(models.Model):
         admin_user_ids = self.env.ref('base.group_system').users.ids
 
         # domain guru normal
-        guru_domain = [
-            ('jns_pegawai', 'in', [
-                'guru',
-                'guru,guruquran',
-                'musyrif,guru',
-                'musyrif,guru,guruquran',
-                'superadmin'
-            ])
-        ]
+        guru_domain = [('jns_pegawai_ids.code', 'in', ['guru', 'superadmin'])]
 
         # domain employee milik admin
         admin_domain = [('user_id', 'in', admin_user_ids)]

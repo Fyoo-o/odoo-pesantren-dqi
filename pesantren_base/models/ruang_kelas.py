@@ -13,13 +13,7 @@ class ruang_kelas(models.Model):
         return [
             '|',
             ('user_id', '=', admin_user_ids),
-            ('jns_pegawai', 'in', [
-                'guru',
-                'guru,guruquran', 
-                'musyrif,guruquran', 
-                'musyrif,guru,guruquran',
-                'superadmin'
-            ])
+            ('jns_pegawai_ids.code', 'in', ['guru', 'superadmin'])
         ]
 
     name = fields.Many2one(

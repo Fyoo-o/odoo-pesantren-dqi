@@ -19,6 +19,19 @@ class hr_employee(models.Model):
                         ('rtq', 'RTQ')], string='Lembaga', default='smama')
     pendidikan_guru_ids = fields.One2many(comodel_name="edu.employee", inverse_name="employee_id", string="Riwayat Pendidikan", help="")
     marital = fields.Selection(string='Status Pernikahan', selection=[('single', 'Belum Kawin'), ('married', 'Menikah'), ('divorced', 'Cerai Hidup'), ('cerai', 'Cerai Mati')])
+    
+    # NEW: Many2many relationship for roles
+    jns_pegawai_ids = fields.Many2many(
+        'cdn.jenis_pegawai',
+        'hr_employee_jenis_pegawai_rel',
+        'employee_id',
+        'jenis_pegawai_id',
+        string='Jenis Pegawai',
+        help='Multiple roles can be assigned to an employee'
+    )
+    
+    # DEPRECATED: Keep for backward compatibility during migration
+    # This field is now computed from jns_pegawai_ids
     jns_pegawai = fields.Selection([
         ('musyrif', 'Musyrif'),
         # ('ustadz', 'Ustadz'),
@@ -32,13 +45,27 @@ class hr_employee(models.Model):
         ('superadmin', 'Super Admin'),
         # ('kesehatan', 'Kesehatan'),
         # ('kasrama', 'Kepala Asrama')
-    ], string='Jenis Pegawai')
+    ], string='Jenis Pegawai (Legacy)', compute='_compute_jns_pegawai_legacy', store=True, readonly=False)
     mata_pelajaran_ids = fields.Many2many(comodel_name="cdn.mata_pelajaran", string="Mata Pelajaran", help="")
     password = fields.Char(
         string='Password',
         help="Kosongkan jika ingin pakai otomatis dari NIP",
         store=True,
     )
+    
+    # Helper computed fields for view visibility
+    has_guru_role = fields.Boolean(
+        string='Has Guru Role',
+        compute='_compute_has_guru_role',
+        store=True,
+        help='True if employee has guru role'
+    )
+
+    @api.depends('jns_pegawai_ids.code')
+    def _compute_has_guru_role(self):
+        """Compute if employee has guru role for view visibility"""
+        for rec in self:
+            rec.has_guru_role = 'guru' in rec.jns_pegawai_ids.mapped('code')
 
     @api.onchange('nip')
     def _onchange_password(self):
@@ -47,6 +74,157 @@ class hr_employee(models.Model):
                 record.password = record.nip[:6]
             else:
                 record.password = ''
+    
+    @api.depends('jns_pegawai_ids.code')
+    def _compute_jns_pegawai_legacy(self):
+        """
+        Maintain backward compatibility by computing jns_pegawai from jns_pegawai_ids.
+        This allows existing code to continue working during migration.
+        """
+        for rec in self:
+            if rec.jns_pegawai_ids:
+                codes = sorted(rec.jns_pegawai_ids.mapped('code'))
+                # Only set if the value is valid according to Selection options
+                computed_value = ','.join(codes) if codes else False
+                # Validate against Selection options
+                selection_options = [opt[0] for opt in self.fields_get(['jns_pegawai'])['jns_pegawai']['selection']]
+                if computed_value in selection_options or computed_value == False:
+                    rec.jns_pegawai = computed_value
+                else:
+                    # If computed value doesn't match Selection, skip setting it
+                    rec.jns_pegawai = False
+            else:
+                rec.jns_pegawai = False
+    
+    @api.onchange('jns_pegawai')
+    def _onchange_jns_pegawai_legacy(self):
+        """
+        Allow setting jns_pegawai (legacy) and update jns_pegawai_ids accordingly.
+        This supports backward compatibility during migration.
+        """
+        if self.jns_pegawai:
+            codes = [c.strip() for c in self.jns_pegawai.split(',') if c.strip()]
+            role_records = self.env['cdn.jenis_pegawai'].search([('code', 'in', codes)])
+            if role_records:
+                self.jns_pegawai_ids = [(6, 0, role_records.ids)]
+            else:
+                # If roles don't exist yet, clear the field
+                self.jns_pegawai_ids = [(5, 0, 0)]
+    
+    def has_role(self, role_code):
+        """
+        Check if employee has a specific role.
+        
+        :param role_code: Code of the role to check (e.g., 'musyrif', 'guru')
+        :return: True if employee has the role, False otherwise
+        """
+        self.ensure_one()
+        return role_code in self.jns_pegawai_ids.mapped('code')
+    
+    def has_any_role(self, role_codes):
+        """
+        Check if employee has any of the specified roles.
+        
+        :param role_codes: List of role codes to check
+        :return: True if employee has at least one of the roles, False otherwise
+        """
+        self.ensure_one()
+        employee_codes = set(self.jns_pegawai_ids.mapped('code'))
+        return bool(employee_codes.intersection(set(role_codes)))
+    
+    def has_all_roles(self, role_codes):
+        """
+        Check if employee has all of the specified roles.
+        
+        :param role_codes: List of role codes to check
+        :return: True if employee has all the roles, False otherwise
+        """
+        self.ensure_one()
+        employee_codes = set(self.jns_pegawai_ids.mapped('code'))
+        return set(role_codes).issubset(employee_codes)
+    
+    @api.model
+    def _get_role_combinations_for_domain(self, *role_codes):
+        """
+        Generate all possible combinations of role codes for domain filters.
+        This is a helper method to maintain backward compatibility with existing domain filters.
+        
+        :param role_codes: Variable number of role codes
+        :return: List of comma-separated role code strings (e.g., ['guru', 'guru,guruquran'])
+        """
+        from itertools import combinations
+        result = []
+        role_codes = sorted(role_codes)
+        for r in range(1, len(role_codes) + 1):
+            for combo in combinations(role_codes, r):
+                result.append(','.join(combo))
+        return result
+    
+    def _get_security_groups_for_roles(self):
+        """
+        Get security groups based on employee roles.
+        This method replaces the hardcoded if/elif chain with dynamic role-based group assignment.
+        
+        :return: List of security group records to assign
+        """
+        groups_to_add = []
+        role_codes = set(self.jns_pegawai_ids.mapped('code'))
+        
+        # Always add base user group
+        groups_to_add.append(self.env.ref('base.group_user'))
+        
+        # Super Admin - gets all permissions
+        if 'superadmin' in role_codes:
+            groups_to_add.extend([
+                self.env.ref('base.group_system'),
+                self.env.ref('hr.group_hr_manager'),
+                self.env.ref('hr_attendance.group_hr_attendance_officer'),
+                self.env.ref('pesantren_pendaftaran.group_pendaftaran_manager'),
+                self.env.ref('pesantren_base.group_sekolah_manager'),
+                self.env.ref('pesantren_kesantrian.group_kesantrian_manager'),
+                self.env.ref('pesantren_guru.group_guru_manager'),
+                self.env.ref('pesantren_guruquran.group_guru_quran_manager'),
+                self.env.ref('pesantren_musyrif.group_musyrif_manager'),
+                self.env.ref('pesantren_kesantrian.group_kesantrian_kesehatan'),
+                self.env.ref('pesantren_kesantrian.group_kesantrian_keamanan'),
+                self.env.ref('account.group_account_manager'),
+                self.env.ref('base.group_partner_manager'),
+                self.env.ref('base.group_allow_export'),
+            ])
+            return groups_to_add
+        
+        # Role-based group assignment (order matters - more specific roles first)
+        # Musyrif role
+        if 'musyrif' in role_codes:
+            groups_to_add.append(self.env.ref('pesantren_musyrif.group_musyrif_staff'))
+        
+        # Guru Akademik role
+        if 'guru' in role_codes:
+            groups_to_add.append(self.env.ref('pesantren_guru.group_guru_staff'))
+        elif 'guruquran' in role_codes:
+            # If only guruquran (not guru), give guru user access
+            groups_to_add.append(self.env.ref('pesantren_guru.group_guru_user'))
+        
+        # Guru Qur'an role
+        if 'guruquran' in role_codes:
+            groups_to_add.append(self.env.ref('pesantren_guruquran.group_guru_quran_staff'))
+        elif 'guru' in role_codes:
+            # If only guru (not guruquran), give guruquran user access
+            groups_to_add.append(self.env.ref('pesantren_guruquran.group_guru_quran_user'))
+        
+        # Keamanan role
+        if 'keamanan' in role_codes:
+            groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_keamanan'))
+        
+        # Common groups for all employees (except superadmin)
+        groups_to_add.extend([
+            self.env.ref('pesantren_kesantrian.group_kesantrian_user'),
+            self.env.ref('pesantren_base.group_sekolah_user'),
+            self.env.ref('pesantren_base.group_hr_employee_readonly'),
+            self.env.ref('base.group_allow_export'),
+        ])
+        
+        return groups_to_add
     
 # args=None
     # def activate_account(self):
@@ -509,87 +687,113 @@ class hr_employee(models.Model):
 
         user.groups_id = [(5, 0, 0)]  # Menghapus semua grup yang sudah ada
 
-        # Menentukan group yang sesuai berdasarkan jenis pegawai
-        groups_to_add = []
-        groups_to_add.append(self.env.ref('base.group_user'))
-        
-        if self.jns_pegawai == 'superadmin':
-            groups_to_add.append(self.env.ref('base.group_system'))
-            groups_to_add.append(self.env.ref('hr.group_hr_manager'))
-            groups_to_add.append(self.env.ref('hr_attendance.group_hr_attendance_officer'))
-            groups_to_add.append(self.env.ref('pesantren_pendaftaran.group_pendaftaran_manager'))
-            groups_to_add.append(self.env.ref('pesantren_base.group_sekolah_manager'))
-            groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_manager'))
-            groups_to_add.append(self.env.ref('pesantren_guru.group_guru_manager'))
-            groups_to_add.append(self.env.ref('pesantren_guruquran.group_guru_quran_manager'))
-            groups_to_add.append(self.env.ref('pesantren_musyrif.group_musyrif_manager'))
-            groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_kesehatan'))
-            groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_keamanan'))
-            groups_to_add.append(self.env.ref('account.group_account_manager'))
-            groups_to_add.append(self.env.ref('base.group_partner_manager'))
-            groups_to_add.append(self.env.ref('base.group_allow_export'))
-        elif self.jns_pegawai == 'guruquran':
-            groups_to_add.append(self.env.ref('pesantren_guruquran.group_guru_quran_staff')) 
-            groups_to_add.append(self.env.ref('pesantren_guru.group_guru_user')) 
-            groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_user')) 
-            groups_to_add.append(self.env.ref('pesantren_base.group_sekolah_user')) 
-            groups_to_add.append(self.env.ref('pesantren_base.group_hr_employee_readonly'))
-            groups_to_add.append(self.env.ref('base.group_allow_export'))
-        elif self.jns_pegawai == 'guru':
-            groups_to_add.append(self.env.ref('pesantren_guru.group_guru_staff'))
-            groups_to_add.append(self.env.ref('pesantren_guruquran.group_guru_quran_user'))
-            groups_to_add.append(self.env.ref('pesantren_base.group_sekolah_user'))
-            groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_user'))
-            groups_to_add.append(self.env.ref('pesantren_base.group_hr_employee_readonly'))
-            groups_to_add.append(self.env.ref('base.group_allow_export'))
-        elif self.jns_pegawai == 'guru,guruquran':
-            groups_to_add.append(self.env.ref('pesantren_guru.group_guru_staff'))
-            groups_to_add.append(self.env.ref('pesantren_guruquran.group_guru_quran_staff'))
-            groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_user')) 
-            groups_to_add.append(self.env.ref('pesantren_base.group_sekolah_user')) 
-            groups_to_add.append(self.env.ref('pesantren_base.group_hr_employee_readonly'))
-            groups_to_add.append(self.env.ref('base.group_allow_export'))
-        elif self.jns_pegawai == 'musyrif,guru':
-            groups_to_add.append(self.env.ref('pesantren_musyrif.group_musyrif_staff'))
-            groups_to_add.append(self.env.ref('pesantren_guru.group_guru_staff'))
-            groups_to_add.append(self.env.ref('pesantren_guruquran.group_guru_quran_user'))
-            groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_user')) 
-            groups_to_add.append(self.env.ref('pesantren_base.group_sekolah_user')) 
-            groups_to_add.append(self.env.ref('pesantren_base.group_hr_employee_readonly'))
-            groups_to_add.append(self.env.ref('base.group_allow_export'))
-        elif self.jns_pegawai == 'musyrif,guruquran':
-            groups_to_add.append(self.env.ref('pesantren_musyrif.group_musyrif_staff'))
-            groups_to_add.append(self.env.ref('pesantren_guruquran.group_guru_quran_staff'))
-            groups_to_add.append(self.env.ref('pesantren_guru.group_guru_user')) 
-            groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_user')) 
-            groups_to_add.append(self.env.ref('pesantren_base.group_sekolah_user')) 
-            groups_to_add.append(self.env.ref('pesantren_base.group_hr_employee_readonly'))
-            groups_to_add.append(self.env.ref('base.group_allow_export'))
-        elif self.jns_pegawai == 'musyrif,guru,guruquran':
-            groups_to_add.append(self.env.ref('pesantren_musyrif.group_musyrif_staff'))
-            groups_to_add.append(self.env.ref('pesantren_guru.group_guru_staff'))
-            groups_to_add.append(self.env.ref('pesantren_guruquran.group_guru_quran_staff'))
-            groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_user')) 
-            groups_to_add.append(self.env.ref('pesantren_base.group_sekolah_user')) 
-            groups_to_add.append(self.env.ref('pesantren_base.group_hr_employee_readonly'))
-            groups_to_add.append(self.env.ref('base.group_allow_export'))
-        elif self.jns_pegawai == 'musyrif':
-            groups_to_add.append(self.env.ref('pesantren_musyrif.group_musyrif_staff'))
-            groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_user'))
-            groups_to_add.append(self.env.ref('pesantren_base.group_sekolah_user'))
-            groups_to_add.append(self.env.ref('pesantren_base.group_hr_employee_readonly'))
-            groups_to_add.append(self.env.ref('base.group_allow_export'))
-        elif self.jns_pegawai == 'keamanan':
-            groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_keamanan'))
-            groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_user'))
-            groups_to_add.append(self.env.ref('pesantren_base.group_sekolah_user'))
-            groups_to_add.append(self.env.ref('pesantren_base.group_hr_employee_readonly'))
-            groups_to_add.append(self.env.ref('base.group_allow_export'))
+        # Get security groups based on employee roles (new Many2many approach)
+        # Falls back to legacy jns_pegawai if jns_pegawai_ids is not set
+        if self.jns_pegawai_ids:
+            groups_to_add = self._get_security_groups_for_roles()
         else:
-            groups_to_add.append(self.env.ref('pesantren_base.group_sekolah_user'))
-            groups_to_add.append(self.env.ref('pesantren_kesantrian.group_kesantrian_user'))
-            groups_to_add.append(self.env.ref('pesantren_base.group_hr_employee_readonly'))
-            groups_to_add.append(self.env.ref('base.group_allow_export'))
+            # Backward compatibility: use legacy jns_pegawai field
+            # This ensures migration period works correctly
+            groups_to_add = []
+            groups_to_add.append(self.env.ref('base.group_user'))
+            
+            if self.jns_pegawai == 'superadmin':
+                groups_to_add.extend([
+                    self.env.ref('base.group_system'),
+                    self.env.ref('hr.group_hr_manager'),
+                    self.env.ref('hr_attendance.group_hr_attendance_officer'),
+                    self.env.ref('pesantren_pendaftaran.group_pendaftaran_manager'),
+                    self.env.ref('pesantren_base.group_sekolah_manager'),
+                    self.env.ref('pesantren_kesantrian.group_kesantrian_manager'),
+                    self.env.ref('pesantren_guru.group_guru_manager'),
+                    self.env.ref('pesantren_guruquran.group_guru_quran_manager'),
+                    self.env.ref('pesantren_musyrif.group_musyrif_manager'),
+                    self.env.ref('pesantren_kesantrian.group_kesantrian_kesehatan'),
+                    self.env.ref('pesantren_kesantrian.group_kesantrian_keamanan'),
+                    self.env.ref('account.group_account_manager'),
+                    self.env.ref('base.group_partner_manager'),
+                    self.env.ref('base.group_allow_export'),
+                ])
+            elif self.jns_pegawai == 'guruquran':
+                groups_to_add.extend([
+                    self.env.ref('pesantren_guruquran.group_guru_quran_staff'),
+                    self.env.ref('pesantren_guru.group_guru_user'),
+                    self.env.ref('pesantren_kesantrian.group_kesantrian_user'),
+                    self.env.ref('pesantren_base.group_sekolah_user'),
+                    self.env.ref('pesantren_base.group_hr_employee_readonly'),
+                    self.env.ref('base.group_allow_export'),
+                ])
+            elif self.jns_pegawai == 'guru':
+                groups_to_add.extend([
+                    self.env.ref('pesantren_guru.group_guru_staff'),
+                    self.env.ref('pesantren_guruquran.group_guru_quran_user'),
+                    self.env.ref('pesantren_base.group_sekolah_user'),
+                    self.env.ref('pesantren_kesantrian.group_kesantrian_user'),
+                    self.env.ref('pesantren_base.group_hr_employee_readonly'),
+                    self.env.ref('base.group_allow_export'),
+                ])
+            elif self.jns_pegawai == 'guru,guruquran':
+                groups_to_add.extend([
+                    self.env.ref('pesantren_guru.group_guru_staff'),
+                    self.env.ref('pesantren_guruquran.group_guru_quran_staff'),
+                    self.env.ref('pesantren_kesantrian.group_kesantrian_user'),
+                    self.env.ref('pesantren_base.group_sekolah_user'),
+                    self.env.ref('pesantren_base.group_hr_employee_readonly'),
+                    self.env.ref('base.group_allow_export'),
+                ])
+            elif self.jns_pegawai == 'musyrif,guru':
+                groups_to_add.extend([
+                    self.env.ref('pesantren_musyrif.group_musyrif_staff'),
+                    self.env.ref('pesantren_guru.group_guru_staff'),
+                    self.env.ref('pesantren_guruquran.group_guru_quran_user'),
+                    self.env.ref('pesantren_kesantrian.group_kesantrian_user'),
+                    self.env.ref('pesantren_base.group_sekolah_user'),
+                    self.env.ref('pesantren_base.group_hr_employee_readonly'),
+                    self.env.ref('base.group_allow_export'),
+                ])
+            elif self.jns_pegawai == 'musyrif,guruquran':
+                groups_to_add.extend([
+                    self.env.ref('pesantren_musyrif.group_musyrif_staff'),
+                    self.env.ref('pesantren_guruquran.group_guru_quran_staff'),
+                    self.env.ref('pesantren_guru.group_guru_user'),
+                    self.env.ref('pesantren_kesantrian.group_kesantrian_user'),
+                    self.env.ref('pesantren_base.group_sekolah_user'),
+                    self.env.ref('pesantren_base.group_hr_employee_readonly'),
+                    self.env.ref('base.group_allow_export'),
+                ])
+            elif self.jns_pegawai == 'musyrif,guru,guruquran':
+                groups_to_add.extend([
+                    self.env.ref('pesantren_musyrif.group_musyrif_staff'),
+                    self.env.ref('pesantren_guru.group_guru_staff'),
+                    self.env.ref('pesantren_guruquran.group_guru_quran_staff'),
+                    self.env.ref('pesantren_kesantrian.group_kesantrian_user'),
+                    self.env.ref('pesantren_base.group_sekolah_user'),
+                    self.env.ref('pesantren_base.group_hr_employee_readonly'),
+                    self.env.ref('base.group_allow_export'),
+                ])
+            elif self.jns_pegawai == 'musyrif':
+                groups_to_add.extend([
+                    self.env.ref('pesantren_musyrif.group_musyrif_staff'),
+                    self.env.ref('pesantren_kesantrian.group_kesantrian_user'),
+                    self.env.ref('pesantren_base.group_sekolah_user'),
+                    self.env.ref('pesantren_base.group_hr_employee_readonly'),
+                    self.env.ref('base.group_allow_export'),
+                ])
+            elif self.jns_pegawai == 'keamanan':
+                groups_to_add.extend([
+                    self.env.ref('pesantren_kesantrian.group_kesantrian_keamanan'),
+                    self.env.ref('pesantren_kesantrian.group_kesantrian_user'),
+                    self.env.ref('pesantren_base.group_sekolah_user'),
+                    self.env.ref('pesantren_base.group_hr_employee_readonly'),
+                    self.env.ref('base.group_allow_export'),
+                ])
+            else:
+                groups_to_add.extend([
+                    self.env.ref('pesantren_base.group_sekolah_user'),
+                    self.env.ref('pesantren_kesantrian.group_kesantrian_user'),
+                    self.env.ref('pesantren_base.group_hr_employee_readonly'),
+                    self.env.ref('base.group_allow_export'),
+                ])
 
         if not groups_to_add:
             raise UserError("Jenis pegawai tidak terdaftar untuk penambahan group.")
@@ -1244,18 +1448,25 @@ class hr_employee(models.Model):
 
             try:
                 # Tentukan group yang harus diberikan
-                jenis = rec.jns_pegawai or ''
-                group_xmlids = ['base.group_user']  # selalu ada
-
-                # 🔧 PERBAIKAN: Gunakan exact match agar konsisten dengan activate_account()
-                if jenis in GROUP_MAPPING:
-                    group_xmlids.extend(GROUP_MAPPING[jenis])
+                # Use new Many2many approach if available, fallback to legacy
+                if rec.jns_pegawai_ids:
+                    # New approach: use helper method
+                    groups_to_add = rec._get_security_groups_for_roles()
+                    final_group_ids = [g.id for g in groups_to_add]
                 else:
-                    # Jika tidak ada exact match → pakai default
-                    group_xmlids.extend(DEFAULT_GROUPS)
+                    # Backward compatibility: use legacy jns_pegawai field
+                    jenis = rec.jns_pegawai or ''
+                    group_xmlids = ['base.group_user']  # selalu ada
 
-                # Konversi ke ID nyata
-                final_group_ids = [group_refs[x].id for x in group_xmlids if x in group_refs]
+                    # 🔧 PERBAIKAN: Gunakan exact match agar konsisten dengan activate_account()
+                    if jenis in GROUP_MAPPING:
+                        group_xmlids.extend(GROUP_MAPPING[jenis])
+                    else:
+                        # Jika tidak ada exact match → pakai default
+                        group_xmlids.extend(DEFAULT_GROUPS)
+
+                    # Konversi ke ID nyata
+                    final_group_ids = [group_refs[x].id for x in group_xmlids if x in group_refs]
 
                 # UPDATE USER — SEKALI JALAN (super cepat!)
                 user.write({
