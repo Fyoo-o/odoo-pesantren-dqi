@@ -203,6 +203,21 @@
                                             placeholder="Catatan untuk murajaah harian..." />
                                     </group>
                                 </page>
+                                <!-- TAB Riwayat Hafalan -->
+                                <page string="Riwayat Hafalan">
+                                    <field name="riwayat_hafalan_ids" nolabel="1" mode="list"
+                                        readonly="1">
+                                        <list default_order="tanggal_penilaian desc, sequence desc"
+                                            create="false" edit="false" delete="false">
+                                            <field name="tanggal_penilaian" string="Tanggal" />
+                                            <field name="surah_id" string="Surah" />
+                                            <field name="ayat_awal" string="Ayat Awal" />
+                                            <field name="ayat_akhir" string="Ayat Akhir" />
+                                            <field name="nilai_hafalan" string="Nilai Hafalan" />
+                                            <field name="predikat" string="Predikat Hafalan" />
+                                        </list>
+                                    </field>
+                                </page>
                                 <!-- TAB Riwayat Tahfizh Ujian -->
                                 <page string="Riwayat Ujian Tahfizh">
                                     <field name="riwayat_tahfidz_ujian_ids" nolabel="1" mode="list"
@@ -217,21 +232,6 @@
                                                 string="Ayat Akhir" />
                                             <field name="nilai_ujian_tahfidz" string="Nilai" />
                                             <field name="predikat_ujian_tahfidz" string="Predikat" />
-                                        </list>
-                                    </field>
-                                </page>
-                                <!-- TAB Riwayat Hafalan -->
-                                <page string="Riwayat Hafalan">
-                                    <field name="riwayat_hafalan_ids" nolabel="1" mode="list"
-                                        readonly="1">
-                                        <list default_order="tanggal_penilaian desc, sequence desc"
-                                            create="false" edit="false" delete="false">
-                                            <field name="tanggal_penilaian" string="Tanggal" />
-                                            <field name="surah_id" string="Surah" />
-                                            <field name="ayat_awal" string="Ayat Awal" />
-                                            <field name="ayat_akhir" string="Ayat Akhir" />
-                                            <field name="nilai_hafalan" string="Nilai Hafalan" />
-                                            <field name="predikat" string="Predikat Hafalan" />
                                         </list>
                                     </field>
                                 </page>
