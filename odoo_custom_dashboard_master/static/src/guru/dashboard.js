@@ -232,7 +232,7 @@ class OwlGuruDashboard extends Component {
   get dateRangeProps() {
     console.log("Getting dateRangeProps:", this.state.selectedDateRange);
     if (!this.state.selectedDateRange) {
-      return { startDate: null, endDate: null };
+      return { startDate: "", endDate: "" };
     }
     return {
       startDate: this.state.selectedDateRange.start,

@@ -6,54 +6,51 @@
         <record id="view_employee_tree_inherit" model="ir.ui.view">
             <field name="name">hr.employee.list.inherit</field>
             <field name="model">hr.employee</field>
-            <field name="inherit_id" ref="hr.view_employee_tree"/>
+            <field name="inherit_id" ref="hr.view_employee_tree" />
             <field name="arch" type="xml">
                 <field name="department_id" position="before">
-                    <field name="nip"/>
-                    <field name="lembaga"/>
-				</field>
-            </field>
-        </record>
-        
-        <record id="view_employee_form_inherit" model="ir.ui.view">
-            <field name="name">hr.employee.form.inherit</field>
-            <field name="model">hr.employee</field>
-            <field name="inherit_id" ref="hr.view_employee_form"/>
-            <field name="arch" type="xml">
-                <field name="job_id" position="attributes">
-                    <attribute name="widget">many2one_tags</attribute>
+                    <field name="nip" />
+                    <field name="lembaga" />
+                    <field name="jns_pegawai_ids" widget="many2many_tags"
+                        options="{'color_field': 'color'}" />
                 </field>
             </field>
         </record>
-        
+
 
         <record id="view_employee_form_inherit" model="ir.ui.view">
-            <field name="name">hr.employee.from.inherit</field>
+            <field name="name">hr.employee.form.inherit</field>
             <field name="model">hr.employee</field>
-            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="inherit_id" ref="hr.view_employee_form" />
             <field name="arch" type="xml">
+                <field name="job_id" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
                 <field name="department_id" position="before">
-                    <field name="nip"/>
-                    <field name="lembaga"/>
-                    <field name="password" widget="password_toggle"/>
-				</field>
+                    <field name="nip" />
+                    <field name="lembaga" />
+                    <field name="password" widget="password_toggle" />
+                </field>
                 <field name="coach_id" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </field>
                 <!-- Add your xpath here -->
-                <xpath expr="//page[@name='personal_information']//group[1]//group[4]" position="attributes">
+                <xpath expr="//page[@name='personal_information']//group[1]//group[4]"
+                    position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
-                <xpath expr="//page[@name='personal_information']//group[1]//group[3]" position="attributes">
+                <xpath expr="//page[@name='personal_information']//group[1]//group[3]"
+                    position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
-                <xpath expr="//page[@name='personal_information']//group[1]//group[1]" position="attributes">
+                <xpath expr="//page[@name='personal_information']//group[1]//group[1]"
+                    position="attributes">
                     <attribute name="string">Data Kontak</attribute>
                 </xpath>
                 <xpath expr="//header" position="inside">
                     <button name="activate_account"
-        string="Aktifkan Akun"
-        type="object" />
+                        string="Aktifkan Akun"
+                        type="object" />
                 </xpath>
                 <!-- <field name="country_of_birth" position="attributes">
                     <attribute name="invisible">1</attribute>
@@ -61,7 +58,8 @@
                 <!-- <field name="km_home_work" position="attributes">
                     <attribute name="string">Jarak Rumah (km)</attribute>
                 </field> -->
-                <!-- <xpath expr="//page[@name='personal_information']//group[1]//group[5]" position="attributes">
+                <!-- <xpath expr="//page[@name='personal_information']//group[1]//group[5]"
+                position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
                 <xpath expr="//page[@name='personal_information']//group[1]//group[6]" position="attributes">
@@ -71,48 +69,33 @@
                     <attribute name="attrs">{'invisible':True}</attribute>
                 </xpath> -->
                 <xpath expr="//notebook" position="inside">
-                    <page string="Daftar Mata Pelajaran" invisible="jns_pegawai not in ['guru', 'guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran']">
-                        <field name="jns_pegawai" invisible="1"/>
+                    <page string="Daftar Mata Pelajaran" invisible="not has_guru_role">
+                        <field name="jns_pegawai" invisible="1" />
                         <field name="mata_pelajaran_ids" nolable="1" colspan="4">
                             <list editable="bottom">
-                                <field name="name"/>
-                                <field name="jenjang"/>
-                                <field name="tingkat_id"/>
-                                <field name="jurusan_id"/>
-                                <field name="kategori"/>
+                                <field name="name" />
+                                <field name="jenjang" />
+                                <field name="tingkat_id" />
+                                <field name="jurusan_id" />
+                                <field name="kategori" />
                             </list>
                         </field>
                     </page>
                 </xpath>
-                <!-- <xpath expr="//notebook" position="inside">
-                    <page string="Jadwal Mengajar" invisible="[('jns_pegawai','!=','guru')]">
-                        <field name="jns_pegawai" invisible="1"/>
-                        <field name="jadwal_pelajaran_lines_ids" nolable="1" colspan="4">
-                            <list editable="bottom">
-                                <field name="name"/>
-                                <field name="kelas_id"/>
-                                <field name="jampelajaran_id"/>
-                                <field name="matapelajaran_id"/>
-                            </list>
-                        </field>
-                    </page>
-                </xpath> -->
             </field>
         </record>
         <record id="hr_employee_kanban_inheritance_view" model="ir.ui.view">
             <field name="name">hr.employee.kanban.inherit</field>
             <field name="model">hr.employee</field>
-            <field name="inherit_id" ref="hr.hr_kanban_view_employees"/>
-            <!-- Replace 'your_module' with the actual module name -->
+            <field name="inherit_id" ref="hr.hr_kanban_view_employees" />
+            <!-- Replace 'your_module' with the actual modue name -->
             <field name="arch" type="xml">
-                <!-- Use XPath to insert the jns_pegawai field -->
-                <xpath expr="//field[@name='job_title']" position="attributes">
-                    <attribute name="t-if">False</attribute>
+                <xpath expr="//kanban" position="inside">
+                    <field name="jns_pegawai_ids" />
                 </xpath>
-                <xpath expr="//field[@name='job_title']" position="after">
-                    <span t-if="record.jns_pegawai.raw_value" class="o_kanban_record_subtitle">
-                        <field name="jns_pegawai"/>
-                    </span>
+                <!-- Use XPath to insert the jns_pegawai field -->
+                <xpath expr="//field[@name='job_title']" position="replace">
+                    <field name="jns_pegawai_ids" widget="many2many_tags" />
                 </xpath>
             </field>
         </record>
@@ -121,8 +104,8 @@
             <field name="name">Data Guru / Karyawan</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">hr.employee</field>
-            <field name="view_mode">list,form</field>
-            <field name="domain">[('jns_pegawai','in',['guru', 'guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])]</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="domain">[('jns_pegawai_ids.code', 'in', ['guru'])]</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
                     <!-- Add Text Here -->
@@ -135,13 +118,14 @@
 
         <record id="guru_karyawan_active_account_action" model="ir.actions.server">
             <field name="name">Aktifkan Akun</field>
-            <field name="model_id" ref="model_hr_employee"/>
-            <field name="binding_model_id" ref="model_hr_employee"/>
+            <field name="model_id" ref="model_hr_employee" />
+            <field name="binding_model_id" ref="model_hr_employee" />
             <field name="binding_view_types">form,list</field>
-            <field name="state">code</field>    
+            <field name="state">code</field>
             <field name="code">action = records.activate_account_action()</field>
         </record>
 
-        <menuitem id="menu_cdn_guru" name="Guru" parent="sekolah_top_menu" action="hr_employee_guru_open_action" sequence="20"/>
+        <menuitem id="menu_cdn_guru" name="Guru" parent="sekolah_top_menu"
+            action="hr_employee_guru_open_action" sequence="20" />
     </data>
 </odoo>

@@ -11,7 +11,16 @@ class TahfidzHadits(models.Model):
     kelas_id = fields.Many2one(comodel_name='cdn.ruang_kelas', string='Kelas', readonly=True, related='siswa_id.ruang_kelas_id')
     
     tanggal = fields.Date(string='Tgl Tahfidz', default=fields.Date.context_today, required=True)
-    guru_id = fields.Many2one(comodel_name='hr.employee', string='Guru', required=True, domain=[('jns_pegawai','in',['guru','musyrif','ustadz','guruquran','guru,guruquran','musyrif,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])], default=lambda self: self.env['hr.employee'].search([('user_id','=',self.env.uid), ('jns_pegawai','in',['guru','musyrif','ustadz', 'guru,guruquran', 'musyrif,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])], limit=1))
+    guru_id = fields.Many2one(
+        comodel_name='hr.employee', 
+        string='Guru', 
+        required=True, 
+        domain=[('jns_pegawai_ids.code', 'in', ['guru', 'musyrif', 'guruquran'])], 
+        default=lambda self: self.env['hr.employee'].search([
+            ('user_id', '=', self.env.uid), 
+            ('jns_pegawai_ids.code', 'in', ['guru', 'musyrif', 'guruquran'])
+        ], limit=1)
+    )
     hadits_id = fields.Many2one(comodel_name='cdn.hadits', string='Hadits', required=True)
     nilai_id = fields.Many2one(comodel_name='cdn.nilai_tahfidz', string='Nilai')
     nilai = fields.Integer(string='Nilai', default="0")

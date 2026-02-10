@@ -43,7 +43,7 @@
     'author': "PT. Cendana Teknika Utama",
     'website': "https://www.cendana2000.co.id",
     'category': 'Education',
-    'version': '18.0.1.0',
+    'version': '18.0.1.1',
     'license': 'LGPL-3',
 
     # any module necessary for this one to work correctly
@@ -57,15 +57,16 @@
         # 'data/ks_sekolah_data.xml',
 
         #data
-        'views/menu.xml',
         'data/company_data.xml',
         'data/base_data.xml',
         'data/ir_sequence_data.xml',
         'data/cdn_tingkat_data.xml',
+        'data/jenis_pegawai_data.xml',
         # report
         'report/cetak_sertifikat_santri.xml',
         'report/cetak_kartu_santri.xml',
-        # views
+        # views (load before menu so actions are available)
+        'views/jenis_pegawai_views.xml',
         'views/siswa.xml',
         'views/cutigroup.xml',
         'views/orangtua.xml',
@@ -82,6 +83,7 @@
         'views/jurusan.xml',
         'views/guru.xml',
         'views/guru_karyawan.xml',
+        'views/menu.xml',
         'views/sekolah.xml',
         'views/harga_khusus.xml',
         'views/invoice_view.xml',

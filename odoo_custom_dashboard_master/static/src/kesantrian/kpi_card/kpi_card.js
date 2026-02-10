@@ -20,7 +20,7 @@ export class KpiCard extends Component {
 
         const today = new Date();
         const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
-        
+
         this.defaultStartDate = firstDayOfYear.toISOString().split('T')[0];
         this.defaultEndDate = today.toISOString().split('T')[0];
 
@@ -29,7 +29,7 @@ export class KpiCard extends Component {
         }
 
         onWillUpdateProps(async (nextProps) => {
-            if (nextProps.startDate !== this.props.startDate || 
+            if (nextProps.startDate !== this.props.startDate ||
                 nextProps.endDate !== this.props.endDate) {
                 this.state.currentStartDate = nextProps.startDate;
                 this.state.currentEndDate = nextProps.endDate;
@@ -116,7 +116,7 @@ export class KpiCard extends Component {
     updateTimerUI(stopped = false) {
         const timerIcon = document.getElementById("timerIcon");
         const timerCountdown = document.getElementById("timerCountdown");
-        
+
         if (timerIcon) {
             timerIcon.className = stopped ? "fas fa-clock" : "fas fa-stop d-none";
         }
@@ -145,7 +145,7 @@ export class KpiCard extends Component {
 
     animateNumber(element, start, end, duration = 500) {
         if (!element) return;
-        
+
         const range = end - start;
         const minFrame = 16;
         const steps = Math.max(Math.floor(duration / minFrame), 1);
@@ -162,7 +162,7 @@ export class KpiCard extends Component {
         const animate = () => {
             step++;
             current += increment;
-            
+
             if (step <= steps) {
                 element.textContent = Math.round(current).toLocaleString();
                 this.state.animations[animationKey] = requestAnimationFrame(animate);
@@ -179,53 +179,65 @@ export class KpiCard extends Component {
         try {
             // Remove date domain filter, use empty domain instead
             const domain = [];
-            
+
             let siswaData = [], orangtuaData = [], employeeData = [];
-        
+
             try {
                 siswaData = await this.orm.call(
-                    'cdn.siswa', 
-                    'search_read', 
+                    'cdn.siswa',
+                    'search_read',
                     [domain, ['id', 'complete_name', 'jns_kelamin', 'last_tahfidz', 'pelanggaran_count', 'penilaian_quran_count']],
                     { context: this.env.context }
                 );
             } catch (error) {
                 console.warn('Error fetching siswa data:', error);
             }
-        
+
             try {
                 orangtuaData = await this.orm.call(
-                    'cdn.orangtua', 
-                    'search_read', 
+                    'cdn.orangtua',
+                    'search_read',
                     [domain, ['id', 'complete_name']],
                     { context: this.env.context }
                 );
             } catch (error) {
                 console.warn('Error fetching orangtua data:', error);
             }
-        
+
             try {
-                employeeData = await this.orm.call(
-                    'hr.employee', 
-                    'search_read', 
-                    [domain, ['id', 'jns_pegawai']],
+                musyrifData = await this.orm.call(
+                    'hr.employee',
+                    'search_read',
+                    [[['jns_pegawai_ids.code', '=', 'musyrif']], ['id']],
                     { context: this.env.context }
                 );
             } catch (error) {
-                console.warn('Error fetching employee data:', error);
+                console.warn('Error fetching musyrif data:', error);
             }
 
-            console.log('Raw Data:', {
+            try {
+                guruQuranData = await this.orm.call(
+                    'hr.employee',
+                    'search_read',
+                    [[['jns_pegawai_ids.code', '=', 'guruquran']], ['id']],
+                    { context: this.env.context }
+                );
+            } catch (error) {
+                console.warn('Error fetching guruquran data:', error);
+            }
+
+            console.log('Raw Data Kesantrian:', {
                 siswaData,
                 orangtuaData,
-                employeeData
+                musyrifData,
+                guruQuranData
             });
 
             // Calculate totals (with null checks)
             const totalSiswa = siswaData?.length || 0;
             const totalOrangtua = orangtuaData?.length || 0;
-            const musyrifCount = employeeData?.filter(employee => employee.jns_pegawai === 'musyrif')?.length || 0;
-            const guruQuranCount = employeeData?.filter(employee => employee.jns_pegawai === 'guruquran')?.length || 0;
+            const musyrifCount = musyrifData?.length || 0;
+            const guruQuranCount = guruQuranData?.length || 0;
 
             // Update state with new data
             this.state.kpiData = [
@@ -251,7 +263,7 @@ export class KpiCard extends Component {
                     icon: 'fa-user-tie',
                     color: '#00e396',
                     res_model: 'hr.employee',
-                    domain: [...domain, ['jns_pegawai', '=', 'musyrif']],
+                    domain: [...domain, ['jns_pegawai_ids.code', '=', 'musyrif']],
                 },
                 {
                     name: 'Guru Quran',
@@ -259,13 +271,13 @@ export class KpiCard extends Component {
                     icon: 'fa-book',
                     color: '#00e396',
                     res_model: 'hr.employee',
-                    domain: [...domain, ['jns_pegawai', '=', 'guruquran']],
+                    domain: [...domain, ['jns_pegawai_ids.code', '=', 'guruquran']],
                 },
             ];
 
             // Start animations for new values
             this.startKpiAnimations();
-                
+
         } catch (error) {
             console.error('Error in fetchData:', error);
         }

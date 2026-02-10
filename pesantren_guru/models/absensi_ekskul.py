@@ -60,13 +60,7 @@ class AbsensiEkskul(models.Model):
         return [
             '|',
             ('user_id', 'in', admin_user_ids),
-            ('jns_pegawai', 'in', [
-                'guru',
-                'guru,guruquran',
-                'musyrif,guru',
-                'musyrif,guru,guruquran',
-                'superadmin'
-            ]),
+            ('jns_pegawai_ids.code', 'in', ['guru', 'superadmin'])
         ]
     @api.depends('ekskul_id')
     def _compute_guru(self):

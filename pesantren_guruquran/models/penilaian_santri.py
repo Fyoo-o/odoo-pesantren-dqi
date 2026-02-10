@@ -43,8 +43,7 @@ class Penilaian(models.Model):
         # domain=_domain_guru,
         default=lambda self: self.env['hr.employee'].search([
             ('user_id', '=', self.env.uid),
-            ('jns_pegawai', 'in', [
-             'guruquran', 'guru,guruquran', 'musyrif,guruquran', 'musyrif,guru,guruquran'])
+            ('jns_pegawai_ids.code', 'in', ['guruquran'])
         ],
             limit=1),
         domain=lambda self: self.env['cdn.penilaian_santri']._domain_guruquran(

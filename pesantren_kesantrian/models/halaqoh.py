@@ -54,15 +54,7 @@ class Halaqoh(models.Model):
         return [
             '|',
             ('user_id', '=', admin_user_ids),  # superadmin
-            ('jns_pegawai', 'in', [
-                'guruquran',
-                'musyrif',
-                'guru,guruquran',
-                'musyrif,guruquran',
-                'musyrif,guru',
-                'musyrif,guru,guruquran',
-                'superadmin'
-            ])
+            ('jns_pegawai_ids.code', 'in', ['guruquran', 'musyrif', 'guru', 'superadmin'])
         ]
         
     def unlink(self):

@@ -6,7 +6,7 @@
         <field name="code">cdn.penilaian_quran</field>
         <field name="prefix">PQ/%(year)s/</field>
         <field name="padding">4</field>
-        <field name="company_id" eval="False"/>
+        <field name="company_id" eval="False" />
     </record>
 
     <!-- List View -->
@@ -15,58 +15,65 @@
         <field name="model">cdn.penilaian_quran</field>
         <field name="arch" type="xml">
             <list default_order="name desc" create="false">
-                <field name="name" optional="show"/>
-                <field name="tanggal" optional="show"/>
-                <field name="siswa_id" optional="show" context="{'from_guru_quran': True}"/>
-                <field name="halaqoh_id" string="Halaqoh" optional="show" context="{'from_guru_quran': True}"/>
-                <field name="ustadz_id" optional="show"/>
+                <field name="name" optional="show" />
+                <field name="tanggal" optional="show" />
+                <field name="siswa_id" optional="show" context="{'from_guru_quran': True}" />
+                <field name="halaqoh_id" string="Halaqoh" optional="show"
+                    context="{'from_guru_quran': True}" />
+                <field name="ustadz_id" optional="show" />
 
                 <!-- Tahfizh -->
-                <field name="surah_id" string="Surat Tahfizh" optional="hide"/>
-                <field name="ayat_awal" string="Ayat Awal Tahfizh" optional="hide"/>
-                <field name="ayat_akhir" string="Ayat Akhir Tahfizh" optional="hide"/>
-                <field name="last_jml_baris" string="Jumlah Maqra' Tahfizh" optional="hide"/>
-                <field name="last_nilai_hafalan" string="Nilai Tahfizh" optional="hide"/>
-                <field name="last_predikat" string="Predikat Tahfizh" optional="hide"/>
+                <field name="surah_id" string="Surat Tahfizh" optional="hide" />
+                <field name="ayat_awal" string="Ayat Awal Tahfizh" optional="hide" />
+                <field name="ayat_akhir" string="Ayat Akhir Tahfizh" optional="hide" />
+                <field name="last_jml_baris" string="Jumlah Maqra' Tahfizh" optional="hide" />
+                <field name="last_nilai_hafalan" string="Nilai Tahfizh" optional="hide" />
+                <field name="last_predikat" string="Predikat Tahfizh" optional="hide" />
 
                 <!-- Tahfizh Ujian -->
-                <field name="surah_id_ujian_tahfidz" string="Surat Tahfizh (Ujian)" optional="hide"/>
-                <field name="ayat_awal_ujian_tahfidz" string="Ayat Awal Tahfizh (Ujian)" optional="hide"/>
-                <field name="ayat_akhir_ujian_tahfidz" string="Ayat Akhir Tahfizh (Ujian)" optional="hide"/>
-                <field name="nilai_ujian_tahfidz" string="Nilai Tahfizh (Ujian)" optional="hide"/>
-                <field name="predikat_ujian_tahfidz" string="Predikat Tahfizh (Ujian)" optional="hide"/>
+                <field name="surah_id_ujian_tahfidz" string="Surat Tahfizh (Ujian)" optional="hide" />
+                <field name="ayat_awal_ujian_tahfidz" string="Ayat Awal Tahfizh (Ujian)"
+                    optional="hide" />
+                <field name="ayat_akhir_ujian_tahfidz" string="Ayat Akhir Tahfizh (Ujian)"
+                    optional="hide" />
+                <field name="nilai_ujian_tahfidz" string="Nilai Tahfizh (Ujian)" optional="hide" />
+                <field name="predikat_ujian_tahfidz" string="Predikat Tahfizh (Ujian)"
+                    optional="hide" />
 
                 <!-- Murajaah Harian -->
-                <field name="buku_murajaah_id" string="Buku Murajaah" optional="hide"/>
-                <field name="juz_murajaah" string="Juz Murajaah" optional="hide"/>
-                <field name="surah_murajaah_id" string="Surah Murajaah" optional="hide"/>
-                <field name="halaman_murajaah" string="Halaman Murajaah" optional="hide"/>
+                <field name="buku_murajaah_id" string="Buku Murajaah" optional="hide" />
+                <field name="juz_murajaah" string="Juz Murajaah" optional="hide" />
+                <field name="surah_murajaah_id" string="Surah Murajaah" optional="hide" />
+                <field name="halaman_murajaah" string="Halaman Murajaah" optional="hide" />
 
                 <!-- Tahsin Harian -->
-                <field name="buku_harian_id" string="Buku Tahsin (Harian)" optional="hide"/>
-                <field name="jilid_harian_id" string="Jilid Tahsin (Harian)" optional="hide"/>
-                <field name="halaman_harian" string="Halaman Tahsin (Harian)" optional="hide"/>
-                <field name="nilai_harian" string="Nilai Harian (PAUD/TK)" optional="hide"/>
-                <field name="surah_id_harian" string="Surat Tahsin (Harian)" optional="hide"/>
-                <field name="ayat_awal_harian" string="Ayat Awal Tahsin (Harian)" optional="hide"/>
-                <field name="ayat_akhir_harian" string="Ayat Akhir Tahsin (Harian)" optional="hide"/>
-                <field name="nilai_tahsin_harian" string="Nilai (Harian)" optional="hide"/>
-                <field name="predikat_tahsin_harian" string="Predikat Tahsin (Harian)" optional="hide"/>
+                <field name="buku_harian_id" string="Buku Tahsin (Harian)" optional="hide" />
+                <field name="jilid_harian_id" string="Jilid Tahsin (Harian)" optional="hide" />
+                <field name="halaman_harian" string="Halaman Tahsin (Harian)" optional="hide" />
+                <field name="nilai_harian" string="Nilai Harian (PAUD/TK)" optional="hide" />
+                <field name="surah_id_harian" string="Surat Tahsin (Harian)" optional="hide" />
+                <field name="ayat_awal_harian" string="Ayat Awal Tahsin (Harian)" optional="hide" />
+                <field name="ayat_akhir_harian" string="Ayat Akhir Tahsin (Harian)" optional="hide" />
+                <field name="nilai_tahsin_harian" string="Nilai (Harian)" optional="hide" />
+                <field name="predikat_tahsin_harian" string="Predikat Tahsin (Harian)"
+                    optional="hide" />
 
                 <!-- Tahsin Ujian -->
-                <field name="buku_ujian_id" string="Buku Tahsin (Ujian)" optional="hide"/>
-                <field name="jilid_ujian_id" string="Jilid Tahsin (Ujian)" optional="hide"/>
-                <field name="halaman_ujian" string="Halaman Tahsin (Ujian)" optional="hide"/>
-                <field name="surah_id_ujian" string="Surat Tahsin (Ujian)" optional="hide"/>
-                <field name="ayat_awal_ujian" string="Ayat Awal Tahsin (Ujian)" optional="hide"/>
-                <field name="ayat_akhir_ujian" string="Ayat Akhir Tahsin (Ujian)" optional="hide"/>
-                <field name="nilai_tajwid_ujian" string="Nilai Tajwid Tahsin (Ujian)" optional="hide"/>
-                <field name="nilai_makhroj_ujian" string="Nilai Makhroj Tahsin (Ujian)" optional="hide"/>
-                <field name="nilai_mad_ujian" string="Nilai Mad Tahsin (Ujian)" optional="hide"/>
+                <field name="buku_ujian_id" string="Buku Tahsin (Ujian)" optional="hide" />
+                <field name="jilid_ujian_id" string="Jilid Tahsin (Ujian)" optional="hide" />
+                <field name="halaman_ujian" string="Halaman Tahsin (Ujian)" optional="hide" />
+                <field name="surah_id_ujian" string="Surat Tahsin (Ujian)" optional="hide" />
+                <field name="ayat_awal_ujian" string="Ayat Awal Tahsin (Ujian)" optional="hide" />
+                <field name="ayat_akhir_ujian" string="Ayat Akhir Tahsin (Ujian)" optional="hide" />
+                <field name="nilai_tajwid_ujian" string="Nilai Tajwid Tahsin (Ujian)"
+                    optional="hide" />
+                <field name="nilai_makhroj_ujian" string="Nilai Makhroj Tahsin (Ujian)"
+                    optional="hide" />
+                <field name="nilai_mad_ujian" string="Nilai Mad Tahsin (Ujian)" optional="hide" />
 
                 <!-- Status -->
-                <field name="company_id" optional="hide"/>
-                <field name="state" optional="show"/>
+                <field name="company_id" optional="hide" />
+                <field name="state" optional="show" />
             </list>
         </field>
     </record>
@@ -78,313 +85,372 @@
         <field name="arch" type="xml">
             <form string="Penilaian Halaqoh" create="false">
                 <header>
-                    <button string="Confirm" type="object" name="action_confirm" invisible="state != 'draft'" class="oe_highlight" groups="pesantren_kesantrian.group_kesantrian_staff,pesantren_guruquran.group_guru_quran_staff,base.group_system"/>
-                    <button string="Set to Draft" type="object" name="action_draft" invisible="state != 'done'" groups="pesantren_kesantrian.group_kesantrian_staff,pesantren_guruquran.group_guru_quran_staff,base.group_system"/>
-                    <field name="state" widget="statusbar"/>
+                    <button string="Confirm" type="object" name="action_confirm"
+                        invisible="state != 'draft'" class="oe_highlight"
+                        groups="pesantren_kesantrian.group_kesantrian_staff,pesantren_guruquran.group_guru_quran_staff,base.group_system" />
+                    <button string="Set to Draft" type="object" name="action_draft"
+                        invisible="state != 'done'"
+                        groups="pesantren_kesantrian.group_kesantrian_staff,pesantren_guruquran.group_guru_quran_staff,base.group_system" />
+                    <field name="state" widget="statusbar" />
                 </header>
                 <sheet>
-                    <div class="oe_button_box" name="button_box"/>
+                    <div class="oe_button_box" name="button_box" />
 
                     <group string="Informasi Santri">
                         <group>
-                            <field name="barcode" readonly="1"/>
-                            <field name="siswa_id" required="1" options="{'no_create': True, 'no_open': True}" context="{'from_guru_quran': True}"/>
-                            <field name="kelas_id" readonly="1"/>
+                            <field name="barcode" readonly="1" />
+                            <field name="siswa_id" required="1"
+                                options="{'no_create': True, 'no_open': True}"
+                                context="{'from_guru_quran': True}" />
+                            <field name="kelas_id" readonly="1" />
                         </group>
                         <group>
-                            <field name="kamar_id" readonly="1"/>
-                            <field name="halaqoh_id" readonly="1" context="{'from_guru_quran': True}"/>
-                            <field name="musyrif_id" readonly="1"/>
+                            <field name="kamar_id" readonly="1" />
+                            <field name="halaqoh_id" readonly="1"
+                                context="{'from_guru_quran': True}" />
+                            <field name="musyrif_id" readonly="1" />
                         </group>
                     </group>
 
                     <group string="Pelaksanaan">
                         <group>
-                            <field name="tanggal"/>
-                            <field name="ustadz_id" required="1" options="{'no_create': True, 'no_open': True}"/>
-                            <field name="company_id" 
-                                options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="1"/>
+                            <field name="tanggal" />
+                            <field name="ustadz_id" required="1"
+                                options="{'no_create': True, 'no_open': True}" />
+                            <field name="company_id"
+                                options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"
+                                readonly="1" />
                         </group>
                         <group>
-                            <field name="sesi_id"/>
-                            <field name="jenjang_display"/>
+                            <field name="sesi_id" />
+                            <field name="jenjang_display" />
                         </group>
                     </group>
 
                     <notebook>
                         <!-- TAB Tahfizh -->
                         <page string="Tahfizh">
-                        <notebook>
-                        <page string="Tahfizh">
-                            <!-- Info Tahfidz Terakhir -->
-                            <group string="Tahfizh Terakhir" colspan="4" invisible="not siswa_id">
-                                <group>
-                                    <field name="last_surah_id" readonly="1"/>
-                                    <field name="last_ayat_akhir" readonly="1"/>
-                                </group>
-                            </group>
-                            <!-- Tabel Dinamis Setoran Hafalan -->
-                            <field name="tahfidz_line_ids">
-                                <list editable="bottom">
-                                    <field name="surah_id"/>
-                                    <field name="ayat_awal"/>
-                                    <field name="ayat_akhir"/>
-                                    <field name="jml_baris"/>
+                            <notebook>
+                                <page string="Tahfizh">
+                                    <!-- Info Tahfidz Terakhir -->
+                                    <group string="Tahfizh Terakhir" colspan="4"
+                                        invisible="not siswa_id">
+                                        <group>
+                                            <field name="last_surah_id" readonly="1" />
+                                            <field name="last_ayat_akhir" readonly="1" />
+                                        </group>
+                                    </group>
+                                    <!-- Tabel Dinamis Setoran Hafalan -->
+                                    <field name="tahfidz_line_ids">
+                                        <list editable="bottom">
+                                            <field name="surah_id" />
+                                            <field name="ayat_awal" />
+                                            <field name="ayat_akhir" />
+                                            <field name="jml_baris" />
 
-                                    <!-- Nilai Hafalan hanya muncul untuk jenjang SD ke atas -->
-                                    <field name="nilai_hafalan" invisible="penilaian_id.jenjang_display in ['paud','tk','tk/ra']"/>
+                                            <!-- Nilai Hafalan hanya muncul untuk jenjang SD ke atas -->
+                                            <field name="nilai_hafalan"
+                                                invisible="penilaian_id.jenjang_display in ['paud','tk','tk/ra']" />
 
-                                    <field name="predikat" readonly="1"/>
-                                    <field name="keterangan"/>
-                                </list>
-                            </field>
-                        </page>
+                                            <field name="predikat" readonly="1" />
+                                            <field name="keterangan" />
+                                        </list>
+                                    </field>
+                                </page>
 
-                        <!-- TAB TAHFIDZ UJIAN -->
-                        <page string="Tahfizh Ujian">
-                            <group string="Buku Halaman">
-                                <group>
-                                    <field name="buku_tahfidz_ujian_id"/>
-                                    <field name="juz_tahfidz_ujian"/>
-                                </group>
-                                <group>
-                                    <field name="halaman_tahfidz_ujian"/>
-                                </group>
-                            </group>
-                            <group string="Penilaian">
-                                <group>
-                                    <field name="surah_id_ujian_tahfidz"/>
-                                    <field name="ayat_awal_ujian_tahfidz"/>
-                                    <field name="ayat_akhir_ujian_tahfidz"/>
-                                </group>
-                                <group>
-                                    <field name="nilai_ujian_tahfidz" string="Nilai"/>
-                                    <field name="predikat_ujian_tahfidz" />
-                                </group>
-                            </group>
-                            <group string="Catatan">
-                                <field name="catatan_tahfidz" nolabel="1" placeholder="Catatan untuk Tahfizh ujian..."/>
-                            </group>
-                        </page>
+                                <!-- TAB TAHFIDZ UJIAN -->
+                                <page string="Tahfizh Ujian">
+                                    <group string="Buku Halaman">
+                                        <group>
+                                            <field name="buku_tahfidz_ujian_id" />
+                                            <field name="juz_tahfidz_ujian" />
+                                        </group>
+                                        <group>
+                                            <field name="halaman_tahfidz_ujian" />
+                                        </group>
+                                    </group>
+                                    <group string="Penilaian">
+                                        <group>
+                                            <field name="surah_id_ujian_tahfidz" />
+                                            <field name="ayat_awal_ujian_tahfidz" />
+                                            <field name="ayat_akhir_ujian_tahfidz" />
+                                        </group>
+                                        <group>
+                                            <field name="nilai_ujian_tahfidz" string="Nilai" />
+                                            <field name="predikat_ujian_tahfidz" />
+                                        </group>
+                                    </group>
+                                    <group string="Catatan">
+                                        <field name="catatan_tahfidz" nolabel="1"
+                                            placeholder="Catatan untuk Tahfizh ujian..." />
+                                    </group>
+                                </page>
 
-                        <!-- TAB Murajaah Harian -->
-                        <page string="Murajaah Harian">
-                            <group string="Informasi Murajaah">
-                                <group>
-                                    <field name="buku_murajaah_id" readonly="1"/>
-                                    <field name="juz_murajaah" height="10px"/>
-                                </group>
-                                <group>
-                                    <field name="surah_murajaah_id"/>
-                                    <field name="halaman_murajaah"/>
-                                </group>
-                            </group>
-                            <group string="Catatan">
-                                <field name="catatan_murajaah_harian" nolabel="1" placeholder="Catatan untuk murajaah harian..."/>
-                            </group>
-                        </page>
-                        <!-- TAB Riwayat Hafalan -->
-                        <page string="Riwayat Hafalan">
-                            <field name="riwayat_hafalan_ids" nolabel="1" mode="list" readonly="1">
-                                <list default_order="tanggal_penilaian desc, sequence desc" create="false" edit="false" delete="false">
-                                    <field name="tanggal_penilaian" string="Tanggal"/>
-                                    <field name="surah_id" string="Surah"/>
-                                    <field name="ayat_awal" string="Ayat Awal"/>
-                                    <field name="ayat_akhir" string="Ayat Akhir"/>
-                                    <field name="nilai_hafalan" string="Nilai Hafalan"/>
-                                    <field name="predikat" string="Predikat Hafalan"/>
-                                </list>
-                            </field>
-                        </page>
-                        </notebook>
+                                <!-- TAB Murajaah Harian -->
+                                <page string="Murajaah Harian">
+                                    <group string="Informasi Murajaah">
+                                        <group>
+                                            <field name="buku_murajaah_id" readonly="1" />
+                                            <field name="juz_murajaah" height="10px" />
+                                        </group>
+                                        <group>
+                                            <field name="surah_murajaah_id" />
+                                            <field name="halaman_murajaah" />
+                                        </group>
+                                    </group>
+                                    <group string="Catatan">
+                                        <field name="catatan_murajaah_harian" nolabel="1"
+                                            placeholder="Catatan untuk murajaah harian..." />
+                                    </group>
+                                </page>
+                                <!-- TAB Riwayat Tahfizh Ujian -->
+                                <page string="Riwayat Ujian Tahfizh">
+                                    <field name="riwayat_tahfidz_ujian_ids" nolabel="1" mode="list"
+                                        readonly="1">
+                                        <list default_order="tanggal desc" create="false"
+                                            edit="false" delete="false">
+                                            <field name="tanggal" string="Tanggal" />
+                                            <field name="juz_tahfidz_ujian" string="Juz" />
+                                            <field name="surah_id_ujian_tahfidz" string="Surah" />
+                                            <field name="ayat_awal_ujian_tahfidz" string="Ayat Awal" />
+                                            <field name="ayat_akhir_ujian_tahfidz"
+                                                string="Ayat Akhir" />
+                                            <field name="nilai_ujian_tahfidz" string="Nilai" />
+                                            <field name="predikat_ujian_tahfidz" string="Predikat" />
+                                        </list>
+                                    </field>
+                                </page>
+                                <!-- TAB Riwayat Hafalan -->
+                                <page string="Riwayat Hafalan">
+                                    <field name="riwayat_hafalan_ids" nolabel="1" mode="list"
+                                        readonly="1">
+                                        <list default_order="tanggal_penilaian desc, sequence desc"
+                                            create="false" edit="false" delete="false">
+                                            <field name="tanggal_penilaian" string="Tanggal" />
+                                            <field name="surah_id" string="Surah" />
+                                            <field name="ayat_awal" string="Ayat Awal" />
+                                            <field name="ayat_akhir" string="Ayat Akhir" />
+                                            <field name="nilai_hafalan" string="Nilai Hafalan" />
+                                            <field name="predikat" string="Predikat Hafalan" />
+                                        </list>
+                                    </field>
+                                </page>
+                            </notebook>
                         </page>
 
                         <page string="Tahsin">
-                        <notebook>
-                        <!-- TAB TAHsin HARIAN -->
-                        <page string="Tahsin Harian">
-                            <group string="Buku Halaman">
-                                <group>
-                                    <field name="buku_harian_id"/>
-                                    <field name="jilid_harian_id"/>
-                                </group>
-                                <group>
-                                    <field name="halaman_harian"/>
-                                    <field name="nilai_harian" invisible="jenjang_display not in ['paud','tk','tk/ra']" />
-                                </group>
-                            </group>
-                            <group string="Penilaian" invisible="jenjang_display in ['paud','tk','tk/ra']">
-                                <group invisible="jenjang_display in ['paud','tk','tk/ra']">
-                                    <field name="surah_id_harian"/>
-                                    <field name="ayat_awal_harian"/>
-                                    <field name="ayat_akhir_harian"/>
-                                </group>
-                                <group invisible="jenjang_display in ['paud','tk','tk/ra']">
-                                    <field name="nilai_tahsin_harian" />
-                                    <field name="predikat_tahsin_harian" />
-                                </group>
-                            </group>
-                            <group string="Catatan">
-                                <field name="catatan_harian" nolabel="1" placeholder="Catatan untuk tahsin harian..."/>
-                            </group>
+                            <notebook>
+                                <!-- TAB TAHsin HARIAN -->
+                                <page string="Tahsin Harian">
+                                    <group string="Buku Halaman">
+                                        <group>
+                                            <field name="buku_harian_id" />
+                                            <field name="jilid_harian_id" />
+                                        </group>
+                                        <group>
+                                            <field name="halaman_harian" />
+                                            <field name="nilai_harian"
+                                                invisible="jenjang_display not in ['paud','tk','tk/ra']" />
+                                        </group>
+                                    </group>
+                                    <group string="Penilaian"
+                                        invisible="jenjang_display in ['paud','tk','tk/ra']">
+                                        <group invisible="jenjang_display in ['paud','tk','tk/ra']">
+                                            <field name="surah_id_harian" />
+                                            <field name="ayat_awal_harian" />
+                                            <field name="ayat_akhir_harian" />
+                                        </group>
+                                        <group invisible="jenjang_display in ['paud','tk','tk/ra']">
+                                            <field name="nilai_tahsin_harian" />
+                                            <field name="predikat_tahsin_harian" />
+                                        </group>
+                                    </group>
+                                    <group string="Catatan">
+                                        <field name="catatan_harian" nolabel="1"
+                                            placeholder="Catatan untuk tahsin harian..." />
+                                    </group>
+                                </page>
+
+                                <!-- TAB TAHsin UJIAN -->
+                                <page string="Tahsin Ujian">
+                                    <group string="Buku Halaman">
+                                        <group>
+                                            <field name="buku_ujian_id" />
+                                            <field name="jilid_ujian_id" />
+                                        </group>
+                                        <group>
+                                            <field name="halaman_ujian" />
+                                        </group>
+                                    </group>
+                                    <group string="Penilaian">
+                                        <group>
+                                            <field name="surah_id_ujian" />
+                                            <field name="ayat_awal_ujian" />
+                                            <field name="ayat_akhir_ujian" />
+                                        </group>
+                                        <group>
+                                            <field name="nilai_tajwid_ujian" />
+                                            <field name="nilai_makhroj_ujian" />
+                                            <field name="nilai_mad_ujian" />
+                                        </group>
+                                    </group>
+                                    <group string="Catatan">
+                                        <field name="catatan_ujian" nolabel="1"
+                                            placeholder="Catatan untuk tahsin ujian..." />
+                                    </group>
+                                </page>
+
+                                <!-- TAB Riwayat Tahsin Harian -->
+                                <page string="Riwayat Tahsin Harian">
+                                    <field name="riwayat_tahsin_harian_ids" nolabel="1"
+                                        mode="list,form" readonly="1">
+                                        <list default_order="tanggal desc" create="false"
+                                            edit="false" delete="false">
+                                            <field name="tanggal" string="Tanggal" />
+                                            <field name="jenjang_display" string="Jenjang"
+                                                optional="hide" />
+                                            <field name="buku_harian_id" string="Buku" />
+                                            <field name="jilid_harian_id" string="Jilid" />
+                                            <field name="halaman_harian" string="Halaman" />
+                                            <!-- Nilai PAUD/TK - hanya tampil untuk PAUD/TK -->
+                                            <field name="nilai_harian" string="Nilai (PAUD/TK)"
+                                                column_invisible="not parent.is_jenjang_paud_tk" />
+                                            <!-- Field untuk SD/SMP/SMA - hidden untuk PAUD/TK -->
+                                            <field name="surah_id_harian" string="Surah"
+                                                column_invisible="parent.is_jenjang_paud_tk" />
+                                            <field name="ayat_awal_harian" string="Ayat Awal"
+                                                column_invisible="parent.is_jenjang_paud_tk" />
+                                            <field name="ayat_akhir_harian" string="Ayat Akhir"
+                                                column_invisible="parent.is_jenjang_paud_tk" />
+                                            <field name="nilai_tahsin_harian" string="Nilai"
+                                                column_invisible="parent.is_jenjang_paud_tk" />
+                                            <field name="predikat_tahsin_harian" string="Predikat"
+                                                column_invisible="parent.is_jenjang_paud_tk" />
+                                        </list>
+                                        <form string="Detail Riwayat Tahsin Harian" create="false"
+                                            edit="false" delete="false">
+                                            <sheet>
+                                                <group string="Informasi Penilaian">
+                                                    <group>
+                                                        <field name="name" string="Referensi"
+                                                            readonly="1" />
+                                                        <field name="tanggal" readonly="1" />
+                                                        <field name="siswa_id" readonly="1" />
+                                                        <field name="halaqoh_id" readonly="1" />
+                                                    </group>
+                                                    <group>
+                                                        <field name="ustadz_id" readonly="1" />
+                                                        <field name="sesi_id" readonly="1" />
+                                                        <field name="jenjang_display" readonly="1" />
+                                                    </group>
+                                                </group>
+                                                <group string="Buku Halaman">
+                                                    <group>
+                                                        <field name="buku_harian_id" readonly="1" />
+                                                        <field name="jilid_harian_id" readonly="1" />
+                                                    </group>
+                                                    <group>
+                                                        <field name="halaman_harian" readonly="1" />
+                                                    </group>
+                                                </group>
+                                                <!-- Untuk PAUD/TK -->
+                                                <group string="Nilai"
+                                                    invisible="not is_jenjang_paud_tk">
+                                                    <field name="nilai_harian" readonly="1" />
+                                                </group>
+                                                <!-- Untuk SD/SMP/SMA -->
+                                                <group string="Penilaian"
+                                                    invisible="is_jenjang_paud_tk">
+                                                    <group>
+                                                        <field name="surah_id_harian" readonly="1" />
+                                                        <field name="ayat_awal_harian" readonly="1" />
+                                                        <field name="ayat_akhir_harian" readonly="1" />
+                                                    </group>
+                                                    <group>
+                                                        <field name="nilai_tahsin_harian"
+                                                            readonly="1" />
+                                                        <field name="predikat_tahsin_harian"
+                                                            readonly="1" />
+                                                    </group>
+                                                </group>
+                                                <group string="Catatan">
+                                                    <field name="catatan_harian" readonly="1"
+                                                        nolabel="1" />
+                                                </group>
+                                            </sheet>
+                                        </form>
+                                    </field>
+                                </page>
+
+                                <!-- TAB Riwayat Tahsin Ujian -->
+                                <page string="Riwayat Tahsin Ujian">
+                                    <field name="riwayat_tahsin_ujian_ids" nolabel="1"
+                                        mode="list,form" readonly="1">
+                                        <list default_order="tanggal desc" create="false"
+                                            edit="false" delete="false">
+                                            <field name="tanggal" string="Tanggal" />
+                                            <field name="buku_ujian_id" string="Buku" />
+                                            <field name="jilid_ujian_id" string="Jilid" />
+                                            <field name="halaman_ujian" string="Halaman" />
+                                            <field name="surah_id_ujian" string="Surah" />
+                                            <field name="ayat_awal_ujian" string="Ayat Awal" />
+                                            <field name="ayat_akhir_ujian" string="Ayat Akhir" />
+                                            <field name="nilai_tajwid_ujian" string="Nilai Tajwid" />
+                                            <field name="nilai_makhroj_ujian" string="Nilai Makhroj" />
+                                            <field name="nilai_mad_ujian" string="Nilai Mad" />
+                                        </list>
+                                        <form string="Detail Riwayat Tahsin Ujian" create="false"
+                                            edit="false" delete="false">
+                                            <sheet>
+                                                <group string="Informasi Penilaian">
+                                                    <group>
+                                                        <field name="name" string="Referensi"
+                                                            readonly="1" />
+                                                        <field name="tanggal" readonly="1" />
+                                                        <field name="siswa_id" readonly="1" />
+                                                        <field name="halaqoh_id" readonly="1" />
+                                                    </group>
+                                                    <group>
+                                                        <field name="ustadz_id" readonly="1" />
+                                                        <field name="sesi_id" readonly="1" />
+                                                        <field name="jenjang_display" readonly="1" />
+                                                    </group>
+                                                </group>
+                                                <group string="Buku Halaman">
+                                                    <group>
+                                                        <field name="buku_ujian_id" readonly="1" />
+                                                        <field name="jilid_ujian_id" readonly="1" />
+                                                    </group>
+                                                    <group>
+                                                        <field name="halaman_ujian" readonly="1" />
+                                                    </group>
+                                                </group>
+                                                <group string="Penilaian">
+                                                    <group>
+                                                        <field name="surah_id_ujian" readonly="1" />
+                                                        <field name="ayat_awal_ujian" readonly="1" />
+                                                        <field name="ayat_akhir_ujian" readonly="1" />
+                                                    </group>
+                                                    <group>
+                                                        <field name="nilai_tajwid_ujian"
+                                                            readonly="1" />
+                                                        <field name="nilai_makhroj_ujian"
+                                                            readonly="1" />
+                                                        <field name="nilai_mad_ujian" readonly="1" />
+                                                    </group>
+                                                </group>
+                                                <group string="Catatan">
+                                                    <field name="catatan_ujian" readonly="1"
+                                                        nolabel="1" />
+                                                </group>
+                                            </sheet>
+                                        </form>
+                                    </field>
+                                </page>
+                            </notebook>
                         </page>
 
-                        <!-- TAB TAHsin UJIAN -->
-                        <page string="Tahsin Ujian">
-                            <group string="Buku Halaman">
-                                <group>
-                                    <field name="buku_ujian_id"/>
-                                    <field name="jilid_ujian_id"/>
-                                </group>
-                                <group>
-                                    <field name="halaman_ujian"/>
-                                </group>
-                            </group>
-                            <group string="Penilaian">
-                                <group>
-                                    <field name="surah_id_ujian"/>
-                                    <field name="ayat_awal_ujian"/>
-                                    <field name="ayat_akhir_ujian"/>
-                                </group>
-                                <group>
-                                    <field name="nilai_tajwid_ujian"/>
-                                    <field name="nilai_makhroj_ujian"/>
-                                    <field name="nilai_mad_ujian"/>
-                                </group>
-                            </group>
-                            <group string="Catatan">
-                                <field name="catatan_ujian" nolabel="1" placeholder="Catatan untuk tahsin ujian..."/>
-                            </group>
-                        </page>
 
-                        <!-- TAB Riwayat Tahsin Harian -->
-                        <page string="Riwayat Tahsin Harian">
-                            <field name="riwayat_tahsin_harian_ids" nolabel="1" mode="list,form" readonly="1">
-                                <list default_order="tanggal desc" create="false" edit="false" delete="false">
-                                    <field name="tanggal" string="Tanggal"/>
-                                    <field name="jenjang_display" string="Jenjang" optional="hide"/>
-                                    <field name="buku_harian_id" string="Buku"/>
-                                    <field name="jilid_harian_id" string="Jilid"/>
-                                    <field name="halaman_harian" string="Halaman"/>
-                                    <!-- Nilai PAUD/TK - hanya tampil untuk PAUD/TK -->
-                                    <field name="nilai_harian" string="Nilai (PAUD/TK)" column_invisible="not parent.is_jenjang_paud_tk"/>
-                                    <!-- Field untuk SD/SMP/SMA - hidden untuk PAUD/TK -->
-                                    <field name="surah_id_harian" string="Surah" column_invisible="parent.is_jenjang_paud_tk"/>
-                                    <field name="ayat_awal_harian" string="Ayat Awal" column_invisible="parent.is_jenjang_paud_tk"/>
-                                    <field name="ayat_akhir_harian" string="Ayat Akhir" column_invisible="parent.is_jenjang_paud_tk"/>
-                                    <field name="nilai_tahsin_harian" string="Nilai" column_invisible="parent.is_jenjang_paud_tk"/>
-                                    <field name="predikat_tahsin_harian" string="Predikat" column_invisible="parent.is_jenjang_paud_tk"/>
-                                </list>
-                                <form string="Detail Riwayat Tahsin Harian" create="false" edit="false" delete="false">
-                                    <sheet>
-                                        <group string="Informasi Penilaian">
-                                            <group>
-                                                <field name="name" string="Referensi" readonly="1"/>
-                                                <field name="tanggal" readonly="1"/>
-                                                <field name="siswa_id" readonly="1"/>
-                                                <field name="halaqoh_id" readonly="1"/>
-                                            </group>
-                                            <group>
-                                                <field name="ustadz_id" readonly="1"/>
-                                                <field name="sesi_id" readonly="1"/>
-                                                <field name="jenjang_display" readonly="1"/>
-                                            </group>
-                                        </group>
-                                        <group string="Buku Halaman">
-                                            <group>
-                                                <field name="buku_harian_id" readonly="1"/>
-                                                <field name="jilid_harian_id" readonly="1"/>
-                                            </group>
-                                            <group>
-                                                <field name="halaman_harian" readonly="1"/>
-                                            </group>
-                                        </group>
-                                        <!-- Untuk PAUD/TK -->
-                                        <group string="Nilai" invisible="not is_jenjang_paud_tk">
-                                            <field name="nilai_harian" readonly="1"/>
-                                        </group>
-                                        <!-- Untuk SD/SMP/SMA -->
-                                        <group string="Penilaian" invisible="is_jenjang_paud_tk">
-                                            <group>
-                                                <field name="surah_id_harian" readonly="1"/>
-                                                <field name="ayat_awal_harian" readonly="1"/>
-                                                <field name="ayat_akhir_harian" readonly="1"/>
-                                            </group>
-                                            <group>
-                                                <field name="nilai_tahsin_harian" readonly="1"/>
-                                                <field name="predikat_tahsin_harian" readonly="1"/>
-                                            </group>
-                                        </group>
-                                        <group string="Catatan">
-                                            <field name="catatan_harian" readonly="1" nolabel="1"/>
-                                        </group>
-                                    </sheet>
-                                </form>
-                            </field>
-                        </page>
-
-                        <!-- TAB Riwayat Tahsin Ujian -->
-                        <page string="Riwayat Tahsin Ujian">
-                            <field name="riwayat_tahsin_ujian_ids" nolabel="1" mode="list,form" readonly="1">
-                                <list default_order="tanggal desc" create="false" edit="false" delete="false">
-                                    <field name="tanggal" string="Tanggal"/>
-                                    <field name="buku_ujian_id" string="Buku"/>
-                                    <field name="jilid_ujian_id" string="Jilid"/>
-                                    <field name="halaman_ujian" string="Halaman"/>
-                                    <field name="surah_id_ujian" string="Surah"/>
-                                    <field name="ayat_awal_ujian" string="Ayat Awal"/>
-                                    <field name="ayat_akhir_ujian" string="Ayat Akhir"/>
-                                    <field name="nilai_tajwid_ujian" string="Nilai Tajwid"/>
-                                    <field name="nilai_makhroj_ujian" string="Nilai Makhroj"/>
-                                    <field name="nilai_mad_ujian" string="Nilai Mad"/>
-                                </list>
-                                <form string="Detail Riwayat Tahsin Ujian" create="false" edit="false" delete="false">
-                                    <sheet>
-                                        <group string="Informasi Penilaian">
-                                            <group>
-                                                <field name="name" string="Referensi" readonly="1"/>
-                                                <field name="tanggal" readonly="1"/>
-                                                <field name="siswa_id" readonly="1"/>
-                                                <field name="halaqoh_id" readonly="1"/>
-                                            </group>
-                                            <group>
-                                                <field name="ustadz_id" readonly="1"/>
-                                                <field name="sesi_id" readonly="1"/>
-                                                <field name="jenjang_display" readonly="1"/>
-                                            </group>
-                                        </group>
-                                        <group string="Buku Halaman">
-                                            <group>
-                                                <field name="buku_ujian_id" readonly="1"/>
-                                                <field name="jilid_ujian_id" readonly="1"/>
-                                            </group>
-                                            <group>
-                                                <field name="halaman_ujian" readonly="1"/>
-                                            </group>
-                                        </group>
-                                        <group string="Penilaian">
-                                            <group>
-                                                <field name="surah_id_ujian" readonly="1"/>
-                                                <field name="ayat_awal_ujian" readonly="1"/>
-                                                <field name="ayat_akhir_ujian" readonly="1"/>
-                                            </group>
-                                            <group>
-                                                <field name="nilai_tajwid_ujian" readonly="1"/>
-                                                <field name="nilai_makhroj_ujian" readonly="1"/>
-                                                <field name="nilai_mad_ujian" readonly="1"/>
-                                            </group>
-                                        </group>
-                                        <group string="Catatan">
-                                            <field name="catatan_ujian" readonly="1" nolabel="1"/>
-                                        </group>
-                                    </sheet>
-                                </form>
-                            </field>
-                        </page>
-                        </notebook>
-                        </page>
-
-                        
                     </notebook>
                 </sheet>
             </form>
@@ -397,70 +463,78 @@
         <field name="model">cdn.penilaian_quran</field>
         <field name="arch" type="xml">
             <search string="Cari Penilaian Halaqoh">
-                <field name="name" string="Referensi" filter_domain="['|', ('name', 'ilike', self), ('siswa_id.name', 'ilike', self)]"/>
-                <field name="siswa_id" context="{'from_guru_quran': True}"/>
+                <field name="name" string="Referensi"
+                    filter_domain="['|', ('name', 'ilike', self), ('siswa_id.name', 'ilike', self)]" />
+                <field name="siswa_id" context="{'from_guru_quran': True}" />
                 <field name="halaqoh_id" context="{'from_guru_quran': True}" />
-                <field name="ustadz_id"/>
-                <field name="tanggal"/>
-                <field name="state"/>
+                <field name="ustadz_id" />
+                <field name="tanggal" />
+                <field name="state" />
 
                 <!-- 🧩 Filter Berdasarkan Jenis Data -->
-                <separator/>
+                <separator />
 
                 <!-- Filter Tahfidz: Tampilkan jika ADA data tahfidz ATAU SEMUA kosong -->
-                <filter name="filter_tahfidz_only" string="Setoran Tahfizh" domain="['|',
+                <filter name="filter_tahfidz_only" string="Setoran Tahfizh"
+                    domain="['|',
                                 ('tahfidz_line_ids', '!=', False),
                                 '&amp;', '&amp;', '&amp;',
                                     ('tahfidz_line_ids', '=', False),
                                     ('buku_harian_id', '=', False),
                                     ('buku_ujian_id', '=', False),
                                     ('juz_murajaah', '=', False)
-                                ]"/>
+                                ]" />
 
                 <!-- Filter Murajaah Harian: Tampilkan jika ADA data murajaah ATAU SEMUA kosong -->
-                <filter name="filter_murajaah_harian" string="Murajaah Harian" domain="['|',
+                <filter name="filter_murajaah_harian" string="Murajaah Harian"
+                    domain="['|',
                                 ('juz_murajaah', '!=', False),
                                 '&amp;', '&amp;', '&amp;',
                                     ('tahfidz_line_ids', '=', False),
                                     ('buku_harian_id', '=', False),
                                     ('buku_ujian_id', '=', False),
                                     ('juz_murajaah', '=', False)
-                                ]"/>
+                                ]" />
 
                 <!-- Filter Tahsin Harian: Tampilkan jika ADA data tahsin harian ATAU SEMUA kosong -->
-                <filter name="filter_tahsin_harian" string="Tahsin Harian" domain="['|',
+                <filter name="filter_tahsin_harian" string="Tahsin Harian"
+                    domain="['|',
                                 ('buku_harian_id', '!=', False),
                                 '&amp;', '&amp;', '&amp;',
                                     ('tahfidz_line_ids', '=', False),
                                     ('buku_harian_id', '=', False),
                                     ('buku_ujian_id', '=', False),
                                     ('juz_murajaah', '=', False)
-                                ]"/>
+                                ]" />
 
                 <!-- Filter Tahsin Ujian: Tampilkan jika ADA data tahsin ujian ATAU SEMUA kosong -->
-                <filter name="filter_tahsin_ujian" string="Tahsin Ujian" domain="['|',
+                <filter name="filter_tahsin_ujian" string="Tahsin Ujian"
+                    domain="['|',
                                 ('buku_ujian_id', '!=', False),
                                 '&amp;', '&amp;', '&amp;',
                                     ('tahfidz_line_ids', '=', False),
                                     ('buku_harian_id', '=', False),
                                     ('buku_ujian_id', '=', False),
                                     ('juz_murajaah', '=', False)
-                                ]"/>
+                                ]" />
 
                 <group expand="0" string="Group By">
-                    <filter name="group_siswa" string="Santri" context="{'group_by': 'siswa_id'}"/>
-                    <filter name="group_tanggal" string="Tanggal" context="{'group_by': 'tanggal'}"/>
-                    <filter name="group_halaqoh" string="Halaqoh" context="{'group_by': 'halaqoh_id'}"/>
-                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_siswa" string="Santri" context="{'group_by': 'siswa_id'}" />
+                    <filter name="group_tanggal" string="Tanggal" context="{'group_by': 'tanggal'}" />
+                    <filter name="group_halaqoh" string="Halaqoh"
+                        context="{'group_by': 'halaqoh_id'}" />
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}" />
                 </group>
 
-                <filter name="filter_today" string="Hari Ini" domain="[('tanggal','=',context_today().strftime('%Y-%m-%d'))]"/>
-                <filter string="Hari Ini &amp; Kemarin" name="today_yesterday" domain="[
+                <filter name="filter_today" string="Hari Ini"
+                    domain="[('tanggal','=',context_today().strftime('%Y-%m-%d'))]" />
+                <filter string="Hari Ini &amp; Kemarin" name="today_yesterday"
+                    domain="[
                             ('tanggal', '&gt;=', (context_today() - relativedelta(days=1))),
                             ('tanggal', '&lt;=', context_today())
-                        ]"/>
-                <filter name="filter_draft" string="Draft" domain="[('state','=','draft')]"/>
-                <filter name="filter_done" string="Selesai" domain="[('state','=','done')]"/>
+                        ]" />
+                <filter name="filter_draft" string="Draft" domain="[('state','=','draft')]" />
+                <filter name="filter_done" string="Selesai" domain="[('state','=','done')]" />
             </search>
         </field>
     </record>
@@ -479,23 +553,23 @@
         <field name="name">cdn.penilaian_quran_line.tree</field>
         <field name="model">cdn.penilaian_quran_line</field>
         <field name="arch" type="xml">
-            <list string="" 
-                  default_order="tanggal_penilaian desc, sequence asc" 
-                  create="false" 
-                  edit="false" 
-                  delete="false">
-                <field name="penilaian_id" string="Referensi" optional="show"/>
-                <field name="tanggal_penilaian" string="Tanggal"/>
-                <field name="halaqoh_id" string="Halaqoh"/>
-                <field name="sesi_id" string="Sesi"/>
-                <field name="ustadz_id" string="Ustadz" optional="hide"/>
-                <field name="surah_id" string="Surah"/>
-                <field name="ayat_awal" string="Ayat Awal"/>
-                <field name="ayat_akhir" string="Ayat Akhir"/>
-                <field name="jml_baris" string="Jumlah Maqra'"/>
-                <field name="nilai_hafalan" string="Nilai Hafalan"/>
-                <field name="predikat" string="Predikat"/>
-                <field name="keterangan" string="Keterangan" optional="hide"/>
+            <list string=""
+                default_order="tanggal_penilaian desc, sequence asc"
+                create="false"
+                edit="false"
+                delete="false">
+                <field name="penilaian_id" string="Referensi" optional="show" />
+                <field name="tanggal_penilaian" string="Tanggal" />
+                <field name="halaqoh_id" string="Halaqoh" />
+                <field name="sesi_id" string="Sesi" />
+                <field name="ustadz_id" string="Ustadz" optional="hide" />
+                <field name="surah_id" string="Surah" />
+                <field name="ayat_awal" string="Ayat Awal" />
+                <field name="ayat_akhir" string="Ayat Akhir" />
+                <field name="jml_baris" string="Jumlah Maqra'" />
+                <field name="nilai_hafalan" string="Nilai Hafalan" />
+                <field name="predikat" string="Predikat" />
+                <field name="keterangan" string="Keterangan" optional="hide" />
             </list>
         </field>
     </record>
@@ -508,20 +582,20 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="penilaian_id" readonly="1" force_save="0"/>
-                            <field name="tanggal_penilaian" readonly="1" force_save="0"/>
-                            <field name="halaqoh_id" readonly="1" force_save="0"/>
-                            <field name="sesi_id" readonly="1" force_save="0"/>
-                            <field name="ustadz_id" readonly="1" force_save="0"/>
-                            <field name="keterangan" readonly="1" force_save="0"/>
+                            <field name="penilaian_id" readonly="1" force_save="0" />
+                            <field name="tanggal_penilaian" readonly="1" force_save="0" />
+                            <field name="halaqoh_id" readonly="1" force_save="0" />
+                            <field name="sesi_id" readonly="1" force_save="0" />
+                            <field name="ustadz_id" readonly="1" force_save="0" />
+                            <field name="keterangan" readonly="1" force_save="0" />
                         </group>
                         <group>
-                            <field name="surah_id" readonly="1" force_save="0"/>
-                            <field name="ayat_awal" readonly="1" force_save="0"/>
-                            <field name="ayat_akhir" readonly="1" force_save="0"/>
-                            <field name="jml_baris" readonly="1" force_save="0"/>
-                            <field name="nilai_hafalan" readonly="1" force_save="0"/>
-                            <field name="predikat" readonly="1" force_save="0"/>
+                            <field name="surah_id" readonly="1" force_save="0" />
+                            <field name="ayat_awal" readonly="1" force_save="0" />
+                            <field name="ayat_akhir" readonly="1" force_save="0" />
+                            <field name="jml_baris" readonly="1" force_save="0" />
+                            <field name="nilai_hafalan" readonly="1" force_save="0" />
+                            <field name="predikat" readonly="1" force_save="0" />
                         </group>
                     </group>
                 </sheet>
@@ -534,30 +608,32 @@
         <field name="model">cdn.penilaian_quran_line</field>
         <field name="arch" type="xml">
             <search string="Cari Riwayat Hafalan">
-                <field name="penilaian_id" string="Referensi"/>
-                <field name="surah_id" string="Surah"/>
-                <field name="halaqoh_id" string="Halaqoh"/>
-                <field name="ustadz_id" string="Ustadz"/>
-                <field name="tanggal_penilaian" string="Tanggal"/>
-                
-                <separator/>
-                
+                <field name="penilaian_id" string="Referensi" />
+                <field name="surah_id" string="Surah" />
+                <field name="halaqoh_id" string="Halaqoh" />
+                <field name="ustadz_id" string="Ustadz" />
+                <field name="tanggal_penilaian" string="Tanggal" />
+
+                <separator />
+
                 <!-- Filter berdasarkan tanggal -->
-                <filter name="filter_today" string="Hari Ini" 
-                        domain="[('tanggal_penilaian','=',context_today().strftime('%Y-%m-%d'))]"/>
-                <filter name="filter_this_week" string="Minggu Ini" 
-                        domain="[('tanggal_penilaian','&gt;=',(context_today()-relativedelta(days=7)).strftime('%Y-%m-%d'))]"/>
-                <filter name="filter_this_month" string="Bulan Ini" 
-                        domain="[('tanggal_penilaian','&gt;=',(context_today()-relativedelta(months=1)).strftime('%Y-%m-%d'))]"/>
-                
-                <separator/>
-                
+                <filter name="filter_today" string="Hari Ini"
+                    domain="[('tanggal_penilaian','=',context_today().strftime('%Y-%m-%d'))]" />
+                <filter name="filter_this_week" string="Minggu Ini"
+                    domain="[('tanggal_penilaian','&gt;=',(context_today()-relativedelta(days=7)).strftime('%Y-%m-%d'))]" />
+                <filter name="filter_this_month" string="Bulan Ini"
+                    domain="[('tanggal_penilaian','&gt;=',(context_today()-relativedelta(months=1)).strftime('%Y-%m-%d'))]" />
+
+                <separator />
+
                 <!-- Group By -->
                 <group expand="0" string="Group By">
-                    <filter name="group_tanggal" string="Tanggal" context="{'group_by': 'tanggal_penilaian'}"/>
-                    <filter name="group_surah" string="Surah" context="{'group_by': 'surah_id'}"/>
-                    <filter name="group_halaqoh" string="Halaqoh" context="{'group_by': 'halaqoh_id'}"/>
-                    <filter name="group_ustadz" string="Ustadz" context="{'group_by': 'ustadz_id'}"/>
+                    <filter name="group_tanggal" string="Tanggal"
+                        context="{'group_by': 'tanggal_penilaian'}" />
+                    <filter name="group_surah" string="Surah" context="{'group_by': 'surah_id'}" />
+                    <filter name="group_halaqoh" string="Halaqoh"
+                        context="{'group_by': 'halaqoh_id'}" />
+                    <filter name="group_ustadz" string="Ustadz" context="{'group_by': 'ustadz_id'}" />
                 </group>
             </search>
         </field>
@@ -582,8 +658,8 @@
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">cdn.penilaian_quran_line</field>
         <field name="view_mode">list,form</field>
-        <field name="view_id" ref="view_penilaian_quran_line_tree"/>
-        <field name="search_view_id" ref="view_penilaian_quran_line_search"/>
+        <field name="view_id" ref="view_penilaian_quran_line_tree" />
+        <field name="search_view_id" ref="view_penilaian_quran_line_search" />
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Tidak ada riwayat hafalan
@@ -593,5 +669,6 @@
     </record>
 
     <!-- Menu Item -->
-    <menuitem id="menu_penilaian_quran" name="Penilaian Halaqoh" parent="kepesantrenan_halaqoh_menu_categ" action="action_penilaian_quran" sequence="15"/>
+    <menuitem id="menu_penilaian_quran" name="Penilaian Halaqoh"
+        parent="kepesantrenan_halaqoh_menu_categ" action="action_penilaian_quran" sequence="15" />
 </odoo>
