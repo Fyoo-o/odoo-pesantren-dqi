@@ -2,24 +2,33 @@
 <odoo>
 
     <data>
-    
+
         <!-- This Menu Item will appear in the Upper bar, that's why It needs NO parent or action -->
-        <menuitem id="kesantrian_menu_root" name="Kesantrian" sequence="10" web_icon="pesantren_base,static/description/dqi.png" groups="pesantren_kesantrian.group_kesantrian_staff"/>
+        <menuitem id="kesantrian_menu_root" name="Kesantrian" sequence="10"
+            web_icon="pesantren_base,static/description/dqi.png"
+            groups="pesantren_kesantrian.group_kesantrian_staff" />
 
-        <menuitem id="data_kesantrian_menu_categ" name="Kesantrian" sequence="20" parent="kesantrian_menu_root" groups="pesantren_kesantrian.group_kesantrian_manager"/>
+        <menuitem id="data_kesantrian_menu_categ" name="Kesantrian" sequence="20"
+            parent="kesantrian_menu_root" groups="pesantren_kesantrian.group_kesantrian_manager" />
 
-        <menuitem id="kepesantrenan_menu_categ" name="Kepesantrenan" sequence="10" parent="kesantrian_menu_root" groups="pesantren_kesantrian.group_kesantrian_staff">
-                <menuitem id="kepesantrenan_tahfidz_menu_categ" name="Tahfidzh" sequence="10"/>
-                <menuitem id="kepesantrenan_tahsin_menu_categ" name="Tahsin" sequence="20" />
-                <menuitem id="kepesantrenan_halaqoh_menu_categ" name="Halaqoh" sequence="25" />
-                <menuitem id="kepesantrenan_hadits_menu_categ" name="Hadits" sequence="30" />
-                <menuitem id="kepesantrenan_kepengasuhan_menu_categ" name="Kepengasuhan" sequence="40" />
-        </menuitem>    
+        <menuitem id="kepesantrenan_menu_categ" name="Kepesantrenan" sequence="10"
+            parent="kesantrian_menu_root" groups="pesantren_kesantrian.group_kesantrian_staff">
+            <menuitem id="kepesantrenan_tahfidz_menu_categ" name="Tahfidzh" sequence="10" />
+            <menuitem id="kepesantrenan_tahsin_menu_categ" name="Tahsin" sequence="20" />
+            <menuitem id="kepesantrenan_halaqoh_menu_categ" name="Halaqoh" sequence="25" />
+            <menuitem id="kepesantrenan_hadits_menu_categ" name="Hadits" sequence="30" />
+            <menuitem id="kepesantrenan_rekap_menu_categ" name="Rekap" sequence="35" />
+            <menuitem id="kepesantrenan_kepengasuhan_menu_categ" name="Kepengasuhan" sequence="40" />
+        </menuitem>
 
-        <menuitem id="aktivitas_kesantrian_menu_categ" name="Aktivitas" sequence="30" parent="kesantrian_menu_root"/>
-        <menuitem id="kesantrian_mutasi_saldo_menu" name="Mutasi Saldo" parent="aktivitas_kesantrian_menu_categ" action="pesantren_keuangan.cdn_uang_saku_action" sequence="50"/>
+        <menuitem id="aktivitas_kesantrian_menu_categ" name="Aktivitas" sequence="30"
+            parent="kesantrian_menu_root" />
+        <menuitem id="kesantrian_mutasi_saldo_menu" name="Mutasi Saldo"
+            parent="aktivitas_kesantrian_menu_categ"
+            action="pesantren_keuangan.cdn_uang_saku_action" sequence="50" />
 
-        <menuitem id="pengaturan_menu_categ" name="Pengaturan" sequence="40" parent="kesantrian_menu_root" groups="pesantren_kesantrian.group_kesantrian_manager">
+        <menuitem id="pengaturan_menu_categ" name="Pengaturan" sequence="40"
+            parent="kesantrian_menu_root" groups="pesantren_kesantrian.group_kesantrian_manager">
             <menuitem id="pengaturan_pesantren_menu_categ" name="Pesantren" sequence="10" />
             <menuitem id="pengaturan_tahfidz_menu_categ" name="Tahfidzh" sequence="20" />
             <menuitem id="pengaturan_halaqoh_menu_categ" name="Halaqoh" sequence="20" />
@@ -28,9 +37,10 @@
 
             <menuitem id="pengaturan_pelanggaran_menu_categ" name="Pelanggaran" sequence="40" />
 
-            <menuitem id="pengaturan_halaqoh_dan_kamar_menu_categ" name="Kamar dan Halaqah" sequence="50" />
-            <menuitem id="prestasi_menu_categ" name="Prestasi" sequence="60"/>
+            <menuitem id="pengaturan_halaqoh_dan_kamar_menu_categ" name="Kamar dan Halaqah"
+                sequence="50" />
+            <menuitem id="prestasi_menu_categ" name="Prestasi" sequence="60" />
         </menuitem>
     </data>
-    
+
 </odoo>

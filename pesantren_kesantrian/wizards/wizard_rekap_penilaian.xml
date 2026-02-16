@@ -1,0 +1,78 @@
+<odoo>
+    <!-- Separate List View for Recap Lines -->
+    <record id="view_wizard_rekap_penilaian_line_tree" model="ir.ui.view">
+        <field name="name">cdn.wizard_rekap_penilaian_line.tree</field>
+        <field name="model">cdn.wizard_rekap_penilaian_line</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false" delete="false">
+                <field name="tanggal" />
+                <field name="kegiatan" />
+                <field name="materi" />
+                <field name="nilai" />
+                <field name="predikat" />
+                <field name="keterangan" />
+            </list>
+        </field>
+    </record>
+
+    <!-- Main Wizard Form View -->
+    <record id="view_wizard_rekap_penilaian_form" model="ir.ui.view">
+        <field name="name">cdn.wizard_rekap_penilaian.form</field>
+        <field name="model">cdn.wizard_rekap_penilaian</field>
+        <field name="arch" type="xml">
+            <form string="Rekap Penilaian Santri">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Rekap Penilaian Halaqoh</h1>
+                    </div>
+                    <group>
+                        <group name="pencarian" string="Data Santri">
+                            <field name="barcode" string="Kartu Santri" />
+                            <field name="siswa_id" string="Nama Siswa"
+                                options="{'no_create': True, 'no_open': True}" />
+                        </group>
+                        <group name="periode" string="Periode">
+                            <field name="tgl_awal" />
+                            <field name="tgl_akhir" />
+                        </group>
+                    </group>
+
+                    <notebook invisible="not siswa_id">
+                        <page string="Detail Penilaian">
+                            <field name="rekap_line_ids"
+                                context="{'list_view_ref': 'pesantren_kesantrian.view_wizard_rekap_penilaian_line_tree'}" />
+                        </page>
+                    </notebook>
+
+                    <!-- Hidden fields for export -->
+                    <group invisible="1">
+                        <field name="data_file" filename="file_name" />
+                        <field name="file_name" />
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_export_csv" string="Export CSV" type="object"
+                        class="btn-primary" invisible="not rekap_line_ids" />
+                    <button name="action_export_xlsx" string="Export XLSX" type="object"
+                        class="btn-primary" invisible="not rekap_line_ids" />
+                    <button string="Tutup" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_wizard_rekap_penilaian" model="ir.actions.act_window">
+        <field name="name">Rekap Penilaian Halaqoh</field>
+        <field name="res_model">cdn.wizard_rekap_penilaian</field>
+        <field name="view_mode" eval="'form'" />
+        <field name="target" eval="'new'" />
+    </record>
+
+    <menuitem id="menu_rekap_penilaian_santri"
+        name="Rekap Penilaian Halaqoh"
+        parent="pesantren_kesantrian.kepesantrenan_rekap_menu_categ"
+        action="action_wizard_rekap_penilaian"
+        sequence="20" />
+</odoo>
+
+<!-- test -->
