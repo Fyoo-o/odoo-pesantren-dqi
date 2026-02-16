@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
-#    ________  __      ________  _______   ______          _______    _______   ________     __      _____  ___  ___________  _______    _______  _____  ___   
-#   /"       )|" \    /"       )/"     "| /    " \        |   __ "\  /"     "| /"       )   /""\    (\"   \|"  \("     _   ")/"      \  /"     "|(\"   \|"  \  
-#  (:   \___/ ||  |  (:   \___/(: ______)// ____  \       (. |__) :)(: ______)(:   \___/   /    \   |.\\   \    |)__/  \\__/|:        |(: ______)|.\\   \    | 
-#   \___  \   |:  |   \___  \   \/    | /  /    ) :)      |:  ____/  \/    |   \___  \    /' /\  \  |: \.   \\  |   \\_ /   |_____/   ) \/    |  |: \.   \\  | 
-#    __/  \\  |.  |    __/  \\  // ___)(: (____/ //       (|  /      // ___)_   __/  \\  //  __'  \ |.  \    \. |   |.  |    //      /  // ___)_ |.  \    \. | 
-#   /" \   :) /\  |\  /" \   :)(:  (    \        /       /|__/ \    (:      "| /" \   :)/   /  \\  \|    \    \ |   \:  |   |:  __   \ (:      "||    \    \ | 
-#  (_______/ (__\_|_)(_______/  \__/     \"_____/       (_______)    \_______)(_______/(___/    \___)\___|\____\)    \__|   |__|  \___) \_______) \___|\____\) 
+#    ________  __      ________  _______   ______          _______    _______   ________     __      _____  ___  ___________  _______    _______  _____  ___
+#   /"       )|" \    /"       )/"     "| /    " \        |   __ "\  /"     "| /"       )   /""\    (\"   \|"  \("     _   ")/"      \  /"     "|(\"   \|"  \
+#  (:   \___/ ||  |  (:   \___/(: ______)// ____  \       (. |__) :)(: ______)(:   \___/   /    \   |.\\   \    |)__/  \\__/|:        |(: ______)|.\\   \    |
+#   \___  \   |:  |   \___  \   \/    | /  /    ) :)      |:  ____/  \/    |   \___  \    /' /\  \  |: \.   \\  |   \\_ /   |_____/   ) \/    |  |: \.   \\  |
+#    __/  \\  |.  |    __/  \\  // ___)(: (____/ //       (|  /      // ___)_   __/  \\  //  __'  \ |.  \    \. |   |.  |    //      /  // ___)_ |.  \    \. |
+#   /" \   :) /\  |\  /" \   :)(:  (    \        /       /|__/ \    (:      "| /" \   :)/   /  \\  \|    \    \ |   \:  |   |:  __   \ (:      "||    \    \ |
+#  (_______/ (__\_|_)(_______/  \__/     \"_____/       (_______)    \_______)(_______/(___/    \___)\___|\____\)    \__|   |__|  \___) \_______) \___|\____\)
 #
 #
 
-                                                                                                                                                            
 
 {
     'name': "Pesantren Kesantrian",
@@ -29,14 +28,14 @@
     'license': 'LGPL-3',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','pesantren_base'],
+    'depends': ['base', 'pesantren_base'],
 
     # always loaded
     'data': [
         'security/groups.xml',
         'security/ir.model.access.csv',
-        
-         #data
+
+        # data
         'views/menu.xml',
         'views/menu_satpam.xml',
         'data/ir_sequence_data.xml',
@@ -45,8 +44,8 @@
         # 'data/ks_kesantrian_data.xml',
         'data/cdn_surah_data.xml',
         'data/cdn_ayat_data.xml',
-        
-        #views  
+
+        # views
         'views/quran.xml',
         'views/guru.xml',
         'views/guru_quran.xml',
@@ -87,7 +86,6 @@
         'views/mutabaah_sesi.xml',
         'views/satpam_perijinan.xml',
         'views/keterangan.xml',
-        # 'views/scan_kts.xml',
         'wizards/wizard_checkout.xml',
         'wizards/wizard_santridata.xml',
         'wizards/wizard_checkin.xml',
@@ -97,11 +95,12 @@
         'wizards/Akun/blokir.xml',
         'wizards/Akun/open_account.xml',
         'wizards/Akun/open_block.xml',
+        'wizards/wizard_rekap_absensi.xml',
+        'wizards/wizard_rekap_penilaian.xml',
         'wizards/menu.xml',
     ],
     'assets': {
         'web.assets_backend': [
-            # 'pesantren_kesantrian/static/src/js/perijinan_autofocus.js',
             'pesantren_kesantrian/static/src/scss/style.scss',
         ],
     },
@@ -109,13 +108,7 @@
     'demo': [
         'demo/demo.xml',
     ],
-    # 'assets': {
-    #     'web.assets_backend': [
-    #         'pesantren_kesantrian/static/src/js/popup_scan.js',
-    #     ],
-    # },
-
     "installable": True,
-	"auto_install": False,
-	"application": True,  
+    "auto_install": False,
+    "application": True,
 }
