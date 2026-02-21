@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError, UserError
 import uuid
 from datetime import datetime, timedelta
@@ -526,7 +526,7 @@ class DataPendaftaran(models.Model):
                     return orangtua
             else:
                 partner_vals = {
-                    'name': record.nama_ayah,
+                    'name': record.nama_ayah or record.nama_ibu or record.wali_nama or record.email_ayah or _("Orang Tua"),
                     'email': record.email or record.email_ayah,
                     'phone': record.telepon_ayah,
                     'city': record.kota_id.name if record.kota_id else False,
