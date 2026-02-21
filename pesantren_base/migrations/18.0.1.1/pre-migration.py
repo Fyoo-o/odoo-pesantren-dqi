@@ -15,6 +15,16 @@ def migrate(cr, version):
     _logger.info(
         "Running pre-migration script to link cdn.jenis_pegawai records...")
 
+    # Check if table exists before querying.
+    # This prevents UndefinedTable errors during the module's first installation
+    # or if the table hasn't been created yet in the database.
+    cr.execute(
+        "SELECT 1 FROM information_schema.tables WHERE table_name = 'cdn_jenis_pegawai'")
+    if not cr.fetchone():
+        _logger.info(
+            "Table 'cdn_jenis_pegawai' does not exist yet. Skipping pre-migration linking.")
+        return
+
     # Mapping of XML IDs to their corresponding codes
     # These must match pesantren_base/data/jenis_pegawai_data.xml
     roles_to_handle = [
