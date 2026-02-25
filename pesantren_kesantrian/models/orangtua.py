@@ -113,11 +113,8 @@ class OrangTua(models.Model):
                 raise ValueError(
                     _("No user associated with this OrangTua record."))
 
-            # Remove existing groups
-            user.groups_id = [(5, 0, 0)]  # Clear all groups
-
-            # Add new groups
-            user.groups_id = [(6, 0, [
+            # Add required groups incrementally to preserve existing roles (e.g. Guru/Karyawan)
+            group_ids = [
                 self.env.ref('base.group_user').id,
                 self.env.ref(
                     'pesantren_kesantrian.group_kesantrian_orang_tua').id,
@@ -126,7 +123,10 @@ class OrangTua(models.Model):
                 self.env.ref('pesantren_guru.group_guru_user').id,
                 self.env.ref('pesantren_keuangan.group_keuangan_user').id,
                 self.env.ref('account.group_account_readonly').id,
-            ])]
+            ]
+            user.sudo().write({
+                'groups_id': [(4, gid) for gid in group_ids if gid]
+            })
 
         return {
             'type': 'ir.actions.client',
@@ -138,24 +138,7 @@ class OrangTua(models.Model):
                 'sticky': False,
             }
         }
-        # return {
-        #     'type': 'ir.actions.client',
-        #     'tag': 'display_notification',
-        #     'params': {
-        #         'title': _("Warning head"),
-        #         'type': 'notification',
-        #         'message': _("This is the detailed warning"),
-        #         'sticky': True,
-        #     },
-        # }
 
-    # def write(self, vals):
-    #     res = super(OrangTua, self).write(vals)
-    #     for record in self:
-    #         # Jika field password diubah, update password user terkait
-    #         if vals.get('password') and record.user_id:
-    #             record.user_id.sudo().write({'password': vals['password']})
-    #     return res
     def write(self, vals):
         # Simpan dulu nilai password sebelum super().write()
         password_changed = 'password' in vals
