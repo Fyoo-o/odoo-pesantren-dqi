@@ -59,7 +59,6 @@ export class OrangtuaKpiCard extends Component {
 
     onWillStart(async () => {
       try {
-        await this.checkModelAccess();
         await this.fetchData(
           this.state.currentStartDate || this.defaultStartDate,
           this.state.currentEndDate || this.defaultEndDate
@@ -79,21 +78,6 @@ export class OrangtuaKpiCard extends Component {
     });
   }
 
-  async checkModelAccess() {
-    try {
-      const models = ["cdn.siswa", "account.payment", "cdn.pelanggaran"];
-      for (const model of models) {
-        const access = await this.orm.call(
-          "ir.model.access",
-          "check",
-          [model, "read"],
-          { context: this.env.context }
-        );
-      }
-    } catch (error) {
-      console.error("Error checking model access:", error);
-    }
-  }
 
   handleTimerClick() {
     if (this.isCountingDown) {
