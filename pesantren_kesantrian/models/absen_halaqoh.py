@@ -2,35 +2,11 @@ from odoo import api, fields, models
 from datetime import date, datetime
 from odoo.exceptions import UserError
 
+
 class Absenhalaqoh(models.Model):
-    _name           = 'cdn.absen_halaqoh'
-    _description    = 'Tabel Halaqoh'
-    
-    #get domain 
-    # def _domain_halaqoh_id(self):
-    #     tahun_ajaran = self.env.user.company_id.tahun_ajaran_aktif.id
-    #     user = self.env.user
+    _name = 'cdn.absen_halaqoh'
+    _description = 'Tabel Halaqoh'
 
-    #     # Jika user adalah Manager Kesantrian -> lihat semua halaqoh di tahun ajaran aktif
-    #     if self.env.user.has_group('pesantren_kesantrian.group_kesantrian_manager,pesantren_guruquran.group_guru_quran_staff'):
-    #         return [
-    #             ('fiscalyear_id', '=', tahun_ajaran)
-    #         ]
-    # # # Cari employee dari user
-    # #     employee = self.env['hr.employee'].search([('user_id', '=', user.id)], limit=1)
-
-    # #     if employee:
-    # #         # Guru Qur’an: hanya halaqoh yang dia pegang atau dia jadi pengganti
-    # #         return [
-    # #             ('fiscalyear_id', '=', tahun_ajaran),
-    # #             '|',
-    # #             ('penanggung_jawab_id', '=', employee.id),
-    # #             ('pengganti_ids', 'in', [employee.id])
-    # #         ]
-
-    #     # Jika user bukan guru dan tidak punya employee
-    #     return [('id', '=', 0)]
-    
     def _domain_halaqoh_id(self):
         """Mengembalikan domain untuk field halaqoh_id berdasarkan tahun ajaran aktif."""
         tahun_ajaran = self.env.user.company_id.tahun_ajaran_aktif.id
@@ -38,29 +14,23 @@ class Absenhalaqoh(models.Model):
 
     def _get_domain_guru(self):
         admin_user_ids = self.env.ref('base.group_system').users.ids
-        
+
         return [
             '|',
             ('user_id', '=', admin_user_ids),
             ('jns_pegawai_ids.code', 'in', ['guruquran', 'superadmin'])
         ]
 
-    # def _get_default_guru(self):
-    #     user = self.env.user
-    #     if user.has_group('pesantren_guru.group_guru_staff'):
-    #         employee = self.env['hr.employee'].search([('user_id', '=', user.id)], limit=1)
-    #         if employee:
-    #             return employee.id
-    #     return False
-    
     def _get_default_guru(self):
         user = self.env.user
-        employee = self.env['hr.employee'].search([('user_id', '=', user.id)], limit=1)
+        employee = self.env['hr.employee'].search(
+            [('user_id', '=', user.id)], limit=1)
         return employee.id if employee else False
 
-    name            = fields.Date(string='Tgl Absen', required=True, default=fields.Date.context_today, states={'Done': [('readonly', True)]})
-    halaqoh_id      = fields.Many2one('cdn.halaqoh', string='Halaqoh', required=True, domain=_domain_halaqoh_id, states={'Done': [('readonly', True)]})
-    # ustadz_id       = fields.Many2one('hr.employee', string='Ustadz',domain=_get_domain_guru, default=_get_default_guru ,required=True, states={'Done': [('readonly', True)]})
+    name = fields.Date(string='Tgl Absen', required=True,
+                       default=fields.Date.context_today, states={'Done': [('readonly', True)]})
+    halaqoh_id = fields.Many2one('cdn.halaqoh', string='Halaqoh', required=True,
+                                 domain=_domain_halaqoh_id, ondelete='cascade', states={'Done': [('readonly', True)]})
     ustadz_id = fields.Many2one(
         'hr.employee',
         string='Ustadz',
@@ -69,38 +39,33 @@ class Absenhalaqoh(models.Model):
         required=True,
         states={'Done': [('readonly', True)]}
     )
-    fiscalyear_id   = fields.Many2one('cdn.ref_tahunajaran', string='Tahun Ajaran', readonly=True, default=lambda self:self.env.user.company_id.tahun_ajaran_aktif.id, states={'Done': [('readonly', True)]})
-    absen_ids       = fields.One2many('cdn.absen_halaqoh_line', 'absen_id', string='Absen', states={'Done': [('readonly', True)]})
-    state           = fields.Selection([
+    fiscalyear_id = fields.Many2one('cdn.ref_tahunajaran', string='Tahun Ajaran', readonly=True,
+                                    default=lambda self: self.env.user.company_id.tahun_ajaran_aktif.id, states={'Done': [('readonly', True)]})
+    absen_ids = fields.One2many('cdn.absen_halaqoh_line', 'absen_id', string='Absen', states={
+                                'Done': [('readonly', True)]})
+    state = fields.Selection([
         ('Draft', 'Draft'),
         ('Proses', 'Proses'),
-        ('Done','Selesai'),
+        ('Done', 'Selesai'),
     ], default='Draft', string='Status')
-    penanggung_jawab_id = fields.Many2one('hr.employee', string='Penanggung Jawab', related='halaqoh_id.penanggung_jawab_id', readonly=True, store=True)
-    sesi_id         = fields.Many2one('cdn.sesi_halaqoh', string='Sesi', states={'Done': [('readonly', True)]})
-    keterangan      = fields.Char(string='Keterangan')
-    row_number      = fields.Integer(string='No', compute='_compute_row_number', store=False)
-    company_id      = fields.Many2one('res.company', string='Lembaga', default=lambda self: self.env.company)
+    penanggung_jawab_id = fields.Many2one(
+        'hr.employee', string='Penanggung Jawab', related='halaqoh_id.penanggung_jawab_id', readonly=True, store=True)
+    sesi_id = fields.Many2one('cdn.sesi_halaqoh', string='Sesi', states={
+                              'Done': [('readonly', True)]})
+    keterangan = fields.Char(string='Keterangan')
+    row_number = fields.Integer(
+        string='No', compute='_compute_row_number', store=False)
+    company_id = fields.Many2one(
+        'res.company', string='Lembaga', default=lambda self: self.env.company)
 
     def _compute_row_number(self):
         for index, record in enumerate(self):
             record.row_number = index + 1
-    # def action_proses(self):
-    #     self.state = 'Proses'
-    #     for absen in self.absen_ids:
-    #         if absen.kehadiran == 'Hadir':
-    #             halaqoh_vals = {
-    #                 'tanggal': self.name,
-    #                 'siswa_id': absen.siswa_id.id,
-    #                 'halaqoh_id': self.halaqoh_id.id,
-    #                 'ustadz_id': self.ustadz_id.id,
-    #                 'sesi_id': self.sesi_id.id,
-    #                 'state': 'draft',
-    #             }
-    #             self.env['cdn.penilaian_quran'].create(halaqoh_vals)
+
     def action_proses(self):
         self.state = 'Proses'
-        Penilaian = self.env['cdn.penilaian_quran'].with_context(from_guru_quran=True)
+        Penilaian = self.env['cdn.penilaian_quran'].with_context(
+            from_guru_quran=True)
         for absen in self.absen_ids.filtered(lambda l: l.kehadiran == 'Hadir'):
             # Cek existing untuk hindari duplikat (kombinasi unik: tanggal + siswa + halaqoh + sesi)
             existing = Penilaian.search([
@@ -123,37 +88,17 @@ class Absenhalaqoh(models.Model):
 
     def action_confirm(self):
         self.state = 'Done'
-        
-    # def action_sync_penilaian(self):
-    #     Penilaian = self.env['cdn.penilaian_quran']
 
-    #     for record in self:
-    #         for line in record.absen_ids.filtered(lambda l: l.kehadiran == 'Hadir'):
-    #             # Cek apakah sudah ada penilaian dengan kombinasi yang sama
-    #             existing = Penilaian.search([
-    #                 ('tanggal', '=', record.name),
-    #                 ('siswa_id', '=', line.siswa_id.id),
-    #                 ('halaqoh_id', '=', record.halaqoh_id.id),
-    #                 ('sesi_id', '=', record.sesi_id.id),
-    #             ], limit=1)
-
-    #             if not existing:
-    #                 Penilaian.create({
-    #                     'tanggal': record.name,
-    #                     'siswa_id': line.siswa_id.id,
-    #                     'halaqoh_id': record.halaqoh_id.id,
-    #                     'ustadz_id': record.ustadz_id.id,
-    #                     'sesi_id': record.sesi_id.id,
-    #                     'state': 'draft',
-    #                 })
     def action_sync_penilaian(self):
-        Penilaian = self.env['cdn.penilaian_quran'].with_context(from_guru_quran=True)
+        Penilaian = self.env['cdn.penilaian_quran'].with_context(
+            from_guru_quran=True)
         for record in self:
             for line in record.absen_ids.filtered(lambda l: l.kehadiran == 'Hadir'):
                 existing = Penilaian.search([
                     ('tanggal', '=', record.name),
                     ('siswa_id', '=', line.siswa_id.id),
-                    ('halaqoh_id', '=', record.halaqoh_id.id),  # Gunakan halaqoh_id dari absen
+                    # Gunakan halaqoh_id dari absen
+                    ('halaqoh_id', '=', record.halaqoh_id.id),
                     ('sesi_id', '=', record.sesi_id.id),
                     ('company_id', '=', record.company_id.id),
                 ], limit=1)
@@ -167,7 +112,7 @@ class Absenhalaqoh(models.Model):
                         'state': 'draft',
                         'company_id': record.company_id.id,
                     })
-                    
+
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
@@ -193,51 +138,8 @@ class Absenhalaqoh(models.Model):
             jam_menit = dt.strftime('%H:%M')
             nama_bulan = bulan_dict.get(bulan_angka, bulan_angka)
             return f"{hari} {nama_bulan} {tahun} {jam_menit}"
-        return 'Tidak tercatat'    
+        return 'Tidak tercatat'
 
-    # @api.onchange('halaqoh_id')
-    # def _onchange_halaqoh_id(self):
-    #     halaqoh = self.halaqoh_id
-    #     if halaqoh:
-    #         absen_ids = [(5, 0, 0)] 
-    #         for siswa in halaqoh.siswa_ids:
-
-    #             permission = self.env['cdn.perijinan'].search([
-    #                 ('siswa_id', '=', siswa.id),
-    #                 ('state', '=', 'Permission')
-    #             ], limit=1)
-
-    #             if permission:
-    #                 keperluan_name = permission.keperluan.name if permission.keperluan else 'Tidak ada keterangan'
-    #                 waktu_keluar = self.format_datetime_indonesia(permission.waktu_keluar) if permission.waktu_keluar else 'Tidak tercatat'
-    #                 message = f"Santri Keluar pada {waktu_keluar}, karena {keperluan_name}".encode()
-
-    #                 absen_ids.append((0,0, {
-    #                     'siswa_id': siswa.id,
-    #                     'kehadiran' : 'keluar',
-    #                     'keterangan': message,
-    #                 }))
-
-    #             else:
-    #                 absen_ids.append((0, 0, {
-    #                     'siswa_id': siswa.id,
-    #                     'kehadiran': 'Hadir'
-    #                 }))
-        
-    #         ustadz = halaqoh.penanggung_jawab_id | halaqoh.pengganti_ids
-            
-    #         if not self.env.user.has_group('pesantren_kesantrian.group_kesantrian_manager'):
-    #             ustadz = ustadz.filtered(lambda x: x.user_id == self.env.user)
-            
-    #         return {
-    #             'domain': {
-    #                 'ustadz_id': [('id', 'in', ustadz.ids)]
-    #             },
-    #             'value': {
-    #                 'absen_ids': absen_ids,
-    #                 'ustadz_id': ustadz[0].id if ustadz else False
-    #             }
-    #         }
     @api.onchange('halaqoh_id')
     def _onchange_halaqoh_id(self):
         """Mengisi absen_ids dan mengatur ustadz_id ke pengguna yang login untuk staff."""
@@ -251,12 +153,13 @@ class Absenhalaqoh(models.Model):
                 ], limit=1)
                 if permission:
                     keperluan_name = permission.keperluan.name if permission.keperluan else 'Tidak ada keterangan'
-                    waktu_keluar = self.format_datetime_indonesia(permission.waktu_keluar) if permission.waktu_keluar else 'Tidak tercatat'
+                    waktu_keluar = self.format_datetime_indonesia(
+                        permission.waktu_keluar) if permission.waktu_keluar else 'Tidak tercatat'
                     message = f"Santri Keluar pada {waktu_keluar}, karena {keperluan_name}"
-                    
+
                     # PERBAIKAN: Ambil foto bukti dari perijinan
                     foto_bukti = permission.foto_bukti if permission.foto_bukti else False
-                    
+
                     # Ambil nama file asli dari perijinan, atau generate jika kosong
                     if permission.foto_bukti_filename:
                         nama_file = permission.foto_bukti_filename
@@ -265,7 +168,7 @@ class Absenhalaqoh(models.Model):
                         nama_file = f"Bukti_Izin_{siswa.nis}_{siswa.name}_{permission.name}.jpg"
                     else:
                         nama_file = False
-                    
+
                     absen_ids.append((0, 0, {
                         'siswa_id': siswa.id,
                         'kehadiran': 'keluar',
@@ -279,7 +182,8 @@ class Absenhalaqoh(models.Model):
                         'kehadiran': 'Hadir'
                     }))
             user = self.env.user
-            employee = self.env['hr.employee'].search([('user_id', '=', user.id)], limit=1)
+            employee = self.env['hr.employee'].search(
+                [('user_id', '=', user.id)], limit=1)
             ustadz_id = employee.id if employee else False
             if self.env.user.has_group('pesantren_kesantrian.group_kesantrian_manager'):
                 ustadz = halaqoh.penanggung_jawab_id | halaqoh.pengganti_ids
@@ -303,74 +207,69 @@ class Absenhalaqoh(models.Model):
                     'company_id': halaqoh.company_id.id,
                 }
             }
-    
-    # @api.model
-    # def default_get(self, fields_tree):
-    #     tahun_ajaran = self.env['res.company'].search([('id', '=', self.env.ref('base.main_company').id)]).tahun_ajaran_aktif.id
-    #     if not tahun_ajaran:
-    #         raise models.ValidationError('Tahun ajaran belum di set')
-    #     return super().default_get(fields_tree)
-    # @api.model
-    # def default_get(self, fields_list):
-    #     """Memastikan tahun ajaran aktif diset."""
-    #     res = super().default_get(fields_list)
-    #     tahun_ajaran = self.env['res.company'].search([('id', '=', self.env.ref('base.main_company').id)]).tahun_ajaran_aktif.id
-    #     if not tahun_ajaran:
-    #         raise UserError('Tahun ajaran belum di set')
-    #     return res
+
     @api.model
     def default_get(self, fields_list):
         """Memastikan tahun ajaran aktif diset dari company yang sedang aktif."""
         res = super().default_get(fields_list)
-        
+
         # PERBAIKAN: Gunakan company aktif user, bukan selalu main_company
         current_company = self.env.company  # Company yang sedang aktif
         tahun_ajaran = current_company.tahun_ajaran_aktif
-        
+
         if not tahun_ajaran:
             raise UserError(
                 f'Tahun ajaran belum diset untuk {current_company.name}. '
                 'Silakan set tahun ajaran aktif di menu Settings > Companies.'
             )
-        
+
         # Optional: Set fiscalyear_id di res jika diperlukan
         if 'fiscalyear_id' in fields_list:
             res['fiscalyear_id'] = tahun_ajaran.id
-        
+
         return res
-    
+
     @api.model
     def create(self, vals):
         """Membuat absensi tanpa batasan ustadz_id untuk staff."""
         return super().create(vals)
-    
-    
-class AbsenTahsinQuranLine(models.Model):
-    _name           = 'cdn.absen_halaqoh_line'
-    _description    = 'Tabel Absen Halaqoh Line'
 
-    absen_id    = fields.Many2one('cdn.absen_halaqoh', string='Absen', ondelete='cascade')
-    tanggal     = fields.Date(string='Tgl Absen', related='absen_id.name', readonly=True, store=True)
-    halaqoh_id  = fields.Many2one('cdn.halaqoh', string='Halaqoh', related='absen_id.halaqoh_id', readonly=True, store=True)
-    siswa_id    = fields.Many2one('cdn.siswa', string='Siswa', ondelete='cascade')
-    
-    name                        = fields.Char(string='Nama', related='siswa_id.name', readonly=True, store=True)
-    nis                         = fields.Char(string='NIS', related='siswa_id.nis', readonly=True, store=True)
-    panggilan                   = fields.Char(string='Nama Panggilan', related='siswa_id.namapanggilan', readonly=True, store=True)
-    keterangan                  = fields.Char(string='Keterangan')
-    keterangan_izin             = fields.Binary(string='Foto', attachment=True)
-    keterangan_izin_filename    = fields.Char(string="Nama File Foto")
-    company_id                  = fields.Many2one('res.company', string='Lembaga', related='absen_id.company_id', readonly=True, store=True)
-    kehadiran                   = fields.Selection([
+
+class AbsenTahsinQuranLine(models.Model):
+    _name = 'cdn.absen_halaqoh_line'
+    _description = 'Tabel Absen Halaqoh Line'
+
+    absen_id = fields.Many2one(
+        'cdn.absen_halaqoh', string='Absen', ondelete='cascade')
+    tanggal = fields.Date(string='Tgl Absen',
+                          related='absen_id.name', readonly=True, store=True)
+    halaqoh_id = fields.Many2one('cdn.halaqoh', string='Halaqoh',
+                                 related='absen_id.halaqoh_id', readonly=True, store=True)
+    siswa_id = fields.Many2one('cdn.siswa', string='Siswa', ondelete='cascade')
+
+    name = fields.Char(string='Nama', related='siswa_id.name',
+                       readonly=True, store=True)
+    nis = fields.Char(string='NIS', related='siswa_id.nis',
+                      readonly=True, store=True)
+    panggilan = fields.Char(
+        string='Nama Panggilan', related='siswa_id.namapanggilan', readonly=True, store=True)
+    keterangan = fields.Char(string='Keterangan')
+    keterangan_izin = fields.Binary(string='Foto', attachment=True)
+    keterangan_izin_filename = fields.Char(string="Nama File Foto")
+    company_id = fields.Many2one('res.company', string='Lembaga',
+                                 related='absen_id.company_id', readonly=True, store=True)
+    kehadiran = fields.Selection([
         ('Hadir', 'Hadir'),
         ('Izin', 'Izin'),
         ('keluar', 'Izin Keluar'),
         ('Sakit', 'Sakit'),
         ('Alpa', 'Alpa'),
     ], string='Kehadiran', required=True)
-    penanggung_jawab_id         = fields.Many2one('hr.employee', string='Penanggung Jawab', related='halaqoh_id.penanggung_jawab_id', readonly=True, store=True)
-    row_number                  = fields.Integer(string='No', compute='_compute_row_number', store=False)
-    ustadz_id                   = fields.Many2one(
+    penanggung_jawab_id = fields.Many2one(
+        'hr.employee', string='Penanggung Jawab', related='halaqoh_id.penanggung_jawab_id', readonly=True, store=True)
+    row_number = fields.Integer(
+        string='No', compute='_compute_row_number', store=False)
+    ustadz_id = fields.Many2one(
         'hr.employee',
         string='Ustadz',
         related='absen_id.ustadz_id',
@@ -381,28 +280,29 @@ class AbsenTahsinQuranLine(models.Model):
     def _compute_row_number(self):
         for index, record in enumerate(self):
             record.row_number = index + 1
+
     def action_view_permission(self):
         """Open permission form for this student"""
         if not self.siswa_id or not self.tanggal:
             return
-            
+
         permission = self.env['cdn.perijinan'].search([
             ('siswa_id', '=', self.siswa_id.id),
             ('state', '=', 'Permission')
         ], limit=1)
-        
+
         if not permission:
             return {
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
                 'params': {
-                    'title' : '❌ Tidak Dapat Menemukan Data !',
+                    'title': '❌ Tidak Dapat Menemukan Data !',
                     'message': 'Data perizinan tidak ditemukan, mungkin santri telah kembali.',
                     'type': 'danger',
                     'sticky': False,
                 }
             }
-        
+
         return {
             'type': 'ir.actions.act_window',
             'name': 'Detail Perijinan',
