@@ -44,18 +44,14 @@ class master_kelas(models.Model):
         help="Urutan numerik tingkat untuk sorting",
     )
 
-    # ===============================
     # Constraint unik
-    # ===============================
     @api.constrains("name")
     def _check_unique_name(self):
         for record in self:
             if self.search_count([("name", "=", record.name)]) > 1:
                 raise UserError(_("Master Data Kelas harus unik!"))
 
-    # ===============================
     # Hitung urutan tingkat
-    # ===============================
     @api.depends("tingkat", "jenjang")
     def _compute_tingkat_urutan(self):
         for record in self:
@@ -82,9 +78,7 @@ class master_kelas(models.Model):
                                 break
             record.tingkat_urutan = urutan
 
-    # ===============================
     # Helper konversi angka ke romawi
-    # ===============================
     def _convert_to_roman(self, number):
         roman = [
             (1000, "M"), (900, "CM"), (500, "D"), (400, "CD"),
@@ -98,9 +92,7 @@ class master_kelas(models.Model):
                 number -= value
         return result
 
-    # ===============================
     # Helper ambil nama dasar kelas
-    # ===============================
     def _get_base_name(self, jenjang, tingkat):
         if not tingkat:
             return ""
@@ -124,10 +116,7 @@ class master_kelas(models.Model):
         else:
             return tingkat_name.upper()
 
-
-    # ===============================
     # Onchange → preview name
-    # ===============================
     @api.onchange("tingkat", "jurusan_id", "nama_kelas")
     def onchange_tingkat_nama_kelas(self):
         if self.tingkat:
@@ -142,9 +131,7 @@ class master_kelas(models.Model):
             else:
                 self.name = base_name
 
-    # ===============================
     # Create override
-    # ===============================
     @api.model
     def create(self, vals):
         tingkat = self.env["cdn.tingkat"].browse(vals["tingkat"])
@@ -162,15 +149,14 @@ class master_kelas(models.Model):
         vals["name"] = " - ".join(name_parts)
         return super(master_kelas, self).create(vals)
 
-    # ===============================
     # Write override
-    # ===============================
     def write(self, vals):
         res = super(master_kelas, self).write(vals)
 
         if any(k in vals for k in ["tingkat", "jurusan_id", "nama_kelas", "jenjang"]):
             for record in self:
-                base_name = record._get_base_name(record.jenjang, record.tingkat)
+                base_name = record._get_base_name(
+                    record.jenjang, record.tingkat)
 
                 if record.jurusan_id and record.nama_kelas:
                     name = f"{base_name} - {record.jurusan_id.name} - {record.nama_kelas}"
@@ -182,7 +168,8 @@ class master_kelas(models.Model):
                     name = base_name
 
                 if name != record.name:
-                    record.with_context(no_name_update=True).write({"name": name})
+                    record.with_context(
+                        no_name_update=True).write({"name": name})
 
         return res
 

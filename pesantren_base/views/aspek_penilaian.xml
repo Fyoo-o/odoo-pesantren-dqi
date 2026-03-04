@@ -7,9 +7,9 @@
             <field name="model">cdn.aspek_penilaian</field>
             <field name="arch" type="xml">
                 <list>
-                    <field name="name"/>
-                    <field name="parent_id"/>
-                    <field name="keterangan"/>
+                    <field name="name" />
+                    <field name="parent_id" />
+                    <field name="keterangan" />
                 </list>
             </field>
         </record>
@@ -21,9 +21,9 @@
                 <form string="">
                     <sheet>
                         <group>
-                            <field name="name"/>
-                            <field name="parent_id"/>
-                            <field name="keterangan"/>
+                            <field name="name" />
+                            <field name="parent_id" />
+                            <field name="keterangan" />
                         </group>
                     </sheet>
                 </form>
@@ -36,8 +36,5 @@
             <field name="res_model">cdn.aspek_penilaian</field>
             <field name="view_mode">list,form</field>
         </record>
-        <!-- This Menu Item must have a parent and an action -->
-        <!-- <menuitem id="aspek_penilaian_menu_act" name="Aspek Penilaian" 
-            parent="pengaturan_akademik_menu_categ" action="cdn_aspek_penilaian_action" sequence="40"/> -->
     </data>
 </odoo>

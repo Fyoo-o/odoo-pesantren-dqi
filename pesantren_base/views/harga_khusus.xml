@@ -7,13 +7,15 @@
             <field name="model">cdn.harga_khusus</field>
             <field name="arch" type="xml">
                 <list string="Harga Khusus Diskon">
-                    <field name="name"/>
-                    <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" string="Nama Santri"/>
+                    <field name="name" />
+                    <field name="siswa_id"
+                        options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"
+                        string="Nama Santri" />
                     <!-- <field name="partner_id"/> -->
-                    <field name="disc_amount"/>
-                    <field name="disc_persen"/>
-                    <field name="keterangan"/>
-                    <field name="state" widget="badge"/>
+                    <field name="disc_amount" />
+                    <field name="disc_persen" />
+                    <field name="keterangan" />
+                    <field name="state" widget="badge" />
                 </list>
             </field>
         </record>
@@ -24,22 +26,24 @@
             <field name="arch" type="xml">
                 <form string="Harga Khusus Diskon">
                     <header>
-                        <field name="state" widget="statusbar" readonly="1"/>
+                        <field name="state" widget="statusbar" readonly="1" />
                         <!-- Status Field with Status Bar -->
                     </header>
                     <sheet>
                         <group>
                             <group>
-                                <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" string="Nama Santri"/>
-                                <field name="name"/>
-                                <field name="disc_persen"/>
-                                <field name="keterangan"/>
+                                <field name="siswa_id"
+                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"
+                                    string="Nama Santri" />
+                                <field name="name" />
+                                <field name="disc_persen" />
+                                <field name="keterangan" />
                             </group>
                             <group>
-                                <field name="partner_id" string="ID Santri"/>
-                                <field name="price" widget="integer"/>
-                                <field name="disc_amount"/>
-                                <field name="expired_date"/>
+                                <field name="partner_id" string="ID Santri" />
+                                <field name="price" widget="integer" />
+                                <field name="disc_amount" />
+                                <field name="expired_date" />
                                 <!-- Kadaluarsa Field -->
                             </group>
                         </group>
@@ -47,22 +51,5 @@
                 </form>
             </field>
         </record>
-        <!-- cdn.harga_khusus action window -->
-        <!-- <record id="cdn_harga_khusus_action" model="ir.actions.act_window">
-            <field name="name">Diskon Khusus / Keringanan</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">cdn.harga_khusus</field>
-            <field name="view_mode">list,form</field>
-            <field name="help" type="html">
-                <p class="oe_view_nocontent_create">
-                    Add Text Here
-                </p>
-                <p>
-                    More details about what a user can do with this object will be OK
-                </p>
-            </field>
-        </record> -->
-        <!-- This Menu Item must have a parent and an action -->
-        <!-- <menuitem id="harga_khusus_menu_act" name="Diskon/Keringanan" parent="pengaturan_admkeu_menu_categ" action="cdn_harga_khusus_action" sequence="30"/> -->
     </data>
 </odoo>

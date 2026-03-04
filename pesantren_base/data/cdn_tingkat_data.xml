@@ -72,7 +72,6 @@
             <field name="jenjang">paud</field>
             <field name="keterangan">PAUD - Persiapan</field>
         </record>
-
         <!-- TK/RA -->
         <record model="cdn.tingkat" id="15">
             <field name="name">1</field>

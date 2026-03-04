@@ -25,9 +25,6 @@ class KenaikanKelas(models.Model):
     _description = 'Menu POP UP untuk mengatur kenaikan kelas dan kelas yang lulus'
     _rec_name = 'tahunajaran_id'
 
-    # def _default_tahunajaran(self):
-    #    return self.env['res.company'].search([('id','=',1)]).tahun_ajaran_aktif
-
     jenjang = fields.Selection(
         selection=[('paud', 'PAUD'), ('tk', 'TK/RA'), ('sd', 'SD/MI'),
                    ('smp', 'SMP/MTS'), ('sma', 'SMA/MA/SMK'), ('nonformal', 'Nonformal')],

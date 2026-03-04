@@ -6,7 +6,7 @@
             <field name="name">cdn_ref_pendidikan_tree</field>
             <field name="model">cdn.ref_pendidikan</field>
             <field name="type">list</field>
-            <field name="priority" eval="8"/>
+            <field name="priority" eval="8" />
             <field name="arch" type="xml">
                 <list string="Pendidikan">
                     <field name="name" />
@@ -19,21 +19,18 @@
             <field name="name">cdn_ref_pendidikan_form</field>
             <field name="model">cdn.ref_pendidikan</field>
             <field name="type">form</field>
-            <field name="priority" eval="8"/>
+            <field name="priority" eval="8" />
             <field name="arch" type="xml">
                 <form string="Pendidikan">
                     <header>
                     </header>
                     <sheet>
-                        <div class="oe_button_box" name="button_box">
-                            <!--button type="object" name="action_view_detail" class="oe_stat_button" icon="fa-pencil-square-o"-->
-                                <!--field name="detail_count" widget="statinfo" string="Detail(s)"/-->
-                                <!--field name="detail_ids" invisible="1"/-->
-                            <!--/button-->
-                        </div>
+                        <div class="oe_button_box" name="button_box"> </div>
                         <div class="oe_title">
-                            <label for="name" class="oe_edit_only" string="Nama Pendidikan"/>
-                            <h1><field name="name"/></h1>
+                            <label for="name" class="oe_edit_only" string="Nama Pendidikan" />
+                            <h1>
+                                <field name="name" />
+                            </h1>
                         </div>
                         <group>
                             <group>
@@ -55,17 +52,18 @@
                 <search string="Pendidikan">
 
                     <filter string="Nama" name="filter_by_name" domain="[('name','=','')]" />
-                    <filter string="Keterangan" name="filter_by_keterangan" domain="[('keterangan','=','')]" />
+                    <filter string="Keterangan" name="filter_by_keterangan"
+                        domain="[('keterangan','=','')]" />
                     <filter string="Active" name="filter_by_active" domain="[('active','=','')]" />
-                    <field name="name" select="True"/>
-                    <field name="keterangan" select="True"/>
-                    <field name="active" select="True"/>
+                    <field name="name" select="True" />
+                    <field name="keterangan" select="True" />
+                    <field name="active" select="True" />
                     <group string="Group By..">
                     </group>
                 </search>
             </field>
         </record>
- 
+
         <!-- action window -->
         <record id="action_cdn_ref_pendidikan" model="ir.actions.act_window">
             <field name="name">Pendidikan</field>
@@ -75,13 +73,15 @@
             <field name="context">{"search_default_fieldname":1}</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
-                Click to add a new Pendidikan
-                </p><p>
-                Click the Create button to add a new Pendidikan
+                    Click to add a new Pendidikan
+                </p>
+                <p>
+                    Click the Create button to add a new Pendidikan
                 </p>
             </field>
         </record>
 
-        <menuitem id="menu_cdn_ref_pendidikan" name="Pendidikan" parent="pengaturan_ref_menu_categ" action="action_cdn_ref_pendidikan" sequence="40"/>
+        <menuitem id="menu_cdn_ref_pendidikan" name="Pendidikan" parent="pengaturan_ref_menu_categ"
+            action="action_cdn_ref_pendidikan" sequence="40" />
     </data>
 </odoo>

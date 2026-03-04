@@ -7,17 +7,22 @@ class WizardSearchSiswa(models.TransientModel):
     _name = 'wizard.search.siswa'
     _description = 'Wizard Search Siswa'
 
-    siswa_id    = fields.Many2one('cdn.siswa', string='Siswa', required=False, store=True, ondelete='cascade')
-    tmp_lahir = fields.Char(related='siswa_id.tmp_lahir', string='Tmp Lahir', store=True)
-    tgl_lahir = fields.Date(related='siswa_id.tgl_lahir', string='Tgl Lahir',store=True)
-    nis = fields.Char(related='siswa_id.nis',string='NIS', required=False,store=True)
-    barcode = fields.Char(string='Kartu Santri',readonly=False)
+    siswa_id = fields.Many2one(
+        'cdn.siswa', string='Siswa', required=False, store=True, ondelete='cascade')
+    tmp_lahir = fields.Char(related='siswa_id.tmp_lahir',
+                            string='Tmp Lahir', store=True)
+    tgl_lahir = fields.Date(related='siswa_id.tgl_lahir',
+                            string='Tgl Lahir', store=True)
+    nis = fields.Char(related='siswa_id.nis', string='NIS',
+                      required=False, store=True)
+    barcode = fields.Char(string='Kartu Santri', readonly=False)
 
     @api.onchange('barcode')
     def _onchange_barcode(self):
         """Mengisi siswa_id berdasarkan barcode yang diinput"""
         if self.barcode:
-            siswa = self.env['cdn.siswa'].search([('barcode_santri', '=', self.barcode)], limit=1)
+            siswa = self.env['cdn.siswa'].search(
+                [('barcode_santri', '=', self.barcode)], limit=1)
 
             if siswa:
                 self.siswa_id = siswa.id
@@ -31,16 +36,17 @@ class WizardSearchSiswa(models.TransientModel):
                         'message': f"Data Santri dengan Kartu Santri {barcode_sementara} tidak ditemukan."
                     }
                 }
-                
 
     def button_search(self):
         if not self.siswa_id and self.barcode:
-            siswa = self.env['cdn.siswa'].search([('barcode_santri', '=', self.barcode)], limit=1)
+            siswa = self.env['cdn.siswa'].search(
+                [('barcode_santri', '=', self.barcode)], limit=1)
             if siswa:
                 self.siswa_id = siswa.id
             else:
-                raise UserError(f"Data Santri dengan Kartu Santri {self.barcode} tidak ditemukan")
-        
+                raise UserError(
+                    f"Data Santri dengan Kartu Santri {self.barcode} tidak ditemukan")
+
         if not self.siswa_id:
             raise UserError('Silahkan isi data santri terlebih dahulu')
 
@@ -51,5 +57,3 @@ class WizardSearchSiswa(models.TransientModel):
             'res_id': self.siswa_id.id,
             'target': 'current',
         }
-
-

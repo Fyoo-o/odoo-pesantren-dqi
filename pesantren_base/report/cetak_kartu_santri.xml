@@ -1,3 +1,4 @@
+<?xml version='1.0' encoding='utf-8'?>
 <odoo>
     <data>
         <record id="action_report_kartu_santri" model="ir.actions.report">
@@ -13,32 +14,43 @@
                     <t t-call="web.external_layout">
                         <style>
                             .barcode {
-                                background-color: transparent !important;
+                            background-color: transparent !important;
                             }
                         </style>
                         <div class="page">
-                            <div style="border: 1px black solid; max-width: 500px; margin: 50px auto; border-top-right-radius: 5px; border-top-left-radius: 5px; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;">
-                                <div style="background-color: #0B5B54; padding: 5px; border-top-right-radius: 5px; border-top-left-radius: 5px;">
+                            <div
+                                style="border: 1px black solid; max-width: 500px; margin: 50px auto; border-top-right-radius: 5px; border-top-left-radius: 5px; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;">
+                                <div
+                                    style="background-color: #0B5B54; padding: 5px; border-top-right-radius: 5px; border-top-left-radius: 5px;">
                                     <table cellpadding="0" cellspacing="0">
                                         <tr>
                                             <td>
-                                                <img src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png" alt="Logo" width="50" style="margin-left: 10px;"/>
+                                                <img
+                                                    src="https://i.ibb.co.com/SmWmBTW/SAVE-20220114-075750-removebg-preview-4.png"
+                                                    alt="Logo" width="50" style="margin-left: 10px;" />
                                             </td>
                                             <td style="color: white; padding-left: 10px;">
-                                                <span style="text-transform: uppercase; font-size: 15px;">Kartu tanda santri
-                                                    <br/> yayasan pondok pesantren
-                                                    <span style="font-weight: bold; font-size: 15px;">Daarul Qur`an Istiqomah</span>
+                                                <span
+                                                    style="text-transform: uppercase; font-size: 15px;">Kartu
+                                                    tanda santri <br /> yayasan pondok pesantren <span
+                                                        style="font-weight: bold; font-size: 15px;">Daarul
+                                                    Qur`an Istiqomah</span>
                                                 </span>
                                             </td>
                                         </tr>
                                     </table>
                                 </div>
-                                <div class="body" style="background-color: white; padding-bottom: 20px; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px; padding-top: 10px;">
+                                <div class="body"
+                                    style="background-color: white; padding-bottom: 20px; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px; padding-top: 10px;">
                                     <div style="padding-left: 10px;">
                                         <div style="float: left; margin-right: 10px;">
-                                            <img t-att-src="'data:image/png;base64,' + (doc.image_1920.decode('utf-8') if doc.image_1920 else '')" alt="Foto Santri" width="75" style="border-radius: 5px;"/>
+                                            <img
+                                                t-att-src="'data:image/png;base64,' + (doc.image_1920.decode('utf-8') if doc.image_1920 else '')"
+                                                alt="Foto Santri" width="75"
+                                                style="border-radius: 5px;" />
                                         </div>
-                                        <table cellspacing="0" cellpadding="0" style="font-size: 12px;">
+                                        <table cellspacing="0" cellpadding="0"
+                                            style="font-size: 12px;">
                                             <tr style="white-space: nowrap;">
                                                 <td>Nomor Induk</td>
                                                 <td>&#160;</td>
@@ -63,8 +75,8 @@
                                                 <td>:</td>
                                                 <td>&#160;</td>
                                                 <td>
-                                                    <span t-field="doc.tmp_lahir" />,
-                                                    <span t-esc="ttl_lahir"/>
+                                                    <span t-field="doc.tmp_lahir" />, <span
+                                                        t-esc="ttl_lahir" />
                                                 </td>
                                             </tr>
                                             <tr>
@@ -88,42 +100,58 @@
                                                 <td>&#160;</td>
                                                 <td>&#160;</td>
                                                 <td>&#160;</td>
-                                                <td style="font-size: 10px; padding-left: 130px; padding-top: 10px;">Tanah Laut,
-                                                    <span t-esc="datetime.date.today().strftime('%d-%m-%Y')" />
-                                                    <br/> Pengasuh PP. Tahfizh Daarul Qur'an Istiqomah
-                                                    <br/>
-                                                    <br/>
-                                                    <br/>
-                                                    <br/>
-                                                    <span style="font-weight: bold; text-decoration: underline; font-size: 11px;">UST. ADLIN P. PUTRA</span>
+                                                <td
+                                                    style="font-size: 10px; padding-left: 130px; padding-top: 10px;">Tanah
+                                                    Laut, <span
+                                                        t-esc="datetime.date.today().strftime('%d-%m-%Y')" />
+                                                    <br />
+                                                    Pengasuh PP. Tahfizh Daarul Qur'an Istiqomah <br />
+                                                    <br />
+                                                    <br />
+                                                    <br />
+                                                    <span
+                                                        style="font-weight: bold; text-decoration: underline; font-size: 11px;">UST.
+                                                    ADLIN P. PUTRA</span>
                                                 </td>
                                             </tr>
                                         </table>
                                     </div>
                                 </div>
                             </div>
-                            <div style="border: 1px black solid; max-width: 500px; height: 250.75px; margin: 50px auto; border-radius: 5px; background-color: white;">
-                                <div style="background-color: #0B5B54; text-align: center; padding: 10px 0; color:white;">
-                                    <span style="font-size: 15px; text-transform: uppercase;">Yayasan pondok pesantren
-                                        <br/>
-                                        <i style="font-size: 17px; font-weight: bold;">Daarul Qur`an Istiqomah</i>
+                            <div
+                                style="border: 1px black solid; max-width: 500px; height: 250.75px; margin: 50px auto; border-radius: 5px; background-color: white;">
+                                <div
+                                    style="background-color: #0B5B54; text-align: center; padding: 10px 0; color:white;">
+                                    <span style="font-size: 15px; text-transform: uppercase;">Yayasan
+                                        pondok pesantren <br />
+                                        <i
+                                            style="font-size: 17px; font-weight: bold;">Daarul
+                                        Qur`an Istiqomah</i>
                                     </span>
                                 </div>
                                 <div style="padding: 5px;">
-                                    <div style="font-weight: bold; font-size: 13px; margin-left: 10px;">Janji Santri:</div>
-                                    <div style="font-size: 13px; color: #333; margin: 5px 0 10px 10px;">
+                                    <div
+                                        style="font-weight: bold; font-size: 13px; margin-left: 10px;">Janji
+                                        Santri:</div>
+                                    <div
+                                        style="font-size: 13px; color: #333; margin: 5px 0 10px 10px;">
                                         <ol style="padding-left: 20px; margin: 0;">
-                                            <li>Beribadah dengan penuh keikhlasan dan tanggung jawab.</li>
-                                            <li>Menjaga akhlak mulia dalam setiap perilaku sehari-hari.</li>
+                                            <li>Beribadah dengan penuh keikhlasan dan tanggung
+                                                jawab.</li>
+                                            <li>Menjaga akhlak mulia dalam setiap perilaku
+                                                sehari-hari.</li>
                                             <li>Menghormati guru, orang tua, dan sesama santri.</li>
-                                            <li>Belajar dengan sungguh-sungguh untuk mencapai ilmu yang bermanfaat.</li>
+                                            <li>Belajar dengan sungguh-sungguh untuk mencapai ilmu
+                                                yang bermanfaat.</li>
                                         </ol>
                                     </div>
-                                    <div style="padding-top: 5px; width:100% display:flex;justify-content:center;">
+                                    <div
+                                        style="padding-top: 5px; width:100% display:flex;justify-content:center;">
                                         <div class="barcode" style="text-align: center;">
                                             <div t-field="doc.barcode"
-                                                            t-options="{'widget':'barcode', 'width':180, 'height':38, 'img_style':'width:180px;height:38px;image-rendering: crisp-edges;'}" />
-                                            <p style="color: #000; margin: 0; text-align: center; font-size: 12px;">
+                                                t-options="{'widget':'barcode', 'width':180, 'height':38, 'img_style':'width:180px;height:38px;image-rendering: crisp-edges;'}" />
+                                            <p
+                                                style="color: #000; margin: 0; text-align: center; font-size: 12px;">
                                                 <span t-field="doc.barcode" />
                                             </p>
                                         </div>

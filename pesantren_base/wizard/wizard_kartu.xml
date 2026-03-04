@@ -7,12 +7,13 @@
             <field name="arch" type="xml">
                 <form string="Ubah Wallet PIN">
                     <group>
-                        <field name="kartu_santri"/>
+                        <field name="kartu_santri" />
                         <field name="pin" password="True" />
                     </group>
                     <footer>
-                        <button name="action_register" string="Simpan" type="object" class="btn-primary"/>
-		                <button string="Batal" class="btn-default" special="cancel"/>
+                        <button name="action_register" string="Simpan" type="object"
+                            class="btn-primary" />
+                        <button string="Batal" class="btn-default" special="cancel" />
                     </footer>
                 </form>
             </field>
@@ -22,7 +23,7 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wizard.register.kartu</field>
             <field name="view_mode">form</field>
-            <field name="view_id" ref="wizard_register_kartu_view_form"/>
+            <field name="view_id" ref="wizard_register_kartu_view_form" />
             <field name="target">new</field>
         </record>
     </data>

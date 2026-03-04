@@ -1,7 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
 <odoo>
-    
-    
     <data noupdate="1">
         <!-- Kategori -->
         <record id="product_category_01" model="product.category">
@@ -23,25 +21,21 @@
             <field name="type">service</field>
             <field name="sale_ok">True</field>
             <field name="purchase_ok">False</field>
-            <field name="categ_id" ref="product_category_01"/>
+            <field name="categ_id" ref="product_category_01" />
         </record>
         <record id="product_product_02" model="product.product">
             <field name="name">Uang Gedung/Uang Masuk</field>
             <field name="type">service</field>
             <field name="sale_ok">True</field>
             <field name="purchase_ok">False</field>
-            <field name="categ_id" ref="product_category_03"/>
+            <field name="categ_id" ref="product_category_03" />
         </record>
         <record id="product_product_03" model="product.product">
             <field name="name">Uang Kegiatan</field>
             <field name="type">service</field>
             <field name="sale_ok">True</field>
             <field name="purchase_ok">False</field>
-            <field name="categ_id" ref="product_category_02"/>
+            <field name="categ_id" ref="product_category_02" />
         </record>
-    
-        
-    
     </data>
-    
 </odoo>

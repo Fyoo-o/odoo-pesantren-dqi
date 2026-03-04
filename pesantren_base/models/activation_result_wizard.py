@@ -1,4 +1,7 @@
+# -*- coding: utf-8 -*-
+
 from odoo import models, fields
+
 
 class ActivationResultWizard(models.TransientModel):
     _name = 'activation.result.wizard'
