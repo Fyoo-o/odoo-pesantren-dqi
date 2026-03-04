@@ -1,7 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <odoo>
     <data>
-    
         <!-- cdn.ekstrakulikuler list view -->
         <record id="cdn_ekstrakulikuler_view_tree" model="ir.ui.view">
             <field name="name">cdn.ekstrakulikuler.view.list</field>
@@ -9,9 +8,9 @@
             <field name="arch" type="xml">
                 <list>
                     <!-- Add your fields here -->
-                    <field name="name"/>
-                    <field name="is_wajib"/>
-                    <field name="tingkat_ids" widget="many2many_tags"/>
+                    <field name="name" />
+                    <field name="is_wajib" />
+                    <field name="tingkat_ids" widget="many2many_tags" />
                 </list>
             </field>
         </record>
@@ -25,8 +24,8 @@
                     <sheet>
                         <group>
                             <!-- Add your fields here -->
-                            <field name="name"/>
-                            <field name="is_wajib"/>
+                            <field name="name" />
+                            <field name="is_wajib" />
                             <field name="tingkat_ids" widget="many2many_tags" />
                         </group>
                     </sheet>
@@ -43,8 +42,7 @@
         </record>
 
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="cdn_ekstrakulikuler_menu_act" name="Jenis Ekskul" parent="tu_opkilang" action="cdn_ekstrakulikuler_action" sequence="40"/>
-    
+        <menuitem id="cdn_ekstrakulikuler_menu_act" name="Jenis Ekskul" parent="tu_opkilang"
+            action="cdn_ekstrakulikuler_action" sequence="40" />
     </data>
-    
 </odoo>

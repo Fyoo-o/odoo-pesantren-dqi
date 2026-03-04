@@ -17,7 +17,6 @@
             </field>
         </record>
 
-
         <record id="view_employee_form_inherit" model="ir.ui.view">
             <field name="name">hr.employee.form.inherit</field>
             <field name="model">hr.employee</field>
@@ -52,22 +51,6 @@
                         string="Aktifkan Akun"
                         type="object" />
                 </xpath>
-                <!-- <field name="country_of_birth" position="attributes">
-                    <attribute name="invisible">1</attribute>
-                </field> -->
-                <!-- <field name="km_home_work" position="attributes">
-                    <attribute name="string">Jarak Rumah (km)</attribute>
-                </field> -->
-                <!-- <xpath expr="//page[@name='personal_information']//group[1]//group[5]"
-                position="attributes">
-                    <attribute name="invisible">1</attribute>
-                </xpath>
-                <xpath expr="//page[@name='personal_information']//group[1]//group[6]" position="attributes">
-                    <attribute name="invisible">1</attribute>
-                </xpath>
-                <xpath expr="//field[@name='coach_id']" position="attributes">
-                    <attribute name="attrs">{'invisible':True}</attribute>
-                </xpath> -->
                 <xpath expr="//notebook" position="inside">
                     <page string="Daftar Mata Pelajaran" invisible="not has_guru_role">
                         <field name="jns_pegawai" invisible="1" />
@@ -107,12 +90,8 @@
             <field name="view_mode">kanban,list,form</field>
             <field name="domain">[('jns_pegawai_ids.code', 'in', ['guru'])]</field>
             <field name="help" type="html">
-                <p class="oe_view_nocontent_create">
-                    <!-- Add Text Here -->
-                </p>
-                <p>
-                    <!-- More details about what a user can do with this object will be OK -->
-                </p>
+                <p class="oe_view_nocontent_create"> </p>
+                <p> </p>
             </field>
         </record>
 

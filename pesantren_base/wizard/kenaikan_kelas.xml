@@ -6,11 +6,10 @@
             <field name="model">cdn.kenaikan_kelas</field>
             <field name="arch" type="xml">
                 <form string="Kenaikan Kelas">
-                    
                     <sheet>
                         <group>
                             <group>
-                                <field name="tahunajaran_id" string="Tahun Ajaran"/>
+                                <field name="tahunajaran_id" string="Tahun Ajaran" />
                             </group>
 
                             <group>
@@ -20,9 +19,9 @@
                                     decoration-warning="status == 'tidak_naik'"
                                     decoration-danger="status == 'tidak_lulus'"
                                 />
-                                
-                                <field name="angkatan_id" invisible="1"/>
-                                <field name="jenjang" invisible="1"/>
+
+                                <field name="angkatan_id" invisible="1" />
+                                <field name="jenjang" invisible="1" />
                                 <field name="status" invisible="1"
                                     decoration-success="status == 'naik'"
                                     decoration-primary="status == 'lulus'"
@@ -31,32 +30,40 @@
                                 />
                             </group>
 
-                            <group>    
-                                <field name="kelas_id" string="Dari kelas" options="{'no_create': True}" placeholder="Pilih Kelas"/>
+                            <group>
+                                <field name="kelas_id" string="Dari kelas"
+                                    options="{'no_create': True}" placeholder="Pilih Kelas" />
                             </group>
 
                             <group>
-                                <field name="next_class" string="Ke Kelas" decoration-success="status == 'naik'" decoration-primary="status == 'lulus'" decoration-warning="status == 'tidak_naik'" decoration-danger="status == 'tidak_lulus'" options="{'no_create': True, 'no_open': True}"/>
-                                <field name="tingkat_id" invisible="1" readonly="1" options="{'no_create' : True, 'no_open' : True}"/>
+                                <field name="next_class" string="Ke Kelas"
+                                    decoration-success="status == 'naik'"
+                                    decoration-primary="status == 'lulus'"
+                                    decoration-warning="status == 'tidak_naik'"
+                                    decoration-danger="status == 'tidak_lulus'"
+                                    options="{'no_create': True, 'no_open': True}" />
+                                <field name="tingkat_id" invisible="1" readonly="1"
+                                    options="{'no_create' : True, 'no_open' : True}" />
                             </group>
 
                             <group string="Wali Kelas" invisible="1">
-                                <field name="walikelas_id" invisible="1"/>
+                                <field name="walikelas_id" invisible="1" />
                             </group>
 
                             <group string="Santri Yang Tidak Naik Kelas / Tidak Lulus" invisible="1">
-                                <field name="filtered_santri_ids" invisible="1" widget="many2many_tags" />
+                                <field name="filtered_santri_ids" invisible="1"
+                                    widget="many2many_tags" />
                             </group>
                         </group>
-                        
+
                         <notebook>
                             <page string="Santri">
                                 <field name="partner_ids" string="Santri">
                                     <list editable="bottom" no_create="1">
-                                        <field name="centang" string=" " widget="boolean_toggle"/>
-                                        <field name="name"/>
-                                        <field name="panggilan"/>
-                                        <field name="nis"/>
+                                        <field name="centang" string=" " widget="boolean_toggle" />
+                                        <field name="name" />
+                                        <field name="panggilan" />
+                                        <field name="nis" />
                                         <field name="jns_kelamin" />
                                     </list>
                                 </field>
@@ -65,10 +72,11 @@
                             <page string="Partner_lines" invisible="1">
                                 <field name="partner_lines" invisible="1" string="">
                                     <list editable="bottom" string="">
-                                        <field name="nis"/>
-                                        <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
-                                        <field name="kelas_sekarang_id"/>
-                                        <field name="next_class_id"/>
+                                        <field name="nis" />
+                                        <field name="siswa_id"
+                                            options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
+                                        <field name="kelas_sekarang_id" />
+                                        <field name="next_class_id" />
                                     </list>
                                 </field>
                             </page>
@@ -77,15 +85,16 @@
                     </sheet>
 
                     <footer>
-                        <button name="action_proses_kenaikan_kelas" string="Simpan" type="object" class="btn-primary"/>
-                        <button string="Batal" class="btn-secondary" special="cancel"/>
+                        <button name="action_proses_kenaikan_kelas" string="Simpan" type="object"
+                            class="btn-primary" />
+                        <button string="Batal" class="btn-secondary" special="cancel" />
                     </footer>
 
                 </form>
             </field>
         </record>
 
-        
+
         <record id="action_kenaikan_kelas" model="ir.actions.act_window">
             <field name="name">Kenaikan Kelas</field>
             <field name="res_model">cdn.kenaikan_kelas</field>
@@ -94,9 +103,9 @@
         </record>
 
         <menuitem id="menu_kenaikan_kelas"
-                  name="Kenaikan Kelas"
-                  parent="sekolah_top_menu"
-                  action="action_kenaikan_kelas"
-                  sequence="50"/>
+            name="Kenaikan Kelas"
+            parent="sekolah_top_menu"
+            action="action_kenaikan_kelas"
+            sequence="50" />
     </data>
 </odoo>

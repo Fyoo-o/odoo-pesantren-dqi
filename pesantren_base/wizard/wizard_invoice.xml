@@ -1,122 +1,57 @@
 <?xml version='1.0' encoding='utf-8'?>
 <odoo>
-    <data> 
-        <record model="ir.ui.view" id="view_wizard_generate_invoice">
-            <field name="name">Generate Invoice</field>
-            <field name="model">generate.invoice</field>
-            <field name="arch" type="xml">
-                <form string="Buat Tagihan">
+	<data>
+		<record model="ir.ui.view" id="view_wizard_generate_invoice">
+			<field name="name">Generate Invoice</field>
+			<field name="model">generate.invoice</field>
+			<field name="arch" type="xml">
+				<form string="Buat Tagihan">
 					<group>
 						<group>
-							<field name="angkatan_id" string="Santri Angkatan"/>
-							<field name="period_from" domain="[('tahunajaran_id','=', tahunajaran_id)]"/>
+							<field name="angkatan_id" string="Santri Angkatan" />
+							<field name="period_from"
+								domain="[('tahunajaran_id','=', tahunajaran_id)]" />
 						</group>
 						<group>
-							<field name="tahunajaran_id"/>
-							<field name="period_to" domain="[('tahunajaran_id','=', tahunajaran_id)]"/>
+							<field name="tahunajaran_id" />
+							<field name="period_to"
+								domain="[('tahunajaran_id','=', tahunajaran_id)]" />
 						</group>
 					</group>
 					<group>
 						<group>
-							<field name="komponen_id"/>
-                            <field name="kelas_id" widget="many2many_tags" string="Kelas"/>
+							<field name="komponen_id" />
+							<field name="kelas_id" widget="many2many_tags" string="Kelas" />
 						</group>
 						<group>
-							<field name="name" widget="integer" string="Biaya"/>
+							<field name="name" widget="integer" string="Biaya" />
 						</group>
 					</group>
 					<group string="Santri">
 						<field name="partner_ids" nolabel="1" colspan="2">
 							<list>
-								<field name="name"/>
-								<field name="nis"/>
-								<field name="ruang_kelas_id" string="Ruang Kelas"/>
+								<field name="name" />
+								<field name="nis" />
+								<field name="ruang_kelas_id" string="Ruang Kelas" />
 							</list>
 						</field>
 					</group>
 					<footer>
-	                    <button name="create_invoice" string="Buat Tagihan" type="object" class="oe_highlight"/>
-                        <!-- atau -->
-	                    <button string="Batal" class="oe_link" special="cancel" />
-	                </footer>
-                </form>
-            </field>
-        </record>
+						<button name="create_invoice" string="Buat Tagihan" type="object"
+							class="oe_highlight" />
+						<!-- atau -->
+						<button string="Batal" class="oe_link" special="cancel" />
+					</footer>
+				</form>
+			</field>
+		</record>
 
-        <record model="ir.actions.act_window" id="action_generate_invoice">
-            <field name="name">Buat Tagihan</field>
-            <field name="res_model">generate.invoice</field>
+		<record model="ir.actions.act_window" id="action_generate_invoice">
+			<field name="name">Buat Tagihan</field>
+			<field name="res_model">generate.invoice</field>
 			<field name="context">{'check_move_validity' : False}</field>
-            <field name="view_mode">form</field>
-            <field name="target">new</field>
-        </record>
-
-        <!-- <menuitem id="generate_invoice_menu_act" name="Buat Tagihan" parent="tu_aktivitas_tagihan" action="action_generate_invoice" sequence="20"/> -->
-        
-    </data>
+			<field name="view_mode">form</field>
+			<field name="target">new</field>
+		</record>
+	</data>
 </odoo>
-
-
-
-
-<!-- <?xml version='1.0' encoding='utf-8'?>
-<odoo>
-    <data> 
-
-        <record model="ir.ui.view" id="view_wizard_generate_invoice">
-            <field name="name">Generate Invoice</field>
-            <field name="model">generate.invoice</field>
-            <field name="arch" type="xml">
-                <form string="Buat Tagihan">
-					<group> 
-						<group>
-							<field name="angkatan_id" string="Santri Angkatan"/>
-							<field name="period_from" domain="[('tahunajaran_id','=', tahunajaran_id)]"/>
-						</group>
-						<group>
-							<field name="tahunajaran_id"/>
-							<field name="period_to" domain="[('tahunajaran_id','=', tahunajaran_id)]"/>
-						</group>
-					</group>
-					<group>
-						<group>
-							<field name="komponen_id"/>
-							<field name="kelas_id" widget="many2many_tags" options="{'no_create': True}"/>
-						</group>
-						<group>
-							<field name="name" widget="integer" string="Biaya"/>
-						</group>
-					</group>
-					<group>
-						<notebook>
-							<page string="Santri">
-								<field name="partner_ids" nolabel="1">
-									<list editable="bottom" create="false">
-										<field name="name" readonly="True"/>
-										<field name="nis" readonly="True"/>
-										<field name="ruang_kelas_id" readonly="True"/>
-									</list>
-								</field>
-							</page>
-						</notebook>
-					</group>
-					<footer>
-	                    <button name="create_invoice" string="Buat Tagihan" type="object" class="oe_highlight"/>
-	                    <button string="Batal" class="oe_link" special="cancel" />
-	                </footer>
-                </form>
-            </field>
-        </record>
-
-        <record model="ir.actions.act_window" id="action_generate_invoice">
-            <field name="name">Buat Tagihan</field>
-            <field name="res_model">generate.invoice</field>
-			<field name="context">{'check_move_validity' : False}</field>
-            <field name="view_mode">form</field>
-            <field name="target">new</field>
-        </record>
-
-        <menuitem id="generate_invoice_menu_act" name="Buat Tagihan" parent="tu_aktivitas_tagihan" action="action_generate_invoice" sequence="20"/>
-        
-    </data>
-</odoo> -->

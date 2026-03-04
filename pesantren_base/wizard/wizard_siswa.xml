@@ -6,16 +6,18 @@
         <field name="arch" type="xml">
             <form string="Search Siswa">
                 <group>
-                    <field name="barcode"/>
+                    <field name="barcode" />
                 </group>
                 <group>
-                    <field name="nis"/>
-                    <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="1"/>
-                    <field name="tmp_lahir" readonly="1"/>
-                    <field name="tgl_lahir" readonly="1"/>
+                    <field name="nis" />
+                    <field name="siswa_id"
+                        options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"
+                        readonly="1" />
+                    <field name="tmp_lahir" readonly="1" />
+                    <field name="tgl_lahir" readonly="1" />
                 </group>
                 <footer>
-                    <button string="Cari" type="object" name="button_search" class="btn-primary"/>
+                    <button string="Cari" type="object" name="button_search" class="btn-primary" />
                     <button string="Batal" class="btn-secondary" special="cancel" />
                 </footer>
             </form>
@@ -26,9 +28,7 @@
         <field name="name">Cari Siswa</field>
         <field name="res_model">wizard.search.siswa</field>
         <field name="view_mode">form</field>
-        <field name="view_id" ref="view_wizard_search_siswa_form"/>
+        <field name="view_id" ref="view_wizard_search_siswa_form" />
         <field name="target">new</field>
     </record>
-
-    <!-- <menuitem id="menu_wizard_search_siswa" name="Cari Siswa" parent="sekolah_top_menu" action="action_wizard_search_siswa" sequence="20"/> -->
 </odoo>

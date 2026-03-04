@@ -1,3 +1,4 @@
+<?xml version='1.0' encoding='utf-8'?>
 <odoo>
 	<data>
 		<record model="ir.module.category" id="module_category_alhamra">
@@ -12,18 +13,18 @@
 		</record>
 		<record id="group_sekolah_user" model="res.groups">
 			<field name="name">User</field>
-			<field name="category_id" ref="module_category_sekolah"/>
+			<field name="category_id" ref="module_category_sekolah" />
 		</record>
 		<record id="group_sekolah_admin" model="res.groups">
 			<field name="name">Administrator</field>
-			<field name="category_id" ref="module_category_sekolah"/>
-			<field name="implied_ids" eval="[(4, ref('group_sekolah_user'))]"/>
+			<field name="category_id" ref="module_category_sekolah" />
+			<field name="implied_ids" eval="[(4, ref('group_sekolah_user'))]" />
 		</record>
 		<record id="group_sekolah_manager" model="res.groups">
 			<field name="name">Manager</field>
-			<field name="category_id" ref="module_category_sekolah"/>
-			<field name="implied_ids" eval="[(4, ref('group_sekolah_admin'))]"/>
-        	<field name="users" eval="[(4, ref('base.user_admin'))]"/>
+			<field name="category_id" ref="module_category_sekolah" />
+			<field name="implied_ids" eval="[(4, ref('group_sekolah_admin'))]" />
+			<field name="users" eval="[(4, ref('base.user_admin'))]" />
 		</record>
 	</data>
 </odoo>

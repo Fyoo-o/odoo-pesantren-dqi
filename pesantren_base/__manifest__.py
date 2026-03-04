@@ -1,16 +1,4 @@
 # -*- coding: utf-8 -*-
-#    ________  __      ________  _______   ______          _______    _______   ________     __      _____  ___  ___________  _______    _______  _____  ___   
-#   /"       )|" \    /"       )/"     "| /    " \        |   __ "\  /"     "| /"       )   /""\    (\"   \|"  \("     _   ")/"      \  /"     "|(\"   \|"  \  
-#  (:   \___/ ||  |  (:   \___/(: ______)// ____  \       (. |__) :)(: ______)(:   \___/   /    \   |.\\   \    |)__/  \\__/|:        |(: ______)|.\\   \    | 
-#   \___  \   |:  |   \___  \   \/    | /  /    ) :)      |:  ____/  \/    |   \___  \    /' /\  \  |: \.   \\  |   \\_ /   |_____/   ) \/    |  |: \.   \\  | 
-#    __/  \\  |.  |    __/  \\  // ___)(: (____/ //       (|  /      // ___)_   __/  \\  //  __'  \ |.  \    \. |   |.  |    //      /  // ___)_ |.  \    \. | 
-#   /" \   :) /\  |\  /" \   :)(:  (    \        /       /|__/ \    (:      "| /" \   :)/   /  \\  \|    \    \ |   \:  |   |:  __   \ (:      "||    \    \ | 
-#  (_______/ (__\_|_)(_______/  \__/     \"_____/       (_______)    \_______)(_______/(___/    \___)\___|\____\)    \__|   |__|  \___) \_______) \___|\____\) 
-#
-#
-
-                                                                                                                                                            
-
 {
     'name': "Modul Dasar/Base SISFO Pesantren",
 
@@ -46,17 +34,14 @@
     'version': '18.0.1.1',
     'license': 'LGPL-3',
 
-    # any module necessary for this one to work correctly
-    'depends': ['base','l10n_id','l10n_id_efaktur','mail','hr','sale','account','muk_web_theme','hr_attendance','hr_holidays', 'web_password_toggle','web_progress','queue_job'],
-    #test
-    # always loaded
+    'depends': ['base', 'l10n_id', 'l10n_id_efaktur', 'mail', 'hr', 'sale', 'account', 'muk_web_theme', 'hr_attendance', 'hr_holidays', 'web_password_toggle', 'web_progress', 'queue_job'],
+
     'data': [
         'security/groups.xml',
         'security/hr_employee_security.xml',
         'security/ir.model.access.csv',
-        # 'data/ks_sekolah_data.xml',
 
-        #data
+        # data
         'data/company_data.xml',
         'data/base_data.xml',
         'data/ir_sequence_data.xml',
@@ -98,28 +83,22 @@
         'views/mobile_fasilitas.xml',
         'views/res_config_setting_inherit.xml',
         'views/activation_result_wizard_views.xml',
-        
         'views/kongfigurasi_jenjang.xml',
-        
-        
+
         # wizard
         'wizard/wizard_invoice.xml',
         'wizard/wizard_siswa.xml',
         'wizard/wizard_kartu.xml',
         'wizard/kenaikan_kelas.xml',
     ],
-    # only loaded in demonstration mode
-    'demo': [
-        'demo/demo.xml',
-    ],
+
     'assets': {
         'web.assets_backend': [
             '/pesantren_base/static/src/js/limit_location.js',
             'pesantren_base/static/src/js/nontifikasi.js',
-            # 'pesantren_base/static/src/scss/style.scss'
         ],
     },
     "installable": True,
-	"auto_install": False,
-	"application": True,  
+    "auto_install": False,
+    "application": True,
 }

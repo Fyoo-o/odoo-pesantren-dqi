@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <list>
                     <!-- Add your fields here -->
-                    <field name="name"/>
+                    <field name="name" />
                 </list>
             </field>
         </record>
@@ -22,13 +22,13 @@
                     <sheet>
                         <group>
                             <!-- Add your fields here -->
-                            <field name="name"/>
+                            <field name="name" />
                         </group>
                         <group string="Struktur">
                             <field name="anggota_ids">
                                 <list editable="bottom">
-                                    <field name="position"/>
-                                    <field name="partner_id"/>
+                                    <field name="position" />
+                                    <field name="partner_id" />
                                 </list>
                             </field>
                         </group>
@@ -46,6 +46,7 @@
         </record>
 
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="cdn_organisasi_menu_act" name="Organisasi" parent="pengaturan_umum_menu_categ" action="cdn_organisasi_action" sequence="40"/>
+        <menuitem id="cdn_organisasi_menu_act" name="Organisasi" parent="pengaturan_umum_menu_categ"
+            action="cdn_organisasi_action" sequence="40" />
     </odoo>
 </odoo>

@@ -8,13 +8,13 @@
       <field name="arch" type="xml">
         <list>
           <!-- Add your fields here -->
-          <field name="name"/>
-          <field name="kode"/>
-          <field name="urut"/>
-          <field name="kategori"/>
-          <field name="jenjang"/>
-          <field name="tingkat_id"/>
-          <field name="guru_ids" widget="many2many_tags"/>
+          <field name="name" />
+          <field name="kode" />
+          <field name="urut" />
+          <field name="kategori" />
+          <field name="jenjang" />
+          <field name="tingkat_id" />
+          <field name="guru_ids" widget="many2many_tags" />
         </list>
       </field>
     </record>
@@ -29,30 +29,30 @@
             <group>
               <!-- Add your fields here -->
               <group>
-                <field name="urut"/>
-                <field name="jenjang"/>
-                <field name="tingkat_id" 
-                      domain="[('jenjang', '=', jenjang)]"
-                      options="{
+                <field name="urut" />
+                <field name="jenjang" />
+                <field name="tingkat_id"
+                  domain="[('jenjang', '=', jenjang)]"
+                  options="{
                         'no_create_edit':True, 
                         'no_create':True, 
                         'no_open': True
-                      }"/>
-                <field name="jurusan_id" invisible="jenjang not in ('sma')"/>
+                      }" />
+                <field name="jurusan_id" invisible="jenjang not in ('sma')" />
               </group>
               <group>
-                <field name="name"/>
-                <field name="kode"/>
-                <field name="kategori"/>
+                <field name="name" />
+                <field name="kode" />
+                <field name="kategori" />
                 <field name="guru_ids"
-                      widget="many2many_tags"/>
+                  widget="many2many_tags" />
               </group>
             </group>
           </sheet>
         </form>
       </field>
     </record>
-    
+
     <!-- cdn.mata_pelajaran search view -->
     <record id="cdn_mata_pelajaran_view_search" model="ir.ui.view">
       <field name="name">cdn.mata_pelajaran.view.search</field>
@@ -60,13 +60,14 @@
       <field name="arch" type="xml">
         <search string="Mata Pelajaran">
           <!-- Add your fields here -->
-          <filter string="Akademik" name="filter_by_kategori" domain="[('kategori','=','akademik')]"/>
-          <filter string="Diniyyah" name="filter_by_kategori" domain="[('kategori','=','diniyyah')]"/>
-          <filter string="Tahfidz" name="filter_by_kategori" domain="[('kategori','=','tahfidz')]"/>
-          <filter string="Ekstrakurikuler" name="filter_by_kategori" domain="[('kategori','=','ekstrakurikuler')]"/>
-          <filter string="Lainnya" name="filter_by_kategori" domain="[('kategori','=','lainnya')]"/>
+          <filter string="Akademik" name="filter_by_kategori" domain="[('kategori','=','akademik')]" />
+          <filter string="Diniyyah" name="filter_by_kategori" domain="[('kategori','=','diniyyah')]" />
+          <filter string="Tahfidz" name="filter_by_kategori" domain="[('kategori','=','tahfidz')]" />
+          <filter string="Ekstrakurikuler" name="filter_by_kategori"
+            domain="[('kategori','=','ekstrakurikuler')]" />
+          <filter string="Lainnya" name="filter_by_kategori" domain="[('kategori','=','lainnya')]" />
           <group string="Group By..">
-              <filter string="Jenjang" name="group_by_jenjang" context="{'group_by':'jenjang'}"/>
+            <filter string="Jenjang" name="group_by_jenjang" context="{'group_by':'jenjang'}" />
           </group>
         </search>
       </field>
@@ -79,17 +80,13 @@
       <field name="res_model">cdn.mata_pelajaran</field>
       <field name="view_mode">list,form</field>
       <field name="help" type="html">
-        <p class="oe_view_nocontent_create">
-          <!-- Add Text Here -->
-        </p><p>
-          <!-- More details about what a user can do with this object will be OK --> 
-        </p>
+        <p class="oe_view_nocontent_create"> </p>
+        <p> </p>
       </field>
     </record>
 
     <!-- This Menu Item must have a parent and an action -->
-    <menuitem id="matpel_menu_act" name="Mata Pelajaran" parent="pengaturan_akademik_menu_categ" action="cdn_mata_pelajaran_action" sequence="20"/>
-  
+    <menuitem id="matpel_menu_act" name="Mata Pelajaran" parent="pengaturan_akademik_menu_categ"
+      action="cdn_mata_pelajaran_action" sequence="20" />
   </data>
-  
 </odoo>

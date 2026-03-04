@@ -3,7 +3,7 @@
     <data noupdate="1">
         <!-- Employee Role Master Data -->
         <!-- This data file creates the initial role records based on existing jns_pegawai values -->
-        
+
         <record id="jenis_pegawai_musyrif" model="cdn.jenis_pegawai">
             <field name="name">Musyrif</field>
             <field name="code">musyrif</field>
@@ -43,6 +43,5 @@
             <field name="sequence">5</field>
             <field name="active">True</field>
         </record>
-
     </data>
 </odoo>
