@@ -1,24 +1,4 @@
 # -*- coding: utf-8 -*-
-#############################################################################
-#
-#    Cybrosys Technologies Pvt. Ltd.
-#
-#    Copyright (C) 2019-TODAY Cybrosys Technologies(<https://www.cybrosys.com>)
-#    Author: Cybrosys Techno Solutions(<https://www.cybrosys.com>)
-#
-#    You can modify it under the terms of the GNU LESSER
-#    GENERAL PUBLIC LICENSE (LGPL v3), Version 3.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU LESSER GENERAL PUBLIC LICENSE (LGPL v3) for more details.
-#
-#    You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
-#    (LGPL v3) along with this program.
-#    If not, see <http://www.gnu.org/licenses/>.
-#
-#############################################################################
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
@@ -151,8 +131,8 @@ class BudgetLines(models.Model):
         today = fields.Datetime.now()
         for line in self:
             if self.env.context.get(
-                    'wizard_date_from') and self.env.context.get(
-                'wizard_date_to'):
+                'wizard_date_from') and self.env.context.get(
+                    'wizard_date_to'):
                 date_from = fields.Datetime.from_string(
                     self.env.context.get('wizard_date_from'))
                 date_to = fields.Datetime.from_string(
@@ -175,12 +155,12 @@ class BudgetLines(models.Model):
                     elapsed_timedelta = date_to - date_from
                     if elapsed_timedelta.days > 0:
                         theo_amt = (
-                                               elapsed_timedelta.total_seconds() / line_timedelta.total_seconds()) * line.planned_amount
+                            elapsed_timedelta.total_seconds() / line_timedelta.total_seconds()) * line.planned_amount
             else:
                 if line.paid_date:
                     if fields.Datetime.from_string(
-                            line.date_to) <= fields.Datetime.from_string(
-                        line.paid_date):
+                        line.date_to) <= fields.Datetime.from_string(
+                            line.paid_date):
                         theo_amt = 0.00
                     else:
                         theo_amt = line.planned_amount
@@ -197,7 +177,7 @@ class BudgetLines(models.Model):
                             today) < fields.Datetime.from_string(line.date_to):
                         total_days = (line.date_to - line.date_from).days + 1
                         days_over = (
-                                                fields.Date.today() - line.date_from).days + 1
+                            fields.Date.today() - line.date_from).days + 1
                         # If today is between the budget line date_from and date_to
                         theo_amt = line.planned_amount / total_days * days_over
                     else:
@@ -207,6 +187,7 @@ class BudgetLines(models.Model):
     def _compute_percentage(self):
         for line in self:
             if line.theoretical_amount != 0.00:
-                line.percentage = float((line.practical_amount or 0.0) / line.theoretical_amount) * 100
+                line.percentage = float(
+                    (line.practical_amount or 0.0) / line.theoretical_amount) * 100
             else:
                 line.percentage = 0.00
