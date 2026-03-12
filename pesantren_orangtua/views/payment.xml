@@ -36,11 +36,7 @@
             <field name="view_mode">list,form</field>
             <field name="context">{'search_default_partner_id': 1}</field>
 
-            <field name="domain">
-            [
-                ('siswa_id.orangtua_id.partner_id.user_id','=',uid)
-            ]
-            </field>
+            <field name="domain">[]</field>
         </record>
         <record id="tree_pembayaran_orangtua_action" model="ir.actions.act_window.view">
             <field name="sequence" eval="2"/>

@@ -139,6 +139,26 @@ class OrangTua(models.Model):
             }
         }
 
+    def action_sync_user_id(self):
+        """Synchronize user_id from cdn.orangtua to partner_id.user_id for all records."""
+        all_orangtua = self.search([])
+        count = 0
+        for rec in all_orangtua:
+            if rec.user_id and rec.partner_id:
+                if rec.partner_id.user_id != rec.user_id:
+                    rec.partner_id.sudo().write({'user_id': rec.user_id.id})
+                    count += 1
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': '✅ Sinkronisasi Berhasil',
+                'message': f'Berhasil menyelaraskan {count} data user.',
+                'type': 'success',
+                'sticky': False,
+            }
+        }
+
     def write(self, vals):
         # Simpan dulu nilai password sebelum super().write()
         password_changed = 'password' in vals
@@ -153,5 +173,10 @@ class OrangTua(models.Model):
                 if record.user_id:
                     # Update password user menggunakan sudo
                     record.user_id.sudo().write({'password': new_password})
+
+        if 'user_id' in vals:
+            for record in self:
+                if record.partner_id:
+                    record.partner_id.sudo().write({'user_id': record.user_id.id})
 
         return res

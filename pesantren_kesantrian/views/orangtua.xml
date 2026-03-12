@@ -1,8 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <odoo>
     <data>
-
-
         <!-- cdn.orangtua inherit form view -->
         <record id="cdn_orangtua_inherit_tree_view" model="ir.ui.view">
             <field name="name">cdn.orangtua.inherit.view.tree</field>
@@ -11,7 +9,10 @@
             <field name="arch" type="xml">
                 <xpath expr="//list" position="inside">
                     <header>
-                        <button name="update_user_groups" string="Perbaiki Akses" type="object" class="oe_highlight" groups="pesantren_base.group_sekolah_manager"/>
+                        <button name="update_user_groups" string="Perbaiki Akses" type="object"
+                            class="oe_highlight" groups="pesantren_base.group_sekolah_manager" />
+                        <button name="action_sync_user_id" string="Sinkronkan User ID" type="object"
+                            class="btn btn-secondary" groups="pesantren_base.group_sekolah_manager" />
                     </header>
                 </xpath>
             </field>
@@ -34,7 +35,15 @@
                     <attribute name="required">1</attribute>
                 </field>
                 <xpath expr="//header" position="inside">
-                    <button name="update_user_groups" string="Perbaiki Akses" type="object" class="oe_highlight" groups="pesantren_base.group_sekolah_manager"/>
+                    <button name="update_user_groups" string="Perbaiki Akses" type="object"
+                        class="oe_highlight" groups="pesantren_base.group_sekolah_manager" />
+                    <button name="action_sync_user_id" string="Sinkronkan User ID" type="object"
+                        groups="pesantren_base.group_sekolah_manager" />
+                </xpath>
+                <xpath expr="//sheet/group[1]/group[1]" position="inside">
+                    <field name="user_id" groups="pesantren_base.group_sekolah_manager" />
+                    <field name="partner_id" readonly="1"
+                        groups="pesantren_base.group_sekolah_manager" />
                 </xpath>
 
             </field>
@@ -64,9 +73,7 @@
         </record>
 
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="orangtua_menu_act" name="Orang Tua" parent="data_kesantrian_menu_categ" action="orangtua_action" sequence="40" />
-
-
+        <menuitem id="orangtua_menu_act" name="Orang Tua" parent="data_kesantrian_menu_categ"
+            action="orangtua_action" sequence="40" />
     </data>
-
 </odoo>
