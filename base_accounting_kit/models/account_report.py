@@ -1,24 +1,5 @@
 # -*- coding: utf-8 -*-
-#############################################################################
-#
-#    Cybrosys Technologies Pvt. Ltd.
-#
-#    Copyright (C) 2024-TODAY Cybrosys Technologies(<https://www.cybrosys.com>)
-#    Author: Cybrosys Techno Solutions(<https://www.cybrosys.com>)
-#
-#    You can modify it under the terms of the GNU LESSER
-#    GENERAL PUBLIC LICENSE (LGPL v3), Version 3.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU LESSER GENERAL PUBLIC LICENSE (LGPL v3) for more details.
-#
-#    You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
-#    (LGPL v3) along with this program.
-#    If not, see <http://www.gnu.org/licenses/>.
-#
-#############################################################################
+
 from odoo import api, fields, models
 from odoo.tools import get_lang
 
@@ -35,7 +16,8 @@ class AccountCommonReport(models.Model):
         comodel_name='account.journal',
         string='Journals',
         required=True,
-        default=lambda self: self.env['account.journal'].search([('company_id', '=', self.company_id.id)]),
+        default=lambda self: self.env['account.journal'].search(
+            [('company_id', '=', self.company_id.id)]),
         domain="[('company_id', '=', company_id)]")
     date_from = fields.Date(string='Start Date')
     date_to = fields.Date(string='End Date')
@@ -75,7 +57,9 @@ class AccountCommonReport(models.Model):
         data = {}
         data['ids'] = self.env.context.get('active_ids', [])
         data['model'] = self.env.context.get('active_model', 'ir.ui.menu')
-        data['form'] = self.read(['date_from', 'date_to', 'journal_ids', 'target_move', 'company_id'])[0]
+        data['form'] = self.read(
+            ['date_from', 'date_to', 'journal_ids', 'target_move', 'company_id'])[0]
         used_context = self._build_contexts(data)
-        data['form']['used_context'] = dict(used_context, lang=get_lang(self.env).code)
+        data['form']['used_context'] = dict(
+            used_context, lang=get_lang(self.env).code)
         return self.with_context(discard_logo_check=True)._print_report(data)

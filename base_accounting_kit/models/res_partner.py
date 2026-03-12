@@ -1,24 +1,5 @@
 # -*- coding: utf-8 -*-
-#############################################################################
-#
-#    Cybrosys Technologies Pvt. Ltd.
-#
-#    Copyright (C) 2024-TODAY Cybrosys Technologies(<https://www.cybrosys.com>)
-#    Author: Cybrosys Techno Solutions(<https://www.cybrosys.com>)
-#
-#    You can modify it under the terms of the GNU LESSER
-#    GENERAL PUBLIC LICENSE (LGPL v3), Version 3.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU LESSER GENERAL PUBLIC LICENSE (LGPL v3) for more details.
-#
-#    You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
-#    (LGPL v3) along with this program.
-#    If not, see <http://www.gnu.org/licenses/>.
-#
-#############################################################################
+
 from datetime import date, timedelta
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
@@ -32,8 +13,8 @@ class ResPartner(models.Model):
                                    string="Invoice Details",
                                    readonly=True,
                                    domain=(
-                                   [('payment_state', '=', 'not_paid'),
-                                    ('move_type', '=', 'out_invoice')]))
+                                       [('payment_state', '=', 'not_paid'),
+                                        ('move_type', '=', 'out_invoice')]))
     total_due = fields.Monetary(compute='_compute_for_followup', store=False,
                                 readonly=True)
     next_reminder_date = fields.Date(compute='_compute_for_followup',
@@ -45,7 +26,7 @@ class ResPartner(models.Model):
          ('with_overdue_invoices', 'With overdue invoices'),
          ('no_action_needed', 'No action needed')],
         string='Followup status',
-        )
+    )
 
     warning_stage = fields.Float(string='Warning Amount',
                                  help="A warning message will appear once the "

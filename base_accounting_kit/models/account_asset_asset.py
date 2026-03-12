@@ -1,24 +1,5 @@
 # -*- coding: utf-8 -*-
-#############################################################################
-#
-#    Cybrosys Technologies Pvt. Ltd.
-#
-#    Copyright (C) 2024-TODAY Cybrosys Technologies(<https://www.cybrosys.com>)
-#    Author: Cybrosys Techno Solutions(<https://www.cybrosys.com>)
-#
-#    You can modify it under the terms of the GNU LESSER
-#    GENERAL PUBLIC LICENSE (LGPL v3), Version 3.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU LESSER GENERAL PUBLIC LICENSE (LGPL v3) for more details.
-#
-#    You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
-#    (LGPL v3) along with this program.
-#    If not, see <http://www.gnu.org/licenses/>.
-#
-#############################################################################
+
 import calendar
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
@@ -57,8 +38,8 @@ class AccountAssetAsset(models.Model):
         [('draft', 'Draft'), ('open', 'Running'), ('close', 'Close')],
         'Status', required=True, copy=False, default='draft',
         help="Saat aset dibuat, statusnya adalah 'draft'. \n"
-                "Jika aset dikonfirmasi, statusnya masuk 'berjalan' dan jalur penyusutan dapat diposting di akuntansi. \n"
-                "Anda dapat secara manual menutup aset ketika penyusutan selesai. Jika garis depresiasi terakhir diposting, aset secara otomatis masuk dalam status itu.")
+        "Jika aset dikonfirmasi, statusnya masuk 'berjalan' dan jalur penyusutan dapat diposting di akuntansi. \n"
+        "Anda dapat secara manual menutup aset ketika penyusutan selesai. Jika garis depresiasi terakhir diposting, aset secara otomatis masuk dalam status itu.")
     active = fields.Boolean(default=True)
     partner_id = fields.Many2one('res.partner', string='Partner',
                                  readonly=True)
@@ -181,13 +162,13 @@ class AccountAssetAsset(models.Model):
                                 calendar.monthrange(date.year, date.month)[1]
                             days = month_days - date.day + 1
                             amount = (
-                                             amount_to_depr / self.method_number) / month_days * days
+                                amount_to_depr / self.method_number) / month_days * days
                         else:
                             days = (self.company_id.compute_fiscalyear_dates(
                                 depreciation_date)[
-                                        'date_to'] - depreciation_date).days + 1
+                                'date_to'] - depreciation_date).days + 1
                             amount = (
-                                             amount_to_depr / self.method_number) / total_days * days
+                                amount_to_depr / self.method_number) / total_days * days
             elif self.method == 'degressive':
                 amount = residual_amount * self.method_progress_factor
                 if self.prorata:
@@ -199,13 +180,13 @@ class AccountAssetAsset(models.Model):
                                 calendar.monthrange(date.year, date.month)[1]
                             days = month_days - date.day + 1
                             amount = (
-                                             residual_amount * self.method_progress_factor) / month_days * days
+                                residual_amount * self.method_progress_factor) / month_days * days
                         else:
                             days = (self.company_id.compute_fiscalyear_dates(
                                 depreciation_date)[
-                                        'date_to'] - depreciation_date).days + 1
+                                'date_to'] - depreciation_date).days + 1
                             amount = (
-                                             residual_amount * self.method_progress_factor) / total_days * days
+                                residual_amount * self.method_progress_factor) / total_days * days
         return amount
 
     def _compute_board_undone_dotation_nb(self, depreciation_date, total_days):
@@ -265,8 +246,8 @@ class AccountAssetAsset(models.Model):
                                           day=int(
                                               self.company_id.fiscalyear_last_day)) + relativedelta(
                             days=1) + \
-                                     relativedelta(year=int(
-                                         self.date.year))  # e.g. 2018-12-31 +1 -> 2019
+                            relativedelta(year=int(
+                                self.date.year))  # e.g. 2018-12-31 +1 -> 2019
                     else:
                         asset_date = datetime.strptime(
                             str(self.date)[:4] + '-01-01', DF).date()
@@ -313,7 +294,7 @@ class AccountAssetAsset(models.Model):
                     'name': (self.code or '') + '/' + str(sequence),
                     'remaining_value': residual_amount if residual_amount >= 0 else 0.0,
                     'depreciated_value': self.value - (
-                            self.salvage_value + residual_amount),
+                        self.salvage_value + residual_amount),
                     'depreciation_date': depreciation_date.strftime(DF),
                 }
                 commands.append((0, False, vals))

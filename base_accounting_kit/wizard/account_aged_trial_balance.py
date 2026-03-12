@@ -1,24 +1,5 @@
 # -*- coding: utf-8 -*-
-#############################################################################
-#
-#    Cybrosys Technologies Pvt. Ltd.
-#
-#    Copyright (C) 2024-TODAY Cybrosys Technologies(<https://www.cybrosys.com>)
-#    Author: Cybrosys Techno Solutions(<https://www.cybrosys.com>)
-#
-#    You can modify it under the terms of the GNU LESSER
-#    GENERAL PUBLIC LICENSE (LGPL v3), Version 3.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU LESSER GENERAL PUBLIC LICENSE (LGPL v3) for more details.
-#
-#    You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
-#    (LGPL v3) along with this program.
-#    If not, see <http://www.gnu.org/licenses/>.
-#
-#############################################################################
+###################################################
 import time
 from dateutil.relativedelta import relativedelta
 from odoo import fields, models, _
@@ -40,7 +21,8 @@ class AccountAgedTrialBalance(models.TransientModel):
                                           relation="account_aged_trail_report_section_rel",
                                           column1="main_report_id",
                                           column2="sub_report_id")
-    name = fields.Char(string="Account Aged Trial balance Report", default="Account Aged Trial balance Report", required=True, translate=True)
+    name = fields.Char(string="Account Aged Trial balance Report",
+                       default="Account Aged Trial balance Report", required=True, translate=True)
 
     journal_ids = fields.Many2many('account.journal', string='Journals',
                                    required=True)
@@ -64,9 +46,9 @@ class AccountAgedTrialBalance(models.TransientModel):
             stop = start - relativedelta(days=period_length - 1)
             res[str(i)] = {
                 'name': (i != 0 and (
-                            str((5 - (i + 1)) * period_length) + '-' + str(
+                    str((5 - (i + 1)) * period_length) + '-' + str(
                         (5 - i) * period_length)) or (
-                                     '+' + str(4 * period_length))),
+                    '+' + str(4 * period_length))),
                 'stop': start.strftime('%Y-%m-%d'),
                 'start': (i != 0 and stop.strftime('%Y-%m-%d') or False),
             }

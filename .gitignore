@@ -233,6 +233,7 @@ Thumbs.db
 # Odoo config
 odoo.conf
 *odoo.conf
+*odoo.conf*
 
 # C Python
 *.pyc

@@ -1,24 +1,5 @@
 # -*- coding: utf-8 -*-
-#############################################################################
-#
-#    Cybrosys Technologies Pvt. Ltd.
-#
-#    Copyright (C) 2024-TODAY Cybrosys Technologies(<https://www.cybrosys.com>)
-#    Author: Cybrosys Techno Solutions(<https://www.cybrosys.com>)
-#
-#    You can modify it under the terms of the GNU LESSER
-#    GENERAL PUBLIC LICENSE (LGPL v3), Version 3.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU LESSER GENERAL PUBLIC LICENSE (LGPL v3) for more details.
-#
-#    You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
-#    (LGPL v3) along with this program.
-#    If not, see <http://www.gnu.org/licenses/>.
-#
-#############################################################################
+
 import time
 from odoo import api, models, _
 from odoo.exceptions import UserError
@@ -54,11 +35,11 @@ class ReportTrialBalance(models.AbstractModel):
         filters = " AND ".join(wheres)
         # compute the balance, debit and credit for the provided accounts
         request = (
-                    "SELECT account_id AS id, SUM(debit) AS debit, "
-                    "SUM(credit) AS credit, (SUM(debit) - SUM(credit)) "
-                    "AS balance" +
-                    " FROM " + tables + " WHERE account_id IN %s " +
-                    filters + " GROUP BY account_id")
+            "SELECT account_id AS id, SUM(debit) AS debit, "
+            "SUM(credit) AS credit, (SUM(debit) - SUM(credit)) "
+            "AS balance" +
+            " FROM " + tables + " WHERE account_id IN %s " +
+            filters + " GROUP BY account_id")
         params = (tuple(accounts.ids),) + tuple(where_params)
         self.env.cr.execute(request, params)
         for row in self.env.cr.dictfetchall():

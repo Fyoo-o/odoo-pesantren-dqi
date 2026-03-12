@@ -1,24 +1,5 @@
 # -*- coding: utf-8 -*-
-#############################################################################
-#
-#    Cybrosys Technologies Pvt. Ltd.
-#
-#    Copyright (C) 2024-TODAY Cybrosys Technologies(<https://www.cybrosys.com>)
-#    Author: Cybrosys Techno Solutions(<https://www.cybrosys.com>)
-#
-#    You can modify it under the terms of the GNU LESSER
-#    GENERAL PUBLIC LICENSE (LGPL v3), Version 3.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU LESSER GENERAL PUBLIC LICENSE (LGPL v3) for more details.
-#
-#    You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
-#    (LGPL v3) along with this program.
-#    If not, see <http://www.gnu.org/licenses/>.
-#
-#############################################################################
+
 from odoo import api, fields, models
 
 
@@ -35,9 +16,9 @@ class AccountTypes(models.Model):
         ('payable', 'Payable'),
         ('liquidity', 'Liquidity'),
     ], required=True, default='other',
-        help="The 'Internal Type' is used for features available on " 
+        help="The 'Internal Type' is used for features available on "
              "different types of accounts: liquidity type is for cash or "
-             "bank accounts" \
+             "bank accounts"
              ", payable/receivable is for vendor/customer accounts.")
 
 
@@ -75,7 +56,8 @@ class AccountFinancialReport(models.Model):
         'parent_id',
         'Account Report')
     sequence = fields.Integer('Sequence')
-    level = fields.Integer(compute='_get_level', string='Level', store=True, recursive=True)
+    level = fields.Integer(compute='_get_level',
+                           string='Level', store=True, recursive=True)
     type = fields.Selection(
         [('sum', 'View'),
          ('accounts', 'Accounts'),
@@ -117,7 +99,7 @@ class AccountFinancialReport(models.Model):
             ("off_balance", "Off-Balance Sheet"),
         ],
         string="Type",
-        help="These types are defined according to your country. The type contains more information " \
+        help="These types are defined according to your country. The type contains more information "
              "about the account and its specificities."
     )
 
