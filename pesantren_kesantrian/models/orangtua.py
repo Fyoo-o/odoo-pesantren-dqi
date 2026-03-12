@@ -105,27 +105,31 @@ class OrangTua(models.Model):
         return super(OrangTua, self).unlink()
 
     def update_user_groups(self):
-        """Update groups for the related user."""
-        for orangtua in self:
-            user = self.env['res.users'].search(
-                [('login', '=', orangtua.email)], limit=1)
-            if not user:
-                raise ValueError(
-                    _("No user associated with this OrangTua record."))
+        """Update groups for the related user using batch operations."""
+        group_ids = [
+            self.env.ref('base.group_user', raise_if_not_found=False),
+            self.env.ref('pesantren_kesantrian.group_kesantrian_orang_tua', raise_if_not_found=False),
+            self.env.ref('pesantren_base.group_sekolah_user', raise_if_not_found=False),
+            self.env.ref('pesantren_kesantrian.group_kesantrian_user', raise_if_not_found=False),
+            self.env.ref('pesantren_guru.group_guru_user', raise_if_not_found=False),
+            self.env.ref('pesantren_keuangan.group_keuangan_user', raise_if_not_found=False),
+            self.env.ref('account.group_account_readonly', raise_if_not_found=False),
+        ]
+        group_ids = [g.id for g in group_ids if g]
 
-            # Add required groups incrementally to preserve existing roles (e.g. Guru/Karyawan)
-            group_ids = [
-                self.env.ref('base.group_user').id,
-                self.env.ref(
-                    'pesantren_kesantrian.group_kesantrian_orang_tua').id,
-                self.env.ref('pesantren_base.group_sekolah_user').id,
-                self.env.ref('pesantren_kesantrian.group_kesantrian_user').id,
-                self.env.ref('pesantren_guru.group_guru_user').id,
-                self.env.ref('pesantren_keuangan.group_keuangan_user').id,
-                self.env.ref('account.group_account_readonly').id,
-            ]
-            user.sudo().write({
-                'groups_id': [(4, gid) for gid in group_ids if gid]
+        # Batch find users
+        users = self.mapped('user_id')
+        
+        # Check by email for records without user_id
+        recs_without_user = self.filtered(lambda r: not r.user_id and r.email)
+        if recs_without_user:
+            emails = recs_without_user.mapped('email')
+            found_users = self.env['res.users'].sudo().search([('login', 'in', emails)])
+            users |= found_users
+
+        if users:
+            users.sudo().write({
+                'groups_id': [(4, gid) for gid in group_ids]
             })
 
         return {
@@ -133,27 +137,31 @@ class OrangTua(models.Model):
             'tag': 'display_notification',
             'params': {
                 'title': '✅ Berhasil',
-                'message': f'Hak Akses Sudah Diperbarui',
+                'message': f'Hak Akses untuk {len(users)} user sudah diperbarui.',
                 'type': 'success',
                 'sticky': False,
             }
         }
 
     def action_sync_user_id(self):
-        """Synchronize user_id from cdn.orangtua to partner_id.user_id for all records."""
-        all_orangtua = self.search([])
-        count = 0
-        for rec in all_orangtua:
-            if rec.user_id and rec.partner_id:
-                if rec.partner_id.user_id != rec.user_id:
-                    rec.partner_id.sudo().write({'user_id': rec.user_id.id})
-                    count += 1
+        """Synchronize user_id from cdn.orangtua to partner_id.user_id using high-performance SQL."""
+        query = """
+            UPDATE res_partner p
+            SET user_id = o.user_id
+            FROM cdn_orangtua o
+            WHERE p.id = o.partner_id 
+            AND o.user_id IS NOT NULL
+            AND (p.user_id IS DISTINCT FROM o.user_id)
+        """
+        self._cr.execute(query)
+        count = self._cr.rowcount
+        
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
             'params': {
                 'title': '✅ Sinkronisasi Berhasil',
-                'message': f'Berhasil menyelaraskan {count} data user.',
+                'message': f'Berhasil menyelaraskan {count} data user secara instan.',
                 'type': 'success',
                 'sticky': False,
             }
