@@ -1,24 +1,5 @@
 # -*- coding: utf-8 -*-
-#############################################################################
-#
-#    Cybrosys Technologies Pvt. Ltd.
-#
-#    Copyright (C) 2024-TODAY Cybrosys Technologies(<https://www.cybrosys.com>)
-#    Author: Cybrosys Techno Solutions(<https://www.cybrosys.com>)
-#
-#    You can modify it under the terms of the GNU LESSER
-#    GENERAL PUBLIC LICENSE (LGPL v3), Version 3.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU LESSER GENERAL PUBLIC LICENSE (LGPL v3) for more details.
-#
-#    You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
-#    (LGPL v3) along with this program.
-#    If not, see <http://www.gnu.org/licenses/>.
-#
-#############################################################################
+
 import time
 from odoo import api, models, _
 from odoo.exceptions import UserError
@@ -42,7 +23,7 @@ class ReportJournal(models.AbstractModel):
                   '"account_move_line".account_id = acc.id AND '
                   '"account_move_line".move_id=am.id AND am.state IN %s AND '
                   '"account_move_line".journal_id IN %s AND ') + \
-                query_get_clause[1] + ' ORDER BY '
+            query_get_clause[1] + ' ORDER BY '
         if sort_selection == 'date':
             query += '"account_move_line".date'
         else:
@@ -64,8 +45,8 @@ class ReportJournal(models.AbstractModel):
             0] + ', account_move am '
                  'WHERE "account_move_line".move_id=am.id AND am.state IN %s'
                  ' AND "account_move_line".journal_id IN %s AND ' +
-                            query_get_clause[1] + ' ',
-                            tuple(params))
+            query_get_clause[1] + ' ',
+            tuple(params))
         return self.env.cr.fetchone()[0] or 0.0
 
     def _sum_credit(self, data, journal_id):
@@ -79,8 +60,8 @@ class ReportJournal(models.AbstractModel):
         self.env.cr.execute('SELECT SUM(credit) FROM ' + query_get_clause[
             0] + ', account_move am '
                  'WHERE "account_move_line".move_id=am.id AND am.state IN %s AND "account_move_line".journal_id IN %s AND ' +
-                            query_get_clause[1] + ' ',
-                            tuple(params))
+            query_get_clause[1] + ' ',
+            tuple(params))
         return self.env.cr.fetchone()[0] or 0.0
 
     def _get_taxes(self, data, journal_id):

@@ -1,24 +1,5 @@
 # -*- coding: utf-8 -*-
-#############################################################################
-#
-#    Cybrosys Technologies Pvt. Ltd.
-#
-#    Copyright (C) 2024-TODAY Cybrosys Technologies(<https://www.cybrosys.com>)
-#    Author: Cybrosys Techno Solutions(<https://www.cybrosys.com>)
-#
-#    You can modify it under the terms of the GNU LESSER
-#    GENERAL PUBLIC LICENSE (LGPL v3), Version 3.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU LESSER GENERAL PUBLIC LICENSE (LGPL v3) for more details.
-#
-#    You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
-#    (LGPL v3) along with this program.
-#    If not, see <http://www.gnu.org/licenses/>.
-#
-#############################################################################
+
 from datetime import time
 from odoo import api, models, _
 from odoo.exceptions import UserError
@@ -115,7 +96,7 @@ class ReportBankBook(models.AbstractModel):
         for account in accounts:
             account_company = self.env.company
             currency = account.currency_id and \
-                       account.currency_id or account_company.currency_id
+                account.currency_id or account_company.currency_id
             res = dict((fn, 0.0) for fn in ['credit', 'debit', 'balance'])
             res['code'] = account.code
             res['name'] = account.name
@@ -153,11 +134,13 @@ class ReportBankBook(models.AbstractModel):
         accounts = self.env['account.account'].search(
             [('id', 'in', account_ids)])
         if not accounts:
-            journals = self.env['account.journal'].search([('type', '=', 'bank')])
+            journals = self.env['account.journal'].search(
+                [('type', '=', 'bank')])
             accounts = []
             for journal in journals:
                 accounts.append(journal.default_account_id.id)
-            accounts = self.env['account.account'].search([('id', 'in', accounts)])
+            accounts = self.env['account.account'].search(
+                [('id', 'in', accounts)])
 
         accounts_res = self.with_context(data['form'].get('used_context', {}))._get_account_move_entry(
             accounts,

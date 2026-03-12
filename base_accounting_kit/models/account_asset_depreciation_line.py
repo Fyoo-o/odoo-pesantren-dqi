@@ -1,24 +1,5 @@
 # -*- coding: utf-8 -*-
-#############################################################################
-#
-#    Cybrosys Technologies Pvt. Ltd.
-#
-#    Copyright (C) 2024-TODAY Cybrosys Technologies(<https://www.cybrosys.com>)
-#    Author: Cybrosys Techno Solutions(<https://www.cybrosys.com>)
-#
-#    You can modify it under the terms of the GNU LESSER
-#    GENERAL PUBLIC LICENSE (LGPL v3), Version 3.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU LESSER GENERAL PUBLIC LICENSE (LGPL v3) for more details.
-#
-#    You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
-#    (LGPL v3) along with this program.
-#    If not, see <http://www.gnu.org/licenses/>.
-#
-#############################################################################
+
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 from odoo.tools import float_compare
@@ -77,10 +58,13 @@ class AccountAssetDepreciationLine(models.Model):
             company_currency = line.asset_id.company_id.currency_id
             current_currency = line.asset_id.currency_id
             amount = current_currency._convert(line.amount, company_currency,
-                                      line.asset_id.company_id,
-                                      depreciation_date)
-            asset_name = line.asset_id.name + ' (%s/%s)' % (line.sequence, len(line.asset_id.depreciation_line_ids))
-            partner = self.env['res.partner']._find_accounting_partner(line.asset_id.partner_id)
+                                               line.asset_id.company_id,
+                                               depreciation_date)
+            asset_name = line.asset_id.name + \
+                ' (%s/%s)' % (line.sequence,
+                              len(line.asset_id.depreciation_line_ids))
+            partner = self.env['res.partner']._find_accounting_partner(
+                line.asset_id.partner_id)
             move_line_1 = {
                 'name': asset_name,
                 'account_id': category_id.account_depreciation_id.id,

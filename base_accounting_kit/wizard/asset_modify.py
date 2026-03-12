@@ -1,24 +1,5 @@
 # -*- coding: utf-8 -*-
-#############################################################################
-#
-#    Cybrosys Technologies Pvt. Ltd.
-#
-#    Copyright (C) 2024-TODAY Cybrosys Technologies(<https://www.cybrosys.com>)
-#    Author: Cybrosys Techno Solutions(<https://www.cybrosys.com>)
-#
-#    You can modify it under the terms of the GNU LESSER
-#    GENERAL PUBLIC LICENSE (LGPL v3), Version 3.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU LESSER GENERAL PUBLIC LICENSE (LGPL v3) for more details.
-#
-#    You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
-#    (LGPL v3) along with this program.
-#    If not, see <http://www.gnu.org/licenses/>.
-#
-#############################################################################
+
 from lxml import etree
 from odoo import api, fields, models, _
 
@@ -28,7 +9,8 @@ class AssetModify(models.TransientModel):
     _description = 'Modify Asset'
 
     name = fields.Text(string='Reason', required=True)
-    method_number = fields.Integer(string='Number of Depreciations', required=True)
+    method_number = fields.Integer(
+        string='Number of Depreciations', required=True)
     method_period = fields.Integer(string='Period Length')
     method_end = fields.Date(string='Ending date')
     asset_method_time = fields.Char(compute='_get_asset_method_time',
@@ -36,12 +18,14 @@ class AssetModify(models.TransientModel):
 
     def _get_asset_method_time(self):
         if self.env.context.get('active_id'):
-            asset = self.env['account.asset.asset'].browse(self.env.context.get('active_id'))
+            asset = self.env['account.asset.asset'].browse(
+                self.env.context.get('active_id'))
             self.asset_method_time = asset.method_time
 
     @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
-        result = super(AssetModify, self).fields_view_get(view_id, view_type, toolbar=toolbar, submenu=submenu)
+        result = super(AssetModify, self).fields_view_get(
+            view_id, view_type, toolbar=toolbar, submenu=submenu)
         asset_id = self.env.context.get('active_id')
         active_model = self.env.context.get('active_model')
         if active_model == 'account.asset.asset' and asset_id:
@@ -72,7 +56,8 @@ class AssetModify(models.TransientModel):
         if 'method_end' in fields and asset.method_time == 'end':
             res.update({'method_end': asset.method_end})
         if self.env.context.get('active_id'):
-            active_asset = self.env['account.asset.asset'].browse(self.env.context.get('active_id'))
+            active_asset = self.env['account.asset.asset'].browse(
+                self.env.context.get('active_id'))
             res['asset_method_time'] = active_asset.method_time
         return res
 
@@ -94,8 +79,11 @@ class AssetModify(models.TransientModel):
         }
         asset.write(asset_vals)
         asset.compute_depreciation_board()
-        tracked_fields = self.env['account.asset.asset'].fields_get(['method_number', 'method_period', 'method_end'])
-        changes, tracking_value_ids = asset._mail_track(tracked_fields, old_values)
+        tracked_fields = self.env['account.asset.asset'].fields_get(
+            ['method_number', 'method_period', 'method_end'])
+        changes, tracking_value_ids = asset._mail_track(
+            tracked_fields, old_values)
         if changes:
-            asset.message_post(subject=_('Depreciation board modified'), body=self.name, tracking_value_ids=tracking_value_ids)
+            asset.message_post(subject=_('Depreciation board modified'),
+                               body=self.name, tracking_value_ids=tracking_value_ids)
         return {'type': 'ir.actions.act_window_close'}

@@ -1,24 +1,5 @@
 # -*- coding: utf-8 -*-
-#############################################################################
-#
-#    Cybrosys Technologies Pvt. Ltd.
-#
-#    Copyright (C) 2024-TODAY Cybrosys Technologies(<https://www.cybrosys.com>)
-#    Author: Cybrosys Techno Solutions(<https://www.cybrosys.com>)
-#
-#    You can modify it under the terms of the GNU LESSER
-#    GENERAL PUBLIC LICENSE (LGPL v3), Version 3.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU LESSER GENERAL PUBLIC LICENSE (LGPL v3) for more details.
-#
-#    You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
-#    (LGPL v3) along with this program.
-#    If not, see <http://www.gnu.org/licenses/>.
-#
-#############################################################################
+
 import ast
 from datetime import datetime
 from odoo import api, fields, models, _
@@ -177,32 +158,38 @@ class AccountInvoiceLine(models.Model):
 
         if context.get('reconcile_date'):
             domain += ['|', ('reconciled', '=', False), '|',
-                       ('matched_debit_ids.max_date', '>', context['reconcile_date']),
+                       ('matched_debit_ids.max_date',
+                        '>', context['reconcile_date']),
                        ('matched_credit_ids.max_date', '>', context['reconcile_date'])]
 
         if context.get('account_tag_ids'):
-            domain += [('account_id.tag_ids', 'in', context['account_tag_ids'].ids)]
+            domain += [('account_id.tag_ids', 'in',
+                        context['account_tag_ids'].ids)]
 
         if context.get('account_ids'):
             domain += [('account_id', 'in', context['account_ids'].ids)]
 
         if context.get('analytic_tag_ids'):
-            domain += [('analytic_tag_ids', 'in', context['analytic_tag_ids'].ids)]
+            domain += [('analytic_tag_ids', 'in',
+                        context['analytic_tag_ids'].ids)]
 
         if context.get('analytic_account_ids'):
-            domain += [('analytic_account_id', 'in', context['analytic_account_ids'].ids)]
+            domain += [('analytic_account_id', 'in',
+                        context['analytic_account_ids'].ids)]
 
         if context.get('partner_ids'):
             domain += [('partner_id', 'in', context['partner_ids'].ids)]
 
         if context.get('partner_categories'):
-            domain += [('partner_id.category_id', 'in', context['partner_categories'].ids)]
+            domain += [('partner_id.category_id', 'in',
+                        context['partner_categories'].ids)]
 
         where_clause = ""
         where_clause_params = []
         tables = ''
         if domain:
-            domain.append(('display_type', 'not in', ('line_section', 'line_note')))
+            domain.append(('display_type', 'not in',
+                          ('line_section', 'line_note')))
             domain.append(('parent_state', '!=', 'cancel'))
 
             query = self._where_calc(domain)

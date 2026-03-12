@@ -1,24 +1,5 @@
 # -*- coding: utf-8 -*-
-#############################################################################
-#
-#    Cybrosys Technologies Pvt. Ltd.
-#
-#    Copyright (C) 2024-TODAY Cybrosys Technologies(<https://www.cybrosys.com>)
-#    Author: Cybrosys Techno Solutions(<https://www.cybrosys.com>)
-#
-#    You can modify it under the terms of the GNU LESSER
-#    GENERAL PUBLIC LICENSE (LGPL v3), Version 3.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU LESSER GENERAL PUBLIC LICENSE (LGPL v3) for more details.
-#
-#    You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
-#    (LGPL v3) along with this program.
-#    If not, see <http://www.gnu.org/licenses/>.
-#
-#############################################################################
+
 import time
 from odoo import api, models, _
 from odoo.exceptions import UserError
@@ -48,10 +29,10 @@ class ReportFinancial(models.AbstractModel):
             filters = " AND ".join(wheres)
             request = "SELECT account_id as id, " + ', '.join(
                 mapping.values()) + \
-                      " FROM " + tables + \
-                      " WHERE account_id IN %s " \
-                      + filters + \
-                      " GROUP BY account_id"
+                " FROM " + tables + \
+                " WHERE account_id IN %s " \
+                + filters + \
+                " GROUP BY account_id"
             params = (tuple(accounts._ids),) + tuple(where_params)
             self.env.cr.execute(request, params)
             for row in self.env.cr.dictfetchall():
@@ -176,9 +157,9 @@ class ReportFinancial(models.AbstractModel):
                         vals['debit'] = value['debit']
                         vals['credit'] = value['credit']
                         if not account.company_id.currency_id.is_zero(
-                                vals[
-                                    'debit']) or not account.company_id.currency_id.is_zero(
-                            vals['credit']):
+                            vals[
+                                'debit']) or not account.company_id.currency_id.is_zero(
+                                vals['credit']):
                             flag = True
                     if not account.company_id.currency_id.is_zero(
                             vals['balance']):

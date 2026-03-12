@@ -1,6 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-<!--Inheriting Account Journal Kanban View-->
+    <!--Inheriting Account Journal Kanban
+    View-->
     <record id="account_journal_dashboard_kanban_view" model="ir.ui.view">
         <field name="name">account.journal.view.kanban.inherit.base.accounting.kit</field>
         <field name="model">account.journal</field>
@@ -11,10 +12,9 @@
                 position="inside">
                 <t t-if="dashboard.number_to_reconcile > 0">
                     <button class="btn btn-primary"
-                            type="object"
-                            name="action_open_reconcile">
-                        <t t-esc="dashboard.number_to_reconcile"/> to Reconcile
-                    </button>
+                        type="object"
+                        name="action_open_reconcile">
+                        <t t-esc="dashboard.number_to_reconcile" /> to Reconcile </button>
                 </t>
             </xpath>
         </field>

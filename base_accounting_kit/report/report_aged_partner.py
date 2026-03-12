@@ -1,24 +1,5 @@
 # -*- coding: utf-8 -*-
-#############################################################################
-#
-#    Cybrosys Technologies Pvt. Ltd.
-#
-#    Copyright (C) 2024-TODAY Cybrosys Technologies(<https://www.cybrosys.com>)
-#    Author: Cybrosys Techno Solutions(<https://www.cybrosys.com>)
-#
-#    You can modify it under the terms of the GNU LESSER
-#    GENERAL PUBLIC LICENSE (LGPL v3), Version 3.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU LESSER GENERAL PUBLIC LICENSE (LGPL v3) for more details.
-#
-#    You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
-#    (LGPL v3) along with this program.
-#    If not, see <http://www.gnu.org/licenses/>.
-#
-#############################################################################
+
 import time
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -133,7 +114,7 @@ class ReportAgedPartnerBalance(models.AbstractModel):
             if partner_id not in undue_amounts:
                 undue_amounts[partner_id] = 0.0
             line_amount = ResCurrency._get_conversion_rate(line.company_id.currency_id,
-                                               user_currency, line.balance)
+                                                           user_currency, line.balance)
             if user_currency.is_zero(line_amount):
                 continue
             for partial_line in line.matched_debit_ids:
@@ -158,13 +139,13 @@ class ReportAgedPartnerBalance(models.AbstractModel):
         history = []
         for i in range(5):
             args_tree = (
-            tuple(move_state), tuple(account_type), tuple(partner_ids),)
+                tuple(move_state), tuple(account_type), tuple(partner_ids),)
             dates_query = '(COALESCE(l.date_maturity,l.date)'
 
             if periods[str(i)]['start'] and periods[str(i)]['stop']:
                 dates_query += ' BETWEEN %s AND %s)'
                 args_tree += (
-                periods[str(i)]['start'], periods[str(i)]['stop'])
+                    periods[str(i)]['start'], periods[str(i)]['stop'])
             elif periods[str(i)]['start']:
                 dates_query += ' >= %s)'
                 args_tree += (periods[str(i)]['start'],)
@@ -190,7 +171,7 @@ class ReportAgedPartnerBalance(models.AbstractModel):
                 if partner_id not in partners_amount:
                     partners_amount[partner_id] = 0.0
                 line_amount = ResCurrency._get_conversion_rate(line.company_id.currency_id,
-                                                   user_currency, line.balance)
+                                                               user_currency, line.balance)
                 if user_currency.is_zero(line_amount):
                     continue
                 for partial_line in line.matched_debit_ids:
@@ -220,7 +201,7 @@ class ReportAgedPartnerBalance(models.AbstractModel):
             values = {}
             undue_amt = 0.0
             if partner[
-                'partner_id'] in undue_amounts:  # Making sure this partner actually was found by the query
+                    'partner_id'] in undue_amounts:  # Making sure this partner actually was found by the query
                 undue_amt = undue_amounts[partner['partner_id']]
 
             total[6] = total[6] + undue_amt
@@ -241,7 +222,7 @@ class ReportAgedPartnerBalance(models.AbstractModel):
                     at_least_one_amount = True
             values['total'] = sum(
                 [values['direction']] + [values[str(i)] for i in range(5)])
-            ## Add for total
+            # Add for total
             total[(i + 1)] += values['total']
             values['partner_id'] = partner['partner_id']
             if partner['partner_id']:
@@ -249,7 +230,7 @@ class ReportAgedPartnerBalance(models.AbstractModel):
                     partner['partner_id'])
                 values['name'] = browsed_partner.name and len(
                     browsed_partner.name) >= 45 and browsed_partner.name[
-                                                    0:40] + '...' or browsed_partner.name
+                    0:40] + '...' or browsed_partner.name
                 values['trust'] = browsed_partner.trust
             else:
                 values['name'] = _('Unknown Partner')
@@ -257,7 +238,7 @@ class ReportAgedPartnerBalance(models.AbstractModel):
 
             if at_least_one_amount or (
                     self._context.get('include_nullified_amount') and lines[
-                partner['partner_id']]):
+                        partner['partner_id']]):
                 res.append(values)
         return res, total, lines
 

@@ -1,24 +1,5 @@
 # -*- coding: utf-8 -*-
-#############################################################################
-#
-#    Cybrosys Technologies Pvt. Ltd.
-#
-#    Copyright (C) 2024-TODAY Cybrosys Technologies(<https://www.cybrosys.com>)
-#    Author: Cybrosys Techno Solutions(<https://www.cybrosys.com>)
-#
-#    You can modify it under the terms of the GNU LESSER
-#    GENERAL PUBLIC LICENSE (LGPL v3), Version 3.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU LESSER GENERAL PUBLIC LICENSE (LGPL v3) for more details.
-#
-#    You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
-#    (LGPL v3) along with this program.
-#    If not, see <http://www.gnu.org/licenses/>.
-#
-#############################################################################
+
 import re
 from odoo import api, models, fields
 
@@ -38,7 +19,8 @@ class FinancialReport(models.TransientModel):
                                           relation="account_financial_report_section_rel",
                                           column1="main_report_id",
                                           column2="sub_report_id")
-    name = fields.Char(string="Financial Report", default="Financial Report", required=True, translate=True)
+    name = fields.Char(string="Financial Report",
+                       default="Financial Report", required=True, translate=True)
 
     target_move = fields.Selection([('posted', 'All Posted Entries'),
                                     ('all', 'All Entries'),
@@ -49,7 +31,6 @@ class FinancialReport(models.TransientModel):
         ('horizontal', 'Horizontal')],
         default='vertical',
         string="Format")
-
 
     def _build_contexts(self, data):
         result = {}
@@ -220,15 +201,18 @@ class FinancialReport(models.TransientModel):
                 ])
                 if report.name == "Expenses":
                     accounts = self.env['account.account'].search([
-                        ('account_type', 'in', ["expense","expense_depreciation","expense_direct_cost"])
+                        ('account_type', 'in', [
+                         "expense", "expense_depreciation", "expense_direct_cost"])
                     ])
                 if report.name == "Liability":
                     accounts = self.env['account.account'].search([
-                        ('account_type', 'in', ["liability_payable","equity","liability_current","liability_non_current"])
+                        ('account_type', 'in', [
+                         "liability_payable", "equity", "liability_current", "liability_non_current"])
                     ])
                 if report.name == "Assets":
                     accounts = self.env['account.account'].search([
-                        ('account_type', 'in', ["asset_receivable","asset_cash","asset_current","asset_non_current","asset_prepayments","asset_fixed"])
+                        ('account_type', 'in', [
+                         "asset_receivable", "asset_cash", "asset_current", "asset_non_current", "asset_prepayments", "asset_fixed"])
                     ])
 
                 res[report.id]['account'] = self._compute_account_balance(
@@ -288,7 +272,7 @@ class FinancialReport(models.TransientModel):
                 'type': 'report',
                 'level': bool(
                     report.style_overwrite) and report.style_overwrite or
-                         report.level,
+                report.level,
                 'account_type': report.type or False,
                 # used to underline the financial report balances
             }

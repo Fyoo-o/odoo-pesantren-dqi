@@ -1,24 +1,5 @@
 # -*- coding: utf-8 -*-
-#############################################################################
-#
-#    Cybrosys Technologies Pvt. Ltd.
-#
-#    Copyright (C) 2024-TODAY Cybrosys Technologies(<https://www.cybrosys.com>)
-#    Author: Cybrosys Techno Solutions(<https://www.cybrosys.com>)
-#
-#    You can modify it under the terms of the GNU LESSER
-#    GENERAL PUBLIC LICENSE (LGPL v3), Version 3.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU LESSER GENERAL PUBLIC LICENSE (LGPL v3) for more details.
-#
-#    You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
-#    (LGPL v3) along with this program.
-#    If not, see <http://www.gnu.org/licenses/>.
-#
-#############################################################################
+
 import time
 from odoo import api, models, _
 from odoo.exceptions import UserError
@@ -37,7 +18,7 @@ class ReportPartnerLedger(models.AbstractModel):
             'reconciled'] else ' AND "account_move_line".full_reconcile_id IS NULL '
         params = [partner.id, tuple(data['computed']['move_state']),
                   tuple(data['computed']['account_ids'])] + \
-                 query_get_data[2]
+            query_get_data[2]
         query = """
             SELECT "account_move_line".id, "account_move_line".date, j.code,
              acc.name as a_name, "account_move_line".ref, 
@@ -85,7 +66,7 @@ class ReportPartnerLedger(models.AbstractModel):
 
         params = [partner.id, tuple(data['computed']['move_state']),
                   tuple(data['computed']['account_ids'])] + \
-                 query_get_data[2]
+            query_get_data[2]
         query = """SELECT sum(""" + field + """)
                 FROM """ + query_get_data[0] + """, account_move AS m
                 WHERE "account_move_line".partner_id = %s
@@ -120,7 +101,8 @@ class ReportPartnerLedger(models.AbstractModel):
         elif result_selection == 'customer':
             data['computed']['ACCOUNT_TYPE'] = ['asset_receivable']
         else:
-            data['computed']['ACCOUNT_TYPE'] = ['liability_payable', 'asset_receivable']
+            data['computed']['ACCOUNT_TYPE'] = [
+                'liability_payable', 'asset_receivable']
 
         self.env.cr.execute("""
             SELECT a.id

@@ -19,7 +19,7 @@
 #    If not, see <http://www.gnu.org/licenses/>.
 #
 #############################################################################
-from _datetime import datetime
+from datetime import datetime
 from odoo import api, models, _
 from odoo.exceptions import UserError
 

@@ -1,24 +1,5 @@
 # -*- coding: utf-8 -*-
-#############################################################################
-#
-#    Cybrosys Technologies Pvt. Ltd.
-#
-#    Copyright (C) 2024-TODAY Cybrosys Technologies(<https://www.cybrosys.com>)
-#    Author: Cybrosys Techno Solutions(<https://www.cybrosys.com>)
-#
-#    You can modify it under the terms of the GNU LESSER
-#    GENERAL PUBLIC LICENSE (LGPL v3), Version 3.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU LESSER GENERAL PUBLIC LICENSE (LGPL v3) for more details.
-#
-#    You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
-#    (LGPL v3) along with this program.
-#    If not, see <http://www.gnu.org/licenses/>.
-#
-#############################################################################
+
 from odoo import api, fields, models
 
 
@@ -37,10 +18,12 @@ class AccountingReport(models.TransientModel):
                                           relation="account_cash_flow_report_section_rel",
                                           column1="main_report_id",
                                           column2="sub_report_id")
-    name = fields.Char(string="Cash Flow Report", default="Cash Flow Report", required=True, translate=True)
+    name = fields.Char(string="Cash Flow Report",
+                       default="Cash Flow Report", required=True, translate=True)
     date_from = fields.Date(string='Start Date')
     date_to = fields.Date(string='End Date')
-    company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True, default=lambda self: self.env.company)
+    company_id = fields.Many2one('res.company', string='Company',
+                                 required=True, readonly=True, default=lambda self: self.env.company)
     target_move = fields.Selection([('posted', 'All Posted Entries'),
                                     ('all', 'All Entries'),
                                     ], string='Target Moves', required=True, default='posted')
@@ -48,7 +31,8 @@ class AccountingReport(models.TransientModel):
         comodel_name='account.journal',
         string='Journals',
         required=True,
-        default=lambda self: self.env['account.journal'].search([('company_id', '=', self.company_id.id)]),
+        default=lambda self: self.env['account.journal'].search(
+            [('company_id', '=', self.company_id.id)]),
         domain="[('company_id', '=', company_id)]",
     )
 

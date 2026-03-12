@@ -1,24 +1,5 @@
 # -*- coding: utf-8 -*-
-#############################################################################
-#
-#    Cybrosys Technologies Pvt. Ltd.
-#
-#    Copyright (C) 2024-TODAY Cybrosys Technologies(<https://www.cybrosys.com>)
-#    Author: Cybrosys Techno Solutions(<https://www.cybrosys.com>)
-#
-#    You can modify it under the terms of the GNU LESSER
-#    GENERAL PUBLIC LICENSE (LGPL v3), Version 3.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU LESSER GENERAL PUBLIC LICENSE (LGPL v3) for more details.
-#
-#    You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
-#    (LGPL v3) along with this program.
-#    If not, see <http://www.gnu.org/licenses/>.
-#
-#############################################################################
+
 from odoo import fields, models, _
 
 
@@ -34,7 +15,8 @@ class AssetDepreciationConfirmationWizard(models.TransientModel):
     def asset_compute(self):
         self.ensure_one()
         context = self._context
-        created_move_ids = self.env['account.asset.asset'].sudo().compute_generated_entries(self.date, asset_type=context.get('asset_type'))
+        created_move_ids = self.env['account.asset.asset'].sudo(
+        ).compute_generated_entries(self.date, asset_type=context.get('asset_type'))
         return {
             'name': _('Created Asset Moves') if context.get('asset_type') == 'purchase' else _('Created Revenue Moves'),
             'view_mode': 'list,form',
