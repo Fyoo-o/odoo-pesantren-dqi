@@ -6,12 +6,12 @@
         <field name="arch" type="xml">
             <list string="Absensi Ekskul">
                 <field name="row_number" string="#" />
-                <field name="name"/>
-                <field name="ekskul_id"/>
-                <field name="guru"/>
-                <field name="fiscalyear_id"/>
-                <field name="company_id" optional="hide"/>
-                <field name="states"/>
+                <field name="name" />
+                <field name="ekskul_id" />
+                <field name="guru" />
+                <field name="fiscalyear_id" />
+                <field name="company_id" optional="hide" />
+                <field name="states" />
             </list>
         </field>
     </record>
@@ -31,54 +31,61 @@
                 <sheet>
                     <group string="Pelaksanaan">
                         <group>
-                            <field name="name" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
+                            <field name="name"
+                                options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
                         </group>
                         <group>
-                            <field name="fiscalyear_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
+                            <field name="fiscalyear_id"
+                                options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
                         </group>
                     </group>
 
                     <group string="Absensi">
                         <group>
-                            <field name="ekskul_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
-                            <field name="company_id" 
-                                options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="1"/>
+                            <field name="ekskul_id"
+                                options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
+                            <field name="company_id"
+                                options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"
+                                readonly="1" />
                         </group>
-                        <group> 
-                            <field name="guru" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
-                        </group> 
-                    </group> 
+                        <group>
+                            <field name="guru"
+                                options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
+                        </group>
+                    </group>
 
-                    <notebook> 
+                    <notebook>
                         <page string="Absensi Ekskul">
-                            <field name="absen_ids" nolabel="1" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}">
+                            <field name="absen_ids" nolabel="1"
+                                options="{'no_create_edit':True, 'no_create':True, 'no_open': True}">
                                 <list editable="bottom" create="false">
                                     <field name="row_number" string="#" />
-                                    <field name="siswa_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" string="Santri"/>
-                                    <field name="panggilan"/>
-                                    <field name="nis"/>
-                                    <field 
+                                    <field name="siswa_id"
+                                        options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"
+                                        string="Santri" />
+                                    <field name="panggilan" />
+                                    <field name="nis" />
+                                    <field
                                         name="kehadiran"
                                         decoration-bf="True"
-                                        decoration-danger="kehadiran=='Alpa'" 
-                                        decoration-warning="kehadiran=='Izin' or kehadiran=='keluar'" 
-                                        decoration-success="kehadiran=='Hadir'" 
-                                        decoration-muted="kehadiran=='Sakit'"    
+                                        decoration-danger="kehadiran=='Alpa'"
+                                        decoration-warning="kehadiran=='Izin' or kehadiran=='keluar'"
+                                        decoration-success="kehadiran=='Hadir'"
+                                        decoration-muted="kehadiran=='Sakit'"
                                     />
-                                    <field name="keterangan"/>
-                                    <field name="keterangan_izin" filename="keterangan_izin_filename"/>    
+                                    <field name="keterangan" />
+                                    <field name="keterangan_izin"
+                                        filename="keterangan_izin_filename" />
                                     <button name="action_view_permission"
-                                            string="Detail"
-                                            type="object"
-                                            icon="fa-eye"
-                                            invisible="kehadiran != 'keluar'"
-                                            class="btn-primary"/>
+                                        string="Detail"
+                                        type="object"
+                                        icon="fa-eye"
+                                        invisible="kehadiran != 'keluar'"
+                                        class="btn-primary" />
                                 </list>
                             </field>
                         </page>
                     </notebook>
-
-                   
                 </sheet>
             </form>
         </field>
@@ -86,12 +93,12 @@
 
     <record id="absensi_ekskul_action" model="ir.actions.act_window">
         <field name="name"> Absensi Ekskul </field>
-        <field name="type">ir.actions.act_window</field> 
+        <field name="type">ir.actions.act_window</field>
         <field name="res_model">cdn.absensi_ekskul</field>
         <field name="view_mode">list,form</field>
-        <field name="domain" eval="[]"/>
+        <field name="domain" eval="[]" />
     </record>
 
-    <!-- <menuitem id="absensi_ekskul_menu" name="Absensi Ekskul" parent="absensi_pengajar" action="absensi_ekskul_action" sequence="20"/> -->
-    <menuitem id="absensi_ekskul_menu" name="Absensi Ekskul" parent="absensi_pengajar" action="absensi_ekskul_action" sequence="20" groups="pesantren_guru.group_guru_staff"/>
+    <menuitem id="absensi_ekskul_menu" name="Absensi Ekskul" parent="absensi_pengajar"
+        action="absensi_ekskul_action" sequence="20" groups="pesantren_guru.group_guru_staff" />
 </odoo>

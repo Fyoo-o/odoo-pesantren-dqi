@@ -1,19 +1,22 @@
+# -*- coding: utf-8 -*-
+
 from odoo import api, fields, models
 from odoo.exceptions import UserError
 import logging
 _logger = logging.getLogger(__name__)
+
 
 class PenilaianAkhirGuru(models.Model):
     _name = 'cdn.penilaian_akhir_guru'
     _description = 'Penilaian Akhir Guru'
     _rec_name = 'guru_id'
 
-
-    # Default Methods
     def _get_default_guru(self):
-        emp = self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1)
+        emp = self.env['hr.employee'].search(
+            [('user_id', '=', self.env.uid)], limit=1)
         if not emp:
-            emp = self.env['hr.employee'].search([('jns_pegawai_ids.code', 'in', ['guru'])], limit=1)
+            emp = self.env['hr.employee'].search(
+                [('jns_pegawai_ids.code', 'in', ['guru'])], limit=1)
         return emp.id if emp else False
 
     def _get_default_semester(self):
@@ -26,17 +29,6 @@ class PenilaianAkhirGuru(models.Model):
                 return term.name.split(' ')[1]
         return '1'  # fallback ke semester 1
 
-    # Domain Methods
-    # def _get_domain_guru(self):
-    #     user = self.env.user
-    #     if user.has_group('base.group_system'):  # Admin bebas semua guru
-    #         return [('jns_pegawai', 'in', ['guru','guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])]
-    #     elif user.has_group('pesantren_guru.group_guru_manager'):
-    #         return [('jns_pegawai', 'in', ['guru','guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])]
-    #     elif user.has_group('pesantren_guru.group_guru_staff'):
-    #         employee = self.env['hr.employee'].search([('user_id', '=', user.id)], limit=1)
-    #         return [('id', '=', employee.id)]
-    #     return [('id', '=', False)]
     def _get_domain_guru(self):
         # dapatkan semua user yang merupakan administrator
         admin_user_ids = self.env.ref('base.group_system').users.ids
@@ -63,36 +55,22 @@ class PenilaianAkhirGuru(models.Model):
             # user lain tidak boleh lihat apapun
             return [('id', '=', False)]
 
-    # def _get_domain_kelas(self):
-    #     guru = self.env['hr.employee'].search([
-    #         ('user_id', '=', self.env.uid),
-    #         ('jns_pegawai', '=', 'guru')
-    #     ], limit=1)
-    #     if not guru:
-    #         return []
-    #     jadwal_lines = self.env['cdn.jadwal_pelajaran_lines'].search([
-    #         ('guru_id', '=', guru.id)
-    #     ])
-    #     _logger.info("Guru %s punya jadwal di kelas: %s", guru.name, jadwal_lines.mapped('kelas_id.name'))
-    #     kelas_ids = jadwal_lines.mapped('kelas_id').ids
-    #     return [('id', 'in', kelas_ids)]
-
-
     # Fields
     guru_id = fields.Many2one(
         'hr.employee',
         string='Guru',
         required=True,
-        domain=lambda self: self.env['cdn.penilaian_akhir_guru']._get_domain_guru(),
+        domain=lambda self: self.env['cdn.penilaian_akhir_guru']._get_domain_guru(
+        ),
         default=_get_default_guru
     )
     kelas_id = fields.Many2one(
         'cdn.ruang_kelas',
         string='Kelas',
         required=True,
-        # domain=_get_domain_kelas
     )
-    tingkat_id = fields.Many2one('cdn.tingkat', string='Tingkat', store=True, compute='_compute_tingkat_id')
+    tingkat_id = fields.Many2one(
+        'cdn.tingkat', string='Tingkat', store=True, compute='_compute_tingkat_id')
 
     tahunajaran_id = fields.Many2one(
         'cdn.ref_tahunajaran',
@@ -113,7 +91,6 @@ class PenilaianAkhirGuru(models.Model):
         'cdn.mata_pelajaran',
         string='Mata Pelajaran',
         required=True,
-        # domain="[('id', 'in', [])]"
     )
     state = fields.Selection(
         string='Status',
@@ -128,15 +105,16 @@ class PenilaianAkhirGuru(models.Model):
         inverse_name='penilaianguru_id',
         string='Penilaian Siswa'
     )
-    company_id = fields.Many2one('res.company', string='Lembaga', default=lambda self: self.env.company)
+    company_id = fields.Many2one(
+        'res.company', string='Lembaga', default=lambda self: self.env.company)
     jenjang = fields.Selection(
         selection=[
-            ('paud','PAUD'),
-            ('tk','TK/RA'),
-            ('sd','SD/MI'),
-            ('smp','SMP/MTS'),
-            ('sma','SMA/MA/SMK'), 
-            ('nonformal', 'Non formal'), 
+            ('paud', 'PAUD'),
+            ('tk', 'TK/RA'),
+            ('sd', 'SD/MI'),
+            ('smp', 'SMP/MTS'),
+            ('sma', 'SMA/MA/SMK'),
+            ('nonformal', 'Non formal'),
             ('rtq', 'Rumah Tahfidz Quran')
         ],
         string="Jenjang",
@@ -160,7 +138,6 @@ class PenilaianAkhirGuru(models.Model):
     def act_draft(self):
         self.state = 'draft'
 
-
     @api.onchange('guru_id')
     def _onchange_guru_id(self):
         if self.guru_id:
@@ -169,7 +146,8 @@ class PenilaianAkhirGuru(models.Model):
             ]).mapped('kelas_id').ids
             return {
                 'domain': {'kelas_id': [('id', 'in', kelas_ids)]},
-                'value': {'kelas_id': False, 'mapel_id': False}  # Reset kelas & mapel
+                # Reset kelas & mapel
+                'value': {'kelas_id': False, 'mapel_id': False}
             }
         return {
             'domain': {'kelas_id': [], 'mapel_id': []},
@@ -192,11 +170,12 @@ class PenilaianAkhirGuru(models.Model):
             'domain': {'mapel_id': domain_mapel},
             'value': {'mapel_id': False}
         }
+
     @api.depends('kelas_id')
     def _compute_tingkat_id(self):
         for rec in self:
             rec.tingkat_id = rec.kelas_id.tingkat if rec.kelas_id else False
-            
+
     @api.onchange('kelas_id')
     def _onchange_kelas_id(self):
         if self.kelas_id:
@@ -208,15 +187,16 @@ class PenilaianAkhirGuru(models.Model):
             self.penilaian_ids = lines
         else:
             self.penilaian_ids = [(5, 0, 0)]  # reset
-                        
+
     # Default Get
     @api.model
     def default_get(self, fields_list):
         defaults = super().default_get(fields_list)
         if not self.env.user.company_id.tahun_ajaran_aktif:
-            raise UserError("Tahun ajaran aktif belum diatur di pengaturan perusahaan.")
+            raise UserError(
+                "Tahun ajaran aktif belum diatur di pengaturan perusahaan.")
         return defaults
-    
+
     @api.constrains('tahunajaran_id', 'semester', 'kelas_id', 'mapel_id')
     def _check_unique_penilaian_akhir_guru(self):
         for rec in self:

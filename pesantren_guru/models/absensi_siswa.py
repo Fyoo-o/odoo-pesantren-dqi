@@ -1,9 +1,12 @@
+# -*- coding: utf-8 -*-
+
 from odoo import api, fields, models
 import logging
 import base64
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
+
 
 class AbsensiSiswa(models.Model):
     _name = 'cdn.absensi_siswa'
@@ -28,9 +31,11 @@ class AbsensiSiswa(models.Model):
             return user.id
         return False
 
-    name    = fields.Char(string='Nama', readonly=True, compute='_compute_name', store=True)
-    tanggal = fields.Date(string='Tgl Absen', required=True, default=fields.Date.today())
-    hari    = fields.Selection([
+    name = fields.Char(string='Nama', readonly=True,
+                       compute='_compute_name', store=True)
+    tanggal = fields.Date(string='Tgl Absen', required=True,
+                          default=fields.Date.today())
+    hari = fields.Selection([
         ('1', 'Senin'),
         ('2', 'Selasa'),
         ('3', 'Rabu'),
@@ -39,39 +44,54 @@ class AbsensiSiswa(models.Model):
         ('6', 'Sabtu'),
         ('7', 'Minggu'),
     ], string='Hari', readonly=True, compute='_compute_hari', store=True)
-    jampelajaran_id = fields.Many2many(comodel_name='cdn.ref_jam_pelajaran', string='Jam Ke', required=True)
-    start_time      = fields.Float(string='Start Time', related='jampelajaran_id.start_time', readonly=True, store=True)
-    end_time        = fields.Float(string='End Time', related='jampelajaran_id.end_time', readonly=True, store=True)
-    kelas_id        = fields.Many2one(comodel_name='cdn.ruang_kelas', string='Kelas', required=True)
-    tingkat_id      = fields.Many2one(comodel_name='cdn.tingkat', string='Tingkat', related='kelas_id.tingkat', readonly=True, store=True)
-    walikelas_id    = fields.Many2one(comodel_name='hr.employee', string='Wali Kelas', related='kelas_id.walikelas_id', readonly=True, store=True)
-    tahunajaran_id  = fields.Many2one(comodel_name='cdn.ref_tahunajaran', string='Tahun Ajaran', related='kelas_id.tahunajaran_id', readonly=True, store=True)
-    semester        = fields.Selection(selection=[('1', 'Ganjil'), ('2', 'Genap')], string='Semester', readonly=True, store=True)
-    guru_id         = fields.Many2one(
-        comodel_name='hr.employee', 
-        string='Guru', 
-        required=True, 
-        default=_get_default_guru, 
+    jampelajaran_id = fields.Many2many(
+        comodel_name='cdn.ref_jam_pelajaran', string='Jam Ke', required=True)
+    start_time = fields.Float(
+        string='Start Time', related='jampelajaran_id.start_time', readonly=True, store=True)
+    end_time = fields.Float(
+        string='End Time', related='jampelajaran_id.end_time', readonly=True, store=True)
+    kelas_id = fields.Many2one(
+        comodel_name='cdn.ruang_kelas', string='Kelas', required=True)
+    tingkat_id = fields.Many2one(comodel_name='cdn.tingkat', string='Tingkat',
+                                 related='kelas_id.tingkat', readonly=True, store=True)
+    walikelas_id = fields.Many2one(comodel_name='hr.employee', string='Wali Kelas',
+                                   related='kelas_id.walikelas_id', readonly=True, store=True)
+    tahunajaran_id = fields.Many2one(comodel_name='cdn.ref_tahunajaran', string='Tahun Ajaran',
+                                     related='kelas_id.tahunajaran_id', readonly=True, store=True)
+    semester = fields.Selection(selection=[(
+        '1', 'Ganjil'), ('2', 'Genap')], string='Semester', readonly=True, store=True)
+    guru_id = fields.Many2one(
+        comodel_name='hr.employee',
+        string='Guru',
+        required=True,
+        default=_get_default_guru,
         domain=lambda self: self.env['cdn.absensi_siswa']._domain_guru()
     )
-    pertemuan_ke    = fields.Integer(string='Pertemuan Ke', readonly=True, compute='_compute_pertemuan_ke', store=True)
-    mapel_id        = fields.Many2one(comodel_name='cdn.mata_pelajaran', string='Mata pelajaran', required=True)
-    rpp_id          = fields.Many2one(comodel_name='cdn.master_rpp', string='RPP')
-    dokumen         = fields.Binary(string='Dokumen', related='rpp_id.dokumen', readonly=True, store=True)
-    tema            = fields.Char(string='Tema', required=True)
-    materi          = fields.Text(string='Materi', required=True)
-    state           = fields.Selection(selection=[('draft', 'Draft'), ('done', 'Done')], string='State', default='draft')
-    absensi_ids     = fields.One2many(comodel_name='cdn.absensi_siswa_lines', inverse_name='absensi_id', string='Absensi Siswa')
-    row_number      = fields.Integer(string='No', compute='_compute_row_number', store=False)
-    company_id      = fields.Many2one('res.company', string='Lembaga', default=lambda self: self.env.company)
+    pertemuan_ke = fields.Integer(
+        string='Pertemuan Ke', readonly=True, compute='_compute_pertemuan_ke', store=True)
+    mapel_id = fields.Many2one(
+        comodel_name='cdn.mata_pelajaran', string='Mata pelajaran', required=True)
+    rpp_id = fields.Many2one(comodel_name='cdn.master_rpp', string='RPP')
+    dokumen = fields.Binary(
+        string='Dokumen', related='rpp_id.dokumen', readonly=True, store=True)
+    tema = fields.Char(string='Tema', required=True)
+    materi = fields.Text(string='Materi', required=True)
+    state = fields.Selection(
+        selection=[('draft', 'Draft'), ('done', 'Done')], string='State', default='draft')
+    absensi_ids = fields.One2many(
+        comodel_name='cdn.absensi_siswa_lines', inverse_name='absensi_id', string='Absensi Siswa')
+    row_number = fields.Integer(
+        string='No', compute='_compute_row_number', store=False)
+    company_id = fields.Many2one(
+        'res.company', string='Lembaga', default=lambda self: self.env.company)
     jenjang = fields.Selection(
         selection=[
-            ('paud','PAUD'),
-            ('tk','TK/RA'),
-            ('sd','SD/MI'),
-            ('smp','SMP/MTS'),
-            ('sma','SMA/MA/SMK'), 
-            ('nonformal', 'Non formal'), 
+            ('paud', 'PAUD'),
+            ('tk', 'TK/RA'),
+            ('sd', 'SD/MI'),
+            ('smp', 'SMP/MTS'),
+            ('sma', 'SMA/MA/SMK'),
+            ('nonformal', 'Non formal'),
             ('rtq', 'Rumah Tahfidz Quran')
         ],
         string="Jenjang",
@@ -114,7 +134,8 @@ class AbsensiSiswa(models.Model):
     @api.depends('tanggal', 'jampelajaran_id')
     def _compute_name(self):
         for record in self:
-            jam_names = ", ".join(record.jampelajaran_id.mapped('name')) if record.jampelajaran_id else "-"
+            jam_names = ", ".join(record.jampelajaran_id.mapped(
+                'name')) if record.jampelajaran_id else "-"
             record.name = "%s/%s/%s" % (
                 record.kelas_id.name.name,
                 record.tanggal,
@@ -141,8 +162,10 @@ class AbsensiSiswa(models.Model):
     def _onchange_kelas_id(self):
         """Mengisi absensi_ids berdasarkan kelas, hanya jika absensi_ids kosong atau kelas berubah."""
         if self.kelas_id and (not self.absensi_ids or self._origin.kelas_id != self.kelas_id):
-            absensi_ids = [(5, 0, 0)]  # Hapus semua baris hanya jika perlu mengisi ulang
-            siswa_list = self.env['cdn.siswa'].search([('ruang_kelas_id', '=', self.kelas_id.id)])
+            # Hapus semua baris hanya jika perlu mengisi ulang
+            absensi_ids = [(5, 0, 0)]
+            siswa_list = self.env['cdn.siswa'].search(
+                [('ruang_kelas_id', '=', self.kelas_id.id)])
             if not siswa_list:
                 return {
                     'warning': {
@@ -158,12 +181,14 @@ class AbsensiSiswa(models.Model):
                 ], limit=1)
                 if permission:
                     keperluan_name = permission.keperluan.name if permission.keperluan else 'Tidak ada keterangan'
-                    waktu_keluar = self.format_datetime_indonesia(permission.waktu_keluar) if permission.waktu_keluar else 'Tidak tercatat'
+                    waktu_keluar = self.format_datetime_indonesia(
+                        permission.waktu_keluar) if permission.waktu_keluar else 'Tidak tercatat'
                     message = f"Santri Keluar pada {waktu_keluar}, karena {keperluan_name}"
                     foto_bukti = False
                     try:
                         if permission.foto_bukti:
-                            base64.b64decode(permission.foto_bukti, validate=True)
+                            base64.b64decode(
+                                permission.foto_bukti, validate=True)
                             foto_bukti = permission.foto_bukti
                     except Exception as e:
                         _logger.error(
@@ -246,15 +271,20 @@ class AbsensiSiswa(models.Model):
             return f"{hari} {nama_bulan} {tahun} {jam_menit}"
         return 'Tidak tercatat'
 
-class AbsensiSiswaLine(models.Model):
-    _name           = 'cdn.absensi_siswa_lines'
-    _description    = 'Data Absensi Siswa Lines'
 
-    absensi_id      = fields.Many2one(comodel_name='cdn.absensi_siswa', string='Absensi Siswa', ondelete='cascade')
-    mapel_id        = fields.Many2one(comodel_name='cdn.mata_pelajaran', string='Mata pelajaran', related='absensi_id.mapel_id')
-    tanggal         = fields.Date(string='Tgl Absen', related='absensi_id.tanggal', readonly=True, store=True)
-    kelas_id        = fields.Many2one(comodel_name='cdn.ruang_kelas', string='Kelas', related='absensi_id.kelas_id', readonly=True, store=True)
-    siswa_id        = fields.Many2one(
+class AbsensiSiswaLine(models.Model):
+    _name = 'cdn.absensi_siswa_lines'
+    _description = 'Data Absensi Siswa Lines'
+
+    absensi_id = fields.Many2one(
+        comodel_name='cdn.absensi_siswa', string='Absensi Siswa', ondelete='cascade')
+    mapel_id = fields.Many2one(comodel_name='cdn.mata_pelajaran',
+                               string='Mata pelajaran', related='absensi_id.mapel_id')
+    tanggal = fields.Date(
+        string='Tgl Absen', related='absensi_id.tanggal', readonly=True, store=True)
+    kelas_id = fields.Many2one(comodel_name='cdn.ruang_kelas', string='Kelas',
+                               related='absensi_id.kelas_id', readonly=True, store=True)
+    siswa_id = fields.Many2one(
         comodel_name='cdn.siswa',
         string='Siswa',
         required=True,
@@ -266,23 +296,29 @@ class AbsensiSiswaLine(models.Model):
         compute='_compute_allowed_siswa',
         store=False
     )
-    name        = fields.Char(string='Nama', related='siswa_id.name', readonly=True, store=True)
-    nis         = fields.Char(string='NIS', related='siswa_id.nis', readonly=True, store=True)
-    kehadiran   = fields.Selection([
+    name = fields.Char(string='Nama', related='siswa_id.name',
+                       readonly=True, store=True)
+    nis = fields.Char(string='NIS', related='siswa_id.nis',
+                      readonly=True, store=True)
+    kehadiran = fields.Selection([
         ('Hadir', 'Hadir'),
         ('Sakit', 'Sakit'),
         ('Izin', 'Izin'),
         ('keluar', 'Izin Keluar'),
         ('Alpa', 'Alpa'),
     ], string='Kehadiran', default='Hadir')
-    
-    keterangan_izin             = fields.Binary(string='Foto', attachment=True)
-    keterangan_izin_filename    = fields.Char(string="Nama File Foto")
-    keterangan                  = fields.Char(string='Keterangan')
-    panggilan                   = fields.Char(string='Nama Panggilan', related='siswa_id.namapanggilan', readonly=True, store=True)
-    guru                        = fields.Many2one('hr.employee', string="Guru", related='absensi_id.guru_id')
-    row_number                  = fields.Integer(string='No', compute='_compute_row_number', store=False)
-    company_id                  = fields.Many2one('res.company', string='Lembaga', related='absensi_id.company_id', readonly=True, store=True)
+
+    keterangan_izin = fields.Binary(string='Foto', attachment=True)
+    keterangan_izin_filename = fields.Char(string="Nama File Foto")
+    keterangan = fields.Char(string='Keterangan')
+    panggilan = fields.Char(
+        string='Nama Panggilan', related='siswa_id.namapanggilan', readonly=True, store=True)
+    guru = fields.Many2one('hr.employee', string="Guru",
+                           related='absensi_id.guru_id')
+    row_number = fields.Integer(
+        string='No', compute='_compute_row_number', store=False)
+    company_id = fields.Many2one('res.company', string='Lembaga',
+                                 related='absensi_id.company_id', readonly=True, store=True)
 
     def _compute_row_number(self):
         for index, record in enumerate(self):
@@ -292,7 +328,8 @@ class AbsensiSiswaLine(models.Model):
     def _compute_allowed_siswa(self):
         for record in self:
             if record.absensi_id.kelas_id:
-                record.allowed_siswa_ids = self.env['cdn.siswa'].search([('ruang_kelas_id', '=', record.absensi_id.kelas_id.id)]).ids
+                record.allowed_siswa_ids = self.env['cdn.siswa'].search(
+                    [('ruang_kelas_id', '=', record.absensi_id.kelas_id.id)]).ids
             else:
                 record.allowed_siswa_ids = []
 
@@ -307,7 +344,8 @@ class AbsensiSiswaLine(models.Model):
             if permission:
                 self.kehadiran = 'keluar'
                 keperluan_name = permission.keperluan.name if permission.keperluan else 'Tidak ada keterangan'
-                waktu_keluar = self.format_datetime_indonesia(permission.waktu_keluar) if permission.waktu_keluar else 'Tidak tercatat'
+                waktu_keluar = self.format_datetime_indonesia(
+                    permission.waktu_keluar) if permission.waktu_keluar else 'Tidak tercatat'
                 self.keterangan = f"Santri Keluar pada {waktu_keluar}, karena {keperluan_name}"
             else:
                 self.kehadiran = 'Hadir'
@@ -356,6 +394,7 @@ class AbsensiSiswaLine(models.Model):
             nama_bulan = bulan_dict.get(bulan_angka, bulan_angka)
             return f"{hari} {nama_bulan} {tahun} {jam_menit}"
         return 'Tidak tercatat'
+
 
 class Kbm_Siswa(models.Model):
     _inherit = 'cdn.siswa'

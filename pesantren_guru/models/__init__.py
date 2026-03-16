@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from . import absensi_siswa
 from . import master_rpp
 from . import penugasan

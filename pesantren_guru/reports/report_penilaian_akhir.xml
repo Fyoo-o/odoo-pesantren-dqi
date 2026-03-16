@@ -8,5 +8,5 @@
         name="pesantren_guru.penilaian_akhir"
         file="cdn_penilaian_akhir"
         attachment_use="False"
-        />
+    />
 </odoo>
