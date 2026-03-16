@@ -1,17 +1,14 @@
 <?xml version='1.0' encoding='utf-8'?>
 <odoo>
     <data>
-
         <!-- cdn.absensi_siswa list view - Akses Umum -->
         <record id="cdn_absensi_siswa_view_tree_public" model="ir.ui.view">
             <field name="name">cdn.absensi_siswa.view.list.public</field>
             <field name="model">cdn.absensi_siswa</field>
             <field name="arch" type="xml">
-                <!-- <list create="false" edit="false" delete="false"> -->
                 <list>
-                    <!-- <button name="%(pesantren_guru.action_absensi_filter_wizard)d" string="Filter Tanggal Manual" type="action" class="btn-primary"/> -->
-                    <field name="row_number" string="#"/>
-                    <field name="name" optional="show"/>
+                    <field name="row_number" string="#" />
+                    <field name="name" optional="show" />
                     <field name="tanggal" optional="show" />
                     <field name="jampelajaran_id" optional="show" widget="many2many_tags" />
                     <field name="kelas_id" optional="show" />
@@ -31,7 +28,6 @@
             <field name="name">cdn.absensi_siswa.view.form.public</field>
             <field name="model">cdn.absensi_siswa</field>
             <field name="arch" type="xml">
-                <!-- <form string="" create="false" edit="false" delete="false"> -->
                 <form string="">
                     <header>
                         <field name="state" widget="statusbar" />
@@ -49,10 +45,11 @@
                         <group string="Aktivitas Pelajaran">
                             <group>
                                 <field name="hari" readonly="1" />
-                                <field name="jampelajaran_id" readonly="1" 
-                                widget="many2many_tags" />
-                                <field name="company_id" 
-                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="1" />
+                                <field name="jampelajaran_id" readonly="1"
+                                    widget="many2many_tags" />
+                                <field name="company_id"
+                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"
+                                    readonly="1" />
                             </group>
                             <group>
                                 <field name="mapel_id" readonly="1" />
@@ -63,32 +60,32 @@
                             <page string="Absensi Siswa">
                                 <field name="absensi_ids" nolabel="1" readonly="1">
                                     <list create="false" edit="false" delete="false">
-                                        <field name="row_number" string="#"/>
-                                        <field name="siswa_id" string="Siswa"/>
-                                        <field name="panggilan" string="Panggilan"/>
+                                        <field name="row_number" string="#" />
+                                        <field name="siswa_id" string="Siswa" />
+                                        <field name="panggilan" string="Panggilan" />
                                         <field name="nis" />
-                                        <field 
+                                        <field
                                             name="kehadiran"
                                             decoration-bf="True"
-                                            decoration-danger="kehadiran=='Alpa'" 
-                                            decoration-warning="kehadiran=='Izin' or kehadiran=='keluar'" 
-                                            decoration-success="kehadiran=='Hadir'" 
-                                            decoration-muted="kehadiran=='Sakit'"    
+                                            decoration-danger="kehadiran=='Alpa'"
+                                            decoration-warning="kehadiran=='Izin' or kehadiran=='keluar'"
+                                            decoration-success="kehadiran=='Hadir'"
+                                            decoration-muted="kehadiran=='Sakit'"
                                         />
-                                        <field name="keterangan"/>
+                                        <field name="keterangan" />
                                     </list>
                                 </field>
-                            </page> 
+                            </page>
                             <page string="Jurnal">
                                 <group>
                                     <group>
                                         <field name="tingkat_id" invisible="1" />
-                                        <field name="tema" readonly="1"/>
-                                        <field name="materi" readonly="1"/>
+                                        <field name="tema" readonly="1" />
+                                        <field name="materi" readonly="1" />
                                     </group>
                                     <group>
                                         <field name="rpp_id" readonly="1" />
-                                        <field name="pertemuan_ke" readonly="1" />  
+                                        <field name="pertemuan_ke" readonly="1" />
                                     </group>
                                 </group>
                                 <field name="dokumen" widget="pdf_viewer" nolabel="1" readonly="1" />
@@ -135,26 +132,28 @@
                             '|', ('absensi_ids.siswa_id.wali_telp', 'ilike', self),
                             '|', ('absensi_ids.siswa_id.gol_darah', 'ilike', self),
                             ('absensi_ids.siswa_id.jns_kelamin', 'ilike', self)
-                        ]"/>
-                    <field name="kelas_id"/>
-                    <field name="mapel_id"/>
-                    <field name="guru_id"/>
-                    <field name="tanggal"/>
-                    
-                    <filter string="Hari Ini" name="today" 
-                        domain="[('tanggal', '=', context_today())]"/>
+                        ]" />
+                    <field name="kelas_id" />
+                    <field name="mapel_id" />
+                    <field name="guru_id" />
+                    <field name="tanggal" />
+
+                    <filter string="Hari Ini" name="today"
+                        domain="[('tanggal', '=', context_today())]" />
                     <filter string="Hari Ini dan Kemarin" name="today_yesterday"
-                        domain="[('tanggal', '&gt;=', (context_today() - relativedelta(days=1))), ('tanggal', '&lt;=', context_today())]"/>
-                   <filter string="7 Hari Terakhir" name="last_week" 
-                        domain="[('tanggal', '&gt;=', (context_today() - relativedelta(days=7)))]"/>
-                    <filter string="30 Hari Terakhir" name="last_month" 
-                        domain="[('tanggal', '&gt;=', (context_today() - relativedelta(days=30)))]"/>
-      
+                        domain="[('tanggal', '&gt;=', (context_today() - relativedelta(days=1))), ('tanggal', '&lt;=', context_today())]" />
+                    <filter string="7 Hari Terakhir" name="last_week"
+                        domain="[('tanggal', '&gt;=', (context_today() - relativedelta(days=7)))]" />
+                    <filter string="30 Hari Terakhir" name="last_month"
+                        domain="[('tanggal', '&gt;=', (context_today() - relativedelta(days=30)))]" />
+
                     <group expand="0" string="Group By">
-                        <filter string="Kelas" name="group_kelas" context="{'group_by':'kelas_id'}"/>
-                        <filter string="Mata Pelajaran" name="group_mapel" context="{'group_by':'mapel_id'}"/>
-                        <filter string="Guru" name="group_guru" context="{'group_by':'guru_id'}"/>
-                        <filter string="Tanggal" name="group_tanggal" context="{'group_by':'tanggal'}"/>
+                        <filter string="Kelas" name="group_kelas" context="{'group_by':'kelas_id'}" />
+                        <filter string="Mata Pelajaran" name="group_mapel"
+                            context="{'group_by':'mapel_id'}" />
+                        <filter string="Guru" name="group_guru" context="{'group_by':'guru_id'}" />
+                        <filter string="Tanggal" name="group_tanggal"
+                            context="{'group_by':'tanggal'}" />
                     </group>
                 </search>
             </field>
@@ -166,18 +165,19 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.absensi_siswa</field>
             <field name="view_mode">list,form</field>
-            <field name="view_ids" eval="[(5, 0, 0),
+            <field name="view_ids"
+                eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'list', 'view_id': ref('cdn_absensi_siswa_view_tree_public')}),
-                (0, 0, {'view_mode': 'form', 'view_id': ref('cdn_absensi_siswa_view_form_public')})]"/>
-            <field name="search_view_id" ref="cdn_absensi_siswa_search_public"/>
+                (0, 0, {'view_mode': 'form', 'view_id': ref('cdn_absensi_siswa_view_form_public')})]" />
+            <field name="search_view_id" ref="cdn_absensi_siswa_search_public" />
             <field name="domain">[]</field>
             <field name="context">{}</field>
         </record>
         <!-- Tambahkan action tombol di tree view -->
         <record id="action_absensi_filter_wizard_server" model="ir.actions.server">
             <field name="name">Filter Tanggal Manual</field>
-            <field name="model_id" ref="model_cdn_absensi_siswa"/>
-            <field name="binding_model_id" ref="model_cdn_absensi_siswa"/>
+            <field name="model_id" ref="model_cdn_absensi_siswa" />
+            <field name="binding_model_id" ref="model_cdn_absensi_siswa" />
             <field name="binding_view_types">list</field>
             <field name="state">code</field>
             <field name="code">action = {
@@ -185,14 +185,13 @@
                 'res_model': 'cdn.absensi.filter.wizard',
                 'view_mode': 'form',
                 'target': 'new'
-            }</field>
+                }</field>
         </record>
 
         <!-- Menu Item untuk Akses Umum dengan akses pesantren_base -->
         <menuitem id="cdn_absensi_siswa_menu_public" name="Absensi Siswa"
-            parent="pesantren_base.absensi_menu_categ" 
-            action="cdn_absensi_siswa_action_public" 
+            parent="pesantren_base.absensi_menu_categ"
+            action="cdn_absensi_siswa_action_public"
             sequence="10" />
-
     </data>
 </odoo>

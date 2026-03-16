@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-#    ________  __      ________  _______   ______          _______    _______   ________     __      _____  ___  ___________  _______    _______  _____  ___   
-#   /"       )|" \    /"       )/"     "| /    " \        |   __ "\  /"     "| /"       )   /""\    (\"   \|"  \("     _   ")/"      \  /"     "|(\"   \|"  \  
-#  (:   \___/ ||  |  (:   \___/(: ______)// ____  \       (. |__) :)(: ______)(:   \___/   /    \   |.\\   \    |)__/  \\__/|:        |(: ______)|.\\   \    | 
-#   \___  \   |:  |   \___  \   \/    | /  /    ) :)      |:  ____/  \/    |   \___  \    /' /\  \  |: \.   \\  |   \\_ /   |_____/   ) \/    |  |: \.   \\  | 
-#    __/  \\  |.  |    __/  \\  // ___)(: (____/ //       (|  /      // ___)_   __/  \\  //  __'  \ |.  \    \. |   |.  |    //      /  // ___)_ |.  \    \. | 
-#   /" \   :) /\  |\  /" \   :)(:  (    \        /       /|__/ \    (:      "| /" \   :)/   /  \\  \|    \    \ |   \:  |   |:  __   \ (:      "||    \    \ | 
-#  (_______/ (__\_|_)(_______/  \__/     \"_____/       (_______)    \_______)(_______/(___/    \___)\___|\____\)    \__|   |__|  \___) \_______) \___|\____\) 
-#
-#
-
-                                                                                                                                                            
 
 {
     'name': "Modul Guru SISFO Pesantren",
@@ -47,19 +36,18 @@
     'license': 'LGPL-3',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','pesantren_base','report_xlsx'],
+    'depends': ['base', 'pesantren_base', 'report_xlsx'],
 
     # always loaded
     'data': [
         'security/groups.xml',
         'security/ir.model.access.csv',
-        
+
         # wizard
         'wizard/absensi_filter_wizard.xml',
-         # data
-        'views/menu.xml',
+
         # views
-        # 'data/ks_guru_data.xml',
+        'views/menu.xml',
         'views/absensi_siswa.xml',
         'views/absensi_ekskul.xml',
         'views/master_rpp.xml',
@@ -74,13 +62,9 @@
         # reports
         'reports/report_penilaian_akhir.xml'
     ],
-    # only loaded in demonstration mode
-    # 'demo': [
-    #     'demo/demo.xml',
-    # ],
     "installable": True,
-	"auto_install": False,
-	"application": True,  
+    "auto_install": False,
+    "application": True,
     'assets': {
         'web.assets_backend': [
             'pesantren_guru/static/src/scss/style.scss',

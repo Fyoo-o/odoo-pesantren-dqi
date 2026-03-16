@@ -1,4 +1,7 @@
+# -*- coding: utf-8 -*-
+
 from odoo import models, fields
+
 
 class AbsensiFilterWizard(models.TransientModel):
     _name = 'cdn.absensi.filter.wizard'

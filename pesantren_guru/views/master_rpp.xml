@@ -8,13 +8,13 @@
       <field name="arch" type="xml">
         <list>
           <!-- Add your fields here -->
-          <field name="name"/>
-          <field name="jenjang"/>
-          <field name="matpel_id"/>
-          <field name="tingkat_id"/>
-          <field name="jurusan_id"/>
-          <field name="waktu"/>
-          <field name="kd"/>
+          <field name="name" />
+          <field name="jenjang" />
+          <field name="matpel_id" />
+          <field name="tingkat_id" />
+          <field name="jurusan_id" />
+          <field name="waktu" />
+          <field name="kd" />
         </list>
       </field>
     </record>
@@ -27,21 +27,21 @@
           <sheet>
             <group>
               <!-- Add your fields here<field name="name"/> -->
-              <field name="name"/>
-              <field name="jenjang"/>
-              <field name="matpel_id" domain="[('jenjang', '=', jenjang)]"/>
+              <field name="name" />
+              <field name="jenjang" />
+              <field name="matpel_id" domain="[('jenjang', '=', jenjang)]" />
               <field name="tingkat_id"
-                    domain="[('jenjang', '=', jenjang)]"
-                    options="{
+                domain="[('jenjang', '=', jenjang)]"
+                options="{
                       'no_create_edit':True, 
                       'no_create':True, 
                       'no_open': True
                     }" />
-              <field name="jurusan_id" invisible="jenjang not in ('sma')"/>
-              <field name="waktu"/>
-              <field name="kd"/>
-              <field name="dokumen"/>
-              <field name="tujuan"/>
+              <field name="jurusan_id" invisible="jenjang not in ('sma')" />
+              <field name="waktu" />
+              <field name="kd" />
+              <field name="dokumen" />
+              <field name="tujuan" />
             </group>
           </sheet>
         </form>
@@ -57,16 +57,15 @@
       <field name="help" type="html">
         <p class="oe_view_nocontent_create">
           <!-- Add Text Here -->
-        </p><p>
-          <!-- More details about what a user can do with this object will be OK --> 
+        </p>
+        <p>
+          <!-- More details about what a user can do with this object will be OK -->
         </p>
       </field>
     </record>
-  
+
     <!-- This Menu Item must have a parent and an action -->
-    <menuitem id="master_rpp_menu_act" name="Master RPP" parent="pengaturan_menu_categ" action="cdn_master_rpp_action" sequence="10"/>
-
-
+    <menuitem id="master_rpp_menu_act" name="Master RPP" parent="pengaturan_menu_categ"
+      action="cdn_master_rpp_action" sequence="10" />
   </data>
-  
 </odoo>

@@ -7,8 +7,8 @@
             <field name="model">cdn.predikat</field>
             <field name="arch" type="xml">
                 <list>
-                    <field name="name"/>
-                    <field name="tipe"/>
+                    <field name="name" />
+                    <field name="tipe" />
                 </list>
             </field>
         </record>
@@ -20,14 +20,14 @@
                 <form string="">
                     <sheet>
                         <group>
-                            <field name="name"/>
-                            <field name="tipe"/>
+                            <field name="name" />
+                            <field name="tipe" />
                         </group>
                         <field name="predikat_ids">
                             <list editable="bottom">
-                                <field name="name"/>
-                                <field name="min_nilai"/>
-                                <field name="max_nilai"/>
+                                <field name="name" />
+                                <field name="min_nilai" />
+                                <field name="max_nilai" />
                             </list>
                         </field>
                     </sheet>
@@ -42,6 +42,7 @@
             <field name="view_mode">list,form</field>
         </record>
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="cdn_predikat_menu_act" name="Predikat" parent="pengaturan_menu_categ" action="cdn_predikat_action" sequence="30"/>
+        <menuitem id="cdn_predikat_menu_act" name="Predikat" parent="pengaturan_menu_categ"
+            action="cdn_predikat_action" sequence="30" />
     </data>
 </odoo>

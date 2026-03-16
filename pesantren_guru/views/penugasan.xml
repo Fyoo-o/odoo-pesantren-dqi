@@ -1,97 +1,105 @@
 <?xml version='1.0' encoding='utf-8'?>
 <odoo>
-  <data>
-    <!-- cdn.penugasan list view -->
-    <record id="cdn_penugasan_view_tree" model="ir.ui.view">
-      <field name="name">cdn.penugasan.view.list</field>
-      <field name="model">cdn.penugasan</field>
-      <field name="arch" type="xml">
-        <list>
-          <!-- Add your fields here -->
-          <field name="tanggal"/>
-          <field name="deadline"/>
-          <field name="kelas_id"/>
-          <field name="guru_id"/>
-          <field name="matpel_id"/>
-          <field name="tugas_ujian"/>
-          <field name="company_id" optional="hide"/>
-          <field name="state"/>
-        </list>
-      </field>
-    </record>
+	<data>
+		<!-- cdn.penugasan list view -->
+		<record id="cdn_penugasan_view_tree" model="ir.ui.view">
+			<field name="name">cdn.penugasan.view.list</field>
+			<field name="model">cdn.penugasan</field>
+			<field name="arch" type="xml">
+				<list>
+					<!-- Add your fields here -->
+					<field name="tanggal" />
+					<field name="deadline" />
+					<field name="kelas_id" />
+					<field name="guru_id" />
+					<field name="matpel_id" />
+					<field name="tugas_ujian" />
+					<field name="company_id" optional="hide" />
+					<field name="state" />
+				</list>
+			</field>
+		</record>
 
-    <!-- cdn.penugasan form view -->
-    <record id="cdn_penugasan_view_form" model="ir.ui.view">
-      <field name="name">cdn.penugasan.view.form</field>
-      <field name="model">cdn.penugasan</field>
-      <field name="arch" type="xml">
-        <form string="">
-          <header>
-            <button string="Proses" name="action_proses" type="object" class="oe_highlight"  invisible="state != 'draft'"/>
-            <button string="Selesai" name="action_done" type="object" class="oe_highlight" invisible="state != 'proses'" />
-            <field name="state" widget="statusbar" />
-          </header>
-          <sheet>
+		<!-- cdn.penugasan form view -->
+		<record id="cdn_penugasan_view_form" model="ir.ui.view">
+			<field name="name">cdn.penugasan.view.form</field>
+			<field name="model">cdn.penugasan</field>
+			<field name="arch" type="xml">
+				<form string="">
+					<header>
+						<button string="Proses" name="action_proses" type="object"
+							class="oe_highlight"
+							invisible="state != 'draft'" />
+						<button string="Selesai" name="action_done" type="object"
+							class="oe_highlight"
+							invisible="state != 'proses'" />
+						<field name="state" widget="statusbar" />
+					</header>
+					<sheet>
 
-            <group string="Kelas">
-              <group>
-                <field name="kelas_id"/>
-                <field name="tingkat_id"/>
-              </group>
-              <group>
-                <field name="tanggal"/>
-              </group>
-            </group>
+						<group string="Kelas">
+							<group>
+								<field name="kelas_id" />
+								<field name="tingkat_id" />
+							</group>
+							<group>
+								<field name="tanggal" />
+							</group>
+						</group>
 
-            <group string="Penugasan">
-              <group>
-               <field name="matpel_id"
-                  domain="[('jenjang', '=', jenjang), '|', ('tingkat_id', '=', False), ('tingkat_id', '=', tingkat_id)]"
-                  options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
-                <field name="tugas_ujian" />  
-                <field name="company_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="1"/>
-              </group>
-              <group>
-                 <field name="guru_id"
-                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
-                <field name="deadline"/>
-              </group>
-            </group>
+						<group string="Penugasan">
+							<group>
+								<field name="matpel_id"
+									domain="[('jenjang', '=', jenjang), '|', ('tingkat_id', '=', False), ('tingkat_id', '=', tingkat_id)]"
+									options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
+								<field name="tugas_ujian" />
+								<field name="company_id"
+									options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"
+									readonly="1" />
+							</group>
+							<group>
+								<field name="guru_id"
+									options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
+								<field name="deadline" />
+							</group>
+						</group>
 
-            <notebook>
-              <page string="Siswa">
-                  <field name="tugas_line_ids" nolable="1" colspan="4">
-                      <list editable="bottom">
-                          <field name="siswa_id"
-                                options="{
+						<notebook>
+							<page string="Siswa">
+								<field name="tugas_line_ids" nolable="1" colspan="4">
+									<list editable="bottom">
+										<field name="siswa_id"
+											options="{
                                   'no_create_edit':True, 
                                   'no_create':True
-                                }"/>
-                                <field name="panggilan" string="Panggilan"/>
-                                <field name="nilai" widget="integer" invisible="state in ('draft')"/>
-                                <field name="keterangan" invisible="state in ('draft')"/>
-                        </list>
-                  </field>
-              </page>
-          </notebook>
-          </sheet>
-        </form>
-      </field>
-    </record>
-    
-    <!-- cdn.penugasan action window -->
-    <record id="cdn_penugasan_action" model="ir.actions.act_window">
-      <field name="name">Penugasan</field>
-      <field name="type">ir.actions.act_window</field>
-      <field name="res_model">cdn.penugasan</field>
-      <field name="view_mode">list,form</field>
-      <!-- <field name="domain">[('guru_id.user_id', '=', uid)]</field> -->
-      <field name="domain" eval="[]"/>
-    </record>
-    
-    <!-- This Menu Item must have a parent and an action -->
-    <menuitem id="penugasan_menu_act" name="Penugasan" parent="aktivitas_menu_categ" action="cdn_penugasan_action" sequence="30"/>
-  
-  </data>
-  
+                                }" />
+										<field name="panggilan" string="Panggilan" />
+										<field name="nilai" widget="integer"
+											invisible="state in ('draft')" />
+										<field name="keterangan" invisible="state in ('draft')" />
+									</list>
+								</field>
+							</page>
+						</notebook>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<!-- cdn.penugasan action window -->
+		<record id="cdn_penugasan_action" model="ir.actions.act_window">
+			<field name="name">Penugasan</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">cdn.penugasan</field>
+			<field name="view_mode">list,form</field>
+			<!-- <field name="domain">[('guru_id.user_id', '=', uid)]</field> -->
+			<field name="domain" eval="[]" />
+		</record>
+
+		<!-- This Menu Item must have a parent and an action -->
+		<menuitem id="penugasan_menu_act" name="Penugasan" parent="aktivitas_menu_categ"
+			action="cdn_penugasan_action" sequence="30" />
+
+	</data>
+
 </odoo>

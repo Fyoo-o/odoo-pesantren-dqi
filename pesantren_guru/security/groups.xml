@@ -7,255 +7,257 @@
 		</record>
 		<record id="group_guru_user" model="res.groups">
 			<field name="name">User</field>
-			<field name="category_id" ref="module_category_guru"/>
+			<field name="category_id" ref="module_category_guru" />
 		</record>
 		<record id="group_guru_staff" model="res.groups">
 			<field name="name">Staff</field>
-			<field name="category_id" ref="module_category_guru"/>
-			<field name="implied_ids" eval="[(4, ref('group_guru_user'))]"/>
+			<field name="category_id" ref="module_category_guru" />
+			<field name="implied_ids" eval="[(4, ref('group_guru_user'))]" />
 		</record>
 		<record id="group_guru_manager" model="res.groups">
 			<field name="name">Manager</field>
-			<field name="category_id" ref="module_category_guru"/>
-			<field name="implied_ids" eval="[(4, ref('group_guru_staff'))]"/>
-			<field name="users" eval="[(4, ref('base.user_admin'))]"/>
+			<field name="category_id" ref="module_category_guru" />
+			<field name="implied_ids" eval="[(4, ref('group_guru_staff'))]" />
+			<field name="users" eval="[(4, ref('base.user_admin'))]" />
 		</record>
 
 		<!-- Rule Absensi Siswa -->
 		<record id="absensi_siswa_rule_guru_user" model="ir.rule">
 			<field name="name">Absensi Siswa - Guru Akademik User </field>
-			<field name="model_id" ref="pesantren_guru.model_cdn_absensi_siswa"/>
-			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_user'))]"/>
+			<field name="model_id" ref="pesantren_guru.model_cdn_absensi_siswa" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_user'))]" />
 			<field name="domain_force">[('guru_id.user_id', '=', user.id)]</field>
 		</record>
 
 		<record id="absensi_siswa_line_rule_guru_user" model="ir.rule">
 			<field name="name">Absensi Siswa Line - Guru Akademik User </field>
-			<field name="model_id" ref="pesantren_guru.model_cdn_absensi_siswa_lines"/>
-			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_user'))]"/>
+			<field name="model_id" ref="pesantren_guru.model_cdn_absensi_siswa_lines" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_user'))]" />
 			<field name="domain_force">[('guru.user_id', '=', user.id)]</field>
 		</record>
 
 		<record id="absensi_siswa_rule_guru_staff" model="ir.rule">
 			<field name="name">Absensi Siswa - Guru Akademik Staff </field>
-			<field name="model_id" ref="pesantren_guru.model_cdn_absensi_siswa"/>
-			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_staff'))]"/>
+			<field name="model_id" ref="pesantren_guru.model_cdn_absensi_siswa" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_staff'))]" />
 			<field name="domain_force">[('guru_id.user_id', '=', user.id)]</field>
 		</record>
 
 		<record id="absensi_siswa_rule_guru_manager" model="ir.rule">
 			<field name="name">Absensi Siswa - Guru Akademik Manager </field>
-			<field name="model_id" ref="pesantren_guru.model_cdn_absensi_siswa"/>
-			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_manager'))]"/>
+			<field name="model_id" ref="pesantren_guru.model_cdn_absensi_siswa" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_manager'))]" />
 			<field name="domain_force">[(1, '=', 1)]</field>
 		</record>
 
 		<record id="absensi_siswa_line_rule_guru_manager" model="ir.rule">
 			<field name="name">Absensi Siswa Line - Guru Akademik Manager </field>
-			<field name="model_id" ref="pesantren_guru.model_cdn_absensi_siswa_lines"/>
-			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_manager'))]"/>
+			<field name="model_id" ref="pesantren_guru.model_cdn_absensi_siswa_lines" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_manager'))]" />
 			<field name="domain_force">[(1, '=', 1)]</field>
 		</record>
 
 		<!-- Rule Absensi Ekskul -->
 		<record id="absensi_ekskul_rule_guru_user" model="ir.rule">
 			<field name="name">Absensi Ekskul - Guru Akademik User </field>
-			<field name="model_id" ref="pesantren_guru.model_cdn_absensi_ekskul"/>
-			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_user'))]"/>
+			<field name="model_id" ref="pesantren_guru.model_cdn_absensi_ekskul" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_user'))]" />
 			<field name="domain_force">[('guru.user_id', '=', user.id)]</field>
 		</record>
 
 		<record id="absensi_ekskul_line_rule_guru_user" model="ir.rule">
 			<field name="name">Absensi Ekskul Line - Guru Akademik User </field>
-			<field name="model_id" ref="pesantren_guru.model_cdn_absen_ekskul_line"/>
-			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_user'))]"/>
+			<field name="model_id" ref="pesantren_guru.model_cdn_absen_ekskul_line" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_user'))]" />
 			<field name="domain_force">[('guru.user_id', '=', user.id)]</field>
 		</record>
 
 		<record id="absensi_ekskul_rule_guru_staff" model="ir.rule">
 			<field name="name">Absensi Ekskul - Guru Akademik Staff </field>
-			<field name="model_id" ref="pesantren_guru.model_cdn_absensi_ekskul"/>
-			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_staff'))]"/>
+			<field name="model_id" ref="pesantren_guru.model_cdn_absensi_ekskul" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_staff'))]" />
 			<field name="domain_force">[('guru.user_id', '=', user.id)]</field>
 		</record>
 
 		<record id="absensi_ekskul_rule_guru_manager" model="ir.rule">
 			<field name="name">Absensi Ekskul - Guru Akademik Manager </field>
-			<field name="model_id" ref="pesantren_guru.model_cdn_absensi_ekskul"/>
-			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_manager'))]"/>
+			<field name="model_id" ref="pesantren_guru.model_cdn_absensi_ekskul" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_manager'))]" />
 			<field name="domain_force">[(1, '=', 1)]</field>
 		</record>
 
 		<record id="absensi_ekskul_line_rule_guru_manager" model="ir.rule">
 			<field name="name">Absensi Ekskul Line - Guru Akademik Manager </field>
-			<field name="model_id" ref="pesantren_guru.model_cdn_absen_ekskul_line"/>
-			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_manager'))]"/>
+			<field name="model_id" ref="pesantren_guru.model_cdn_absen_ekskul_line" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_manager'))]" />
 			<field name="domain_force">[(1, '=', 1)]</field>
 		</record>
 
 		<!-- Rule Penugasan -->
 		<record id="penugasan_rule_guru_user" model="ir.rule">
 			<field name="name">Penugasan - Guru Akademik User </field>
-			<field name="model_id" ref="pesantren_guru.model_cdn_penugasan"/>
-			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_user'))]"/>
+			<field name="model_id" ref="pesantren_guru.model_cdn_penugasan" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_user'))]" />
 			<field name="domain_force">[('guru_id.user_id', '=', user.id)]</field>
 		</record>
 
 		<record id="penugasan_rule_guru_staff" model="ir.rule">
 			<field name="name">Penugasan - Guru Akademik Staff </field>
-			<field name="model_id" ref="pesantren_guru.model_cdn_penugasan"/>
-			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_staff'))]"/>
+			<field name="model_id" ref="pesantren_guru.model_cdn_penugasan" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_staff'))]" />
 			<field name="domain_force">[('guru_id.user_id', '=', user.id)]</field>
 		</record>
 
 		<record id="penugasan_rule_guru_manager" model="ir.rule">
 			<field name="name">Penugasan - Guru Akademik Manager </field>
-			<field name="model_id" ref="pesantren_guru.model_cdn_penugasan"/>
-			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_manager'))]"/>
+			<field name="model_id" ref="pesantren_guru.model_cdn_penugasan" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_manager'))]" />
 			<field name="domain_force">[(1, '=', 1)]</field>
 		</record>
 
 		<!-- Rule Penilaian Siswa -->
 		<record id="penilaian_rule_guru_user" model="ir.rule">
 			<field name="name">Penilaian Siswa - Guru Akademik User </field>
-			<field name="model_id" ref="pesantren_guru.model_cdn_penilaian"/>
-			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_user'))]"/>
+			<field name="model_id" ref="pesantren_guru.model_cdn_penilaian" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_user'))]" />
 			<field name="domain_force">[('guru_id.user_id', '=', user.id)]</field>
 		</record>
 
 		<record id="penilaian_rule_guru_staff" model="ir.rule">
 			<field name="name">Penilaian Siswa - Guru Akademik Staff </field>
-			<field name="model_id" ref="pesantren_guru.model_cdn_penilaian"/>
-			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_staff'))]"/>
+			<field name="model_id" ref="pesantren_guru.model_cdn_penilaian" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_staff'))]" />
 			<field name="domain_force">[('guru_id.user_id', '=', user.id)]</field>
 		</record>
 
 		<record id="penilaian_rule_guru_manager" model="ir.rule">
 			<field name="name">Penilaian Siswa - Guru Akademik Manager </field>
-			<field name="model_id" ref="pesantren_guru.model_cdn_penilaian"/>
-			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_manager'))]"/>
+			<field name="model_id" ref="pesantren_guru.model_cdn_penilaian" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_manager'))]" />
 			<field name="domain_force">[(1, '=', 1)]</field>
 		</record>
 
 		<!-- Rule Penilaian Akhir oleh Guru -->
 		<record id="penilaian_akhir_guru_rule_guru_user" model="ir.rule">
 			<field name="name">Penilaian Akhir Guru - Guru Akademik User </field>
-			<field name="model_id" ref="pesantren_guru.model_cdn_penilaian_akhir_guru"/>
-			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_user'))]"/>
+			<field name="model_id" ref="pesantren_guru.model_cdn_penilaian_akhir_guru" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_user'))]" />
 			<field name="domain_force">[('guru_id.user_id', '=', user.id)]</field>
 		</record>
 
 		<record id="penilaian_akhir_guru_rule_guru_staff" model="ir.rule">
 			<field name="name">Penilaian Akhir Guru - Guru Akademik Staff </field>
-			<field name="model_id" ref="pesantren_guru.model_cdn_penilaian_akhir_guru"/>
-			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_staff'))]"/>
+			<field name="model_id" ref="pesantren_guru.model_cdn_penilaian_akhir_guru" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_staff'))]" />
 			<field name="domain_force">[('guru_id.user_id', '=', user.id)]</field>
 		</record>
 
 		<record id="penilaian_akhir_guru_rule_guru_manager" model="ir.rule">
 			<field name="name">Penilaian Akhir Guru - Guru Akademik Manager </field>
-			<field name="model_id" ref="pesantren_guru.model_cdn_penilaian_akhir_guru"/>
-			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_manager'))]"/>
+			<field name="model_id" ref="pesantren_guru.model_cdn_penilaian_akhir_guru" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_manager'))]" />
 			<field name="domain_force">[(1, '=', 1)]</field>
 		</record>
 
 		<!-- Model Penilaian Akhir oleh Wali Kelas -->
 		<record id="penilaian_akhir_walikelas_rule_guru_user" model="ir.rule">
 			<field name="name">Penilaian Akhir Wali Kelas - Guru Akademik User </field>
-			<field name="model_id" ref="pesantren_guru.model_cdn_penilaian_akhir"/>
-			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_user'))]"/>
-			<field name="domain_force">[('siswa_id.ruang_kelas_id.walikelas_id.user_id', '=', user.id)]</field>
+			<field name="model_id" ref="pesantren_guru.model_cdn_penilaian_akhir" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_user'))]" />
+			<field name="domain_force">[('siswa_id.ruang_kelas_id.walikelas_id.user_id', '=',
+				user.id)]</field>
 		</record>
 
 		<record id="penilaian_akhir_walikelas_rule_guru_staff" model="ir.rule">
 			<field name="name">Penilaian Akhir Wali Kelas - Guru Akademik Staff </field>
-			<field name="model_id" ref="pesantren_guru.model_cdn_penilaian_akhir"/>
-			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_staff'))]"/>
-			<field name="domain_force">[('siswa_id.ruang_kelas_id.walikelas_id.user_id', '=', user.id)]</field>
+			<field name="model_id" ref="pesantren_guru.model_cdn_penilaian_akhir" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_staff'))]" />
+			<field name="domain_force">[('siswa_id.ruang_kelas_id.walikelas_id.user_id', '=',
+				user.id)]</field>
 		</record>
 
 		<record id="penilaian_akhir_walikelas_rule_guru_manager" model="ir.rule">
 			<field name="name">Penilaian Akhir Wali Kelas - Guru Akademik Manager </field>
-			<field name="model_id" ref="pesantren_guru.model_cdn_penilaian_akhir"/>
-			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_manager'))]"/>
+			<field name="model_id" ref="pesantren_guru.model_cdn_penilaian_akhir" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_manager'))]" />
 			<field name="domain_force">[(1, '=', 1)]</field>
 		</record>
 
 		<!-- Rule Siswa -->
 		<record id="cdn_siswa_rule_guru_manager" model="ir.rule">
 			<field name="name">Access All Siswa - Super Admin / Manager</field>
-			<field name="model_id" ref="pesantren_base.model_cdn_siswa"/>
-			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_manager'))]"/>
+			<field name="model_id" ref="pesantren_base.model_cdn_siswa" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_manager'))]" />
 			<field name="domain_force">[(1,'=',1)]</field>
 		</record>
 
 		<!-- Absensi Siswa Companies Filter -->
 		<record id="absensi_siswa_company_rule" model="ir.rule">
-            <field name="name">Absensi Siswa companies</field>
-            <field name="model_id" ref="model_cdn_absensi_siswa"/>
-            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
-        </record>
+			<field name="name">Absensi Siswa companies</field>
+			<field name="model_id" ref="model_cdn_absensi_siswa" />
+			<field name="domain_force">[('company_id', 'in', company_ids)]</field>
+		</record>
 
 		<!-- Absensi Siswa Line Companies Filter -->
 		<record id="absensi_siswa_line_company_rule" model="ir.rule">
 			<field name="name">Absensi Siswa Line companies</field>
-			<field name="model_id" ref="model_cdn_absensi_siswa_lines"/>
+			<field name="model_id" ref="model_cdn_absensi_siswa_lines" />
 			<field name="domain_force">[('company_id', 'in', company_ids)]</field>
 		</record>
 
 		<!-- Absensi Ekskul Companies Filter -->
 		<record id="absensi_ekskul_company_rule" model="ir.rule">
 			<field name="name">Absensi Ekskul companies</field>
-			<field name="model_id" ref="model_cdn_absensi_ekskul"/>
+			<field name="model_id" ref="model_cdn_absensi_ekskul" />
 			<field name="domain_force">[('company_id', 'in', company_ids)]</field>
 		</record>
 
 		<!-- Absensi Ekskul Line Companies Filter -->
 		<record id="absensi_ekskul_line_company_rule" model="ir.rule">
 			<field name="name">Absensi Ekskul Line companies</field>
-			<field name="model_id" ref="model_cdn_absen_ekskul_line"/>
+			<field name="model_id" ref="model_cdn_absen_ekskul_line" />
 			<field name="domain_force">[('company_id', 'in', company_ids)]</field>
 		</record>
 
 		<!-- Penugasan Companies Filter -->
 		<record id="penugasan_company_rule" model="ir.rule">
 			<field name="name">Penugasan companies</field>
-			<field name="model_id" ref="model_cdn_penugasan"/>
+			<field name="model_id" ref="model_cdn_penugasan" />
 			<field name="domain_force">[('company_id', 'in', company_ids)]</field>
 		</record>
 
 		<!-- Penugasan Line Companies Filter -->
 		<record id="penugasan_line_company_rule" model="ir.rule">
 			<field name="name">Penugasan Line companies</field>
-			<field name="model_id" ref="model_cdn_tugas_line"/>
+			<field name="model_id" ref="model_cdn_tugas_line" />
 			<field name="domain_force">[('company_id', 'in', company_ids)]</field>
 		</record>
 
 		<!-- Penilaian Companies Filter -->
 		<record id="penilaian_company_rule" model="ir.rule">
 			<field name="name">Penilaian companies</field>
-			<field name="model_id" ref="model_cdn_penilaian"/>
+			<field name="model_id" ref="model_cdn_penilaian" />
 			<field name="domain_force">[('company_id', 'in', company_ids)]</field>
 		</record>
 
 		<!-- Penilaian Lines Companies Filter -->
 		<record id="penilaian_lines_company_rule" model="ir.rule">
 			<field name="name">Penilaian Lines companies</field>
-			<field name="model_id" ref="model_cdn_penilaian_lines"/>
+			<field name="model_id" ref="model_cdn_penilaian_lines" />
 			<field name="domain_force">[('company_id', 'in', company_ids)]</field>
 		</record>
 
 		<!-- Penilaian Akhir Guru Companies Filter -->
 		<record id="penilaian_akhir_guru_company_rule" model="ir.rule">
 			<field name="name">Penilaian Akhir Guru companies</field>
-			<field name="model_id" ref="model_cdn_penilaian_akhir_guru"/>
+			<field name="model_id" ref="model_cdn_penilaian_akhir_guru" />
 			<field name="domain_force">[('company_id', 'in', company_ids)]</field>
 		</record>
 
 		<!-- Penilaiang Akhir Wali Kelas Companies Filter -->
 		<record id="penilaian_akhir_company_rule" model="ir.rule">
 			<field name="name">Penilaian Akhir Wali Kelas companies</field>
-			<field name="model_id" ref="model_cdn_penilaian_akhir"/>
+			<field name="model_id" ref="model_cdn_penilaian_akhir" />
 			<field name="domain_force">[('company_id', 'in', company_ids)]</field>
 		</record>
 	</data>

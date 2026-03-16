@@ -7,13 +7,13 @@
             <field name="model">cdn.penilaian_akhir_guru</field>
             <field name="arch" type="xml">
                 <list>
-                    <field name="kelas_id"/>
-                    <field name="tahunajaran_id"/>
-                    <field name="semester"/>
-                    <field name="guru_id"/>
-                    <field name="mapel_id"/>
-                    <field name="company_id" optional="hide"/>
-                    <field name="state"/>
+                    <field name="kelas_id" />
+                    <field name="tahunajaran_id" />
+                    <field name="semester" />
+                    <field name="guru_id" />
+                    <field name="mapel_id" />
+                    <field name="company_id" optional="hide" />
+                    <field name="state" />
                 </list>
             </field>
         </record>
@@ -24,9 +24,11 @@
             <field name="arch" type="xml">
                 <form string="">
                     <header>
-                        <button string="Confirm" name="act_confirm" type="object" class="oe_highlight"  invisible="state != 'draft'"/>
-                        <button string="Set to Draft" name="act_draft" type="object" class="oe_highlight" invisible="state != 'confirm'" />
-                        <field name="state" widget="statusbar"/>
+                        <button string="Confirm" name="act_confirm" type="object"
+                            class="oe_highlight" invisible="state != 'draft'" />
+                        <button string="Set to Draft" name="act_draft" type="object"
+                            class="oe_highlight" invisible="state != 'confirm'" />
+                        <field name="state" widget="statusbar" />
                     </header>
                     <sheet>
 
@@ -34,43 +36,41 @@
                             <group>
                                 <field name="guru_id"
                                     readonly="state == 'confirm'"
-                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
-                                <field name="kelas_id" 
+                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
+                                <field name="kelas_id"
                                     readonly=" state == 'confirm'"
-                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
+                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
                                 <field name="mapel_id"
                                     readonly="state == 'confirm'"
                                     domain="[('jenjang', '=', jenjang), '|', ('tingkat_id', '=', False), ('tingkat_id', '=', tingkat_id), ('guru_ids','in',[guru_id])]"
-                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
-                                </group>
+                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
+                            </group>
                             <group>
                                 <field name="tahunajaran_id"
                                     readonly="state == 'confirm'"
-                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
+                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
                                 <field name="semester"
-                                    readonly="state == 'confirm'"/>
+                                    readonly="state == 'confirm'" />
                                 <field name="company_id"
-                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="1"/>
+                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"
+                                    readonly="1" />
                             </group>
                         </group>
 
                         <field name="penilaian_ids" readonly=" state == 'confirm'">
                             <list editable="bottom">
                                 <field name="siswa_id"
-                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"/>
-                                <!-- <field name="mapel_id" invisible="1"/> -->
-                                <!-- <field name="tahunajaran_id" invisible="1"/> -->
-                                <!-- <field name="semester" invisible="1"/> -->
+                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
                                 <field name="nilai1" string="Nilai 1" widget="integer" />
-                                <field name="predikat1"/>
-                                <field name="nilai2" string="Nilai 2" widget="integer"/>
-                                <field name="predikat2"/>
-                                <field name="aspek1"/>
-                                <field name="aspek2"/>
-                                <field name="aspek3"/>
-                                <field name="aspek4"/>
-                                <field name="aspek5"/>
-                                <field name="aspek6"/>
+                                <field name="predikat1" />
+                                <field name="nilai2" string="Nilai 2" widget="integer" />
+                                <field name="predikat2" />
+                                <field name="aspek1" />
+                                <field name="aspek2" />
+                                <field name="aspek3" />
+                                <field name="aspek4" />
+                                <field name="aspek5" />
+                                <field name="aspek6" />
                             </list>
                         </field>
                     </sheet>
@@ -78,30 +78,16 @@
             </field>
         </record>
 
-        <!-- <record id="view_penilaian_akhir_guru_search" model="ir.ui.view">
-            <field name="name">cdn.penilaian_akhir_guru.search</field>
-            <field name="model">cdn.penilaian_akhir_guru</field>
-            <field name="arch" type="xml">
-                <search>
-                    <field name="guru_id"/>
-                    <filter string="Penilaian Saya"
-                            name="my_penilaian"
-                            domain="[('guru_id.user_id', '=', uid)]"/>
-                </search>
-            </field>
-        </record> -->
-        <!-- cdn.penilaian_akhir_guru action window -->
         <record id="cdn_penialian_akhir_guru_action" model="ir.actions.act_window">
             <field name="name">Penilaian Akhir ( Guru )</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.penilaian_akhir_guru</field>
             <field name="view_mode">list,form</field>
-            <!-- <field name="domain">
-                [('guru_id.user_id', '=', uid)]
-            </field> -->
-            <field name="domain" eval="[]"/>
+            <field name="domain" eval="[]" />
         </record>
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="cdn_penilaian_akhir_guru_menu_act" name="Penilaian Akhir ( Guru )" parent="aktivitas_penilaian_menu_categ" action="cdn_penialian_akhir_guru_action" sequence="20"/>
+        <menuitem id="cdn_penilaian_akhir_guru_menu_act" name="Penilaian Akhir ( Guru )"
+            parent="aktivitas_penilaian_menu_categ" action="cdn_penialian_akhir_guru_action"
+            sequence="20" />
     </data>
 </odoo>

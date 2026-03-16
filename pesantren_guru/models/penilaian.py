@@ -1,26 +1,21 @@
+# -*- coding: utf-8 -*-
+
 from email import message
 from email.policy import default
 from odoo import api, fields, models, exceptions, _
 from odoo.exceptions import UserError
+
+
 class Penilaian(models.Model):
-    _name               = 'cdn.penilaian'
-    _description        = 'Tabel Data Penilaian Siswa'
-    
+    _name = 'cdn.penilaian'
+    _description = 'Tabel Data Penilaian Siswa'
+
     @api.model
     def _get_action_domain(self):
         if not self.env.user.has_group('base.group_system'):
             return [('guru_id.user_id', '=', self.env.uid)]
         return []
-    # domain
-    # def _domain_guru(self):
-    #     domain = ['&',('jns_pegawai','in',['guru','guru,guruquran', 'musyrif,guru', 'musyrif,guru,guruquran'])]
-    #     if self.env.user.has_group('pesantren_guru.group_guru_manager'):
-    #         domain.append(('id','!=',False))
-    #     elif self.env.user.has_group('pesantren_guru.group_guru_staff'):
-    #         domain.append(('user_id','=',self.env.uid))
-    #     else:
-    #         domain.append(('id','=',False))
-    #     return domain
+
     def _domain_guru(self):
         # dapatkan semua user yang merupakan administrator
         admin_user_ids = self.env.ref('base.group_system').users.ids
@@ -46,28 +41,17 @@ class Penilaian(models.Model):
         else:
             # user lain tidak boleh lihat apapun
             return [('id', '=', False)]
-    # def _get_domain_kelas(self):
-    #     guru = self.env['hr.employee'].search([
-    #         ('user_id', '=', self.env.uid),
-    #         ('jns_pegawai', '=', 'guru')
-    #     ], limit=1)
-    #     if not guru:
-    #         return []
-    #     # ambil semua kelas dari jadwal pelajaran line di mana guru ini mengajar
-    #     kelas_ids = self.env['cdn.jadwal_pelajaran_lines'].search([
-    #         ('guru_id', '=', guru.id)
-    #     ]).mapped('kelas_id').ids
-    #     return [('id', 'in', kelas_ids)]
-    
-    name                = fields.Char(string='Nama', compute='_compute_name', default=False)
-    tingkat_id = fields.Many2one('cdn.tingkat', string='Tingkat', store=True, compute='_compute_tingkat_id')
+
+    name = fields.Char(string='Nama', compute='_compute_name', default=False)
+    tingkat_id = fields.Many2one(
+        'cdn.tingkat', string='Tingkat', store=True, compute='_compute_tingkat_id')
     kelas_id = fields.Many2one(
         'cdn.ruang_kelas',
         string='Kelas',
         required=True,
-        # domain=_get_domain_kelas
     )
-    mapel_id            = fields.Many2one(comodel_name='cdn.mata_pelajaran', string='Mapel', required=True)
+    mapel_id = fields.Many2one(
+        comodel_name='cdn.mata_pelajaran', string='Mapel', required=True)
     guru_id = fields.Many2one(
         'hr.employee',
         string='Guru',
@@ -78,24 +62,28 @@ class Penilaian(models.Model):
             ('jns_pegawai_ids.code', 'in', ['guru'])
         ], limit=1)
     )
-    semester            = fields.Selection(selection=[('1', 'Ganjil'), ('2', 'Genap')], string='Semester', required=True)
-    tipe                = fields.Selection(string='Tipe', selection=[
-                            ('Ulangan','Ulangan'), 
-                            ('UTS','UTS'), 
-                            ('UAS','UAS'), 
-                            ('Ujian Sekolah','Ujian Sekolah'), 
-                            ('Ujian Nasional','Ujian Nasional')], required=True)
-    state               = fields.Selection(string='Status', selection=[('draft', 'Draft'), ('done', 'Done')], default='draft')
-    penilaian_ids       = fields.One2many(comodel_name='cdn.penilaian_lines', inverse_name='penilaian_id', string='Penilaian')
-    company_id          = fields.Many2one('res.company', string='Lembaga', default=lambda self: self.env.company)
+    semester = fields.Selection(
+        selection=[('1', 'Ganjil'), ('2', 'Genap')], string='Semester', required=True)
+    tipe = fields.Selection(string='Tipe', selection=[
+                            ('Ulangan', 'Ulangan'),
+                            ('UTS', 'UTS'),
+                            ('UAS', 'UAS'),
+                            ('Ujian Sekolah', 'Ujian Sekolah'),
+                            ('Ujian Nasional', 'Ujian Nasional')], required=True)
+    state = fields.Selection(string='Status', selection=[(
+        'draft', 'Draft'), ('done', 'Done')], default='draft')
+    penilaian_ids = fields.One2many(
+        comodel_name='cdn.penilaian_lines', inverse_name='penilaian_id', string='Penilaian')
+    company_id = fields.Many2one(
+        'res.company', string='Lembaga', default=lambda self: self.env.company)
     jenjang = fields.Selection(
         selection=[
-            ('paud','PAUD'),
-            ('tk','TK/RA'),
-            ('sd','SD/MI'),
-            ('smp','SMP/MTS'),
-            ('sma','SMA/MA/SMK'), 
-            ('nonformal', 'Non formal'), 
+            ('paud', 'PAUD'),
+            ('tk', 'TK/RA'),
+            ('sd', 'SD/MI'),
+            ('smp', 'SMP/MTS'),
+            ('sma', 'SMA/MA/SMK'),
+            ('nonformal', 'Non formal'),
             ('rtq', 'Rumah Tahfidz Quran')
         ],
         string="Jenjang",
@@ -103,17 +91,19 @@ class Penilaian(models.Model):
         store=True,
         readonly=True
     )
-    
+
     @api.depends('kelas_id')
     def _compute_tingkat_id(self):
         for rec in self:
             rec.tingkat_id = rec.kelas_id.tingkat if rec.kelas_id else False
-    # onchange    
+    # onchange
+
     @api.onchange('kelas_id')
     def _onchange_kelas_id(self):
         """Jika kelas dipilih, filter guru_id sesuai guru login"""
         if not self.env.user.has_group('pesantren_guru.group_guru_manager'):
-            guru_login = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
+            guru_login = self.env['hr.employee'].search(
+                [('user_id', '=', self.env.user.id)], limit=1)
             if guru_login:
                 self.guru_id = guru_login
 
@@ -124,12 +114,12 @@ class Penilaian(models.Model):
         if self.tingkat_id and self.guru_id:
             domain_mapel = [
                 ('tingkat_id', '=', self.tingkat_id.id),
-                ('guru_ids', 'in', [self.guru_id.id])  # hanya mapel yang diajar guru
+                # hanya mapel yang diajar guru
+                ('guru_ids', 'in', [self.guru_id.id])
             ]
-        return {'domain': {'mapel_id': domain_mapel}}                
-                
+        return {'domain': {'mapel_id': domain_mapel}}
 
-    @api.onchange('kelas_id','tipe')
+    @api.onchange('kelas_id', 'tipe')
     def _onchange_kelas_id(self):
         lines = [(5, 0, 0)]
         for siswa in self.kelas_id.siswa_ids:
@@ -145,8 +135,8 @@ class Penilaian(models.Model):
             }
         }
 
-
     # compute
+
     def _compute_penialainid_id(self):
         for record in self:
             record.penialainid_id = record.id
@@ -155,26 +145,26 @@ class Penilaian(models.Model):
     def _compute_name(self):
         for rec in self:
             rec.name = f"{rec.tipe}" if rec.tipe else "Penilaian"
-    
+
     def _check_mapel_guru_kelas(self):
         """Validasi backend supaya tetap aman walaupun user modifikasi via devtools"""
         for rec in self:
             if not rec.kelas_id.tingkat:
                 raise UserError(_("Kelas belum memiliki tingkat."))
             if rec.mapel_id.tingkat_id != rec.kelas_id.tingkat:
-                raise UserError(_("Mata pelajaran tidak sesuai dengan tingkat kelas."))
+                raise UserError(
+                    _("Mata pelajaran tidak sesuai dengan tingkat kelas."))
             if rec.guru_id not in rec.mapel_id.guru_ids:
-                raise UserError(_("Guru ini tidak mengajar mata pelajaran tersebut."))
-            
-  
-    
+                raise UserError(
+                    _("Guru ini tidak mengajar mata pelajaran tersebut."))
+
     @api.model
     def create(self, vals):
         if not vals.get('guru_id'):
             guru = self.env['hr.employee'].search([
                 ('user_id', '=', self.env.uid),
                 ('jns_pegawai_ids.code', 'in', ['guru'])
-            ], limit=1) 
+            ], limit=1)
             if guru:
                 vals['guru_id'] = guru.id
         rec = super().create(vals)
@@ -189,36 +179,45 @@ class Penilaian(models.Model):
     # action buttons
     def action_draft(self):
         self.state = 'draft'
+
     def action_done(self):
         self.state = 'done'
 
 
 class PenilaianLines(models.Model):
-    _name               = 'cdn.penilaian_lines'
-    _description        = 'Tabel Data Penilaian Siswa'
-    _rec_name           = 'name'
+    _name = 'cdn.penilaian_lines'
+    _description = 'Tabel Data Penilaian Siswa'
+    _rec_name = 'name'
 
-    penilaian_id        = fields.Many2one(comodel_name='cdn.penilaian', string='Penilaian', required=True)
-    name                = fields.Char(string='Nama', readonly=False, store=True, compute='_compute_name')
-    mapel_id            = fields.Many2one(comodel_name='cdn.mata_pelajaran', string='Mapel', related='penilaian_id.mapel_id', readonly=True, store=True)
-    tipe                = fields.Selection(string='Tipe', selection=[
-                            ('ulangan','Ulangan'), 
-                            ('uts','UTS'), 
-                            ('uas','UAS'), 
-                            ('ujian_sekolah','Ujian Sekolah'), 
-                            ('ujian_nasional','Ujian Nasional')], related='penilaian_id.tipe', readonly=True, store=True)
-    semester            = fields.Selection(selection=[('1', 'Ganjil'), ('2', 'Genap')], string='Semester', related='penilaian_id.semester', readonly=True, store=True)
-    state               = fields.Selection(string='Status', selection=[('draft', 'Draft'), ('done', 'Done')], related='penilaian_id.state', readonly=True, store=True)
-    siswa_id            = fields.Many2one(comodel_name='cdn.siswa', string='Siswa', required=True , ondelete='cascade')
-    nilai               = fields.Float(string='Nilai')
-    predikat            = fields.Char(string='Predikat')
+    penilaian_id = fields.Many2one(
+        comodel_name='cdn.penilaian', string='Penilaian', required=True)
+    name = fields.Char(string='Nama', readonly=False,
+                       store=True, compute='_compute_name')
+    mapel_id = fields.Many2one(comodel_name='cdn.mata_pelajaran', string='Mapel',
+                               related='penilaian_id.mapel_id', readonly=True, store=True)
+    tipe = fields.Selection(string='Tipe', selection=[
+                            ('ulangan', 'Ulangan'),
+                            ('uts', 'UTS'),
+                            ('uas', 'UAS'),
+                            ('ujian_sekolah', 'Ujian Sekolah'),
+                            ('ujian_nasional', 'Ujian Nasional')], related='penilaian_id.tipe', readonly=True, store=True)
+    semester = fields.Selection(selection=[('1', 'Ganjil'), ('2', 'Genap')],
+                                string='Semester', related='penilaian_id.semester', readonly=True, store=True)
+    state = fields.Selection(string='Status', selection=[(
+        'draft', 'Draft'), ('done', 'Done')], related='penilaian_id.state', readonly=True, store=True)
+    siswa_id = fields.Many2one(
+        comodel_name='cdn.siswa', string='Siswa', required=True, ondelete='cascade')
+    nilai = fields.Float(string='Nilai')
+    predikat = fields.Char(string='Predikat')
     # Field untuk domain di view penilaian
-    id_kelas            = fields.Integer(string='Kelas ID', compute='_compute_id_kelas')
-    id_penilaian        = fields.Integer(string='Penilaian ID', compute='_compute_id_penilaian')
+    id_kelas = fields.Integer(string='Kelas ID', compute='_compute_id_kelas')
+    id_penilaian = fields.Integer(
+        string='Penilaian ID', compute='_compute_id_penilaian')
 
-    panggilan       = fields.Char(string='Nama Panggilan', related='siswa_id.namapanggilan', readonly=True, store=True)
-    company_id      = fields.Many2one('res.company', string='Lembaga', related='penilaian_id.company_id', readonly=True, store=True)
-
+    panggilan = fields.Char(
+        string='Nama Panggilan', related='siswa_id.namapanggilan', readonly=True, store=True)
+    company_id = fields.Many2one('res.company', string='Lembaga',
+                                 related='penilaian_id.company_id', readonly=True, store=True)
 
     # compute
 
@@ -226,9 +225,11 @@ class PenilaianLines(models.Model):
     def _compute_name(self):
         for record in self:
             record.name = record.penilaian_id.name
+
     def _compute_id_kelas(self):
         for record in self:
             record.id_kelas = record.penilaian_id.kelas_id.id
+
     def _compute_id_penilaian(self):
         for record in self:
             record.id_penilaian = record.penilaian_id.id
@@ -236,19 +237,20 @@ class PenilaianLines(models.Model):
     @api.onchange('nilai')
     def _onchange_nilai(self):
         message = {
-            'title' : "Harap diperhatikan!",
-            'message' : "Nilai tidak boleh kurang dari 0 atau melebihi 100"
+            'title': "Harap diperhatikan!",
+            'message': "Nilai tidak boleh kurang dari 0 atau melebihi 100"
         }
         if not self._validate_nilai(self.nilai):
-            return {'warning': message, 'value':{'nilai': self._origin.nilai}}
-        
-        predikat = self.env['cdn.predikat'].search([('tipe','=','akademik')])
-        val = {'value': {'predikat':''}}
+            return {'warning': message, 'value': {'nilai': self._origin.nilai}}
+
+        predikat = self.env['cdn.predikat'].search([('tipe', '=', 'akademik')])
+        val = {'value': {'predikat': ''}}
         if predikat and self.nilai:
             for pred in predikat.predikat_ids:
                 if pred.min_nilai <= self.nilai <= pred.max_nilai:
-                    val['value']['predikat'] =  pred.name
+                    val['value']['predikat'] = pred.name
         return val
+
     def _validate_nilai(self, nilai):
         if nilai < 0 or nilai > 100:
             return False
