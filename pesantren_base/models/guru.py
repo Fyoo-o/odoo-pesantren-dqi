@@ -14,7 +14,7 @@ class guru(models.Model):
     partner_id = fields.Many2one(
         'res.partner', 'Partner', required=True, ondelete="cascade")
 
-    nip = fields.Char(string="NIP", required=True, help="")
+    nip = fields.Char(string="NIP", required=True, help="Nomor Induk Pegawai (NIP) / Nomor Identitas Guru")
     tmp_lahir = fields.Char(string="Tempat Lahir",  help="")
     tgl_lahir = fields.Date(string="Tgl lahir",  help="")
     gol_darah = fields.Selection(selection=[(

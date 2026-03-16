@@ -21,7 +21,7 @@ class JadwalPelajaran(models.Model):
     walikelas_id = fields.Many2one(
         'hr.employee', string='Wali Kelas', readonly=True, related='kelas_id.walikelas_id')
     semester = fields.Selection(selection=[(
-        '1', 'Semester 1'), ('2', 'Semester 2')], string='Semester', required=True)
+        '1', 'Semester 1'), ('2', 'Semester 2')], string='Semester', required=True, help="Pilih jadwal ini berlaku untuk semester berapa")
     jadwal_ids = fields.One2many('cdn.jadwal_pelajaran_lines',
                                  inverse_name='jadwalpelajaran_id', string='Jadwal Pelajaran')
 
@@ -99,7 +99,7 @@ class JadwalPelajaranLine(models.Model):
         string='Jenjang'
     )
     jampelajaran_id = fields.Many2one(
-        'cdn.ref_jam_pelajaran', string='Jam Pelajaran', required=True)
+        'cdn.ref_jam_pelajaran', string='Jam Pelajaran', required=True, help="Jam ke berapa pelajaran ini berlangsung")
     start_time = fields.Float(
         string='Jam Mulai', related='jampelajaran_id.start_time', readonly=True, widget="float_time")
     end_time = fields.Float(
@@ -109,7 +109,7 @@ class JadwalPelajaranLine(models.Model):
     guru_id = fields.Many2many(
         'hr.employee',
         string='Guru',
-        domain=lambda self: self.env['cdn.jadwal_pelajaran_lines']._get_domain_guru())
+        domain=lambda self: self.env['cdn.jadwal_pelajaran_lines']._get_domain_guru(), help="Guru yang mengajar pada jam pelajaran ini")
 
     def _get_domain_guru(self):
         admin_user_ids = self.env.ref('base.group_system').users.ids

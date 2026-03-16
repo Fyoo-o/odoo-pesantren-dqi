@@ -88,7 +88,8 @@ class ruang_kelas(models.Model):
         readonly=True
     )
     # Ubah readonly menjadi False dan tambahkan store=True
-    nama_kelas = fields.Char(string="Nama Kelas", store=True)
+    nama_kelas = fields.Char(
+        string="Nama Kelas", store=True, help="Nama spesifik ruangan kelas.")
 
     status = fields.Selection(
         string='Status',
@@ -106,7 +107,8 @@ class ruang_kelas(models.Model):
         ('tidak', 'Tidak Aktif'),
     ], string="Aktif/Tidak", required=True, default='aktif')
 
-    keterangan = fields.Char(string="Keterangan")
+    keterangan = fields.Char(
+        string="Keterangan", help="Keterangan tambahan terkait ruang kelas")
 
     angkatan_id = fields.Many2one(
         comodel_name="cdn.ref_tahunajaran",

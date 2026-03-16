@@ -151,9 +151,9 @@ class siswa(models.Model):
         _logger.info(f"Berhasil update {count} data nama sekolah santri")
         return True
 
-    nis = fields.Char(string="NIS",  help="")
+    nis = fields.Char(string="NIS",  help="Nomor Induk Siswa/Santri (Lokal)")
     namapanggilan = fields.Char(string="Nama Panggilan")
-    nisn = fields.Char(string="NISN",  help="")
+    nisn = fields.Char(string="NISN",  help="Nomor Induk Siswa Nasional")
     tmp_lahir = fields.Char(string="Tempat Lahir",  help="")
     tgl_lahir = fields.Date(string="Tgl Lahir",  help="")
     gol_darah = fields.Selection(selection=[(
@@ -170,12 +170,13 @@ class siswa(models.Model):
         comodel_name="cdn.ref_kecamatan",  string="Kecamatan",  help="")
 
     kewarganegaraan = fields.Selection(
-        selection=[('wni', 'WNI'), ('wna', 'WNA')],  string="Kewarganegaraan",  help="")
+        selection=[('wni', 'WNI'), ('wna', 'WNA')],  string="Kewarganegaraan",  help="Status Kewarganegaraan Siswa")
     agama = fields.Selection(selection=[('islam', 'Islam'), ('katolik', 'Katolik'), ('protestan', 'Protestan'), (
         'hindu', 'Hindu'), ('budha', 'Budha')],  string="Agama", default='islam', help="")
     panggilan = fields.Char(string="Nama Panggilan",  help="")
 
-    nik = fields.Char(string="No Induk Keluarga",  help="")
+    nik = fields.Char(string="No Induk Keluarga",
+                      help="Nomor Induk Kependudukan (Sesuai KK)")
     anak_ke = fields.Integer(string="Anak ke",  help="")
     jml_saudara_kandung = fields.Integer(
         string="Jml Saudara Kandung",  help="")
@@ -205,11 +206,6 @@ class siswa(models.Model):
         ('nonaktif', 'Tidak Aktif'),
         ('blokir', 'Diblokir')
     ], string="Kartu", default='aktif')
-    # Data Tempat Tinggal
-    # tinggal_di          = fields.Selection(string='Tinggal di', selection=[('rumah', 'Rumah'), ('pondok', 'Pondok Pesantren'),], default='rumah')
-    # pesantren_id        = fields.Many2one(comodel_name='res.partner', string='Nama Pesantren', domain="[('is_pesantren','=',True)]")
-    # pesantren_alamat    = fields.Char(string='Alamat Pesantren', related='pesantren_id.street')
-    # pesantren_telp      = fields.Char(string='No Telp Pesantren', related='pesantren_id.phone')
 
     # Jika `partner_id` field ada, atau bisa diubah ke field lain yang relevan
     @api.depends('partner_id')

@@ -13,9 +13,9 @@ class OrangTua(models.Model):
 
     partner_id = fields.Many2one(
         'res.partner', 'Partner', required=True, ondelete="cascade")
-    nik = fields.Char(string="NIK",  help="")
+    nik = fields.Char(string="NIK",  help="Nomor Induk Kependudukan Orang Tua/Wali")
     hubungan = fields.Selection(selection=[(
-        'ayah', 'Ayah'), ('ibu', 'Ibu'), ('wali', 'Wali')],  string="Hubungan",  help="")
+        'ayah', 'Ayah'), ('ibu', 'Ibu'), ('wali', 'Wali')],  string="Hubungan",  help="Status hubungan dengan siswa (Ayah/Ibu/Wali)")
     label = fields.Many2many('res.partner.category', 'Tag')
     siswa_ids = fields.One2many(
         comodel_name="cdn.siswa",  inverse_name="orangtua_id",  string="Siswa",  help="", ondelete='cascade')

@@ -12,7 +12,6 @@
                     <field name="name" />
                     <field name="nik" />
                     <field name="street" />
-                    <!-- <field name="mobile" string="No. HP"/> -->
                     <field name="phone" string="No. Telepon" />
                     <field name="email" />
                     <field name="hubungan" />
