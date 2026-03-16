@@ -9,7 +9,7 @@ class komponen_biaya(models.Model):
     _name = "cdn.komponen_biaya"
     _description = "Tabel Komponen Biaya"
 
-    name = fields.Char(required=True, string="Nama",  help="")
+    name = fields.Char(required=True, string="Nama",  help="Isikan nama komponen biaya, misal: Uang Pangkal, SPP Bulanan")
     tipe_bayar = fields.Selection(selection=[('cicil', 'Cicilan'), (
         'tunai', 'Tunai')],  string="Tipe bayar", required=True, default='tunai', help="")
     product_id = fields.Many2one(

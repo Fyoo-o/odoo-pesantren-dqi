@@ -7,8 +7,8 @@ class AspekPenilaian(models.Model):
     _name = 'cdn.aspek_penilaian'
     _description = 'Data Aspek Penilaian'
 
-    name = fields.Char(string='Nama', required=True)
-    keterangan = fields.Text(string='Keterangan')
+    name = fields.Char(string='Nama', required=True, help="Nama aspek penilaian capaian siswa")
+    keterangan = fields.Text(string='Keterangan', help="Penjelasan detail mengenai aspek penilaian ini")
     parent_id = fields.Many2one(
         comodel_name='cdn.aspek_penilaian', string='Aspek')
     is_root = fields.Boolean(

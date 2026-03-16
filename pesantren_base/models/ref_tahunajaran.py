@@ -13,7 +13,8 @@ class ref_tahunajaran(models.Model):
     # Mengurutkan berdasarkan tanggal pembuatan terbaru
     _order = "create_date desc, id desc"
 
-    name = fields.Char(required=True, string="Tahun Ajaran",  help="")
+    name = fields.Char(required=True, string="Tahun Ajaran",
+                       help="Contoh penulisan: 2025/2026 atau 2026/2027")
     start_date = fields.Date('Start Date', required=True)
     end_date = fields.Date('End Date', required=True)
     term_structure = fields.Selection([('two_sem', 'Dua Semester'),
@@ -22,9 +23,8 @@ class ref_tahunajaran(models.Model):
                                         'Dua Semester - Tiap semester dibagi 2 (Total 4 Quarter) + UAS'),
                                        ('others', 'Lainnya - Custom Termin Akademik')],
                                       string='Pembagian Termin', default='two_sem',
-                                      required=True)
+                                      required=True, help="Pilih struktur pembagian termin/semester dalam satu tahun ajaran")
     create_boolean = fields.Boolean()
-    # interval            = fields.Integer(string='Interval')
 
     term_akademik_ids = fields.One2many(
         comodel_name='cdn.termin_akademik', inverse_name='tahunajaran_id', string='Termin Akademik')
@@ -33,7 +33,8 @@ class ref_tahunajaran(models.Model):
 
     company_id = fields.Many2one(
         'res.company', string='Instansi', default=lambda self: self.env.user.company_id)
-    keterangan = fields.Char(string="Keterangan",  help="")
+    keterangan = fields.Char(string="Keterangan",
+                             help="Catatan tambahan untuk tahun ajaran ini")
     biaya_ids = fields.One2many(comodel_name="cdn.biaya_tahunajaran",
                                 inverse_name="tahunajaran_id",  string="Biaya",  help="")
 

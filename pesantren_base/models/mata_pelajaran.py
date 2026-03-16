@@ -7,9 +7,9 @@ class MataPelajaran(models.Model):
     _name = 'cdn.mata_pelajaran'
     _description = 'Daftar Mata Pelajaran'
 
-    name = fields.Char(string='Nama Matpel', required=True)
-    urut = fields.Integer(string='No. Urut', default=0, readonly=True)
-    kode = fields.Char(string='Kode Matpel', required=True)
+    name = fields.Char(string='Nama Matpel', required=True, help="Nama lengkap mata pelajaran")
+    urut = fields.Integer(string='No. Urut', default=0, readonly=True, help="Urutan tampil mata pelajaran")
+    kode = fields.Char(string='Kode Matpel', required=True, help="Kode singkatan atau identifier mata pelajaran (harus unik)")
     kategori = fields.Selection([
         ('akademik', 'Akademik'),
         ('diniyyah', 'Diniyyah'),
