@@ -40,7 +40,8 @@ class AbsensiEkskul(models.Model):
     name = fields.Date(
         string='Tanggal Absen',
         required=True,
-        default=fields.Date.context_today
+        default=fields.Date.context_today,
+        help="Tanggal pelaksanaan ekstrakurikuler"
     )
 
     fiscalyear_id = fields.Many2one(
@@ -57,7 +58,8 @@ class AbsensiEkskul(models.Model):
         domain=lambda self: self.env['cdn.absensi_ekskul']._domain_guru(),
         compute='_compute_guru',
         readonly=True,
-        store=True
+        store=True,
+        help="Guru yang bertanggung jawab memimpin ekstrakurikuler ini"
     )
 
     def _domain_guru(self):
