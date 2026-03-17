@@ -21,7 +21,7 @@ class PembagianEkstra(models.Model):
     penanggung_id = fields.Many2one(
         "hr.employee",
         string="Penanggung Jawab",
-        help="",
+        help="Guru yang bertanggung jawab membina atau mengelola kegiatan ekstrakurikuler ini",
         domain=lambda self: self.env['cdn.pembagian_ekstra']._get_domain_guru()
     )
 

@@ -34,17 +34,18 @@ class Penugasan(models.Model):
             # user lain tidak boleh lihat apapun
             return [('id', '=', False)]
 
-    # name           = fields.Char(string='Nama')
     kelas_id = fields.Many2one(
         'cdn.ruang_kelas', string='Ruang Kelas', required=True)
-    tugas_ujian = fields.Text(string='Deskripsi Tugas / Ujian', required=True)
+    tugas_ujian = fields.Text(string='Deskripsi Tugas / Ujian', required=True,
+                              help="Jelaskan secara detail mengenai tugas atau ujian yang diberikan kepada siswa")
     tanggal = fields.Date(string='Tgl Penugasan', default=fields.Date.today())
-    deadline = fields.Date(string='Deadline')
+    deadline = fields.Date(
+        string='Deadline', help="Batas akhir waktu pengumpulan tugas/pelaksanaan ujian")
     state = fields.Selection([
         ('draft', 'Draft'),
         ('proses', 'Ditugaskan'),
         ('done', 'Selesai'),
-    ], default='draft', string='Status')
+    ], default='draft', string='Status', help="Status penugasan saat ini")
     tugas_line_ids = fields.One2many(
         comodel_name='cdn.tugas_line', inverse_name='penugasan_id', string='Tugas Line')
     tingkat_id = fields.Many2one(
@@ -78,7 +79,6 @@ class Penugasan(models.Model):
         store=True,
         readonly=True
     )
-    # jadwal_pelajaran_lines_ids = fields.Many2many(comodel_name='cdn.jadwal_pelajaran_lines', string='Jadwal Pelajaran Lines')
 
     def action_proses(self):
         self.state = 'proses'

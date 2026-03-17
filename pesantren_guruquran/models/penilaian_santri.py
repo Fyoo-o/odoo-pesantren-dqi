@@ -35,7 +35,7 @@ class Penilaian(models.Model):
     kategori_penilaian = fields.Selection(string='Kategori Penilaian', selection=[
         ('tahfidz', 'Tahfidz'),
         ('tahsin', 'Tahsin'),
-    ], required=True)
+    ], required=True, help="Pilih kategori penilaian: Tahfidz (hafalan Al-Qur'an) atau Tahsin (perbaikan bacaan)")
     guru_id = fields.Many2one(
         'hr.employee',
         string='Guru',
@@ -56,9 +56,9 @@ class Penilaian(models.Model):
         ('Ujian Tahsin', 'Ujian Tahsin'),
         ('Ujian Harian', 'Ujian Harian'),
         ('Ujian Bulanan', 'Ujian Bulanan'),
-    ], required=True)
+    ], required=True, help="Pilih jenis ujian yang ingin dilaksanakan")
     state = fields.Selection(string='Status', selection=[(
-        'draft', 'Draft'), ('done', 'Done')], default='draft')
+        'draft', 'Draft'), ('done', 'Done')], default='draft', help="Status penilaian: Draft (belum final) atau Done (sudah selesai)")
     penilaian_santri_ids = fields.One2many(
         comodel_name='cdn.penilaian_santri_lines', inverse_name='penilaian_santri_id', string='Penilaian Santri')
     company_id = fields.Many2one(
@@ -164,9 +164,9 @@ class PenilaianSantriLines(models.Model):
         ('tahfidz', 'Tahfidz'),
         ('tahsin', 'Tahsin'),
     ], related='penilaian_santri_id.kategori_penilaian', readonly=True, store=True)
-    nilai = fields.Float(string='Nilai')
-    predikat = fields.Char(string='Predikat')
-    juz = fields.Char(string='Juz', store=True)
+    nilai = fields.Float(string='Nilai', help="Nilai hasil ujian santri, antara 0 hingga 100")
+    predikat = fields.Char(string='Predikat', help="Predikat otomatis berdasarkan nilai (terisi otomatis)")
+    juz = fields.Char(string='Juz', store=True, help="Nomor juz Al-Qur'an yang diujikan")
     panggilan = fields.Char(
         string='Nama Panggilan', related='santri_id.namapanggilan', readonly=True, store=True)
     id_halaqoh = fields.Integer(

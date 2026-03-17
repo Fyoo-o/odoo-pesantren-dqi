@@ -6,8 +6,8 @@ class ReportFilterWizard(models.TransientModel):
     _description = 'Wizard untuk memfilter data berdasarkan bulan'
 
     start_month = fields.Integer(
-        string='Bulan Mulai', required=True, default=5)
-    end_month = fields.Integer(string='Bulan Akhir', required=True, default=10)
+        string='Bulan Mulai', required=True, default=5, help="Masukkan angka bulan awal (1=Januari, 12=Desember)")
+    end_month = fields.Integer(string='Bulan Akhir', required=True, default=10, help="Masukkan angka bulan akhir (1=Januari, 12=Desember)")
 
     @api.constrains('start_month', 'end_month')
     def _check_month_range(self):
