@@ -92,14 +92,14 @@
                                     <group>
                                         <field name="panggilan" string="Panggilan" />
                                         <field name="tgl_lahir" />
-                                        <field name="jns_kelamin" string="Jns Kelamin" />
+                                        <field name="jns_kelamin" string="Jenis Kelamin" />
                                         <field name="nik" string="NIK" />
-                                        <field name="jml_saudara_kandung" string="Jm Saudara" />
+                                        <field name="jml_saudara_kandung" string="Jumlah Saudara" />
                                         <field name="hobi" />
                                     </group>
                                     <group>
-                                        <field name="tmp_lahir" string="Tmp Lahir" />
-                                        <field name="gol_darah" string="Gol Darah" />
+                                        <field name="tmp_lahir" />
+                                        <field name="gol_darah" />
                                         <field name="agama" />
                                         <field name="anak_ke" />
                                         <field name="bahasa" />
@@ -113,7 +113,7 @@
                                         <field name="status_sekolah_asal" string="Status" />
                                     </group>
                                     <group>
-                                        <field name="telp_asal_sek" string="No Telp" />
+                                        <field name="telp_asal_sek" string="No Telepon" />
                                         <field name="alamat_asal_sek" string="Alamat" />
                                         <field name="prestasi_sebelum" />
                                         <field name="bakat" string="Bakat Siswa"

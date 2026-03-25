@@ -11,7 +11,7 @@
                 <list string="Orangtua">
                     <field name="name" />
                     <field name="nik" />
-                    <field name="street" />
+                    <field name="street" string="Alamat" />
                     <field name="phone" string="No. Telepon" />
                     <field name="email" />
                     <field name="hubungan" />
