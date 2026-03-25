@@ -155,7 +155,7 @@ class siswa(models.Model):
     namapanggilan = fields.Char(string="Nama Panggilan")
     nisn = fields.Char(string="NISN",  help="Nomor Induk Siswa Nasional")
     tmp_lahir = fields.Char(string="Tempat Lahir",  help="")
-    tgl_lahir = fields.Date(string="Tgl Lahir",  help="")
+    tgl_lahir = fields.Date(string="Tanggal Lahir",  help="")
     gol_darah = fields.Selection(selection=[(
         'A', 'A'), ('B', 'B'), ('AB', 'AB'), ('O', 'O')],  string="Golongan Darah",  help="")
     jns_kelamin = fields.Selection(selection=[(
@@ -345,7 +345,7 @@ class siswa(models.Model):
     orangtua_id = fields.Many2one(
         comodel_name="cdn.orangtua",  string="Orangtua",  help="")
     tahunajaran_id = fields.Many2one(
-        comodel_name="cdn.ref_tahunajaran",  string="Thn Ajaran",  help="")
+        comodel_name="cdn.ref_tahunajaran",  string="Tahun Ajaran",  help="")
     ruang_kelas_id = fields.Many2one(
         comodel_name="cdn.ruang_kelas",  string="Ruang Kelas", help="")
     ekstrakulikuler_ids = fields.Many2many(

@@ -33,7 +33,7 @@ class AbsensiSiswa(models.Model):
 
     name = fields.Char(string='Nama', readonly=True,
                        compute='_compute_name', store=True)
-    tanggal = fields.Date(string='Tgl Absen', required=True,
+    tanggal = fields.Date(string='Tanggal Absen', required=True,
                           default=fields.Date.today())
     hari = fields.Selection([
         ('1', 'Senin'),
