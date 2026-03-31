@@ -254,14 +254,26 @@ class hr_employee(models.Model):
         if not self.password or not self.name:
             raise UserError("Password atau Nama karyawan belum diisi.")
 
-        # Cari user berdasarkan email dari work_email
-        user = self.env['res.users'].search(
-            [('login', '=', self.work_email)], limit=1)
+        # Cari user berdasarkan user_id atau login/email dari work_email
+        user = self.user_id
+        if not user:
+            # 1. Cari berdasarkan login (SUDO agar bisa akses semua user)
+            user = self.env['res.users'].sudo().with_context(active_test=False).search(
+                [('login', '=', self.work_email)], limit=1)
+            
+            # 2. Fallback: Cari berdasarkan email jika login tidak cocok
+            if not user:
+                user = self.env['res.users'].sudo().with_context(active_test=False).search(
+                    [('email', '=', self.work_email)], limit=1)
 
         # Validasi: Jika user tidak ditemukan
         if not user:
             raise UserError(
                 f"User dengan email {self.work_email} tidak ditemukan.")
+
+        # Link user_id if not set
+        if not self.user_id:
+            self.user_id = user.id
 
         user.groups_id = [(5, 0, 0)]  # Menghapus semua grup yang sudah ada
 
@@ -393,7 +405,11 @@ class hr_employee(models.Model):
         masked_password = new_password[:2] + '*' * \
             (len(new_password) - 4) + new_password[-2:]
 
-        user.write({'password': new_password})
+        user.write({
+            'password': new_password,
+            'login': self.work_email,
+            'email': self.work_email
+        })
 
         email_values = {
             'subject': "Akun Diaktifkan",
@@ -591,14 +607,24 @@ class hr_employee(models.Model):
                 })
                 continue
 
-            user = self.env['res.users'].sudo().search(
-                [('login', '=', rec.work_email)], limit=1)
+            user = rec.user_id
             if not user:
+                # 1. Cari berdasarkan login (SUDO agar bisa akses semua user)
+                user = self.env['res.users'].sudo().with_context(active_test=False).search(
+                    [('login', '=', rec.work_email)], limit=1)
+                
+                # 2. Fallback: Cari berdasarkan email jika login tidak cocok
+                if not user:
+                    user = self.env['res.users'].sudo().with_context(active_test=False).search(
+                        [('email', '=', rec.work_email)], limit=1)
                 skipped_records.append({
                     'name': rec.name,
                     'reason': f'User tidak ditemukan: {rec.work_email}'
                 })
                 continue
+
+            if not rec.user_id:
+                rec.user_id = user.id
 
             try:
                 # Tentukan group yang harus diberikan
@@ -627,6 +653,8 @@ class hr_employee(models.Model):
                 user.write({
                     'groups_id': [(6, 0, final_group_ids)],
                     'password': rec.password,
+                    'login': rec.work_email,
+                    'email': rec.work_email,
                 })
 
                 # Mask password untuk email
