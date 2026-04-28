@@ -84,6 +84,8 @@ class AbsensiSiswa(models.Model):
         string='No', compute='_compute_row_number', store=False)
     company_id = fields.Many2one(
         'res.company', string='Lembaga', default=lambda self: self.env.company)
+    jml_jampelajaran = fields.Integer(
+        string='Jumlah JP', compute='_compute_jml_jampelajaran', store=True, help='Jumlah Jam Pelajaran')
     jenjang = fields.Selection(
         selection=[
             ('paud', 'PAUD'),
@@ -141,6 +143,11 @@ class AbsensiSiswa(models.Model):
                 record.tanggal,
                 jam_names
             )
+
+    @api.depends('jampelajaran_id')
+    def _compute_jml_jampelajaran(self):
+        for record in self:
+            record.jml_jampelajaran = len(record.jampelajaran_id)
 
     @api.depends('mapel_id', 'kelas_id')
     def _compute_pertemuan_ke(self):
@@ -319,6 +326,8 @@ class AbsensiSiswaLine(models.Model):
         string='No', compute='_compute_row_number', store=False)
     company_id = fields.Many2one('res.company', string='Lembaga',
                                  related='absensi_id.company_id', readonly=True, store=True)
+    jml_jampelajaran = fields.Integer(
+        string='Jumlah JP', related='absensi_id.jml_jampelajaran', store=True, help='Jumlah Jam Pelajaran')
 
     def _compute_row_number(self):
         for index, record in enumerate(self):
