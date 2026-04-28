@@ -6,12 +6,4 @@
         </xpath>
     </template>
 
-    <templates>
-        <t t-name="CustomerValidationButton" owl="1">
-            <div class="control-button o_customer_validation_button">
-                <i class="fa fa-user" role="img" aria-label="Customer Validation" title="Customer Validation"/>
-                <span>Validate Customer</span>
-            </div>
-        </t>
-    </templates>
 </odoo>

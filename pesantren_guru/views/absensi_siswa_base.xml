@@ -11,6 +11,7 @@
                     <field name="name" optional="show" />
                     <field name="tanggal" optional="show" />
                     <field name="jampelajaran_id" optional="show" widget="many2many_tags" />
+                    <field name="jml_jampelajaran" sum="Total JP" optional="show" />
                     <field name="kelas_id" optional="show" />
                     <field name="mapel_id" optional="show" />
                     <field name="guru_id" optional="show" />
