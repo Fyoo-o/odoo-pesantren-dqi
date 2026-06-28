@@ -237,3 +237,5 @@ odoo.conf
 
 # C Python
 *.pyc
+
+odools.toml
