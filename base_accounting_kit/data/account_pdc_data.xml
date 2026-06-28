@@ -21,5 +21,10 @@
             <field name="name">Account</field>
             <field name="digits" eval="3" />
         </record>
+        <!--    Tax tag PPN 8% - adopted from DB to prevent orphan deletion    -->
+        <record id="account_tag_ppn_08" model="account.account.tag">
+            <field name="name">PPN - 08</field>
+            <field name="applicability">taxes</field>
+        </record>
     </data>
 </odoo>
