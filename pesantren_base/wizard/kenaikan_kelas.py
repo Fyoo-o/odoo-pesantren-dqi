@@ -70,6 +70,7 @@ class KenaikanKelas(models.Model):
         string='Kelas Selanjutnya',
         compute='_compute_next_class',
         store=True,
+        readonly=False,
         help="Kelas selanjutnya berdasarkan tingkat, nama kelas, dan jurusan"
     )
 
@@ -110,6 +111,24 @@ class KenaikanKelas(models.Model):
         readonly=True,
         help="Nama tahun ajaran berikutnya"
     )
+
+    @api.onchange('next_class', 'next_tahunajaran_id')
+    def _onchange_next_class_validation(self):
+        """Memunculkan peringatan jika kelas target sudah terisi pada tahun ajaran berikutnya"""
+        if self.next_class and self.next_tahunajaran_id:
+            existing_kelas = self.env['cdn.ruang_kelas'].search([
+                ('name', '=', self.next_class.id),
+                ('tahunajaran_id', '=', self.next_tahunajaran_id.id),
+                ('jml_siswa', '>', 0)
+            ], limit=1)
+            
+            if existing_kelas:
+                return {
+                    'warning': {
+                        'title': 'Peringatan',
+                        'message': f'Kelas tersebut telah terisi ({existing_kelas.jml_siswa} siswa) pada tahun ajaran {self.next_tahunajaran_name}!'
+                    }
+                }
 
     @api.onchange('kelas_id')
     def _onchange_kelas_id(self):

@@ -479,5 +479,76 @@
         </record>
         <menuitem id="menu_cdn_siswa" name="Siswa" parent="siswa_menu_categ"
             action="action_cdn_siswa" sequence="10" />
+
+        <!-- List View Alumni (reuse tree view with extra columns) -->
+        <record id="view_cdn_alumni_tree" model="ir.ui.view">
+            <field name="name">cdn.alumni.list</field>
+            <field name="model">cdn.siswa</field>
+            <field name="type">list</field>
+            <field name="priority" eval="12"/>
+            <field name="arch" type="xml">
+                <list string="Alumni Santri">
+                    <field name="name"/>
+                    <field name="namapanggilan" string="Panggilan"/>
+                    <field name="nis"/>
+                    <field name="jenjang"/>
+                    <field name="nama_sekolah" string="Sekolah"/>
+                    <field name="alasan_keluar" widget="badge"
+                        decoration-success="alasan_keluar == 'lulus'"
+                        decoration-warning="alasan_keluar in ('pindah','berhenti','lainnya')"
+                        decoration-danger="alasan_keluar in ('dikeluarkan','meninggal')"/>
+                    <field name="tanggal_keluar"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Search View Alumni -->
+        <record id="view_cdn_alumni_search" model="ir.ui.view">
+            <field name="name">cdn.alumni.search</field>
+            <field name="model">cdn.siswa</field>
+            <field name="type">search</field>
+            <field name="priority" eval="12"/>
+            <field name="arch" type="xml">
+                <search string="Cari Alumni">
+                    <field name="name" string="Nama"/>
+                    <field name="nis"/>
+                    <separator/>
+                    <filter name="filter_lulus" string="Lulus" domain="[('alasan_keluar','=','lulus')]"/>
+                    <filter name="filter_dikeluarkan" string="Dikeluarkan" domain="[('alasan_keluar','=','dikeluarkan')]"/>
+                    <filter name="filter_pindah" string="Pindah" domain="[('alasan_keluar','=','pindah')]"/>
+                    <filter name="filter_berhenti" string="Berhenti" domain="[('alasan_keluar','=','berhenti')]"/>
+                    <filter name="filter_meninggal" string="Meninggal" domain="[('alasan_keluar','=','meninggal')]"/>
+                    <filter name="filter_lainnya" string="Lainnya" domain="[('alasan_keluar','=','lainnya')]"/>
+                    <separator/>
+                    <group expand="0" string="Kelompokkan Berdasarkan">
+                        <filter name="group_jenjang" string="Jenjang" context="{'group_by':'jenjang'}"/>
+                        <filter name="group_alasan" string="Alasan Keluar" context="{'group_by':'alasan_keluar'}"/>
+                        <filter name="group_tahun" string="Tahun Keluar" context="{'group_by':'tanggal_keluar:year'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action for Alumni -->
+        <record id="action_cdn_alumni" model="ir.actions.act_window">
+            <field name="name">Alumni Santri</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">cdn.siswa</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('active', '=', False), ('alasan_keluar', '!=', False)]</field>
+            <field name="context">{'active_test': False}</field>
+            <field name="search_view_id" ref="view_cdn_alumni_search"/>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Belum ada data alumni.
+                </p>
+                <p>
+                    Santri yang dikeluarkan atau dinyatakan lulus melalui fitur Pemberhentian Santri akan muncul di sini.
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_cdn_alumni" name="Alumni" parent="siswa_menu_categ"
+            action="action_cdn_alumni" sequence="20"/>
     </data>
 </odoo>

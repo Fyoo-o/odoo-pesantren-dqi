@@ -85,6 +85,7 @@ access_wizard_search_siswa,access_wizard_search_siswa,model_wizard_search_siswa,
 
 access_cdn_pengaturan_jenjang,access_cdn_pengaturan_jenjang,model_cdn_pengaturan_jenjang,pesantren_base.group_sekolah_manager,1,1,1,1
 access_cdn_kenaikan_kelas,access_cdn_kenaikan_kelas,model_cdn_kenaikan_kelas,pesantren_base.group_sekolah_manager,1,1,1,1
+access_cdn_pemberhentian_siswa,access_cdn_pemberhentian_siswa,model_cdn_pemberhentian_siswa,pesantren_base.group_sekolah_manager,1,1,1,1
 
 
 access_kenaikan_kelas_line_user,access.kenaikan.kelas.line.user,model_cdn_kenaikan_kelas_line,base.group_user,1,1,1,0
