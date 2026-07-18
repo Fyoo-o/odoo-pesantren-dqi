@@ -2,7 +2,6 @@
 
 from odoo import fields, models, api, _
 from odoo.exceptions import UserError
-from datetime import date
 
 class PemberhentianSiswa(models.TransientModel):
     _name = 'cdn.pemberhentian_siswa'
@@ -35,8 +34,8 @@ class PemberhentianSiswa(models.TransientModel):
     )
 
     @api.model
-    def default_get(self, fields):
-        res = super(PemberhentianSiswa, self).default_get(fields)
+    def default_get(self, fields_list):
+        res = super(PemberhentianSiswa, self).default_get(fields_list)
         active_ids = self._context.get('active_ids')
         if active_ids and self._context.get('active_model') == 'cdn.siswa':
             res['siswa_ids'] = [(6, 0, active_ids)]
