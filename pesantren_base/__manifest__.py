@@ -91,6 +91,7 @@
         'wizard/wizard_siswa.xml',
         'wizard/wizard_kartu.xml',
         'wizard/kenaikan_kelas.xml',
+        'wizard/pemberhentian_siswa.xml',
     ],
 
     'assets': {

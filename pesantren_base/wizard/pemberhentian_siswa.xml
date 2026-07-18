@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Form View for Wizard -->
+        <record id="view_pemberhentian_siswa_form" model="ir.ui.view">
+            <field name="name">cdn.pemberhentian_siswa.form</field>
+            <field name="model">cdn.pemberhentian_siswa</field>
+            <field name="arch" type="xml">
+                <form string="Pemberhentian Santri">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="tanggal"/>
+                                <field name="alasan"/>
+                            </group>
+                            <group>
+                                <field name="blokir_akun" widget="boolean_toggle"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="catatan"/>
+                        </group>
+                        <notebook>
+                            <page string="Daftar Santri">
+                                <field name="siswa_ids">
+                                    <list>
+                                        <field name="name"/>
+                                        <field name="namapanggilan" string="Nama Panggilan"/>
+                                        <field name="nis"/>
+                                        <field name="jns_kelamin"/>
+                                        <field name="ruang_kelas_id"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <footer>
+                        <button name="action_proses_berhenti" string="Proses Pemberhentian" type="object" class="btn-danger" confirm="Anda yakin ingin memproses pemberhentian santri ini? Data santri akan diarsipkan."/>
+                        <button string="Batal" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action for Wizard -->
+        <record id="action_pemberhentian_siswa" model="ir.actions.act_window">
+            <field name="name">Pemberhentian Santri</field>
+            <field name="res_model">cdn.pemberhentian_siswa</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <!-- Menuitem for Wizard -->
+        <menuitem id="menu_pemberhentian_siswa"
+            name="Pemberhentian Santri"
+            parent="sekolah_top_menu"
+            action="action_pemberhentian_siswa"
+            sequence="55" />
+        <!-- Inherit cdn.siswa form to add button -->
+        <record id="view_cdn_siswa_form_inherit_pemberhentian" model="ir.ui.view">
+            <field name="name">cdn.siswa.form.inherit.pemberhentian</field>
+            <field name="model">cdn.siswa</field>
+            <field name="inherit_id" ref="pesantren_base.view_cdn_siswa_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header/button[@name='action_generate_nis']" position="before">
+                    <button name="%(action_pemberhentian_siswa)d" type="action" string="Keluarkan Santri" class="btn-danger" context="{'active_ids': [id], 'active_model': 'cdn.siswa'}" invisible="not active"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

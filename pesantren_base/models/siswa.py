@@ -207,6 +207,16 @@ class siswa(models.Model):
         ('blokir', 'Diblokir')
     ], string="Kartu", default='aktif')
 
+    alasan_keluar = fields.Selection([
+        ('lulus', 'Lulus'),
+        ('pindah', 'Pindah Sekolah'),
+        ('berhenti', 'Berhenti / Mengundurkan Diri'),
+        ('dikeluarkan', 'Dikeluarkan (Pelanggaran)'),
+        ('meninggal', 'Meninggal Dunia'),
+        ('lainnya', 'Lainnya')
+    ], string='Alasan Keluar', readonly=True)
+    tanggal_keluar = fields.Date(string='Tanggal Keluar', readonly=True)
+
     # Jika `partner_id` field ada, atau bisa diubah ke field lain yang relevan
     @api.depends('partner_id')
     def _compute_partner_id(self):

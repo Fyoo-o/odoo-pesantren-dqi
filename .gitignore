@@ -234,6 +234,7 @@ Thumbs.db
 odoo.conf
 *odoo.conf
 *odoo.conf*
+odoo-pesantren-dqi.conf
 
 # C Python
 *.pyc
