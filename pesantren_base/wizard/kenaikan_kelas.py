@@ -52,6 +52,13 @@ class KenaikanKelas(models.Model):
     tingkat_id = fields.Many2one(
         'cdn.tingkat', string="Tingkat", store=True, readonly=False)
 
+    next_tingkat_id = fields.Many2one(
+        'cdn.tingkat',
+        string="Tingkat Selanjutnya",
+        compute='_compute_next_tingkat_id',
+        store=True,
+    )
+
     walikelas_id = fields.Many2one(
         comodel_name="hr.employee",
         string="Wali Kelas",
@@ -71,6 +78,7 @@ class KenaikanKelas(models.Model):
         compute='_compute_next_class',
         store=True,
         readonly=False,
+        domain="[('tingkat', '=', next_tingkat_id)]",
         help="Kelas selanjutnya berdasarkan tingkat, nama kelas, dan jurusan"
     )
 
@@ -931,6 +939,25 @@ class KenaikanKelas(models.Model):
 
         return False
 
+    @api.depends('kelas_id', 'status')
+    def _compute_next_tingkat_id(self):
+        for record in self:
+            if not record.kelas_id:
+                record.next_tingkat_id = False
+                continue
+
+            current_tingkat = record.kelas_id.tingkat
+            if not current_tingkat:
+                record.next_tingkat_id = False
+                continue
+
+            if record.status in ['tidak_naik', 'tidak_lulus']:
+                record.next_tingkat_id = current_tingkat.id
+            else:
+                next_tingkat = record._get_next_tingkat_for_progression(
+                    record.kelas_id, current_tingkat)
+                record.next_tingkat_id = next_tingkat.id if next_tingkat else current_tingkat.id
+
     @api.depends('kelas_id', 'kelas_id.nama_kelas', 'kelas_id.jurusan_id', 'kelas_id.tingkat', 'status')
     def _compute_next_class(self):
         """Compute kelas selanjutnya berdasarkan kelas yang dipilih dan status"""
@@ -1100,6 +1127,7 @@ class KenaikanKelas(models.Model):
     def _reset_kelas_related_fields(self):
         """Helper method untuk reset semua field yang terkait dengan kelas"""
         self.tingkat_id = False
+        self.next_tingkat_id = False
         self.walikelas_id = False
         self.status = False
         self.partner_ids = [(5, 0, 0)]  # kosongkan M2M

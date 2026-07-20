@@ -41,9 +41,11 @@
                                     decoration-primary="status == 'lulus'"
                                     decoration-warning="status == 'tidak_naik'"
                                     decoration-danger="status == 'tidak_lulus'"
+                                    domain="[('tingkat', '=', next_tingkat_id)]"
                                     options="{'no_create': True, 'no_open': True}" />
                                 <field name="tingkat_id" invisible="1" readonly="1"
                                     options="{'no_create' : True, 'no_open' : True}" />
+                                <field name="next_tingkat_id" invisible="1" />
                             </group>
 
                             <group string="Wali Kelas" invisible="1">
