@@ -45,7 +45,7 @@ class KenaikanKelas(models.Model):
     tahunajaran_id = fields.Many2one(
         comodel_name="cdn.ref_tahunajaran", string="Tahun Ajaran", readonly=False, store=True)
     kelas_id = fields.Many2one('cdn.ruang_kelas', string='Kelas',
-                               domain="[('tahunajaran_id','=',tahunajaran_id), ('aktif_tidak','=','aktif'), ('status','=','konfirm')]")
+                               domain="[('tahunajaran_id','=',tahunajaran_id), ('aktif_tidak','=','aktif'), ('status','=','konfirm'), ('jml_siswa', '>', 0)]")
     partner_ids = fields.Many2many(
         'cdn.siswa', 'kenaikan_santri_rel', 'kenaikan_id', 'santri_id', 'Daftar Santri')
 
@@ -120,23 +120,69 @@ class KenaikanKelas(models.Model):
         help="Nama tahun ajaran berikutnya"
     )
 
-    @api.onchange('next_class', 'next_tahunajaran_id')
-    def _onchange_next_class_validation(self):
-        """Memunculkan peringatan jika kelas target sudah terisi pada tahun ajaran berikutnya"""
-        if self.next_class and self.next_tahunajaran_id:
-            existing_kelas = self.env['cdn.ruang_kelas'].search([
-                ('name', '=', self.next_class.id),
-                ('tahunajaran_id', '=', self.next_tahunajaran_id.id),
-                ('jml_siswa', '>', 0)
-            ], limit=1)
-            
-            if existing_kelas:
-                return {
-                    'warning': {
-                        'title': 'Peringatan',
-                        'message': f'Kelas tersebut telah terisi ({existing_kelas.jml_siswa} siswa) pada tahun ajaran {self.next_tahunajaran_name}!'
-                    }
-                }
+    info_next_class = fields.Char(
+        string="Info Kelas Tujuan",
+        compute='_compute_info_next_class',
+        store=False,
+        help="Keterangan jumlah siswa di kelas tujuan pada tahun ajaran berikutnya"
+    )
+
+    jumlah_acak = fields.Integer(
+        string="Jumlah Santri Diacak",
+        default=0,
+        help="Jumlah santri yang ingin diambil secara acak ke kelas ini (isi 0 untuk membagi 2 secara otomatis)"
+    )
+
+    @api.depends('next_class', 'next_tahunajaran_id')
+    def _compute_info_next_class(self):
+        """Menampilkan keterangan jumlah siswa di kelas tujuan tanpa popup warning"""
+        for rec in self:
+            if rec.next_class and rec.next_tahunajaran_id:
+                existing_kelas = self.env['cdn.ruang_kelas'].search([
+                    ('name', '=', rec.next_class.id),
+                    ('tahunajaran_id', '=', rec.next_tahunajaran_id.id),
+                    ('aktif_tidak', '=', 'aktif')
+                ], limit=1)
+                if existing_kelas and existing_kelas.jml_siswa > 0:
+                    rec.info_next_class = f"ℹ Kelas ini sudah berisi {existing_kelas.jml_siswa} siswa pada TA {rec.next_tahunajaran_name}"
+                elif existing_kelas:
+                    rec.info_next_class = f"✓ Kelas ini sudah ada di TA {rec.next_tahunajaran_name} (masih kosong)"
+                else:
+                    rec.info_next_class = f"✓ Kelas baru akan dibuat untuk TA {rec.next_tahunajaran_name}"
+            else:
+                rec.info_next_class = ""
+
+    def action_acak_santri(self):
+        """
+        Mengacak dan memilih sejumlah santri dari partner_ids secara random.
+        Santri yang tidak terpilih akan dikeluarkan dari wizard ini
+        (tetap berada di kelas asal untuk diproses ke kelas tujuan lainnya).
+        """
+        self.ensure_one()
+        if not self.partner_ids:
+            raise UserError(_("Tidak ada daftar santri yang bisa diacak!"))
+
+        total_santri = len(self.partner_ids)
+        count = self.jumlah_acak if self.jumlah_acak > 0 else (total_santri // 2 or 1)
+
+        if count >= total_santri:
+            return
+
+        import random
+        all_ids = self.partner_ids.ids
+        selected_ids = random.sample(all_ids, count)
+
+        # Update partner_ids hanya dengan santri yang terpilih
+        self.partner_ids = [(6, 0, selected_ids)]
+        self.partner_ids.write({'centang': True})
+
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'cdn.kenaikan_kelas',
+            'res_id': self.id,
+            'view_mode': 'form',
+            'target': 'new',
+        }
 
     @api.onchange('kelas_id')
     def _onchange_kelas_id(self):
@@ -1361,60 +1407,55 @@ class KenaikanKelas(models.Model):
 
                 # Proses santri yang naik kelas (dicentang)
                 if santri_naik:
+                    # Cari atau buat cdn.ruang_kelas target untuk tahun ajaran berikutnya
+                    target_ruang_kelas = self.env['cdn.ruang_kelas'].search([
+                        ('name', '=', self.next_class.id),
+                        ('tahunajaran_id', '=', tahun_ajaran_berikutnya.id),
+                        ('aktif_tidak', '=', 'aktif')
+                    ], limit=1)
+
+                    if not target_ruang_kelas:
+                        target_ruang_kelas = self.env['cdn.ruang_kelas'].create({
+                            'name': self.next_class.id,
+                            'tahunajaran_id': tahun_ajaran_berikutnya.id,
+                            'status': 'konfirm',
+                            'aktif_tidak': 'aktif',
+                            'walikelas_id': self.walikelas_id.id if self.walikelas_id else False,
+                            'keterangan': f"Dibuat otomatis dari proses kenaikan kelas pada {fields.Date.today()}"
+                        })
+                        message += f"✓ Berhasil membuat ruang kelas baru: {target_ruang_kelas.name.name} ({tahun_ajaran_berikutnya.name})\n"
+
+                    # Pindahkan HANYA siswa yang dicentang naik kelas
                     for siswa in santri_naik:
+                        # Unlink dari ruang kelas lama (self.kelas_id)
+                        self.kelas_id.write({
+                            'siswa_ids': [(3, siswa.id)]
+                        })
+                        # Link ke ruang kelas target (target_ruang_kelas)
+                        target_ruang_kelas.write({
+                            'siswa_ids': [(4, siswa.id)]
+                        })
+                        # Update data pada model cdn.siswa
                         siswa.write({
+                            'ruang_kelas_id': target_ruang_kelas.id,
                             'tahunajaran_id': tahun_ajaran_berikutnya.id,
                         })
                         count_siswa_naik += 1
 
-                    message += f"✓ {len(santri_naik)} siswa naik kelas ke {self.next_class.name}\n"
+                    message += f"✓ {len(santri_naik)} siswa berhasil dipindahkan ke kelas {target_ruang_kelas.name.name}\n"
 
-                # Proses santri yang tidak naik kelas (tidak dicentang)
+                # Santri yang tidak dicentang tetap berada di kelas asal untuk diproses ke kelas tujuan lainnya
                 if santri_tidak_naik:
-                    # PENTING: Hapus siswa yang tidak naik dari kelas saat ini DULU
+                    message += f"ℹ {len(santri_tidak_naik)} siswa yang tidak dicentang tetap berada di kelas {self.kelas_id.nama_kelas} untuk dialokasikan ke kelas lainnya.\n"
+
+                # Jika semua siswa di kelas asal sudah dipindahkan (kelas kosong), nonaktifkan kelas tersebut
+                if self.kelas_id and not self.kelas_id.siswa_ids:
+                    kelas_nama = self.kelas_id.nama_kelas
                     self.kelas_id.write({
-                        'siswa_ids': [(3, siswa.id) for siswa in santri_tidak_naik]
+                        'aktif_tidak': 'tidak',
                     })
-                    message += f"✓ Menghapus {len(santri_tidak_naik)} siswa dari kelas {self.kelas_id.nama_kelas}\n"
+                    message += f"✓ Kelas {kelas_nama} dinonaktifkan karena seluruh siswanya telah dinaikkan kelas.\n"
 
-                    # Cari atau buat kelas untuk siswa yang tinggal kelas
-                    kelas_tinggal_kelas = self._find_or_create_tinggal_kelas(
-                        tahun_ajaran_berikutnya)
-
-                    if kelas_tinggal_kelas:
-                        # Masukkan siswa ke kelas tinggal kelas
-                        kelas_tinggal_kelas.write({
-                            'siswa_ids': [(4, siswa.id) for siswa in santri_tidak_naik]
-                        })
-
-                        # Update data siswa yang tidak naik
-                        for siswa in santri_tidak_naik:
-                            siswa.write({
-                                'ruang_kelas_id': kelas_tinggal_kelas.id,
-                                'tahunajaran_id': tahun_ajaran_berikutnya.id,
-                            })
-                            count_siswa_tidak_naik += 1
-
-                        message += f"✓ {len(santri_tidak_naik)} siswa dipindahkan ke kelas tinggal kelas: {kelas_tinggal_kelas.nama_kelas}\n"
-                    else:
-                        # Jika gagal membuat kelas tinggal kelas, siswa tetap dihapus dari kelas
-                        for siswa in santri_tidak_naik:
-                            siswa.write({
-                                'ruang_kelas_id': False,  # Hapus dari kelas
-                                'tahunajaran_id': tahun_ajaran_berikutnya.id,
-                            })
-                            count_siswa_tidak_naik += 1
-
-                        message += f"⚠ {len(santri_tidak_naik)} siswa dihapus dari kelas (tidak dapat membuat kelas tinggal kelas)\n"
-
-                # Update kelas utama ke tingkat selanjutnya (hanya untuk siswa yang naik)
-                if santri_naik:
-                    self.kelas_id.write({
-                        'name': self.next_class.id,
-                        'tahunajaran_id': tahun_ajaran_berikutnya.id,
-                        # 'walikelas_id': self.wali_kelas_selanjutnya.id,
-                    })
-                    message += f"✓ Kelas {self.kelas_id.nama_kelas} diupdate ke {self.next_class.name}\n"
 
             elif self.status == 'lulus':
                 message += f"\n=== PROSES KELULUSAN ===\n"
