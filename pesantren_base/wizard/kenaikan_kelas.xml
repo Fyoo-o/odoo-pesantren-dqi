@@ -43,6 +43,9 @@
                                     decoration-danger="status == 'tidak_lulus'"
                                     domain="[('tingkat', '=', next_tingkat_id)]"
                                     options="{'no_create': True, 'no_open': True}" />
+                                <field name="info_next_class" string="" readonly="1" nolabel="1"
+                                    invisible="not info_next_class"
+                                    class="text-info fw-bold" style="font-size: 13px;" />
                                 <field name="tingkat_id" invisible="1" readonly="1"
                                     options="{'no_create' : True, 'no_open' : True}" />
                                 <field name="next_tingkat_id" invisible="1" />
@@ -60,6 +63,10 @@
 
                         <notebook>
                             <page string="Santri">
+                                <group col="4" class="mb-2">
+                                    <field name="jumlah_acak" string="Jumlah Santri Diacak" placeholder="Isi 0 untuk bagi 2 otomatis" />
+                                    <button name="action_acak_santri" string="🔀 Acak Santri" type="object" class="btn-info btn-sm" />
+                                </group>
                                 <field name="partner_ids" string="Santri">
                                     <list editable="bottom" no_create="1">
                                         <field name="centang" string=" " widget="boolean_toggle" />
@@ -88,7 +95,7 @@
 
                     <footer>
                         <button name="action_proses_kenaikan_kelas" string="Simpan" type="object"
-                            class="btn-primary" />
+                            class="btn-primary" confirm="Apakah Anda yakin ingin memproses kenaikan kelas untuk santri yang dipilih?" />
                         <button string="Batal" class="btn-secondary" special="cancel" />
                     </footer>
 
