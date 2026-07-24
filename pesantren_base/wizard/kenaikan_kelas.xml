@@ -44,8 +44,8 @@
                                     domain="[('tingkat', '=', next_tingkat_id)]"
                                     options="{'no_create': True, 'no_open': True}" />
                                 <field name="info_next_class" string="" readonly="1" nolabel="1"
-                                    invisible="not info_next_class"
-                                    class="text-info fw-bold" style="font-size: 13px;" />
+                                    widget="html"
+                                    invisible="not info_next_class" />
                                 <field name="tingkat_id" invisible="1" readonly="1"
                                     options="{'no_create' : True, 'no_open' : True}" />
                                 <field name="next_tingkat_id" invisible="1" />
@@ -65,27 +65,17 @@
                             <page string="Santri">
                                 <group col="4" class="mb-2">
                                     <field name="jumlah_acak" string="Jumlah Santri Diacak" placeholder="Isi 0 untuk bagi 2 otomatis" />
-                                    <button name="action_acak_santri" string="🔀 Acak Santri" type="object" class="btn-info btn-sm" />
+                                    <button name="action_acak_santri" string="Acak Santri" icon="fa-random" type="object" class="btn-success fw-bold px-3" />
                                 </group>
                                 <field name="partner_ids" string="Santri">
-                                    <list editable="bottom" no_create="1">
-                                        <field name="centang" string=" " widget="boolean_toggle" />
+                                    <list no_create="1">
+                                        <field name="centang" invisible="1" />
+                                        <button name="action_toggle_centang" type="object" icon="fa-check-square" class="text-success" invisible="centang == False" title="Naik Kelas (Klik untuk membatalkan)" />
+                                        <button name="action_toggle_centang" type="object" icon="fa-square-o" class="text-danger" invisible="centang == True" title="Tidak Naik Kelas (Klik untuk menaikkan)" />
                                         <field name="name" />
-                                        <field name="panggilan" />
+                                        <field name="namapanggilan" string="Nama Panggilan" />
                                         <field name="nis" />
-                                        <field name="jns_kelamin" />
-                                    </list>
-                                </field>
-                            </page>
-
-                            <page string="Partner_lines" invisible="1">
-                                <field name="partner_lines" invisible="1" string="">
-                                    <list editable="bottom" string="">
-                                        <field name="nis" />
-                                        <field name="siswa_id"
-                                            options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
-                                        <field name="kelas_sekarang_id" />
-                                        <field name="next_class_id" />
+                                        <field name="jns_kelamin" string="Jenis Kelamin" />
                                     </list>
                                 </field>
                             </page>
@@ -95,7 +85,7 @@
 
                     <footer>
                         <button name="action_proses_kenaikan_kelas" string="Simpan" type="object"
-                            class="btn-primary" confirm="Apakah Anda yakin ingin memproses kenaikan kelas untuk santri yang dipilih?" />
+                            class="btn-primary" />
                         <button string="Batal" class="btn-secondary" special="cancel" />
                     </footer>
 
@@ -103,6 +93,24 @@
             </field>
         </record>
 
+        <record id="view_kenaikan_kelas_confirm_form" model="ir.ui.view">
+            <field name="name">cdn.kenaikan_kelas.confirm.form</field>
+            <field name="model">cdn.kenaikan_kelas.confirm</field>
+            <field name="arch" type="xml">
+                <form string="Konfirmasi">
+                    <sheet>
+                        <div class="d-flex align-items-center gap-3 py-2">
+                            <i class="fa fa-question-circle text-warning fs-1"></i>
+                            <field name="message" readonly="1" nolabel="1" class="fw-bold text-wrap" style="font-size: 14px; margin: 0;"/>
+                        </div>
+                    </sheet>
+                    <footer>
+                        <button name="action_process" string="Ok" type="object" class="btn-primary"/>
+                        <button string="Batal" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
 
         <record id="action_kenaikan_kelas" model="ir.actions.act_window">
             <field name="name">Kenaikan Kelas</field>

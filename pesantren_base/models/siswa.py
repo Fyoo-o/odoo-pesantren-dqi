@@ -363,6 +363,11 @@ class siswa(models.Model):
 
     centang = fields.Boolean(string="", default=True)
 
+    def action_toggle_centang(self):
+        """Toggle field centang dari list view (untuk Kenaikan Kelas)"""
+        for rec in self:
+            rec.centang = not rec.centang
+
     tingkat = fields.Many2one(comodel_name="cdn.tingkat",  string="Tingkat",
                               related="ruang_kelas_id.name.tingkat", readonly=True, store=True, help="")
 
