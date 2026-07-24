@@ -13,21 +13,53 @@ _logger = logging.getLogger(__name__)
 class KenaikanKelasLine(models.Model):
     _name = 'cdn.kenaikan_kelas.line'
     _description = 'Detail santri dalam proses kenaikan kelas'
-    _order = 'id desc'
+    _order = 'no_urut asc, id asc'
 
-    kenaikan_id = fields.Many2one('cdn.kenaikan_kelas', string='Header')
+    kenaikan_id = fields.Many2one('cdn.kenaikan_kelas', string='Header', ondelete='cascade')
+    no_urut = fields.Integer(string='No')
     siswa_id = fields.Many2one('cdn.siswa', string='Santri')
+    centang = fields.Boolean(string='Pilih', default=True)
+    name = fields.Char(related='siswa_id.name', string='Nama', store=False)
+    panggilan = fields.Char(related='siswa_id.panggilan', string='Nama Panggilan', store=False)
     nis = fields.Char(related='siswa_id.nis', string='NIS', store=False)
+    jns_kelamin = fields.Selection(related='siswa_id.jns_kelamin', string='Jenis Kelamin', store=False)
     kelas_sekarang_id = fields.Many2one(
         related='siswa_id.ruang_kelas_id', string='Kelas Sekarang', store=False)
     next_class_id = fields.Many2one(
         'cdn.master_kelas', string='Kelas Selanjutnya')
+
+    def action_open_siswa_detail(self):
+        self.ensure_one()
+        if not self.siswa_id:
+            return False
+        return {
+            'name': _('Detail Santri - %s') % (self.siswa_id.name or ''),
+            'type': 'ir.actions.act_window',
+            'res_model': 'cdn.siswa',
+            'res_id': self.siswa_id.id,
+            'views': [(False, 'form')],
+            'view_mode': 'form',
+            'target': 'new',
+        }
 
 
 class MockKelas:
     def __init__(self, tingkat, jenjang):
         self.tingkat = tingkat
         self.jenjang = jenjang
+
+
+class KenaikanKelasConfirm(models.TransientModel):
+    _name = 'cdn.kenaikan_kelas.confirm'
+    _description = 'Konfirmasi Kenaikan Kelas'
+
+    kenaikan_id = fields.Many2one('cdn.kenaikan_kelas', string='Header Kenaikan Kelas')
+    message = fields.Text(string='Pesan Konfirmasi', readonly=True)
+
+    def action_process(self):
+        self.ensure_one()
+        if self.kenaikan_id:
+            return self.kenaikan_id.with_context(skip_confirmation=True).action_proses_kenaikan_kelas()
 
 
 class KenaikanKelas(models.Model):
@@ -120,10 +152,11 @@ class KenaikanKelas(models.Model):
         help="Nama tahun ajaran berikutnya"
     )
 
-    info_next_class = fields.Char(
+    info_next_class = fields.Html(
         string="Info Kelas Tujuan",
         compute='_compute_info_next_class',
         store=False,
+        sanitize=False,
         help="Keterangan jumlah siswa di kelas tujuan pada tahun ajaran berikutnya"
     )
 
@@ -144,39 +177,43 @@ class KenaikanKelas(models.Model):
                     ('aktif_tidak', '=', 'aktif')
                 ], limit=1)
                 if existing_kelas and existing_kelas.jml_siswa > 0:
-                    rec.info_next_class = f"ℹ Kelas ini sudah berisi {existing_kelas.jml_siswa} siswa pada TA {rec.next_tahunajaran_name}"
+                    rec.info_next_class = f'''<div class="alert alert-warning py-1 px-2 my-1 border rounded d-flex align-items-center gap-2" style="font-size: 13px; font-weight: 600; color: #856404; background-color: #fff3cd; border-color: #ffe69c!important;"><i class="fa fa-exclamation-triangle text-warning fs-6"></i><span>Kelas ini <strong>sudah berisi {existing_kelas.jml_siswa} siswa</strong> pada TA {rec.next_tahunajaran_name}</span></div>'''
                 elif existing_kelas:
-                    rec.info_next_class = f"✓ Kelas ini sudah ada di TA {rec.next_tahunajaran_name} (masih kosong)"
+                    rec.info_next_class = f'''<div class="alert alert-info py-1 px-2 my-1 border rounded d-flex align-items-center gap-2" style="font-size: 13px; color: #0c5460; background-color: #d1ecf1; border-color: #bee5eb!important;"><i class="fa fa-info-circle text-info fs-6"></i><span>Kelas ini sudah ada di TA {rec.next_tahunajaran_name} (masih kosong)</span></div>'''
                 else:
-                    rec.info_next_class = f"✓ Kelas baru akan dibuat untuk TA {rec.next_tahunajaran_name}"
+                    rec.info_next_class = f'''<div class="alert alert-success py-1 px-2 my-1 border rounded d-flex align-items-center gap-2" style="font-size: 13px; font-weight: 500; color: #155724; background-color: #d4edda; border-color: #c3e6cb!important;"><i class="fa fa-check-circle text-success fs-6"></i><span>Kelas baru akan dibuat untuk TA {rec.next_tahunajaran_name}</span></div>'''
             else:
                 rec.info_next_class = ""
 
     def action_acak_santri(self):
         """
-        Mengacak dan memilih sejumlah santri dari partner_ids secara random.
-        Santri yang tidak terpilih akan dikeluarkan dari wizard ini
-        (tetap berada di kelas asal untuk diproses ke kelas tujuan lainnya).
+        Mengacak dan memilih sejumlah santri secara random dari seluruh santri yang berada di kelas yang dipilih.
+        Dapat ditekan berulang kali untuk mengulang pengacakan tanpa membuat wizard tertutup.
         """
         self.ensure_one()
-        if not self.partner_ids:
-            raise UserError(_("Tidak ada daftar santri yang bisa diacak!"))
+        if not self.kelas_id:
+            raise UserError(_("Silakan pilih kelas terlebih dahulu!"))
 
-        total_santri = len(self.partner_ids)
-        count = self.jumlah_acak if self.jumlah_acak > 0 else (total_santri // 2 or 1)
+        # Selalu ambil seluruh daftar santri di kelas yang dipilih sebagai pool pengacakan
+        all_santri = self.env['cdn.siswa'].search([('ruang_kelas_id', '=', self.kelas_id.id)])
+        if not all_santri:
+            raise UserError(_("Tidak ada daftar santri di kelas ini yang bisa diacak!"))
 
-        if count >= total_santri:
-            return
+        total_santri = len(all_santri)
+        if self.jumlah_acak > 0:
+            count = min(self.jumlah_acak, total_santri)
+        else:
+            count = total_santri // 2 or 1
 
         import random
-        all_ids = self.partner_ids.ids
-        selected_ids = random.sample(all_ids, count)
+        selected_ids = random.sample(all_santri.ids, count)
 
         # Update partner_ids hanya dengan santri yang terpilih
         self.partner_ids = [(6, 0, selected_ids)]
         self.partner_ids.write({'centang': True})
 
         return {
+            'name': 'Kenaikan Kelas',
             'type': 'ir.actions.act_window',
             'res_model': 'cdn.kenaikan_kelas',
             'res_id': self.id,
@@ -216,16 +253,6 @@ class KenaikanKelas(models.Model):
             if santri:
                 santri.write({'centang': True})
                 self.partner_ids = [(6, 0, santri.ids)]
-                # self.filtered_santri_ids = [(6, 0, santri.ids)]
-
-                # Buat partner_lines baru
-                lines = []
-                for s in santri:
-                    lines.append((0, 0, {
-                        'siswa_id': s.id,
-                        'next_class_id': self.next_class.id if self.next_class else False,
-                    }))
-                self.partner_lines = lines
 
             # Trigger compute untuk next_class jika perlu
             self._compute_next_class()
@@ -1388,10 +1415,50 @@ class KenaikanKelas(models.Model):
                 message += f"Gagal membuat tahun ajaran baru: {str(e)}\n\n"
                 raise UserError(f"Gagal membuat tahun ajaran baru: {str(e)}")
 
+        # Cek konfirmasi dinamis jika belum skip_confirmation
+        if not self.env.context.get('skip_confirmation'):
+            existing_count = 0
+            nama_kelas_tujuan = ""
+            if self.status == 'naik' and self.next_class and tahun_ajaran_berikutnya:
+                target_ruang_kelas = self.env['cdn.ruang_kelas'].search([
+                    ('name', '=', self.next_class.id),
+                    ('tahunajaran_id', '=', tahun_ajaran_berikutnya.id),
+                    ('aktif_tidak', '=', 'aktif')
+                ], limit=1)
+                if target_ruang_kelas and target_ruang_kelas.jml_siswa > 0:
+                    existing_count = target_ruang_kelas.jml_siswa
+                    if target_ruang_kelas.nama_kelas:
+                        nama_kelas_tujuan = target_ruang_kelas.nama_kelas
+                    elif target_ruang_kelas.name:
+                        nama_kelas_tujuan = getattr(target_ruang_kelas.name, 'nama_kelas', False) or getattr(target_ruang_kelas.name, 'name', '')
+
+            if existing_count > 0:
+                class_str = f"'{nama_kelas_tujuan}' " if nama_kelas_tujuan else ""
+                confirm_msg = f"Kelas {class_str}telah terisi sebanyak {existing_count} anak. Apakah Anda yakin ingin menggabungkannya?"
+            else:
+                confirm_msg = "Apakah Anda yakin ingin memproses kenaikan kelas untuk santri yang dipilih?"
+
+            confirm_wizard = self.env['cdn.kenaikan_kelas.confirm'].create({
+                'kenaikan_id': self.id,
+                'message': confirm_msg,
+            })
+
+            return {
+                'name': _('Konfirmasi'),
+                'type': 'ir.actions.act_window',
+                'res_model': 'cdn.kenaikan_kelas.confirm',
+                'res_id': confirm_wizard.id,
+                'view_mode': 'form',
+                'target': 'new',
+            }
+
         # Pisahkan santri berdasarkan status centang
-        santri_naik = self.partner_ids.filtered(lambda s: s.centang == True)
-        santri_tidak_naik = self.partner_ids.filtered(
-            lambda s: s.centang == False)
+        if self.partner_lines:
+            santri_naik = self.partner_lines.filtered(lambda l: l.centang).mapped('siswa_id')
+            santri_tidak_naik = self.partner_lines.filtered(lambda l: not l.centang).mapped('siswa_id')
+        else:
+            santri_naik = self.partner_ids.filtered(lambda s: s.centang == True)
+            santri_tidak_naik = self.partner_ids.filtered(lambda s: s.centang == False)
 
         _logger.info(f"Santri naik kelas: {len(santri_naik)}")
         _logger.info(f"Santri tidak naik kelas: {len(santri_tidak_naik)}")
