@@ -361,7 +361,7 @@ class siswa(models.Model):
     ekstrakulikuler_ids = fields.Many2many(
         "cdn.ekstrakulikuler", string="Ekstrakulikuler")
 
-    centang = fields.Boolean(string="", default=True)
+    centang = fields.Boolean(string="Naik/Tidak", default=True)
 
     def action_toggle_centang(self):
         """Toggle field centang dari list view (untuk Kenaikan Kelas)"""

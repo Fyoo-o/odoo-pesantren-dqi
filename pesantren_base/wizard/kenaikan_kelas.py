@@ -18,7 +18,7 @@ class KenaikanKelasLine(models.Model):
     kenaikan_id = fields.Many2one('cdn.kenaikan_kelas', string='Header', ondelete='cascade')
     no_urut = fields.Integer(string='No')
     siswa_id = fields.Many2one('cdn.siswa', string='Santri')
-    centang = fields.Boolean(string='Pilih', default=True)
+    centang = fields.Boolean(string='Naik/Tidak', default=True)
     name = fields.Char(related='siswa_id.name', string='Nama', store=False)
     panggilan = fields.Char(related='siswa_id.panggilan', string='Nama Panggilan', store=False)
     nis = fields.Char(related='siswa_id.nis', string='NIS', store=False)
