@@ -61,7 +61,7 @@ class PemberhentianSiswa(models.TransientModel):
             # Update data santri
             update_vals = {
                 'active': False,
-                'ruang_kelas_id': False,  # Keluarkan dari kelas
+                # 'ruang_kelas_id': False,  # Jangan keluarkan dari kelas agar menjadi riwayat
                 'alasan_keluar': self.alasan,
                 'tanggal_keluar': self.tanggal,
             }

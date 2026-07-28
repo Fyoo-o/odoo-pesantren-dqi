@@ -1569,15 +1569,15 @@ class KenaikanKelas(models.Model):
 
                         message += f"✓ {len(santri_tidak_naik)} siswa dipindahkan ke kelas tinggal kelas: {kelas_tinggal_kelas.nama_kelas}\n"
                     else:
-                        # Jika gagal membuat kelas tinggal kelas, siswa tetap dihapus dari kelas
+                        # Jika gagal membuat kelas tinggal kelas, biarkan siswa di kelas sebelumnya (jangan dihapus)
                         for siswa in santri_tidak_naik:
                             siswa.write({
-                                'ruang_kelas_id': False,  # Hapus dari kelas
+                                # 'ruang_kelas_id': False,  # Hapus dari kelas - Dihapus agar tetap ada riwayatnya
                                 'tahunajaran_id': tahun_ajaran_berikutnya.id,
                             })
                             count_siswa_tidak_naik += 1
 
-                        message += f"⚠ {len(santri_tidak_naik)} siswa dihapus dari kelas (tidak dapat membuat kelas tinggal kelas)\n"
+                        message += f"⚠ {len(santri_tidak_naik)} siswa gagal dipindahkan ke kelas tinggal kelas (tidak dapat membuat kelas tinggal kelas)\n"
 
                 # Jika semua siswa lulus, nonaktifkan kelas
                 if len(santri_naik) == len(self.partner_ids):
