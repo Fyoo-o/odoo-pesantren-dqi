@@ -15,6 +15,7 @@
           <field name="jenjang" />
           <field name="tingkat_id" />
           <field name="guru_ids" widget="many2many_tags" />
+          <field name="active" widget="boolean_toggle" optional="show" />
         </list>
       </field>
     </record>
@@ -26,6 +27,7 @@
       <field name="arch" type="xml">
         <form string="">
           <sheet>
+            <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active" />
             <group>
               <!-- Add your fields here -->
               <group>
@@ -39,6 +41,7 @@
                         'no_open': True
                       }" />
                 <field name="jurusan_id" invisible="jenjang not in ('sma')" />
+                <field name="active" invisible="1" />
               </group>
               <group>
                 <field name="name" />
@@ -60,12 +63,16 @@
       <field name="arch" type="xml">
         <search string="Mata Pelajaran">
           <!-- Add your fields here -->
+          <field name="name" />
+          <field name="kode" />
           <filter string="Akademik" name="filter_by_kategori" domain="[('kategori','=','akademik')]" />
           <filter string="Diniyyah" name="filter_by_kategori" domain="[('kategori','=','diniyyah')]" />
           <filter string="Tahfidz" name="filter_by_kategori" domain="[('kategori','=','tahfidz')]" />
           <filter string="Ekstrakurikuler" name="filter_by_kategori"
             domain="[('kategori','=','ekstrakurikuler')]" />
           <filter string="Lainnya" name="filter_by_kategori" domain="[('kategori','=','lainnya')]" />
+          <separator />
+          <filter string="Archived" name="inactive" domain="[('active', '=', False)]" />
           <group string="Group By..">
             <filter string="Jenjang" name="group_by_jenjang" context="{'group_by':'jenjang'}" />
           </group>
