@@ -13,6 +13,7 @@ class master_kelas(models.Model):
     name = fields.Char(
         required=True, string="Nama Kelas", copy=False, readonly=True
     )
+    active = fields.Boolean(string="Active", default=True)
     jenjang = fields.Selection(
         selection=[
             ("paud", "PAUD"),

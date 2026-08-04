@@ -13,6 +13,7 @@
                     <field name="jenjang" />
                     <field name="tingkat" />
                     <field name="jurusan_id" invisible="jenjang != 'sma'" />
+                    <field name="active" widget="boolean_toggle" optional="show" />
                 </list>
             </field>
         </record>
@@ -27,6 +28,7 @@
                     <header>
                     </header>
                     <sheet>
+                        <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active" />
                         <div class="oe_button_box" name="button_box"></div>
                         <div class="oe_title">
                             <label for="name" class="oe_edit_only" string="Master kelas Name" />
@@ -41,6 +43,7 @@
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
                                 <field name="jurusan_id" invisible="jenjang != 'sma'" />
                                 <field name="nama_kelas" />
+                                <field name="active" invisible="1" />
                             </group>
                             <group>
                             </group>
@@ -61,6 +64,8 @@
                     <filter string="Nama" name="filter_by_name" domain="[('name','=','')]" />
                     <filter string="Jenjang" name="filter_by_jenjang" domain="[('jenjang','=','')]" />
                     <filter string="Tingkat" name="filter_by_tingkat" domain="[('tingkat','=','')]" />
+                    <separator />
+                    <filter string="Archived" name="inactive" domain="[('active', '=', False)]" />
                     <field name="name" select="True" />
                     <field name="jenjang" select="True" />
                     <field name="tingkat" select="True" />
