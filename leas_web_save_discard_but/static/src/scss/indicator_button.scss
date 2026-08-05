@@ -5,33 +5,6 @@
         margin-left: 10px;
         align-items: center;
 
-        .o_form_button_save,
-        .o_form_button_cancel {
-            height: 100%;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding-left: 8px !important;
-        }
-
-        .o_form_button_save {
-            background-color: $primary;
-            color: #fff;
-        }
-        .o_form_button_save:hover {
-            filter: brightness(0.9);
-        }
-
-        .o_form_button_cancel {
-            color: $primary;
-            margin-left: 5px;
-        }
-        .o_form_button_cancel:hover {
-            background-color: #f6f7fa;
-            border-color: #e0e2e6;
-        }
-
         .save_button {
             width: 100%;
             font-weight: 500;
@@ -55,12 +28,10 @@
         .discard_button {
             width: 100%;
             font-weight: 500;
-            color: white;
             display: inline-block;
             text-align: center;
             vertical-align: middle;
             user-select: none;
-            color: $primary;
             background-color: transparent;
             padding: 0.3rem 2px;
             font-size: 0.8rem;
@@ -71,7 +42,8 @@
             text-transform: uppercase;
             font-family: $o-system-fonts;
         }
-
     }
 }
+
+
 
