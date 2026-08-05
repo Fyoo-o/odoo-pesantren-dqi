@@ -18,8 +18,17 @@ class PenilaianAkhir(models.Model):
                 ('semester', '=', rec.semester),
                 ('id', '!=', rec.id)
             ]
-            if self.search_count(domain):
-                raise UserError('Data Penilaian Akhir sudah ada !')
+            existing = self.search(domain, limit=1)
+            if existing:
+                siswa_name = existing.siswa_id.name if existing.siswa_id else 'Tidak diketahui'
+                user_name = existing.create_uid.name if existing.create_uid else 'Tidak diketahui'
+                ta_name = existing.tahunajaran_id.name if existing.tahunajaran_id else '-'
+                sem = existing.semester or '-'
+                raise UserError(
+                    f"Data Penilaian Akhir untuk Santri '{siswa_name}' "
+                    f"(Semester {sem} TA {ta_name}) sudah diisi oleh User: {user_name}. "
+                    f"Silakan berkoordinasi dengan yang bersangkutan."
+                )
 
     def _get_default_semester(self):
         tahun_ajaran = self.env.user.company_id.tahun_ajaran_aktif

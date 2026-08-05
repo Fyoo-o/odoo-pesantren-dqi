@@ -55,8 +55,15 @@ class JadwalPelajaran(models.Model):
     @api.constrains('name')
     def _check_name_unique(self):
         for rec in self:
-            if rec.name and self.search_count([('name', '=', rec.name), ('id', '!=', rec.id)]) > 0:
-                raise UserError('Jadwal kelas sudah ada!')
+            if rec.name:
+                existing = self.search([('name', '=', rec.name), ('id', '!=', rec.id)], limit=1)
+                if existing:
+                    kelas_name = existing.kelas_id.name.name if (existing.kelas_id and existing.kelas_id.name) else (existing.name or '-')
+                    user_name = existing.create_uid.name if existing.create_uid else 'Tidak diketahui'
+                    raise UserError(
+                        f"Jadwal Pelajaran untuk Kelas '{kelas_name}' sudah ada (diinput oleh User: {user_name}). "
+                        f"Silakan periksa atau koordinasi dengan yang bersangkutan."
+                    )
 
     @api.constrains('kelas_id')
     def _check_mata_pelajaran_exist(self):
