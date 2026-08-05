@@ -155,6 +155,12 @@ class Penilaian(models.Model):
             else:
                 rec.name = "Penilaian"
 
+    @api.onchange('tipe_label', 'tipe')
+    def _onchange_tipe_label(self):
+        nama_tipe = self.tipe_label or self.tipe or ''
+        for line in self.penilaian_ids:
+            line.name = nama_tipe
+
     def _check_mapel_guru_kelas(self):
         """Validasi backend supaya tetap aman walaupun user modifikasi via devtools"""
         for rec in self:
