@@ -222,7 +222,7 @@ class AbsensiSiswa(models.Model):
                         nama_file = False
                     absensi_ids.append((0, 0, {
                         'siswa_id': siswa.id,
-                        'kehadiran': 'keluar',
+                        'kehadiran': 'Pulang-Izin',
                         'keterangan': message,
                         'keterangan_izin': foto_bukti,
                         'keterangan_izin_filename': nama_file,
@@ -323,8 +323,10 @@ class AbsensiSiswaLine(models.Model):
         ('Hadir', 'Hadir'),
         ('Sakit', 'Sakit'),
         ('Izin', 'Izin'),
-        ('keluar', 'Izin Keluar'),
         ('Alpa', 'Alpa'),
+        ('Pulang-Sakit', 'Pulang-Sakit'),
+        ('Pulang-Izin', 'Pulang-Izin'),
+        ('Pulang-Alpa', 'Pulang-Alpa'),
     ], string='Kehadiran', default='Hadir')
 
     keterangan_izin = fields.Binary(string='Foto', attachment=True)
@@ -363,7 +365,7 @@ class AbsensiSiswaLine(models.Model):
                 ('state', '=', 'Permission')
             ], limit=1)
             if permission:
-                self.kehadiran = 'keluar'
+                self.kehadiran = 'Pulang-Izin'
                 keperluan_name = permission.keperluan.name if permission.keperluan else 'Tidak ada keterangan'
                 waktu_keluar = self.format_datetime_indonesia(
                     permission.waktu_keluar) if permission.waktu_keluar else 'Tidak tercatat'

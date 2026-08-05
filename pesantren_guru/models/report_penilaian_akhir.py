@@ -242,7 +242,14 @@ class ReportPenilaianAkhir(models.AbstractModel):
                 'Alpha': 0
             }
             for absen in AbsensiSiswaLine:
-                absensi[absen.kehadiran] += 1
+                if absen.kehadiran in absensi:
+                    absensi[absen.kehadiran] += 1
+                elif absen.kehadiran == 'Pulang-Sakit':
+                    absensi['Sakit'] += 1
+                elif absen.kehadiran in ['Pulang-Izin', 'Izin', 'keluar']:
+                    absensi['Ijin'] += 1
+                elif absen.kehadiran in ['Pulang-Alpa', 'Alpa']:
+                    absensi['Alpha'] += 1
             for i, a in enumerate(column_absensi):
                 final_cells.append((
                     2 + z, save_points[6] + i + 1,
