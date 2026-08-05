@@ -34,7 +34,7 @@ class AbsensiSiswa(models.Model):
     name = fields.Char(string='Nama', readonly=True,
                        compute='_compute_name', store=True)
     tanggal = fields.Date(string='Tanggal Absen', required=True,
-                          default=fields.Date.today())
+                          default=lambda self: fields.Date.context_today(self))
     hari = fields.Selection([
         ('1', 'Senin'),
         ('2', 'Selasa'),
@@ -138,9 +138,11 @@ class AbsensiSiswa(models.Model):
         for record in self:
             jam_names = ", ".join(record.jampelajaran_id.mapped(
                 'name')) if record.jampelajaran_id else "-"
+            kelas_name = record.kelas_id.name.name if record.kelas_id and record.kelas_id.name else "Baru"
+            tanggal = record.tanggal or "-"
             record.name = "%s/%s/%s" % (
-                record.kelas_id.name.name,
-                record.tanggal,
+                kelas_name,
+                tanggal,
                 jam_names
             )
 
