@@ -68,6 +68,7 @@
     'assets': {
         'web.assets_backend': [
             'pesantren_guru/static/src/scss/style.scss',
+            'pesantren_guru/static/src/js/penilaian_live_label.js',
         ],
     },
 }
