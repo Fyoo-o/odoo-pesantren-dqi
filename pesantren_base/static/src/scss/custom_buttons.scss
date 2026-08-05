@@ -1,0 +1,103 @@
+/* =====================================================
+   Custom Control Panel Buttons - CSS Only Approach
+   Simpan & Batal via ::before pseudo-element
+   ===================================================== */
+
+/* 1. Cog Menu (Roda Gigi / Action) */
+.o_cog_menu {
+    .dropdown-toggle,
+    button {
+        height: 32px !important;
+        padding: 0 10px !important;
+        border-radius: 4px !important;
+        background-color: #f8f9fa !important;
+        color: #495057 !important;
+        border: 1px solid #ced4da !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 0.875rem !important;
+
+        i, span, svg {
+            color: #495057 !important;
+        }
+
+        &:hover, &:focus {
+            background-color: #e2e6ea !important;
+            border-color: #dae0e5 !important;
+        }
+    }
+}
+
+/* 2. Tombol SIMPAN - sembunyikan ikon awan, tampilkan teks via CSS */
+.o_form_button_save {
+    height: 32px !important;
+    min-width: 70px !important;
+    padding: 4px 12px !important;
+    border-radius: 4px !important;
+    background-color: $primary !important;
+    border: 1px solid $primary !important;
+    color: #ffffff !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 0 !important; /* sembunyikan teks/icon asli */
+
+    /* Tampilkan teks "Simpan" via CSS */
+    &::before {
+        content: "Simpan" !important;
+        font-size: 0.85rem !important;
+        font-weight: 600 !important;
+        color: #ffffff !important;
+        line-height: 1 !important;
+        letter-spacing: 0 !important;
+    }
+
+    /* Sembunyikan ikon asli */
+    i.fa, i.oi, svg {
+        display: none !important;
+    }
+
+    &:hover {
+        filter: brightness(0.9) !important;
+    }
+}
+
+/* 3. Tombol BATAL - sembunyikan ikon X, tampilkan teks via CSS */
+.o_form_button_cancel {
+    height: 32px !important;
+    min-width: 60px !important;
+    padding: 4px 12px !important;
+    border-radius: 4px !important;
+    background-color: #ffffff !important;
+    border: 1px solid #dc3545 !important;
+    color: #dc3545 !important;
+    margin-left: 4px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 0 !important; /* sembunyikan teks/icon asli */
+
+    /* Tampilkan teks "Batal" via CSS */
+    &::before {
+        content: "Batal" !important;
+        font-size: 0.85rem !important;
+        font-weight: 600 !important;
+        color: #dc3545 !important;
+        line-height: 1 !important;
+        letter-spacing: 0 !important;
+    }
+
+    /* Sembunyikan ikon asli */
+    i.fa, i.oi, svg {
+        display: none !important;
+    }
+
+    &:hover {
+        background-color: #dc3545 !important;
+
+        &::before {
+            color: #ffffff !important;
+        }
+    }
+}
