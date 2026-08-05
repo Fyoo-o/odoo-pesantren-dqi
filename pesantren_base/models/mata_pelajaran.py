@@ -8,6 +8,7 @@ class MataPelajaran(models.Model):
     _description = 'Daftar Mata Pelajaran'
 
     name = fields.Char(string='Nama Matpel', required=True, help="Nama lengkap mata pelajaran")
+    active = fields.Boolean(string='Active', default=True)
     urut = fields.Integer(string='No. Urut', default=0, readonly=True, help="Urutan tampil mata pelajaran")
     kode = fields.Char(string='Kode Matpel', required=True, help="Kode singkatan atau identifier mata pelajaran (harus unik)")
     kategori = fields.Selection([
@@ -49,6 +50,7 @@ class MataPelajaran(models.Model):
         if vals.get('urut', False):
             return super(MataPelajaran, self).create(vals)
         else:
-            vals['urut'] = self.env['cdn.mata_pelajaran'].search(
-                [], order='urut desc', limit=1).urut + 1
+            last_rec = self.env['cdn.mata_pelajaran'].with_context(active_test=False).search(
+                [], order='urut desc', limit=1)
+            vals['urut'] = (last_rec.urut + 1) if last_rec else 1
             return super(MataPelajaran, self).create(vals)

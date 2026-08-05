@@ -26,6 +26,7 @@ class ruang_kelas(models.Model):
         required=True,
         copy=False,
     )
+    active = fields.Boolean(string="Active", default=True)
 
     siswa_ids = fields.Many2many(
         'cdn.siswa',

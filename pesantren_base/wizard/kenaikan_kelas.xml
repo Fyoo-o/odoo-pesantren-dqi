@@ -63,19 +63,18 @@
 
                         <notebook>
                             <page string="Santri">
-                                <group col="4" class="mb-2">
-                                    <field name="jumlah_acak" string="Jumlah Santri Diacak" placeholder="Isi 0 untuk bagi 2 otomatis" />
-                                    <button name="action_acak_santri" string="Acak Santri" icon="fa-random" type="object" class="btn-success fw-bold px-3" />
-                                </group>
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <label for="jumlah_acak" string="Jumlah Santri Diacak" class="fw-bold me-2"/>
+                                    <field name="jumlah_acak" placeholder="Isi 0 untuk bagi 2 otomatis" class="oe_inline"/>
+                                    <button name="action_acak_santri" string="Acak Santri" icon="fa-random" type="object" class="btn btn-success fw-bold px-3 ms-2"/>
+                                </div>
                                 <field name="partner_ids" string="Santri">
-                                    <list no_create="1">
-                                        <field name="centang" invisible="1" />
-                                        <button name="action_toggle_centang" type="object" icon="fa-check-square" class="text-success" invisible="centang == False" title="Naik Kelas (Klik untuk membatalkan)" />
-                                        <button name="action_toggle_centang" type="object" icon="fa-square-o" class="text-danger" invisible="centang == True" title="Tidak Naik Kelas (Klik untuk menaikkan)" />
-                                        <field name="name" />
-                                        <field name="namapanggilan" string="Nama Panggilan" />
-                                        <field name="nis" />
-                                        <field name="jns_kelamin" string="Jenis Kelamin" />
+                                    <list no_create="1" editable="bottom" create="false" delete="false">
+                                        <field name="centang" string="Naik/Tidak" widget="boolean_toggle" />
+                                        <field name="name" string="Nama" readonly="1" force_save="1" />
+                                        <field name="namapanggilan" string="Nama Panggilan" readonly="1" force_save="1" />
+                                        <field name="nis" string="NIS" readonly="1" force_save="1" />
+                                        <field name="jns_kelamin" string="Jenis Kelamin" readonly="1" force_save="1" />
                                     </list>
                                 </field>
                             </page>
