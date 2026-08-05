@@ -65,11 +65,15 @@ class Penilaian(models.Model):
     semester = fields.Selection(
         selection=[('1', 'Ganjil'), ('2', 'Genap')], string='Semester', required=True)
     tipe = fields.Selection(string='Tipe', selection=[
+                            ('Nilai Harian', 'Nilai Harian'),
                             ('Ulangan', 'Ulangan'),
                             ('UTS', 'UTS'),
                             ('UAS', 'UAS'),
                             ('Ujian Sekolah', 'Ujian Sekolah'),
                             ('Ujian Nasional', 'Ujian Nasional')], required=True)
+    tipe_label = fields.Char(
+        string='Label Tipe',
+        help='Label custom untuk tipe penilaian, contoh: ULANGAN BAB 1')
     state = fields.Selection(string='Status', selection=[(
         'draft', 'Draft'), ('done', 'Done')], default='draft')
     penilaian_ids = fields.One2many(
@@ -141,10 +145,15 @@ class Penilaian(models.Model):
         for record in self:
             record.penialainid_id = record.id
 
-    @api.depends('tipe')
+    @api.depends('tipe', 'tipe_label')
     def _compute_name(self):
         for rec in self:
-            rec.name = f"{rec.tipe}" if rec.tipe else "Penilaian"
+            if rec.tipe_label:
+                rec.name = rec.tipe_label
+            elif rec.tipe:
+                rec.name = rec.tipe
+            else:
+                rec.name = "Penilaian"
 
     def _check_mapel_guru_kelas(self):
         """Validasi backend supaya tetap aman walaupun user modifikasi via devtools"""
@@ -195,12 +204,11 @@ class PenilaianLines(models.Model):
                        store=True, compute='_compute_name')
     mapel_id = fields.Many2one(comodel_name='cdn.mata_pelajaran', string='Mapel',
                                related='penilaian_id.mapel_id', readonly=True, store=True)
-    tipe = fields.Selection(string='Tipe', selection=[
-                            ('ulangan', 'Ulangan'),
-                            ('uts', 'UTS'),
-                            ('uas', 'UAS'),
-                            ('ujian_sekolah', 'Ujian Sekolah'),
-                            ('ujian_nasional', 'Ujian Nasional')], related='penilaian_id.tipe', readonly=True, store=True)
+    tipe = fields.Char(
+        string='Tipe',
+        compute='_compute_tipe_display',
+        store=True
+    )
     semester = fields.Selection(selection=[('1', 'Ganjil'), ('2', 'Genap')],
                                 string='Semester', related='penilaian_id.semester', readonly=True, store=True)
     state = fields.Selection(string='Status', selection=[(
@@ -221,10 +229,18 @@ class PenilaianLines(models.Model):
 
     # compute
 
-    @api.depends('penilaian_id')
+    @api.depends('penilaian_id', 'penilaian_id.name')
     def _compute_name(self):
         for record in self:
             record.name = record.penilaian_id.name
+
+    @api.depends('penilaian_id', 'penilaian_id.tipe', 'penilaian_id.tipe_label')
+    def _compute_tipe_display(self):
+        for record in self:
+            if record.penilaian_id.tipe_label:
+                record.tipe = record.penilaian_id.tipe_label
+            else:
+                record.tipe = record.penilaian_id.tipe or ''
 
     def _compute_id_kelas(self):
         for record in self:

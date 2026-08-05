@@ -48,6 +48,9 @@
 							<group>
 								<field name="semester" />
 								<field name="tipe" />
+								<field name="tipe_label"
+									placeholder="Contoh: ULANGAN BAB 1 (opsional)"
+									invisible="not tipe" />
 								<field name="company_id"
 									options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"
 									readonly="1" />
