@@ -207,5 +207,16 @@ class PenilaianAkhirGuru(models.Model):
                 ('mapel_id', '=', rec.mapel_id.id),
                 ('id', '!=', rec.id)
             ]
-            if self.search(domain, limit=1):
-                raise UserError('Penilaian Akhir Guru sudah ada!')
+            existing = self.search(domain, limit=1)
+            if existing:
+                guru_name = existing.guru_id.name if existing.guru_id else 'Tidak diketahui'
+                user_name = existing.create_uid.name if existing.create_uid else 'Tidak diketahui'
+                mapel_name = existing.mapel_id.name if existing.mapel_id else '-'
+                kelas_name = existing.kelas_id.name.name if (existing.kelas_id and existing.kelas_id.name) else '-'
+                ta_name = existing.tahunajaran_id.name if existing.tahunajaran_id else '-'
+                sem = existing.semester or '-'
+                raise UserError(
+                    f"Penilaian Akhir Guru untuk Mapel '{mapel_name}' Kelas '{kelas_name}' "
+                    f"(Semester {sem} TA {ta_name}) sudah diisi oleh Guru: {guru_name} (User: {user_name}). "
+                    f"Silakan berkoordinasi dengan yang bersangkutan."
+                )

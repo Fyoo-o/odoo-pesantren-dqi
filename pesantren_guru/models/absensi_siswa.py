@@ -125,8 +125,18 @@ class AbsensiSiswa(models.Model):
     def _check_name(self):
         for record in self:
             if record.name:
-                if self.search_count([('name', '=', record.name)]) > 1:
-                    raise UserError('Absensi Siswa sudah ada')
+                existing = self.search([('name', '=', record.name), ('id', '!=', record.id)], limit=1)
+                if existing:
+                    guru_name = existing.guru_id.name if existing.guru_id else 'Tidak diketahui'
+                    user_name = existing.create_uid.name if existing.create_uid else 'Tidak diketahui'
+                    kelas_name = existing.kelas_id.display_name if existing.kelas_id else '-'
+                    jam_names = ", ".join(existing.jampelajaran_id.mapped('name')) if existing.jampelajaran_id else '-'
+                    tgl = existing.tanggal.strftime('%d-%m-%Y') if existing.tanggal else '-'
+                    raise UserError(
+                        f"Absensi Siswa untuk Kelas '{kelas_name}' Tanggal {tgl} (Jam: {jam_names}) "
+                        f"sudah diisi oleh Guru: {guru_name} (User: {user_name}). "
+                        f"Silakan berkoordinasi langsung dengan yang bersangkutan."
+                    )
 
     @api.depends('tanggal')
     def _compute_hari(self):
