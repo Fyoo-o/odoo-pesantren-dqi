@@ -100,10 +100,10 @@
                                         <field
                                             name="kehadiran"
                                             decoration-bf="True"
-                                            decoration-danger="kehadiran=='Alpa'"
-                                            decoration-warning="kehadiran=='Izin' or kehadiran=='keluar'"
+                                            decoration-danger="kehadiran in ['Alpa', 'Pulang-Alpa']"
+                                            decoration-warning="kehadiran in ['Izin', 'Pulang-Izin', 'keluar']"
                                             decoration-success="kehadiran=='Hadir'"
-                                            decoration-muted="kehadiran=='Sakit'"
+                                            decoration-muted="kehadiran in ['Sakit', 'Pulang-Sakit']"
                                         />
                                         <field name="keterangan" />
                                         <field name="keterangan_izin"
@@ -112,7 +112,7 @@
                                             string="Detail"
                                             type="object"
                                             icon="fa-eye"
-                                            invisible="kehadiran != 'keluar'"
+                                            invisible="kehadiran not in ['keluar', 'Pulang-Sakit', 'Pulang-Izin', 'Pulang-Alpa']"
                                             class="btn-primary" />
                                     </list>
                                 </field>
