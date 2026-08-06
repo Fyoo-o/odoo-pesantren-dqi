@@ -358,6 +358,8 @@
                     <filter string="Tanpa Kamar" name="no_kamar" domain="[('kamar_id','=',False)]"/>
                     <filter string="Aktif" name="aktif" domain="[('status_akun','=','aktif')]"/>
                     <filter string="Non Aktif" name="nonaktif" domain="[('status_akun','=','nonaktif')]"/>
+                    <separator/>
+                    <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
 
                     <group expand="1" string="Kelompokkan Menurut">
                         <filter string="Kamar" name="group_kamar" context="{'group_by':'kamar_id'}"/>
@@ -379,6 +381,7 @@
                 (ref('view_cdn_santri_tree'), 'list'),
                 (ref('view_cdn_santri_form'), 'form')
             ]</field>
+            <field name="search_view_id" ref="view_cdn_santri_search"/>
             <field name="context">{
                 'default_jenjang': 'smp', 
                 'search_default_group_by_kamar_id': 1,
