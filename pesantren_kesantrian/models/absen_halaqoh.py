@@ -53,6 +53,11 @@ class Absenhalaqoh(models.Model):
     sesi_id = fields.Many2one('cdn.sesi_halaqoh', string='Sesi', states={
                               'Done': [('readonly', True)]})
     keterangan = fields.Char(string='Keterangan')
+    is_guru_pengganti = fields.Boolean(
+        string='Guru Pengganti',
+        default=False,
+        help='Centang kotak disamping jika anda sebagai guru pengganti'
+    )
     row_number = fields.Integer(
         string='No', compute='_compute_row_number', store=False)
     company_id = fields.Many2one(
