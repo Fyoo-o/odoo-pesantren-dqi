@@ -296,7 +296,15 @@ class siswa(models.Model):
         return res
 
     def write(self, vals):
-        """Override write untuk auto-create orangtua jika belum ada"""
+        """Override write untuk auto-create orangtua jika belum ada dan auto-reactivate status_akun ketika unarchive"""
+        if vals.get('active') is True:
+            if 'status_akun' not in vals:
+                vals['status_akun'] = 'aktif'
+            if 'alasan_keluar' not in vals:
+                vals['alasan_keluar'] = False
+            if 'tanggal_keluar' not in vals:
+                vals['tanggal_keluar'] = False
+
         res = super(siswa, self).write(vals)
 
         # Jika edit akun tapi belum ada orangtua, buat baru
