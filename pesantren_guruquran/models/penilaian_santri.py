@@ -112,9 +112,11 @@ class Penilaian(models.Model):
     def _check_halaqoh_guru_quran(self):
         """Validasi backend supaya tetap aman walaupun user modifikasi via devtools"""
         for rec in self:
-            if rec.guru_id not in rec.halaqoh_id.penanggung_jawab_id:
+            # Gunakan sudo() agar bisa membaca halaqoh lintas company
+            halaqoh = rec.halaqoh_id.sudo()
+            if rec.guru_id not in halaqoh.penanggung_jawab_id:
                 raise UserError(
-                    _("Guru ini tidak mengajar di halaqoh tersebut."))
+                    _(f"Guru ini tidak mengajar di halaqoh tersebut."))
 
     @api.model
     def create(self, vals):
@@ -132,7 +134,9 @@ class Penilaian(models.Model):
 
     def write(self, vals):
         res = super().write(vals)
-        self._check_halaqoh_guru_quran()
+        # Hanya validasi jika field terkait halaqoh atau guru yang berubah
+        if 'halaqoh_id' in vals or 'guru_id' in vals:
+            self._check_halaqoh_guru_quran()
         return res
 
     # action buttons
