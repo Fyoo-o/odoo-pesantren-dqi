@@ -271,9 +271,11 @@ class WizardRekapAbsensiLine(models.TransientModel):
     jenis = fields.Char(string='Kegiatan')
     kehadiran = fields.Selection([
         ('Hadir', 'Hadir'),
-        ('Izin', 'Izin'),
-        ('keluar', 'Izin Keluar'),
         ('Sakit', 'Sakit'),
+        ('Izin', 'Izin'),
         ('Alpa', 'Alpa'),
+        ('Pulang-Sakit', 'Pulang-Sakit'),
+        ('Pulang-Izin', 'Pulang-Izin'),
+        ('Pulang-Alpa', 'Pulang-Alpa'),
     ], string='Kehadiran')
     keterangan = fields.Char(string='Keterangan')
