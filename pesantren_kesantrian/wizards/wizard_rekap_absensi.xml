@@ -45,11 +45,14 @@
                                 <group>
                                     <field name="jml_hadir" />
                                     <field name="jml_izin" />
+                                    <field name="jml_pulang_izin" />
                                     <field name="jml_keluar" />
                                 </group>
                                 <group>
                                     <field name="jml_sakit" />
+                                    <field name="jml_pulang_sakit" />
                                     <field name="jml_alpa" />
+                                    <field name="jml_pulang_alpa" />
                                 </group>
                             </group>
                         </page>

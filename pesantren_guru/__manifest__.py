@@ -45,6 +45,7 @@
 
         # wizard
         'wizard/absensi_filter_wizard.xml',
+        'wizard/rekap_absensi_siswa_wizard.xml',
 
         # views
         'views/menu.xml',
