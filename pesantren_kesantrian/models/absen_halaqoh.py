@@ -171,7 +171,7 @@ class Absenhalaqoh(models.Model):
 
                     absen_ids.append((0, 0, {
                         'siswa_id': siswa.id,
-                        'kehadiran': 'keluar',
+                        'kehadiran': 'Pulang-Izin',
                         'keterangan': message,
                         'keterangan_izin': foto_bukti,  # Auto-fill foto bukti
                         'keterangan_izin_filename': nama_file,  # Auto-fill nama file
@@ -260,11 +260,13 @@ class AbsenTahsinQuranLine(models.Model):
                                  related='absen_id.company_id', readonly=True, store=True)
     kehadiran = fields.Selection([
         ('Hadir', 'Hadir'),
-        ('Izin', 'Izin'),
-        ('keluar', 'Izin Keluar'),
         ('Sakit', 'Sakit'),
+        ('Izin', 'Izin'),
         ('Alpa', 'Alpa'),
-    ], string='Kehadiran', required=True)
+        ('Pulang-Sakit', 'Pulang-Sakit'),
+        ('Pulang-Izin', 'Pulang-Izin'),
+        ('Pulang-Alpa', 'Pulang-Alpa'),
+    ], string='Kehadiran', required=True, default='Hadir')
     penanggung_jawab_id = fields.Many2one(
         'hr.employee', string='Penanggung Jawab', related='halaqoh_id.penanggung_jawab_id', readonly=True, store=True)
     row_number = fields.Integer(
