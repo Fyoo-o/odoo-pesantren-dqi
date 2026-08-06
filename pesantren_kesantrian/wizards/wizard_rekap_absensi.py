@@ -30,6 +30,9 @@ class WizardRekapAbsensi(models.TransientModel):
     jml_izin = fields.Integer(string='Izin', compute='_compute_summary')
     jml_sakit = fields.Integer(string='Sakit', compute='_compute_summary')
     jml_alpa = fields.Integer(string='Alpa', compute='_compute_summary')
+    jml_pulang_sakit = fields.Integer(string='Pulang Sakit', compute='_compute_summary')
+    jml_pulang_izin = fields.Integer(string='Pulang Izin', compute='_compute_summary')
+    jml_pulang_alpa = fields.Integer(string='Pulang Alpa', compute='_compute_summary')
     jml_keluar = fields.Integer(
         string='Izin Keluar', compute='_compute_summary')
 
@@ -48,6 +51,12 @@ class WizardRekapAbsensi(models.TransientModel):
                 lambda x: x.kehadiran == 'Sakit'))
             rec.jml_alpa = len(rec.rekap_line_ids.filtered(
                 lambda x: x.kehadiran == 'Alpa'))
+            rec.jml_pulang_sakit = len(rec.rekap_line_ids.filtered(
+                lambda x: x.kehadiran == 'Pulang-Sakit'))
+            rec.jml_pulang_izin = len(rec.rekap_line_ids.filtered(
+                lambda x: x.kehadiran == 'Pulang-Izin'))
+            rec.jml_pulang_alpa = len(rec.rekap_line_ids.filtered(
+                lambda x: x.kehadiran == 'Pulang-Alpa'))
             rec.jml_keluar = len(rec.rekap_line_ids.filtered(
                 lambda x: x.kehadiran == 'keluar'))
 
@@ -240,8 +249,14 @@ class WizardRekapAbsensi(models.TransientModel):
         sheet.write(row + 3, 1, self.jml_sakit, border_format)
         sheet.write(row + 4, 0, 'Alpa', border_format)
         sheet.write(row + 4, 1, self.jml_alpa, border_format)
-        sheet.write(row + 5, 0, 'Izin Keluar', border_format)
-        sheet.write(row + 5, 1, self.jml_keluar, border_format)
+        sheet.write(row + 5, 0, 'Pulang Sakit', border_format)
+        sheet.write(row + 5, 1, self.jml_pulang_sakit, border_format)
+        sheet.write(row + 6, 0, 'Pulang Izin', border_format)
+        sheet.write(row + 6, 1, self.jml_pulang_izin, border_format)
+        sheet.write(row + 7, 0, 'Pulang Alpa', border_format)
+        sheet.write(row + 7, 1, self.jml_pulang_alpa, border_format)
+        sheet.write(row + 8, 0, 'Izin Keluar', border_format)
+        sheet.write(row + 8, 1, self.jml_keluar, border_format)
 
         workbook.close()
         output.seek(0)

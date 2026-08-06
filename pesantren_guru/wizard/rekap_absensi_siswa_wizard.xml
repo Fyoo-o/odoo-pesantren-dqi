@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_wizard_rekap_absensi_siswa_form" model="ir.ui.view">
+        <field name="name">wizard.rekap.absensi.siswa.form</field>
+        <field name="model">cdn.wizard_rekap_absensi_siswa</field>
+        <field name="arch" type="xml">
+            <form string="Rekap Absensi Siswa">
+                <sheet>
+                    <group>
+                        <group string="Tipe &amp; Periode">
+                            <field name="tipe_absensi" widget="radio" options="{'horizontal': true}"/>
+                            <field name="tgl_awal"/>
+                            <field name="tgl_akhir"/>
+                        </group>
+                        <group string="Filter Data">
+                            <field name="jenjang" invisible="tipe_absensi == 'halaqoh'"/>
+                            <field name="kelas_id" 
+                                   domain="[('jenjang', '=', jenjang)] if jenjang else []" 
+                                   options="{'no_create': True, 'no_open': True}"
+                                   invisible="tipe_absensi == 'halaqoh'"/>
+                            <field name="halaqoh_id" 
+                                   options="{'no_create': True, 'no_open': True}"
+                                   invisible="tipe_absensi == 'kelas'"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Hasil Rekap">
+                            <field name="rekap_line_ids" nolabel="1">
+                                <list create="false" edit="false" delete="false" default_order="siswa_name asc">
+                                    <field name="siswa_id" optional="show"/>
+                                    <field name="hadir" sum="Total Hadir"/>
+                                    <field name="sakit" sum="Total Sakit"/>
+                                    <field name="izin" sum="Total Izin"/>
+                                    <field name="alpa" sum="Total Alpa"/>
+                                    <field name="pulang_sakit" sum="Total Pulang Sakit" optional="show"/>
+                                    <field name="pulang_izin" sum="Total Pulang Izin" optional="show"/>
+                                    <field name="pulang_alpa" sum="Total Pulang Alpa" optional="show"/>
+                                    <field name="keluar" sum="Total Keluar" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <footer>
+                    <button name="action_proses" string="Proses" type="object" class="btn-primary" icon="fa-cogs"/>
+                    <button name="action_export_xlsx" string="Export Excel" type="object" class="btn-success" icon="fa-file-excel-o"/>
+                    <button string="Tutup" class="btn-secondary" special="cancel" icon="fa-times"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_wizard_rekap_absensi_siswa" model="ir.actions.act_window">
+        <field name="name">Rekap Absensi Siswa</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cdn.wizard_rekap_absensi_siswa</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Menu Item diletakkan di bawah menu Guru -> Absensi yang ID nya absensi_pengajar -->
+    <menuitem id="menu_rekap_absensi_siswa" 
+              name="Rekap Absensi" 
+              parent="absensi_pengajar" 
+              action="action_wizard_rekap_absensi_siswa" 
+              sequence="20"
+              groups="pesantren_guru.group_guru_staff,pesantren_base.group_sekolah_admin"/>
+
+</odoo>
