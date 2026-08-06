@@ -567,3 +567,47 @@ class siswa(models.Model):
             img.save(buffer, format='PNG')
 
             siswa.qr_code_image = base64.b64encode(buffer.getvalue())
+
+    def unlink(self):
+        for record in self:
+            related_modules = []
+
+            # 1. Absensi Siswa (Kelas)
+            if 'cdn.absensi_siswa_lines' in self.env and self.env['cdn.absensi_siswa_lines'].sudo().search([('siswa_id', '=', record.id)], limit=1):
+                related_modules.append("Absensi Siswa")
+
+            # 2. Absensi Halaqoh
+            if 'cdn.absen_halaqoh_lines' in self.env and self.env['cdn.absen_halaqoh_lines'].sudo().search([('siswa_id', '=', record.id)], limit=1):
+                related_modules.append("Absensi Halaqoh")
+
+            # 3. Penilaian Al-Qur'an / Tahfidz
+            if 'cdn.penilaian_quran' in self.env and self.env['cdn.penilaian_quran'].sudo().search([('siswa_id', '=', record.id)], limit=1):
+                related_modules.append("Penilaian Al-Qur'an")
+            elif 'cdn.penilaian_santri' in self.env and self.env['cdn.penilaian_santri'].sudo().search([('siswa_id', '=', record.id)], limit=1):
+                related_modules.append("Penilaian Al-Qur'an")
+
+            # 4. Penilaian Akademik
+            if 'cdn.penilaian_siswa' in self.env and self.env['cdn.penilaian_siswa'].sudo().search([('siswa_id', '=', record.id)], limit=1):
+                related_modules.append("Penilaian Akademik")
+
+            # 5. Perizinan Santri
+            if 'cdn.perijinan' in self.env and self.env['cdn.perijinan'].sudo().search([('siswa_id', '=', record.id)], limit=1):
+                related_modules.append("Perizinan Santri")
+
+            # 6. Pelanggaran Santri
+            if 'cdn.pelanggaran' in self.env and self.env['cdn.pelanggaran'].sudo().search([('siswa_id', '=', record.id)], limit=1):
+                related_modules.append("Pelanggaran Santri")
+
+            # 7. Kesehatan Santri
+            if 'cdn.kesehatan' in self.env and self.env['cdn.kesehatan'].sudo().search([('siswa_id', '=', record.id)], limit=1):
+                related_modules.append("Kesehatan Santri")
+
+            if related_modules:
+                msg_modules = ", ".join(related_modules)
+                raise UserError(
+                    f"⛔ Gagal Menghapus Data Santri!\n\n"
+                    f"Data Santri \"{record.name}\" tidak dapat dihapus karena sudah tercatat dalam riwayat: {msg_modules}.\n\n"
+                    f"Saran: Ubah status santri menjadi Non-Aktif / Keluar / Alumni."
+                )
+        return super(siswa, self).unlink()
+
