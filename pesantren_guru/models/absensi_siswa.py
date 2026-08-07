@@ -101,6 +101,12 @@ class AbsensiSiswa(models.Model):
         store=True,
         readonly=True
     )
+    is_guru_pengganti = fields.Boolean(
+        string='Guru Pengganti',
+        default=False,
+        help='Centang jika Anda bertindak sebagai guru pengganti'
+    )
+    keterangan = fields.Char(string='Keterangan')
 
     def _domain_guru(self):
         admin_user_ids = self.env.ref('base.group_system').users.ids
