@@ -278,16 +278,28 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
             attendance_map[(line.siswa_id.id, line.tanggal)] = PRESENCE_CODE.get(line.kehadiran, line.kehadiran or 'H')
             
             absen_hdr = line.absensi_id
-            if absen_hdr and line.tanggal not in guru_pengganti_map:
+            if absen_hdr:
                 is_pengganti = getattr(absen_hdr, 'is_guru_pengganti', False)
                 guru = getattr(absen_hdr, 'guru_id', False)
                 if is_pengganti and guru:
-                    guru_pengganti_map[line.tanggal] = guru.name
-                else:
+                    existing_gp = guru_pengganti_map.get(line.tanggal, '-')
+                    if existing_gp == '-' or not existing_gp:
+                        guru_pengganti_map[line.tanggal] = guru.name
+                    elif guru.name not in existing_gp:
+                        guru_pengganti_map[line.tanggal] += f", {guru.name}"
+                elif line.tanggal not in guru_pengganti_map:
                     guru_pengganti_map[line.tanggal] = '-'
                 
-                ket = getattr(absen_hdr, 'keterangan', False) or getattr(absen_hdr, 'name', False)
-                keterangan_map[line.tanggal] = clean_note(ket)
+                ket = getattr(absen_hdr, 'keterangan', False)
+                cleaned_k = clean_note(ket)
+                if cleaned_k != '-':
+                    existing_ket = keterangan_map.get(line.tanggal, '-')
+                    if existing_ket == '-' or not existing_ket:
+                        keterangan_map[line.tanggal] = cleaned_k
+                    elif cleaned_k not in existing_ket:
+                        keterangan_map[line.tanggal] += f" | {cleaned_k}"
+                elif line.tanggal not in keterangan_map:
+                    keterangan_map[line.tanggal] = '-'
 
         for line in halaqoh_lines:
             if not line.siswa_id or not line.tanggal:
@@ -370,6 +382,8 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
         if self.kelas_id:
             k_name = self.kelas_id.name.name if hasattr(self.kelas_id.name, 'name') and self.kelas_id.name.name else self.kelas_id.display_name
             info_str += f"Kelas: {k_name}  "
+            if hasattr(self.kelas_id, 'walikelas_id') and self.kelas_id.walikelas_id:
+                info_str += f"(Wali Kelas: {self.kelas_id.walikelas_id.name})"
         if self.halaqoh_id:
             info_str += f"Halaqoh: {self.halaqoh_id.name}  "
             if self.halaqoh_id.penanggung_jawab_id:
@@ -396,11 +410,10 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
             ket_val = keterangan_map.get(d, '-')
             
             c_width = 8
-            if self.tipe_absensi != 'kelas':
-                if g_name != '-':
-                    c_width = max(c_width, len(str(g_name)) + 3)
-                if ket_val != '-':
-                    c_width = max(c_width, len(str(ket_val)) + 3)
+            if g_name != '-':
+                c_width = max(c_width, len(str(g_name)) + 3)
+            if ket_val != '-':
+                c_width = max(c_width, len(str(ket_val)) + 3)
                 
             sheet.set_column(col_idx, col_idx, c_width)
             col_idx += 1
@@ -439,27 +452,26 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
 
             row_idx += 1
 
-        # Bottom Rows: Guru Pengganti & Keterangan (Hanya untuk Halaqoh / Semua)
-        if self.tipe_absensi != 'kelas':
-            # Bottom Row 1: Guru Pengganti
-            sheet.set_row(row_idx, 28)
-            sheet.merge_range(row_idx, 0, row_idx, 1, 'Guru Pengganti', gray_merged_format)
-            col_c = 2
-            for d in sorted_dates:
-                g_name = guru_pengganti_map.get(d, '-')
-                sheet.write(row_idx, col_c, g_name, wrap_center_format)
-                col_c += 1
-            row_idx += 1
+        # Bottom Rows: Guru Pengganti & Keterangan
+        # Bottom Row 1: Guru Pengganti
+        sheet.set_row(row_idx, 28)
+        sheet.merge_range(row_idx, 0, row_idx, 1, 'Guru Pengganti', gray_merged_format)
+        col_c = 2
+        for d in sorted_dates:
+            g_name = guru_pengganti_map.get(d, '-')
+            sheet.write(row_idx, col_c, g_name, wrap_center_format)
+            col_c += 1
+        row_idx += 1
 
-            # Bottom Row 2: Keterangan
-            sheet.set_row(row_idx, 28)
-            sheet.merge_range(row_idx, 0, row_idx, 1, 'Keterangan', gray_merged_format)
-            col_c = 2
-            for d in sorted_dates:
-                ket_val = keterangan_map.get(d, '-')
-                sheet.write(row_idx, col_c, ket_val, wrap_center_format)
-                col_c += 1
-            row_idx += 1
+        # Bottom Row 2: Keterangan
+        sheet.set_row(row_idx, 28)
+        sheet.merge_range(row_idx, 0, row_idx, 1, 'Keterangan', gray_merged_format)
+        col_c = 2
+        for d in sorted_dates:
+            ket_val = keterangan_map.get(d, '-')
+            sheet.write(row_idx, col_c, ket_val, wrap_center_format)
+            col_c += 1
+        row_idx += 1
 
         # Legenda Footer Professional (1-Column Pair Vertical Grid)
         row_idx += 2
