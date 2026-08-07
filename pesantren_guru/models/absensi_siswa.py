@@ -121,11 +121,16 @@ class AbsensiSiswa(models.Model):
     def action_done(self):
         self.state = 'done'
 
-    @api.constrains('name')
+    @api.constrains('kelas_id', 'tanggal', 'jampelajaran_id')
     def _check_name(self):
         for record in self:
-            if record.name:
-                existing = self.search([('name', '=', record.name), ('id', '!=', record.id)], limit=1)
+            if record.kelas_id and record.tanggal and record.jampelajaran_id:
+                existing = self.search([
+                    ('kelas_id', '=', record.kelas_id.id),
+                    ('tanggal', '=', record.tanggal),
+                    ('jampelajaran_id', 'in', record.jampelajaran_id.ids),
+                    ('id', '!=', record.id)
+                ], limit=1)
                 if existing:
                     guru_name = existing.guru_id.name if existing.guru_id else 'Tidak diketahui'
                     user_name = existing.create_uid.name if existing.create_uid else 'Tidak diketahui'
@@ -143,7 +148,7 @@ class AbsensiSiswa(models.Model):
         for record in self:
             record.hari = str(record.tanggal.weekday() + 1)
 
-    @api.depends('tanggal', 'jampelajaran_id')
+    @api.depends('kelas_id', 'tanggal', 'jampelajaran_id')
     def _compute_name(self):
         for record in self:
             jam_names = ", ".join(record.jampelajaran_id.mapped(
@@ -183,8 +188,8 @@ class AbsensiSiswa(models.Model):
         if self.kelas_id and (not self.absensi_ids or self._origin.kelas_id != self.kelas_id):
             # Hapus semua baris hanya jika perlu mengisi ulang
             absensi_ids = [(5, 0, 0)]
-            siswa_list = self.env['cdn.siswa'].search(
-                [('ruang_kelas_id', '=', self.kelas_id.id)])
+            siswa_domain = ['|', ('ruang_kelas_id', '=', self.kelas_id.id), ('id', 'in', self.kelas_id.siswa_ids.ids)]
+            siswa_list = self.env['cdn.siswa'].search(siswa_domain)
             if not siswa_list:
                 return {
                     'warning': {
@@ -351,8 +356,8 @@ class AbsensiSiswaLine(models.Model):
     def _compute_allowed_siswa(self):
         for record in self:
             if record.absensi_id.kelas_id:
-                record.allowed_siswa_ids = self.env['cdn.siswa'].search(
-                    [('ruang_kelas_id', '=', record.absensi_id.kelas_id.id)]).ids
+                siswa_domain = ['|', ('ruang_kelas_id', '=', record.absensi_id.kelas_id.id), ('id', 'in', record.absensi_id.kelas_id.siswa_ids.ids)]
+                record.allowed_siswa_ids = self.env['cdn.siswa'].search(siswa_domain).ids
             else:
                 record.allowed_siswa_ids = []
 
