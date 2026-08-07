@@ -64,20 +64,47 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
             self.kelas_id = False
 
     def _update_rekap_lines(self):
+        # Reset list hasil rekap
         self.rekap_line_ids = [(5, 0, 0)]
+
+        # Validasi tanggal dan kelengkapan filter
         if not self.tgl_awal or not self.tgl_akhir or self.tgl_awal > self.tgl_akhir:
             return
 
-        lines_data = []
+        if self.tipe_absensi == 'kelas' and not self.kelas_id:
+            return
 
-        # 1. Ambil data Absensi Kelas / KBM
-        if self.tipe_absensi in ['kelas', 'semua']:
+        if self.tipe_absensi == 'halaqoh' and not self.halaqoh_id:
+            return
+
+        # Map: siswa_id -> dict of accumulated totals
+        siswa_summary = {}
+
+        def init_siswa_dict(siswa):
+            rk = getattr(siswa, 'ruang_kelas_id', False) or getattr(siswa, 'kelas_id', False)
+            return {
+                'siswa_id': siswa.id,
+                'siswa_name': siswa.name or '',
+                'kelas_id': rk.id if rk else False,
+                'jenjang': rk.jenjang if rk and hasattr(rk, 'jenjang') else False,
+                'walikelas_id': rk.walikelas_id.id if rk and hasattr(rk, 'walikelas_id') and rk.walikelas_id else False,
+                'hadir': 0,
+                'sakit': 0,
+                'izin': 0,
+                'alpa': 0,
+                'pulang_sakit': 0,
+                'pulang_izin': 0,
+                'pulang_alpa': 0,
+                'keluar': 0,
+            }
+
+        # 1. Data Absensi Kelas / KBM
+        if self.tipe_absensi == 'kelas':
             domain_kbm = [
                 ('tanggal', '>=', self.tgl_awal),
-                ('tanggal', '<=', self.tgl_akhir)
+                ('tanggal', '<=', self.tgl_akhir),
+                ('kelas_id', '=', self.kelas_id.id)
             ]
-            if self.kelas_id:
-                domain_kbm.append(('kelas_id', '=', self.kelas_id.id))
             if self.jenjang:
                 domain_kbm.append(('kelas_id.jenjang', '=', self.jenjang))
                 
@@ -85,74 +112,75 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
             for line in kbm_lines:
                 if not line.siswa_id:
                     continue
+                sid = line.siswa_id.id
+                if sid not in siswa_summary:
+                    siswa_summary[sid] = init_siswa_dict(line.siswa_id)
                 
-                is_pengganti = getattr(line.absensi_id, 'is_guru_pengganti', False) if line.absensi_id else False
-                guru_p_name = line.absensi_id.guru_id.name if (is_pengganti and line.absensi_id and line.absensi_id.guru_id) else '-'
+                st = line.kehadiran
+                if st == 'Hadir':
+                    siswa_summary[sid]['hadir'] += 1
+                elif st == 'Sakit':
+                    siswa_summary[sid]['sakit'] += 1
+                elif st == 'Izin':
+                    siswa_summary[sid]['izin'] += 1
+                elif st == 'Alpa':
+                    siswa_summary[sid]['alpa'] += 1
+                elif st == 'Pulang-Sakit':
+                    siswa_summary[sid]['pulang_sakit'] += 1
+                elif st == 'Pulang-Izin':
+                    siswa_summary[sid]['pulang_izin'] += 1
+                elif st == 'Pulang-Alpa':
+                    siswa_summary[sid]['pulang_alpa'] += 1
+                elif st == 'keluar':
+                    siswa_summary[sid]['keluar'] += 1
 
-                rk = line.kelas_id or getattr(line.siswa_id, 'ruang_kelas_id', False) or getattr(line.siswa_id, 'kelas_id', False)
-                lines_data.append({
-                    'tanggal': line.tanggal,
-                    'siswa_id': line.siswa_id.id,
-                    'kelas_id': rk.id if rk else False,
-                    'jenjang': rk.jenjang if rk and hasattr(rk, 'jenjang') else False,
-                    'walikelas_id': rk.walikelas_id.id if rk and hasattr(rk, 'walikelas_id') and rk.walikelas_id else False,
-                    'hadir': 1 if line.kehadiran == 'Hadir' else 0,
-                    'sakit': 1 if line.kehadiran == 'Sakit' else 0,
-                    'izin': 1 if line.kehadiran == 'Izin' else 0,
-                    'alpa': 1 if line.kehadiran == 'Alpa' else 0,
-                    'pulang_sakit': 1 if line.kehadiran == 'Pulang-Sakit' else 0,
-                    'pulang_izin': 1 if line.kehadiran == 'Pulang-Izin' else 0,
-                    'pulang_alpa': 1 if line.kehadiran == 'Pulang-Alpa' else 0,
-                    'keluar': 1 if line.kehadiran == 'keluar' else 0,
-                    'guru_pengganti_name': guru_p_name,
-                })
-
-        # 2. Ambil data Absensi Halaqoh
-        if self.tipe_absensi in ['halaqoh', 'semua']:
+        # 2. Data Absensi Halaqoh
+        elif self.tipe_absensi == 'halaqoh':
             domain_halaqoh = [
                 ('tanggal', '>=', self.tgl_awal),
-                ('tanggal', '<=', self.tgl_akhir)
+                ('tanggal', '<=', self.tgl_akhir),
+                ('halaqoh_id', '=', self.halaqoh_id.id)
             ]
-            if self.halaqoh_id:
-                domain_halaqoh.append(('halaqoh_id', '=', self.halaqoh_id.id))
-            if self.kelas_id:
-                domain_halaqoh.append(('siswa_id.ruang_kelas_id', '=', self.kelas_id.id))
-                
             halaqoh_lines = self.env['cdn.absen_halaqoh_line'].search(domain_halaqoh)
             for line in halaqoh_lines:
                 if not line.siswa_id:
                     continue
+                sid = line.siswa_id.id
+                if sid not in siswa_summary:
+                    siswa_summary[sid] = init_siswa_dict(line.siswa_id)
+                
+                st = line.kehadiran
+                if st == 'Hadir':
+                    siswa_summary[sid]['hadir'] += 1
+                elif st == 'Sakit':
+                    siswa_summary[sid]['sakit'] += 1
+                elif st == 'Izin':
+                    siswa_summary[sid]['izin'] += 1
+                elif st == 'Alpa':
+                    siswa_summary[sid]['alpa'] += 1
+                elif st == 'Pulang-Sakit':
+                    siswa_summary[sid]['pulang_sakit'] += 1
+                elif st == 'Pulang-Izin':
+                    siswa_summary[sid]['pulang_izin'] += 1
+                elif st == 'Pulang-Alpa':
+                    siswa_summary[sid]['pulang_alpa'] += 1
+                elif st == 'keluar':
+                    siswa_summary[sid]['keluar'] += 1
 
-                absen_hdr = line.absen_id if line.absen_id else False
-                is_pengganti = getattr(absen_hdr, 'is_guru_pengganti', False) if absen_hdr else False
-                ustadz = getattr(absen_hdr, 'ustadz_id', False)
-                pj = getattr(absen_hdr, 'penanggung_jawab_id', False)
+        # Sertakan seluruh siswa yang terdaftar di kelas / halaqoh tersebut
+        if self.tipe_absensi == 'kelas' and self.kelas_id:
+            s_domain = [('ruang_kelas_id', '=', self.kelas_id.id)]
+            all_class_siswa = self.env['cdn.siswa'].search(s_domain)
+            for s in all_class_siswa:
+                if s.id not in siswa_summary:
+                    siswa_summary[s.id] = init_siswa_dict(s)
+        elif self.tipe_absensi == 'halaqoh' and self.halaqoh_id and self.halaqoh_id.siswa_ids:
+            for s in self.halaqoh_id.siswa_ids:
+                if s.id not in siswa_summary:
+                    siswa_summary[s.id] = init_siswa_dict(s)
 
-                if ustadz and (is_pengganti or (pj and ustadz.id != pj.id)):
-                    guru_p_name = ustadz.name or '-'
-                else:
-                    guru_p_name = '-'
-
-                rk = getattr(line.siswa_id, 'ruang_kelas_id', False) or getattr(line.siswa_id, 'kelas_id', False)
-                lines_data.append({
-                    'tanggal': line.tanggal,
-                    'siswa_id': line.siswa_id.id,
-                    'kelas_id': rk.id if rk else False,
-                    'jenjang': rk.jenjang if rk and hasattr(rk, 'jenjang') else False,
-                    'walikelas_id': rk.walikelas_id.id if rk and hasattr(rk, 'walikelas_id') and rk.walikelas_id else False,
-                    'hadir': 1 if line.kehadiran == 'Hadir' else 0,
-                    'sakit': 1 if line.kehadiran == 'Sakit' else 0,
-                    'izin': 1 if line.kehadiran == 'Izin' else 0,
-                    'alpa': 1 if line.kehadiran == 'Alpa' else 0,
-                    'pulang_sakit': 1 if line.kehadiran == 'Pulang-Sakit' else 0,
-                    'pulang_izin': 1 if line.kehadiran == 'Pulang-Izin' else 0,
-                    'pulang_alpa': 1 if line.kehadiran == 'Pulang-Alpa' else 0,
-                    'keluar': 1 if line.kehadiran == 'keluar' else 0,
-                    'guru_pengganti_name': guru_p_name,
-                })
-
-        # Urutkan berdasarkan tanggal asc, nama siswa asc
-        lines_data.sort(key=lambda x: (x['tanggal'] or False, self.env['cdn.siswa'].browse(x['siswa_id']).name if x['siswa_id'] else ''))
+        lines_data = list(siswa_summary.values())
+        lines_data.sort(key=lambda x: x['siswa_name'])
 
         for idx, d in enumerate(lines_data, 1):
             d['sequence'] = idx
@@ -181,24 +209,32 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
         if self.tgl_awal > self.tgl_akhir:
             raise UserError(_('Tanggal Awal tidak boleh lebih besar dari Tanggal Akhir.'))
 
+        if self.tipe_absensi == 'kelas' and not self.kelas_id:
+            raise UserError(_('Silakan pilih Kelas terlebih dahulu.'))
+
+        if self.tipe_absensi == 'halaqoh' and not self.halaqoh_id:
+            raise UserError(_('Silakan pilih Halaqoh terlebih dahulu.'))
+
         # 1. Ambil data Absensi berdasarkan Tipe Absensi
         kbm_lines = self.env['cdn.absensi_siswa_lines']
         halaqoh_lines = self.env['cdn.absen_halaqoh_line']
 
-        if self.tipe_absensi in ['kelas', 'semua']:
-            domain_kbm = [('tanggal', '>=', self.tgl_awal), ('tanggal', '<=', self.tgl_akhir)]
-            if self.kelas_id:
-                domain_kbm.append(('kelas_id', '=', self.kelas_id.id))
+        if self.tipe_absensi == 'kelas':
+            domain_kbm = [
+                ('tanggal', '>=', self.tgl_awal),
+                ('tanggal', '<=', self.tgl_akhir),
+                ('kelas_id', '=', self.kelas_id.id)
+            ]
             if self.jenjang:
                 domain_kbm.append(('kelas_id.jenjang', '=', self.jenjang))
             kbm_lines = self.env['cdn.absensi_siswa_lines'].search(domain_kbm)
 
-        if self.tipe_absensi in ['halaqoh', 'semua']:
-            domain_halaqoh = [('tanggal', '>=', self.tgl_awal), ('tanggal', '<=', self.tgl_akhir)]
-            if self.halaqoh_id:
-                domain_halaqoh.append(('halaqoh_id', '=', self.halaqoh_id.id))
-            if self.kelas_id:
-                domain_halaqoh.append(('siswa_id.ruang_kelas_id', '=', self.kelas_id.id))
+        elif self.tipe_absensi == 'halaqoh':
+            domain_halaqoh = [
+                ('tanggal', '>=', self.tgl_awal),
+                ('tanggal', '<=', self.tgl_akhir),
+                ('halaqoh_id', '=', self.halaqoh_id.id)
+            ]
             halaqoh_lines = self.env['cdn.absen_halaqoh_line'].search(domain_halaqoh)
 
         if not kbm_lines and not halaqoh_lines:
@@ -281,11 +317,15 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
             sorted_dates.append(curr_d)
             curr_d += datetime.timedelta(days=1)
 
-        if self.halaqoh_id and self.halaqoh_id.siswa_ids:
-            sorted_siswa = self.halaqoh_id.siswa_ids.sorted(key=lambda s: s.name or '')
-        elif self.kelas_id:
+        if self.tipe_absensi == 'halaqoh' and self.halaqoh_id:
+            h_siswa = set(self.halaqoh_id.siswa_ids) if self.halaqoh_id.siswa_ids else set()
+            all_siswa = h_siswa.union(siswa_set)
+            sorted_siswa = sorted(list(all_siswa), key=lambda s: s.name or '')
+        elif self.tipe_absensi == 'kelas' and self.kelas_id:
             s_domain = [('ruang_kelas_id', '=', self.kelas_id.id)]
-            sorted_siswa = self.env['cdn.siswa'].search(s_domain).sorted(key=lambda s: s.name or '')
+            k_siswa = set(self.env['cdn.siswa'].search(s_domain))
+            all_siswa = k_siswa.union(siswa_set)
+            sorted_siswa = sorted(list(all_siswa), key=lambda s: s.name or '')
         else:
             sorted_siswa = sorted(list(siswa_set), key=lambda s: (s.name or ''))
 
@@ -488,9 +528,19 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
         })
 
         return {
-            'type': 'ir.actions.act_url',
-            'url': f'/web/content/?model={self._name}&id={self.id}&field=data_file&download=true&filename={self.file_name}',
-            'target': 'self',
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Export Berhasil!'),
+                'message': _("File Excel '%s' telah berhasil di-generate dan berhasil diunduh.") % self.file_name,
+                'type': 'success',
+                'sticky': False,
+                'next': {
+                    'type': 'ir.actions.act_url',
+                    'url': f'/web/content/?model={self._name}&id={self.id}&field=data_file&download=true&filename={self.file_name}',
+                    'target': 'self',
+                }
+            }
         }
 
 
