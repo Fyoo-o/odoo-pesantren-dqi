@@ -48,25 +48,25 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
     data_file = fields.Binary(string='File')
     file_name = fields.Char(string='Nama File')
 
-    @api.onchange('tipe_absensi')
-    def _onchange_tipe_absensi(self):
+    @api.onchange('tipe_absensi', 'tgl_awal', 'tgl_akhir', 'jenjang', 'kelas_id', 'halaqoh_id')
+    def _onchange_filter_rekap(self):
         if self.tipe_absensi == 'kelas':
             self.halaqoh_id = False
         elif self.tipe_absensi == 'halaqoh':
             self.jenjang = False
             self.kelas_id = False
 
+        self._update_rekap_lines()
+
     @api.onchange('jenjang')
     def _onchange_jenjang(self):
         if self.jenjang and self.kelas_id and self.kelas_id.jenjang != self.jenjang:
             self.kelas_id = False
 
-    def action_proses(self):
-        if self.tgl_awal > self.tgl_akhir:
-            raise UserError(_('Tanggal Awal tidak boleh lebih besar dari Tanggal Akhir.'))
-
-        # Hapus line sebelumnya
+    def _update_rekap_lines(self):
         self.rekap_line_ids = [(5, 0, 0)]
+        if not self.tgl_awal or not self.tgl_akhir or self.tgl_awal > self.tgl_akhir:
+            return
 
         lines_data = []
 
@@ -159,7 +159,13 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
 
         lines = [(0, 0, d) for d in lines_data]
         self.rekap_line_ids = lines
-        
+
+    def action_proses(self):
+        if self.tgl_awal > self.tgl_akhir:
+            raise UserError(_('Tanggal Awal tidak boleh lebih besar dari Tanggal Akhir.'))
+
+        self._update_rekap_lines()
+
         return {
             'type': 'ir.actions.act_window',
             'res_model': 'cdn.wizard_rekap_absensi_siswa',
