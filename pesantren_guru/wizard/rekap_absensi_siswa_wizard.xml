@@ -27,7 +27,8 @@
                     <notebook>
                         <page string="Hasil Rekap">
                             <field name="rekap_line_ids" nolabel="1">
-                                <list create="false" edit="false" delete="false" default_order="siswa_name asc">
+                                <list create="false" edit="false" delete="false" default_order="sequence asc">
+                                    <field name="sequence" string="No"/>
                                     <field name="siswa_id" optional="show"/>
                                     <field name="hadir" sum="Total Hadir"/>
                                     <field name="sakit" sum="Total Sakit"/>
