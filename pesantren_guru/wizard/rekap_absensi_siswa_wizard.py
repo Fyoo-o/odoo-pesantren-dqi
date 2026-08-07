@@ -20,8 +20,7 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
     tipe_absensi = fields.Selection(
         selection=[
             ('kelas', 'Absensi Kelas (KBM)'),
-            ('halaqoh', 'Absensi Halaqoh'),
-            ('semua', 'Semua (Kelas & Halaqoh)')
+            ('halaqoh', 'Absensi Halaqoh')
         ],
         string="Tipe Absensi",
         default='kelas',
@@ -69,45 +68,7 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
         # Hapus line sebelumnya
         self.rekap_line_ids = [(5, 0, 0)]
 
-        rekap_data = {}
-
-        def _init_siswa(siswa):
-            s_id = siswa.id
-            if s_id not in rekap_data:
-                rk = getattr(siswa, 'ruang_kelas_id', False) or getattr(siswa, 'kelas_id', False)
-                rekap_data[s_id] = {
-                    'siswa_id': s_id,
-                    'kelas_id': rk.id if rk else False,
-                    'jenjang': rk.jenjang if rk and hasattr(rk, 'jenjang') else False,
-                    'walikelas_id': rk.walikelas_id.id if rk and hasattr(rk, 'walikelas_id') and rk.walikelas_id else False,
-                    'hadir': 0,
-                    'sakit': 0,
-                    'izin': 0,
-                    'alpa': 0,
-                    'pulang_sakit': 0,
-                    'pulang_izin': 0,
-                    'pulang_alpa': 0,
-                    'keluar': 0,
-                }
-            return rekap_data[s_id]
-
-        def _add_kehadiran(s_dict, kehadiran):
-            if kehadiran == 'Hadir':
-                s_dict['hadir'] += 1
-            elif kehadiran == 'Sakit':
-                s_dict['sakit'] += 1
-            elif kehadiran == 'Izin':
-                s_dict['izin'] += 1
-            elif kehadiran == 'Alpa':
-                s_dict['alpa'] += 1
-            elif kehadiran == 'Pulang-Sakit':
-                s_dict['pulang_sakit'] += 1
-            elif kehadiran == 'Pulang-Izin':
-                s_dict['pulang_izin'] += 1
-            elif kehadiran == 'Pulang-Alpa':
-                s_dict['pulang_alpa'] += 1
-            elif kehadiran == 'keluar':
-                s_dict['keluar'] += 1
+        lines_data = []
 
         # 1. Ambil data Absensi Kelas / KBM
         if self.tipe_absensi in ['kelas', 'semua']:
@@ -124,10 +85,27 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
             for line in kbm_lines:
                 if not line.siswa_id:
                     continue
-                s_dict = _init_siswa(line.siswa_id)
-                if line.kelas_id and not s_dict['kelas_id']:
-                    s_dict['kelas_id'] = line.kelas_id.id
-                _add_kehadiran(s_dict, line.kehadiran)
+                
+                is_pengganti = getattr(line.absensi_id, 'is_guru_pengganti', False) if line.absensi_id else False
+                guru_p_name = line.absensi_id.guru_id.name if (is_pengganti and line.absensi_id and line.absensi_id.guru_id) else '-'
+
+                rk = line.kelas_id or getattr(line.siswa_id, 'ruang_kelas_id', False) or getattr(line.siswa_id, 'kelas_id', False)
+                lines_data.append({
+                    'tanggal': line.tanggal,
+                    'siswa_id': line.siswa_id.id,
+                    'kelas_id': rk.id if rk else False,
+                    'jenjang': rk.jenjang if rk and hasattr(rk, 'jenjang') else False,
+                    'walikelas_id': rk.walikelas_id.id if rk and hasattr(rk, 'walikelas_id') and rk.walikelas_id else False,
+                    'hadir': 1 if line.kehadiran == 'Hadir' else 0,
+                    'sakit': 1 if line.kehadiran == 'Sakit' else 0,
+                    'izin': 1 if line.kehadiran == 'Izin' else 0,
+                    'alpa': 1 if line.kehadiran == 'Alpa' else 0,
+                    'pulang_sakit': 1 if line.kehadiran == 'Pulang-Sakit' else 0,
+                    'pulang_izin': 1 if line.kehadiran == 'Pulang-Izin' else 0,
+                    'pulang_alpa': 1 if line.kehadiran == 'Pulang-Alpa' else 0,
+                    'keluar': 1 if line.kehadiran == 'keluar' else 0,
+                    'guru_pengganti_name': guru_p_name,
+                })
 
         # 2. Ambil data Absensi Halaqoh
         if self.tipe_absensi in ['halaqoh', 'semua']:
@@ -144,18 +122,42 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
             for line in halaqoh_lines:
                 if not line.siswa_id:
                     continue
-                s_dict = _init_siswa(line.siswa_id)
-                _add_kehadiran(s_dict, line.kehadiran)
 
-        # Buat lines diurutkan A-Z berdasarkan nama siswa
-        lines = []
-        sorted_rekap = sorted(
-            rekap_data.items(),
-            key=lambda x: self.env['cdn.siswa'].browse(x[0]).name or ''
-        )
-        for siswa_id, data in sorted_rekap:
-            lines.append((0, 0, data))
+                absen_hdr = line.absen_id if line.absen_id else False
+                is_pengganti = getattr(absen_hdr, 'is_guru_pengganti', False) if absen_hdr else False
+                ustadz = getattr(absen_hdr, 'ustadz_id', False)
+                pj = getattr(absen_hdr, 'penanggung_jawab_id', False)
 
+                if ustadz and (is_pengganti or (pj and ustadz.id != pj.id)):
+                    guru_p_name = ustadz.name or '-'
+                else:
+                    guru_p_name = '-'
+
+                rk = getattr(line.siswa_id, 'ruang_kelas_id', False) or getattr(line.siswa_id, 'kelas_id', False)
+                lines_data.append({
+                    'tanggal': line.tanggal,
+                    'siswa_id': line.siswa_id.id,
+                    'kelas_id': rk.id if rk else False,
+                    'jenjang': rk.jenjang if rk and hasattr(rk, 'jenjang') else False,
+                    'walikelas_id': rk.walikelas_id.id if rk and hasattr(rk, 'walikelas_id') and rk.walikelas_id else False,
+                    'hadir': 1 if line.kehadiran == 'Hadir' else 0,
+                    'sakit': 1 if line.kehadiran == 'Sakit' else 0,
+                    'izin': 1 if line.kehadiran == 'Izin' else 0,
+                    'alpa': 1 if line.kehadiran == 'Alpa' else 0,
+                    'pulang_sakit': 1 if line.kehadiran == 'Pulang-Sakit' else 0,
+                    'pulang_izin': 1 if line.kehadiran == 'Pulang-Izin' else 0,
+                    'pulang_alpa': 1 if line.kehadiran == 'Pulang-Alpa' else 0,
+                    'keluar': 1 if line.kehadiran == 'keluar' else 0,
+                    'guru_pengganti_name': guru_p_name,
+                })
+
+        # Urutkan berdasarkan tanggal asc, nama siswa asc
+        lines_data.sort(key=lambda x: (x['tanggal'] or False, self.env['cdn.siswa'].browse(x['siswa_id']).name if x['siswa_id'] else ''))
+
+        for idx, d in enumerate(lines_data, 1):
+            d['sequence'] = idx
+
+        lines = [(0, 0, d) for d in lines_data]
         self.rekap_line_ids = lines
         
         return {
@@ -167,97 +169,312 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
         }
 
     def action_export_xlsx(self):
-        self.action_proses()
-        
         if not xlsxwriter:
             raise UserError(_("Modul 'xlsxwriter' tidak ditemukan. Silakan hubungi administrator."))
 
-        if not self.rekap_line_ids:
-            raise UserError(_("Tidak ada data untuk diekspor pada rentang tanggal tersebut."))
+        if self.tgl_awal > self.tgl_akhir:
+            raise UserError(_('Tanggal Awal tidak boleh lebih besar dari Tanggal Akhir.'))
 
+        # 1. Ambil data Absensi berdasarkan Tipe Absensi
+        kbm_lines = self.env['cdn.absensi_siswa_lines']
+        halaqoh_lines = self.env['cdn.absen_halaqoh_line']
+
+        if self.tipe_absensi in ['kelas', 'semua']:
+            domain_kbm = [('tanggal', '>=', self.tgl_awal), ('tanggal', '<=', self.tgl_akhir)]
+            if self.kelas_id:
+                domain_kbm.append(('kelas_id', '=', self.kelas_id.id))
+            if self.jenjang:
+                domain_kbm.append(('kelas_id.jenjang', '=', self.jenjang))
+            kbm_lines = self.env['cdn.absensi_siswa_lines'].search(domain_kbm)
+
+        if self.tipe_absensi in ['halaqoh', 'semua']:
+            domain_halaqoh = [('tanggal', '>=', self.tgl_awal), ('tanggal', '<=', self.tgl_akhir)]
+            if self.halaqoh_id:
+                domain_halaqoh.append(('halaqoh_id', '=', self.halaqoh_id.id))
+            if self.kelas_id:
+                domain_halaqoh.append(('siswa_id.ruang_kelas_id', '=', self.kelas_id.id))
+            halaqoh_lines = self.env['cdn.absen_halaqoh_line'].search(domain_halaqoh)
+
+        if not kbm_lines and not halaqoh_lines:
+            raise UserError(_("Tidak ada data presensi pada rentang tanggal dan filter tersebut."))
+
+        # 2. Kumpulkan daftar Tanggal Unik & daftar Santri Unik
+        dates_set = set()
+        siswa_set = set()
+        
+        # Map: (siswa_id, tanggal) -> kehadiran_code (H, S, I, A, PS, PI, PA, K)
+        attendance_map = {}
+        # Map: tanggal -> guru_pengganti_name
+        guru_pengganti_map = {}
+        # Map: tanggal -> keterangan_sesi
+        keterangan_map = {}
+
+        PRESENCE_CODE = {
+            'Hadir': 'H',
+            'Sakit': 'S',
+            'Izin': 'I',
+            'Alpa': 'A',
+            'Pulang-Sakit': 'PS',
+            'Pulang-Izin': 'PI',
+            'Pulang-Alpa': 'PA',
+            'keluar': 'K',
+        }
+
+        def clean_note(note_str):
+            if not note_str or not str(note_str).strip():
+                return '-'
+            s = str(note_str).strip().lower()
+            if s.startswith('absensi halaqoh') or s.startswith('absen halaqoh') or s.startswith('absensi kelas'):
+                return '-'
+            return str(note_str).strip()
+
+        for line in kbm_lines:
+            if not line.siswa_id or not line.tanggal:
+                continue
+            dates_set.add(line.tanggal)
+            siswa_set.add(line.siswa_id)
+            attendance_map[(line.siswa_id.id, line.tanggal)] = PRESENCE_CODE.get(line.kehadiran, line.kehadiran or 'H')
+            
+            absen_hdr = line.absensi_id
+            if absen_hdr and line.tanggal not in guru_pengganti_map:
+                is_pengganti = getattr(absen_hdr, 'is_guru_pengganti', False)
+                guru = getattr(absen_hdr, 'guru_id', False)
+                if is_pengganti and guru:
+                    guru_pengganti_map[line.tanggal] = guru.name
+                else:
+                    guru_pengganti_map[line.tanggal] = '-'
+                
+                ket = getattr(absen_hdr, 'keterangan', False) or getattr(absen_hdr, 'name', False)
+                keterangan_map[line.tanggal] = clean_note(ket)
+
+        for line in halaqoh_lines:
+            if not line.siswa_id or not line.tanggal:
+                continue
+            dates_set.add(line.tanggal)
+            siswa_set.add(line.siswa_id)
+            attendance_map[(line.siswa_id.id, line.tanggal)] = PRESENCE_CODE.get(line.kehadiran, line.kehadiran or 'H')
+
+            absen_hdr = line.absen_id
+            if absen_hdr and line.tanggal not in guru_pengganti_map:
+                is_pengganti = getattr(absen_hdr, 'is_guru_pengganti', False)
+                ustadz = getattr(absen_hdr, 'ustadz_id', False)
+                pj = getattr(absen_hdr, 'penanggung_jawab_id', False)
+                
+                if ustadz and (is_pengganti or (pj and ustadz.id != pj.id)):
+                    guru_pengganti_map[line.tanggal] = ustadz.name
+                else:
+                    guru_pengganti_map[line.tanggal] = '-'
+                
+                ket = getattr(absen_hdr, 'keterangan', False)
+                keterangan_map[line.tanggal] = clean_note(ket)
+
+        import datetime
+        sorted_dates = []
+        curr_d = self.tgl_awal
+        while curr_d <= self.tgl_akhir:
+            sorted_dates.append(curr_d)
+            curr_d += datetime.timedelta(days=1)
+
+        if self.halaqoh_id and self.halaqoh_id.siswa_ids:
+            sorted_siswa = self.halaqoh_id.siswa_ids.sorted(key=lambda s: s.name or '')
+        elif self.kelas_id:
+            s_domain = [('ruang_kelas_id', '=', self.kelas_id.id)]
+            sorted_siswa = self.env['cdn.siswa'].search(s_domain).sorted(key=lambda s: s.name or '')
+        else:
+            sorted_siswa = sorted(list(siswa_set), key=lambda s: (s.name or ''))
+
+        # 3. Setup Excel Workbook
         output = io.BytesIO()
         workbook = xlsxwriter.Workbook(output, {'in_memory': True})
-        sheet = workbook.add_worksheet('Rekap Absensi')
+        sheet = workbook.add_worksheet('Matriks Absensi')
 
         # Formats
-        header_format = workbook.add_format({'bold': True, 'bg_color': '#D3D3D3', 'border': 1, 'align': 'center', 'valign': 'vcenter'})
         title_format = workbook.add_format({'bold': True, 'font_size': 14})
+        header_format = workbook.add_format({'bold': True, 'bg_color': '#D3D3D3', 'border': 1, 'align': 'center', 'valign': 'vcenter'})
         border_format = workbook.add_format({'border': 1})
         center_format = workbook.add_format({'border': 1, 'align': 'center'})
-
-        # Judul & Info Header
-        sheet.write(0, 0, 'REKAP ABSENSI SISWA', title_format)
+        gray_merged_format = workbook.add_format({'bold': True, 'bg_color': '#D3D3D3', 'border': 1, 'align': 'center', 'valign': 'vcenter'})
         
-        info_row = 2
+        wrap_center_format = workbook.add_format({'border': 1, 'align': 'center', 'valign': 'vcenter', 'text_wrap': True, 'font_size': 9})
+
+        # Header Info Laporan
+        if self.tipe_absensi == 'kelas':
+            title_text = 'REKAP ABSENSI KELAS'
+        elif self.tipe_absensi == 'halaqoh':
+            title_text = 'REKAP ABSENSI HALAQOH'
+        else:
+            title_text = 'REKAP ABSENSI KELAS / HALAQOH'
+        sheet.write(0, 0, title_text, title_format)
         
         MONTHS = {
             1: 'Januari', 2: 'Februari', 3: 'Maret', 4: 'April',
             5: 'Mei', 6: 'Juni', 7: 'Juli', 8: 'Agustus',
             9: 'September', 10: 'Oktober', 11: 'November', 12: 'Desember'
         }
-        
         if self.tgl_awal.month == self.tgl_akhir.month and self.tgl_awal.year == self.tgl_akhir.year:
             periode_str = f"Periode : {self.tgl_awal.day} - {self.tgl_akhir.day} {MONTHS[self.tgl_akhir.month]} {self.tgl_akhir.year}"
-        elif self.tgl_awal.year == self.tgl_akhir.year:
-            periode_str = f"Periode : {self.tgl_awal.day} {MONTHS[self.tgl_awal.month]} - {self.tgl_akhir.day} {MONTHS[self.tgl_akhir.month]} {self.tgl_akhir.year}"
         else:
-            periode_str = f"Periode : {self.tgl_awal.day} {MONTHS[self.tgl_awal.month]} {self.tgl_awal.year} - {self.tgl_akhir.day} {MONTHS[self.tgl_akhir.month]} {self.tgl_akhir.year}"
+            periode_str = f"Periode : {self.tgl_awal.day} {MONTHS[self.tgl_awal.month]} - {self.tgl_akhir.day} {MONTHS[self.tgl_akhir.month]} {self.tgl_akhir.year}"
 
-        sheet.write(info_row, 0, periode_str)
-        info_row += 1
-
+        sheet.write(2, 0, periode_str)
         tipe_dict = dict(self._fields['tipe_absensi'].selection)
-        sheet.write(info_row, 0, f'Tipe Absensi: {tipe_dict.get(self.tipe_absensi, self.tipe_absensi)}')
-        info_row += 1
-
-        if self.jenjang:
-            j_dict = dict(self._fields['jenjang'].selection)
-            sheet.write(info_row, 0, f'Jenjang: {j_dict.get(self.jenjang, self.jenjang)}')
-            info_row += 1
-
+        sheet.write(3, 0, f"Tipe Absensi: {tipe_dict.get(self.tipe_absensi, self.tipe_absensi)}")
+        
+        info_str = ""
         if self.kelas_id:
             k_name = self.kelas_id.name.name if hasattr(self.kelas_id.name, 'name') and self.kelas_id.name.name else self.kelas_id.display_name
-            sheet.write(info_row, 0, f'Kelas: {k_name}')
-            info_row += 1
-
+            info_str += f"Kelas: {k_name}  "
         if self.halaqoh_id:
-            sheet.write(info_row, 0, f'Halaqoh: {self.halaqoh_id.name}')
-            info_row += 1
+            info_str += f"Halaqoh: {self.halaqoh_id.name}  "
+            if self.halaqoh_id.penanggung_jawab_id:
+                info_str += f"(Ustadz Utama: {self.halaqoh_id.penanggung_jawab_id.name})"
+        sheet.write(4, 0, info_str)
 
-        # Table Header (7 Pilihan Kehadiran Utama + Izin Keluar)
-        headers = ['No', 'Nama Siswa', 'Hadir', 'Sakit', 'Izin', 'Alpa', 'Pulang Sakit', 'Pulang Izin', 'Pulang Alpa', 'Izin Keluar']
-        
-        sheet.set_column('A:A', 5)
-        sheet.set_column('B:B', 35)
-        sheet.set_column('C:J', 14)
-        
-        table_header_row = info_row + 1
-        for col, header in enumerate(headers):
-            sheet.write(table_header_row, col, header, header_format)
+        table_header_row = 6
 
-        # Mengurutkan data berdasarkan Nama Siswa A-Z
-        sorted_lines = self.rekap_line_ids.sorted(key=lambda r: (r.siswa_name or r.siswa_id.name or ''))
+        # Column widths
+        sheet.set_column('A:A', 5)   # No
+        sheet.set_column('B:B', 30)  # Nama Santri
 
-        # Table Data
-        row = table_header_row + 1
-        for i, line in enumerate(sorted_lines, 1):
-            sheet.write(row, 0, i, center_format)
-            sheet.write(row, 1, line.siswa_id.name if line.siswa_id else '-', border_format)
-            sheet.write(row, 2, line.hadir, center_format)
-            sheet.write(row, 3, line.sakit, center_format)
-            sheet.write(row, 4, line.izin, center_format)
-            sheet.write(row, 5, line.alpa, center_format)
-            sheet.write(row, 6, line.pulang_sakit, center_format)
-            sheet.write(row, 7, line.pulang_izin, center_format)
-            sheet.write(row, 8, line.pulang_alpa, center_format)
-            sheet.write(row, 9, line.keluar, center_format)
-            row += 1
+        # Table Header Row
+        sheet.write(table_header_row, 0, 'No', header_format)
+        sheet.write(table_header_row, 1, 'Nama Santri', header_format)
+
+        # Date Headers & Dynamic Column Widths
+        col_idx = 2
+        for d in sorted_dates:
+            date_str = d.strftime('%d/%m')
+            sheet.write(table_header_row, col_idx, date_str, header_format)
+            
+            g_name = guru_pengganti_map.get(d, '-')
+            ket_val = keterangan_map.get(d, '-')
+            
+            c_width = 8
+            if self.tipe_absensi != 'kelas':
+                if g_name != '-':
+                    c_width = max(c_width, len(str(g_name)) + 3)
+                if ket_val != '-':
+                    c_width = max(c_width, len(str(ket_val)) + 3)
+                
+            sheet.set_column(col_idx, col_idx, c_width)
+            col_idx += 1
+
+        # Summary Headers
+        summary_headers = ['Total H', 'Total S', 'Total I', 'Total A', 'Total PS', 'Total PI', 'Total PA']
+        for sh in summary_headers:
+            sheet.write(table_header_row, col_idx, sh, header_format)
+            sheet.set_column(col_idx, col_idx, 10)
+            col_idx += 1
+
+        # Student Data Rows
+        row_idx = table_header_row + 1
+        for i, s in enumerate(sorted_siswa, 1):
+            sheet.write(row_idx, 0, i, center_format)
+            sheet.write(row_idx, 1, s.name or '-', border_format)
+
+            counts = {'H': 0, 'S': 0, 'I': 0, 'A': 0, 'PS': 0, 'PI': 0, 'PA': 0, 'K': 0}
+
+            col_c = 2
+            for d in sorted_dates:
+                st = attendance_map.get((s.id, d), '-')
+                sheet.write(row_idx, col_c, st, center_format)
+                if st in counts:
+                    counts[st] += 1
+                col_c += 1
+
+            # Summary Totals
+            sheet.write(row_idx, col_c, counts['H'], center_format)
+            sheet.write(row_idx, col_c + 1, counts['S'], center_format)
+            sheet.write(row_idx, col_c + 2, counts['I'], center_format)
+            sheet.write(row_idx, col_c + 3, counts['A'], center_format)
+            sheet.write(row_idx, col_c + 4, counts['PS'], center_format)
+            sheet.write(row_idx, col_c + 5, counts['PI'], center_format)
+            sheet.write(row_idx, col_c + 6, counts['PA'], center_format)
+
+            row_idx += 1
+
+        # Bottom Rows: Guru Pengganti & Keterangan (Hanya untuk Halaqoh / Semua)
+        if self.tipe_absensi != 'kelas':
+            # Bottom Row 1: Guru Pengganti
+            sheet.set_row(row_idx, 28)
+            sheet.merge_range(row_idx, 0, row_idx, 1, 'Guru Pengganti', gray_merged_format)
+            col_c = 2
+            for d in sorted_dates:
+                g_name = guru_pengganti_map.get(d, '-')
+                sheet.write(row_idx, col_c, g_name, wrap_center_format)
+                col_c += 1
+            row_idx += 1
+
+            # Bottom Row 2: Keterangan
+            sheet.set_row(row_idx, 28)
+            sheet.merge_range(row_idx, 0, row_idx, 1, 'Keterangan', gray_merged_format)
+            col_c = 2
+            for d in sorted_dates:
+                ket_val = keterangan_map.get(d, '-')
+                sheet.write(row_idx, col_c, ket_val, wrap_center_format)
+                col_c += 1
+            row_idx += 1
+
+        # Legenda Footer Professional (1-Column Pair Vertical Grid)
+        row_idx += 2
+        sheet.write(row_idx, 0, 'KETERANGAN KODE PRESENSI', workbook.add_format({'bold': True, 'font_size': 11}))
+        row_idx += 1
+
+        legend_header_format = workbook.add_format({'bold': True, 'bg_color': '#EFEFEF', 'border': 1, 'align': 'center'})
+        legend_code_format = workbook.add_format({'bold': True, 'border': 1, 'align': 'center'})
+        legend_text_format = workbook.add_format({'border': 1, 'align': 'left'})
+
+        sheet.write(row_idx, 0, 'Kode', legend_header_format)
+        sheet.write(row_idx, 1, 'Keterangan Presensi', legend_header_format)
+        row_idx += 1
+
+        legends = [
+            ('H', 'Hadir'),
+            ('S', 'Sakit'),
+            ('I', 'Izin'),
+            ('A', 'Alpa'),
+            ('PS', 'Pulang - Sakit'),
+            ('PI', 'Pulang - Izin'),
+            ('PA', 'Pulang - Alpa'),
+            ('K', 'Izin Keluar'),
+        ]
+
+        for code, name in legends:
+            sheet.write(row_idx, 0, code, legend_code_format)
+            sheet.write(row_idx, 1, name, legend_text_format)
+            row_idx += 1
 
         workbook.close()
         output.seek(0)
         xlsx_data = output.read()
 
-        file_name = f"Rekap_Absensi_Siswa_{self.tgl_awal}_sd_{self.tgl_akhir}.xlsx"
+        target_name = ""
+        if self.tipe_absensi == 'kelas':
+            tipe_str = "Kelas"
+            if self.kelas_id:
+                k_name = self.kelas_id.name.name if (hasattr(self.kelas_id, 'name') and hasattr(self.kelas_id.name, 'name') and self.kelas_id.name.name) else (self.kelas_id.display_name or str(self.kelas_id.name))
+                target_name = f" {k_name}"
+        elif self.tipe_absensi == 'halaqoh':
+            tipe_str = "Halaqoh"
+            if self.halaqoh_id and self.halaqoh_id.name:
+                target_name = f" {self.halaqoh_id.name}"
+        else:
+            tipe_str = "Kelas dan Halaqoh"
+            extra = []
+            if self.kelas_id:
+                k_name = self.kelas_id.name.name if (hasattr(self.kelas_id, 'name') and hasattr(self.kelas_id.name, 'name') and self.kelas_id.name.name) else (self.kelas_id.display_name or str(self.kelas_id.name))
+                extra.append(k_name)
+            if self.halaqoh_id and self.halaqoh_id.name:
+                extra.append(self.halaqoh_id.name)
+            if extra:
+                target_name = f" {' '.join(extra)}"
+
+        tgl_awal_str = self.tgl_awal.strftime('%d-%m-%Y') if self.tgl_awal else ''
+        tgl_akhir_str = self.tgl_akhir.strftime('%d-%m-%Y') if self.tgl_akhir else ''
+        file_name = f"Rekap Absensi {tipe_str}{target_name} {tgl_awal_str} sd {tgl_akhir_str}.xlsx"
+
+        for char in ['/', '\\', ':', '*', '?', '"', '<', '>', '|']:
+            file_name = file_name.replace(char, '-')
 
         self.write({
             'data_file': base64.b64encode(xlsx_data),
@@ -274,9 +491,11 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
 class WizardRekapAbsensiSiswaLine(models.TransientModel):
     _name = 'cdn.wizard_rekap_absensi_siswa_line'
     _description = 'Detail Rekap Absensi Siswa'
-    _order = 'jenjang, kelas_id, siswa_name asc, id asc'
+    _order = 'sequence asc, tanggal asc, jenjang, kelas_id, siswa_name asc, id asc'
 
     wizard_id = fields.Many2one('cdn.wizard_rekap_absensi_siswa', string='Wizard', ondelete='cascade')
+    sequence = fields.Integer(string='No')
+    tanggal = fields.Date(string='Tanggal')
     jenjang = fields.Selection(
         selection=[
             ('paud', 'PAUD'),
@@ -302,3 +521,4 @@ class WizardRekapAbsensiSiswaLine(models.TransientModel):
     pulang_izin = fields.Integer(string='Pulang Izin')
     pulang_alpa = fields.Integer(string='Pulang Alpa')
     keluar = fields.Integer(string='Izin Keluar')
+    guru_pengganti_name = fields.Char(string='Guru Pengganti')

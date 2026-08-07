@@ -33,6 +33,7 @@ class WizardRekapAbsensi(models.TransientModel):
     jml_pulang_sakit = fields.Integer(string='Pulang Sakit', compute='_compute_summary')
     jml_pulang_izin = fields.Integer(string='Pulang Izin', compute='_compute_summary')
     jml_pulang_alpa = fields.Integer(string='Pulang Alpa', compute='_compute_summary')
+    jml_guru_pengganti = fields.Integer(string='Guru Pengganti', compute='_compute_summary')
     jml_keluar = fields.Integer(
         string='Izin Keluar', compute='_compute_summary')
 
@@ -57,6 +58,8 @@ class WizardRekapAbsensi(models.TransientModel):
                 lambda x: x.kehadiran == 'Pulang-Izin'))
             rec.jml_pulang_alpa = len(rec.rekap_line_ids.filtered(
                 lambda x: x.kehadiran == 'Pulang-Alpa'))
+            rec.jml_guru_pengganti = len(rec.rekap_line_ids.filtered(
+                lambda x: 'Guru Pengganti' in (x.pengabsen or '')))
             rec.jml_keluar = len(rec.rekap_line_ids.filtered(
                 lambda x: x.kehadiran == 'keluar'))
 
@@ -103,10 +106,19 @@ class WizardRekapAbsensi(models.TransientModel):
             ('tanggal', '<=', self.tgl_akhir)
         ], order='tanggal asc')
         for line in halaqoh_lines:
+            absen_hdr = line.absen_id if line.absen_id else False
+            is_pengganti = getattr(absen_hdr, 'is_guru_pengganti', False) if absen_hdr else False
+            ustadz = getattr(absen_hdr, 'ustadz_id', False)
+            pj = getattr(absen_hdr, 'penanggung_jawab_id', False)
+            
+            pengabsen_str = ustadz.name if ustadz else '-'
+            if ustadz and (is_pengganti or (pj and ustadz.id != pj.id)):
+                pengabsen_str += ' (Guru Pengganti)'
             lines.append((0, 0, {
                 'tanggal': line.tanggal,
                 'jenis': 'Halaqoh',
                 'kehadiran': line.kehadiran,
+                'pengabsen': pengabsen_str,
                 'keterangan': line.keterangan or '-'
             }))
 
@@ -121,6 +133,7 @@ class WizardRekapAbsensi(models.TransientModel):
                 'tanggal': line.tanggal,
                 'jenis': 'Malam',
                 'kehadiran': line.kehadiran_absen,
+                'pengabsen': '-',
                 'keterangan': line.keterangan or '-'
             }))
 
@@ -135,6 +148,7 @@ class WizardRekapAbsensi(models.TransientModel):
                 'tanggal': line.tanggal,
                 'jenis': 'Tahfidz',
                 'kehadiran': line.kehadiran,
+                'pengabsen': '-',
                 'keterangan': line.keterangan or '-'
             }))
 
@@ -149,6 +163,7 @@ class WizardRekapAbsensi(models.TransientModel):
                 'tanggal': line.tanggal,
                 'jenis': 'Tahsin',
                 'kehadiran': line.kehadiran,
+                'pengabsen': '-',
                 'keterangan': line.keterangan or '-'
             }))
 
@@ -168,7 +183,7 @@ class WizardRekapAbsensi(models.TransientModel):
 
         # Header
         writer.writerow(['No', 'Tanggal', 'Kegiatan',
-                        'Kehadiran', 'Keterangan'])
+                        'Kehadiran', 'Guru / Pengabsen', 'Keterangan'])
 
         # Data
         for i, line in enumerate(self.rekap_line_ids, 1):
@@ -178,6 +193,7 @@ class WizardRekapAbsensi(models.TransientModel):
                 line.jenis,
                 dict(line._fields['kehadiran'].selection).get(
                     line.kehadiran, line.kehadiran),
+                line.pengabsen or '-',
                 line.keterangan or '-'
             ])
 
@@ -223,7 +239,7 @@ class WizardRekapAbsensi(models.TransientModel):
         sheet.write(3, 0, f'Periode: {self.tgl_awal} s/d {self.tgl_akhir}')
 
         # Table Header
-        headers = ['No', 'Tanggal', 'Kegiatan', 'Kehadiran', 'Keterangan']
+        headers = ['No', 'Tanggal', 'Kegiatan', 'Kehadiran', 'Guru / Pengabsen', 'Keterangan']
         for col, header in enumerate(headers):
             sheet.write(5, col, header, header_format)
 
@@ -235,7 +251,8 @@ class WizardRekapAbsensi(models.TransientModel):
             sheet.write(row, 2, line.jenis, border_format)
             sheet.write(row, 3, dict(line._fields['kehadiran'].selection).get(
                 line.kehadiran, line.kehadiran), border_format)
-            sheet.write(row, 4, line.keterangan or '-', border_format)
+            sheet.write(row, 4, line.pengabsen or '-', border_format)
+            sheet.write(row, 5, line.keterangan or '-', border_format)
             row += 1
 
         # Summary
@@ -255,8 +272,10 @@ class WizardRekapAbsensi(models.TransientModel):
         sheet.write(row + 6, 1, self.jml_pulang_izin, border_format)
         sheet.write(row + 7, 0, 'Pulang Alpa', border_format)
         sheet.write(row + 7, 1, self.jml_pulang_alpa, border_format)
-        sheet.write(row + 8, 0, 'Izin Keluar', border_format)
-        sheet.write(row + 8, 1, self.jml_keluar, border_format)
+        sheet.write(row + 8, 0, 'Sesi Guru Pengganti', border_format)
+        sheet.write(row + 8, 1, self.jml_guru_pengganti, border_format)
+        sheet.write(row + 9, 0, 'Izin Keluar', border_format)
+        sheet.write(row + 9, 1, self.jml_keluar, border_format)
 
         workbook.close()
         output.seek(0)
@@ -293,4 +312,5 @@ class WizardRekapAbsensiLine(models.TransientModel):
         ('Pulang-Izin', 'Pulang-Izin'),
         ('Pulang-Alpa', 'Pulang-Alpa'),
     ], string='Kehadiran')
+    pengabsen = fields.Char(string='Guru / Pengabsen')
     keterangan = fields.Char(string='Keterangan')

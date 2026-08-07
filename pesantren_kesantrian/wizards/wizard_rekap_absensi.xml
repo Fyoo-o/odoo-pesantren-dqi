@@ -8,6 +8,7 @@
                 <field name="tanggal" />
                 <field name="jenis" />
                 <field name="kehadiran" />
+                <field name="pengabsen" string="Guru / Pengabsen" />
                 <field name="keterangan" />
             </list>
         </field>
@@ -53,6 +54,7 @@
                                     <field name="jml_pulang_sakit" />
                                     <field name="jml_alpa" />
                                     <field name="jml_pulang_alpa" />
+                                    <field name="jml_guru_pengganti" />
                                 </group>
                             </group>
                         </page>
