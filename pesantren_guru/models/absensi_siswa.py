@@ -121,6 +121,11 @@ class AbsensiSiswa(models.Model):
     def action_done(self):
         self.state = 'done'
 
+    def action_sort_siswa(self):
+        for record in self:
+            sorted_lines = record.absensi_ids.sorted(key=lambda l: (l.siswa_id.name or '').lower())
+            record.absensi_ids = [(6, 0, sorted_lines.ids)]
+
     @api.constrains('kelas_id', 'tanggal', 'jampelajaran_id')
     def _check_name(self):
         for record in self:
