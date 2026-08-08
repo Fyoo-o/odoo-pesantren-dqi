@@ -38,6 +38,7 @@
                     <field name="kelas_id" optional="show" />
                     <field name="mapel_id" optional="show" />
                     <field name="guru_id" optional="show" />
+                    <field name="is_guru_pengganti" optional="hide" />
                     <field name="tema" optional="hide" />
                     <field name="materi" optional="hide" />
                     <field name="rpp_id" optional="hide" />
@@ -86,6 +87,12 @@
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
                                 <field name="guru_id"
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
+                                <div class="o_wrap_field" style="display: flex; align-items: center; padding: 4px 0 4px 0; gap: 0;">
+                                    <span class="o_form_label" style="min-width: 168px; font-weight: 600; flex-shrink: 0;">Guru Pengganti</span>
+                                    <field name="is_guru_pengganti" nolabel="1" style="margin: 0 8px 0 0; flex-shrink: 0;"/>
+                                    <small class="text-muted fst-italic">Centang kotak disamping jika anda sebagai guru pengganti</small>
+                                </div>
+                                <field name="keterangan" placeholder="Alasan penggantian / catatan absensi..." />
                             </group>
                         </group>
                         <notebook>
