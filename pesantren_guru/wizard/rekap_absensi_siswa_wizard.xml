@@ -64,7 +64,6 @@
               name="Rekap Absensi" 
               parent="absensi_pengajar" 
               action="action_wizard_rekap_absensi_siswa" 
-              sequence="20"
-              groups="pesantren_guru.group_guru_staff,pesantren_base.group_sekolah_admin"/>
+              sequence="20"/>
 
 </odoo>

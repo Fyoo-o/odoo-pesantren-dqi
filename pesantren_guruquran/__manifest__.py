@@ -46,7 +46,7 @@
     'license': 'LGPL-3',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'pesantren_base', 'pesantren_keuangan', 'pesantren_kesantrian', 'hr'],
+    'depends': ['base', 'pesantren_base', 'pesantren_guru', 'pesantren_keuangan', 'pesantren_kesantrian', 'hr'],
 
     # always loaded
     'data': [

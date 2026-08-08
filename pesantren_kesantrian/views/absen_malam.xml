@@ -83,14 +83,14 @@
                                         <field 
                                             name="kehadiran_absen"
                                             decoration-bf="True"
-                                            decoration-danger="kehadiran_absen=='Alpa'" 
-                                            decoration-warning="kehadiran_absen=='Izin' or kehadiran_absen=='keluar'" 
-                                            decoration-success="kehadiran_absen=='Hadir'" 
-                                            decoration-muted="kehadiran_absen=='Sakit'"
+                                            decoration-danger="kehadiran_absen in ['Pulang-Alpa', 'Alpa']" 
+                                            decoration-warning="kehadiran_absen in ['Pulang-Izin', 'Izin', 'keluar']" 
+                                            decoration-success="kehadiran_absen == 'Hadir'" 
+                                            decoration-muted="kehadiran_absen in ['Pulang-Sakit', 'Sakit']"
                                         />
                                         <field name="keterangan"/>
                                         <field name="keterangan_izin" filename="keterangan_izin_filename"/>
-                                        <button name="action_view_permission" string="Detail" type="object" icon="fa-eye" invisible="(kehadiran_absen != 'Izin' and kehadiran_absen != 'keluar') or not keterangan" class="btn-primary"/>
+                                        <button name="action_view_permission" string="Detail" type="object" icon="fa-eye" invisible="kehadiran_absen not in ['Pulang-Izin', 'Pulang-Sakit', 'Izin', 'keluar'] or not keterangan" class="btn-primary"/>
                                     </list>
                                 </field>
                             </page>

@@ -48,5 +48,9 @@
         <menuitem id="cdn_absen_halaqoh_menu_act" name="Absensi Halaqoh"
             parent="pesantren_guru.absensi_pengajar" action="cdn_absen_halaqoh_action_guruquran"
             sequence="10" groups="pesantren_guruquran.group_guru_quran_staff" />
+
+        <menuitem id="menu_rekap_absensi_guruquran" name="Rekap Absensi"
+            parent="pesantren_guru.absensi_pengajar" action="pesantren_guru.action_wizard_rekap_absensi_siswa"
+            sequence="20" groups="pesantren_guruquran.group_guru_quran_user,pesantren_guruquran.group_guru_quran_staff,pesantren_guruquran.group_guru_quran_manager" />
     </data>
 </odoo>

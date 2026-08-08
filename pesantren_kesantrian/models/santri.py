@@ -183,13 +183,27 @@ class Santri(models.Model):
         rec = super().create(vals)
         if rec.halaqoh_id and rec.halaqoh_id not in rec.halaqoh_ids:
             rec.halaqoh_ids = [(4, rec.halaqoh_id.id)]
+        if rec.halaqoh_ids:
+            rec.halaqoh_ids._compute_jml_siswa()
         return rec
 
     def write(self, vals):
+        old_halaqohs = self.mapped('halaqoh_ids') | self.mapped('halaqoh_id')
         res = super().write(vals)
         for rec in self:
             if rec.halaqoh_id and rec.halaqoh_id not in rec.halaqoh_ids:
                 rec.halaqoh_ids = [(4, rec.halaqoh_id.id)]
+        new_halaqohs = self.mapped('halaqoh_ids') | self.mapped('halaqoh_id')
+        all_affected = (old_halaqohs | new_halaqohs).exists()
+        if all_affected:
+            all_affected._compute_jml_siswa()
+        return res
+
+    def unlink(self):
+        affected_halaqohs = self.mapped('halaqoh_ids') | self.mapped('halaqoh_id')
+        res = super().unlink()
+        if affected_halaqohs.exists():
+            affected_halaqohs.exists()._compute_jml_siswa()
         return res
     # actions smart button
     # def action_saldo_tagihan(self):

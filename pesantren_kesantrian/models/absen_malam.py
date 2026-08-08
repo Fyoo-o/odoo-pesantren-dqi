@@ -286,6 +286,8 @@ class AbsensiMalam(models.Model):
                     waktu_keluar = self.format_datetime_indonesia(permission.waktu_keluar) if permission.waktu_keluar else 'Tidak tercatat'
                     message = f"Santri Keluar pada {waktu_keluar}, karena {keperluan_name}"
                     
+                    st_kehadiran = 'Pulang-Sakit' if 'sakit' in keperluan_name.lower() else 'Pulang-Izin'
+                    
                     # PERBAIKAN: Ambil foto bukti dari perijinan
                     foto_bukti = permission.foto_bukti if permission.foto_bukti else False
                     
@@ -300,7 +302,7 @@ class AbsensiMalam(models.Model):
                     
                     absen_ids.append((0, 0, {
                         'siswa_id': siswa.id,
-                        'kehadiran_absen': 'keluar',
+                        'kehadiran_absen': st_kehadiran,
                         'keterangan': message,
                         'keterangan_izin': foto_bukti,  # Auto-fill foto bukti
                         'keterangan_izin_filename': nama_file,  # Auto-fill nama file
@@ -403,10 +405,9 @@ class AbsensiMalamLine(models.Model):
     
     kehadiran_absen = fields.Selection([
         ('Hadir', 'Hadir'),
-        ('Izin', 'Izin'),
-        ('keluar', 'Izin Keluar'),
-        ('Sakit', 'Sakit'),
-        ('Alpa', 'Alpa'),
+        ('Pulang-Sakit', 'Pulang-Sakit'),
+        ('Pulang-Izin', 'Pulang-Izin'),
+        ('Pulang-Alpa', 'Pulang-Alpa'),
     ], string='Kehadiran', default="Hadir", required=True)
     
     keterangan                  = fields.Char(string='Keterangan')
