@@ -200,7 +200,7 @@ class AbsensiSiswa(models.Model):
             # Hapus semua baris hanya jika perlu mengisi ulang
             absensi_ids = [(5, 0, 0)]
             siswa_domain = ['|', ('ruang_kelas_id', '=', self.kelas_id.id), ('id', 'in', self.kelas_id.siswa_ids.ids)]
-            siswa_list = self.env['cdn.siswa'].search(siswa_domain)
+            siswa_list = self.env['cdn.siswa'].search(siswa_domain, order='name asc')
             if not siswa_list:
                 return {
                     'warning': {
@@ -310,6 +310,7 @@ class AbsensiSiswa(models.Model):
 class AbsensiSiswaLine(models.Model):
     _name = 'cdn.absensi_siswa_lines'
     _description = 'Data Absensi Siswa Lines'
+    _order = 'name asc, id asc'
 
     absensi_id = fields.Many2one(
         comodel_name='cdn.absensi_siswa', string='Absensi Siswa', ondelete='cascade')
