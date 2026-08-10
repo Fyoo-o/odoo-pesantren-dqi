@@ -126,7 +126,6 @@ class AbsensiMalam(models.Model):
     
     state           = fields.Selection([
         ('draft', 'Draft'),
-        ('proses', 'Proses'),
         ('done', 'Selesai'),
     ], default='draft', string='Status')
     
@@ -426,7 +425,7 @@ class AbsensiMalam(models.Model):
         self.write({'state': 'draft'})
 
     def action_proses(self):
-        self.write({'state': 'proses'})
+        self.write({'state': 'done'})
         
     def action_done(self):
         self.write({'state': 'done'})
