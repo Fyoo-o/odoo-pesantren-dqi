@@ -82,6 +82,7 @@
         'wizards/Akun/open_block.xml',
         'wizards/wizard_rekap_absensi.xml',
         'wizards/wizard_rekap_penilaian.xml',
+        'wizards/wizard_rekap_tahsin_tahfidz.xml',
         'wizards/menu.xml',
     ],
     'assets': {

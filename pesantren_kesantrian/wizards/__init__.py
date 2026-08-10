@@ -5,3 +5,4 @@ from . import Akun
 from . import Register
 from . import wizard_rekap_absensi
 from . import wizard_rekap_penilaian
+from . import wizard_rekap_tahsin_tahfidz

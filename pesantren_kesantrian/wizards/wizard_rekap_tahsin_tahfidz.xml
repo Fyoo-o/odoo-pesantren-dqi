@@ -1,0 +1,80 @@
+<odoo>
+    <!-- Separate List View for Recap Lines -->
+    <record id="view_wizard_rekap_tahsin_tahfidz_line_tree" model="ir.ui.view">
+        <field name="name">cdn.wizard_rekap_tahsin_tahfidz_line.tree</field>
+        <field name="model">cdn.wizard_rekap_tahsin_tahfidz_line</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false" delete="false">
+                <field name="no" string="No" />
+                <field name="nama" string="Nama" />
+                <field name="tahsin" string="Tahsin" />
+                <field name="murojaah" string="Murojaah" />
+                <field name="hafalan_baru" string="Hafalan Baru" />
+                <field name="jml_semua_hafalan" string="Jumlah Semua Hafalan" />
+                <field name="nilai" string="Nilai" />
+                <field name="keterangan" string="Keterangan" />
+            </list>
+        </field>
+    </record>
+
+    <!-- Main Wizard Form View -->
+    <record id="view_wizard_rekap_tahsin_tahfidz_form" model="ir.ui.view">
+        <field name="name">cdn.wizard_rekap_tahsin_tahfidz.form</field>
+        <field name="model">cdn.wizard_rekap_tahsin_tahfidz</field>
+        <field name="arch" type="xml">
+            <form string="Rekap Tahsin Tahfidz">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Laporan Pencapaian Tahfizh</h1>
+                    </div>
+                    <group>
+                        <group name="halaqoh_info" string="Data Halaqoh">
+                            <field name="halaqoh_id"
+                                options="{'no_create': True, 'no_open': True}" />
+                            <field name="pembimbing_id" />
+                        </group>
+                        <group name="periode" string="Periode">
+                            <field name="bulan" />
+                            <field name="tahun" />
+                        </group>
+                    </group>
+
+                    <notebook invisible="not halaqoh_id">
+                        <page string="Detail Pencapaian">
+                            <field name="rekap_line_ids"
+                                context="{'list_view_ref': 'pesantren_kesantrian.view_wizard_rekap_tahsin_tahfidz_line_tree'}" />
+                        </page>
+                    </notebook>
+
+                    <!-- Hidden fields for export -->
+                    <group invisible="1">
+                        <field name="data_file" filename="file_name" />
+                        <field name="file_name" />
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_export_xlsx" string="Export XLSX" type="object"
+                        class="btn-primary" invisible="not rekap_line_ids" />
+                    <button name="action_export_csv" string="Export CSV" type="object"
+                        class="btn-secondary" invisible="not rekap_line_ids" />
+                    <button string="Tutup" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_wizard_rekap_tahsin_tahfidz" model="ir.actions.act_window">
+        <field name="name">Rekap Tahsin Tahfidz</field>
+        <field name="res_model">cdn.wizard_rekap_tahsin_tahfidz</field>
+        <field name="view_mode" eval="'form'" />
+        <field name="target" eval="'new'" />
+    </record>
+
+    <!-- Menu Item under Rekap -->
+    <menuitem id="menu_rekap_tahsin_tahfidz"
+        name="Rekap Tahsin Tahfidz"
+        parent="pesantren_kesantrian.kepesantrenan_rekap_menu_categ"
+        action="action_wizard_rekap_tahsin_tahfidz"
+        sequence="30" />
+</odoo>
