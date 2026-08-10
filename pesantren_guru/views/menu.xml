@@ -10,10 +10,20 @@
             groups="pesantren_guruquran.group_guru_quran_staff" />
         <menuitem id="kepesantrenan_dqi" name="Tahfidz dan Tahsin" parent="tahfidz_tahsin"
             sequence="18" groups="pesantren_guruquran.group_guru_quran_staff" />
+        <menuitem id="guru_rekap_kepesantrenan_categ" name="Rekap" parent="tahfidz_tahsin"
+            sequence="30" groups="pesantren_guruquran.group_guru_quran_staff,pesantren_guru.group_guru_staff" />
+        <menuitem id="guru_rekap_penilaian_santri_menu" name="Rekap Penilaian Halaqoh" parent="guru_rekap_kepesantrenan_categ"
+            action="pesantren_kesantrian.action_wizard_rekap_penilaian" sequence="10" />
+        <menuitem id="guru_rekap_tahsin_tahfidz_menu" name="Rekap Tahsin Tahfidz" parent="guru_rekap_kepesantrenan_categ"
+            action="pesantren_kesantrian.action_wizard_rekap_tahsin_tahfidz" sequence="20" />
+        <menuitem id="guru_rekap_absensi_santri_menu" name="Rekap Absensi Santri" parent="guru_rekap_kepesantrenan_categ"
+            action="pesantren_kesantrian.action_wizard_rekap_absensi" sequence="30" />
         <menuitem id="aktivitas_menu_categ" name="Aktivitas" parent="guru_menu_root" sequence="20"
             groups="pesantren_guru.group_guru_staff" />
         <menuitem id="aktivitas_penilaian_menu_categ" name="Penilaian" parent="aktivitas_menu_categ"
             sequence="40" />
+        <menuitem id="guru_rekap_penilaian_aktivitas_menu" name="Rekap Penilaian Halaqoh" parent="aktivitas_penilaian_menu_categ"
+            action="pesantren_kesantrian.action_wizard_rekap_penilaian" sequence="50" />
         <menuitem id="pengaturan_menu_categ" name="Pengaturan" parent="guru_menu_root" sequence="30"
             groups="pesantren_guru.group_guru_staff,pesantren_guruquran.group_guru_quran_staff" />
     </data>
