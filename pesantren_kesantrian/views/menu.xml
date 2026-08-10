@@ -23,9 +23,6 @@
 
         <menuitem id="aktivitas_kesantrian_menu_categ" name="Aktivitas" sequence="30"
             parent="kesantrian_menu_root" />
-        <menuitem id="kesantrian_mutasi_saldo_menu" name="Mutasi Saldo"
-            parent="aktivitas_kesantrian_menu_categ"
-            action="pesantren_keuangan.cdn_uang_saku_action" sequence="50" />
 
         <menuitem id="pengaturan_menu_categ" name="Pengaturan" sequence="40"
             parent="kesantrian_menu_root" groups="pesantren_kesantrian.group_kesantrian_manager">
