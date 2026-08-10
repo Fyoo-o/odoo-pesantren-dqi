@@ -105,7 +105,7 @@ from odoo.exceptions import UserError
 class AbsensiMalam(models.Model):
     _name = 'cdn.absensi_malam'
     _description = 'Absensi Malam Santri'
-    _order = 'tgl desc'
+    _order = 'tgl desc, id desc'
 
     name            = fields.Char(string='No. Referensi', readonly=True)
     tgl             = fields.Date(string='Tanggal', required=True, default=lambda self: date.today())

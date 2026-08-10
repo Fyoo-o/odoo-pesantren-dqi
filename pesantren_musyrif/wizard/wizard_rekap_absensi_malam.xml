@@ -1,0 +1,99 @@
+<odoo>
+    <!-- Separate List View for Recap Lines -->
+    <record id="view_wizard_rekap_absensi_malam_line_tree" model="ir.ui.view">
+        <field name="name">cdn.wizard_rekap_absensi_malam_line.tree</field>
+        <field name="model">cdn.wizard_rekap_absensi_malam_line</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false" delete="false">
+                <field name="no" string="#" />
+                <field name="tanggal" />
+                <field name="kamar_id" />
+                <field name="nis" />
+                <field name="nama" />
+                <field name="kehadiran"
+                    decoration-bf="True"
+                    decoration-danger="kehadiran == 'Alpa'"
+                    decoration-warning="kehadiran in ['Izin', 'keluar']"
+                    decoration-success="kehadiran == 'Hadir'"
+                    decoration-muted="kehadiran == 'Sakit'" />
+                <field name="keterangan" />
+            </list>
+        </field>
+    </record>
+
+    <!-- Main Wizard Form View -->
+    <record id="view_wizard_rekap_absensi_malam_form" model="ir.ui.view">
+        <field name="name">cdn.wizard_rekap_absensi_malam.form</field>
+        <field name="model">cdn.wizard_rekap_absensi_malam</field>
+        <field name="arch" type="xml">
+            <form string="Rekap Absensi Malam">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Rekap Absensi Malam Santri</h1>
+                    </div>
+                    <group>
+                        <group name="pencarian" string="Filter Data">
+                            <field name="musyrif_id" options="{'no_create': True, 'no_open': True}" />
+                            <field name="kamar_id" options="{'no_create': True, 'no_open': True}" />
+                        </group>
+                        <group name="periode" string="Periode">
+                            <field name="tgl_awal" />
+                            <field name="tgl_akhir" />
+                        </group>
+                    </group>
+
+                    <!-- Summary Cards -->
+                    <group string="Ringkasan Kehadiran" col="5">
+                        <field name="jml_hadir" string="Hadir" />
+                        <field name="jml_izin" string="Izin" />
+                        <field name="jml_sakit" string="Sakit" />
+                        <field name="jml_alpa" string="Alpa" />
+                        <field name="jml_keluar" string="Izin Keluar" />
+                    </group>
+
+                    <notebook>
+                        <page string="Detail Kehadiran">
+                            <field name="rekap_line_ids"
+                                context="{'list_view_ref': 'pesantren_musyrif.view_wizard_rekap_absensi_malam_line_tree'}" />
+                        </page>
+                    </notebook>
+
+                    <!-- Hidden fields for export -->
+                    <group invisible="1">
+                        <field name="data_file" filename="file_name" />
+                        <field name="file_name" />
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_export_xlsx" string="Export XLSX" type="object"
+                        class="btn-primary" invisible="not rekap_line_ids" />
+                    <button name="action_export_csv" string="Export CSV" type="object"
+                        class="btn-secondary" invisible="not rekap_line_ids" />
+                    <button string="Tutup" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action Window -->
+    <record id="action_wizard_rekap_absensi_malam" model="ir.actions.act_window">
+        <field name="name">Rekap Absensi Malam</field>
+        <field name="res_model">cdn.wizard_rekap_absensi_malam</field>
+        <field name="view_mode" eval="'form'" />
+        <field name="target" eval="'new'" />
+    </record>
+
+    <!-- Menu Item for Musyrif Module -->
+    <menuitem id="menu_musyrif_rekap_absensi_malam"
+        name="Rekap Absensi Malam"
+        parent="pesantren_musyrif.musyrif_aktivitas_menu_categ"
+        action="action_wizard_rekap_absensi_malam"
+        sequence="55" />
+
+    <!-- Menu Item for Kesantrian Module -->
+    <menuitem id="menu_kesantrian_rekap_absensi_malam"
+        name="Rekap Absensi Malam"
+        parent="pesantren_kesantrian.kepesantrenan_rekap_menu_categ"
+        action="action_wizard_rekap_absensi_malam"
+        sequence="25" />
+</odoo>

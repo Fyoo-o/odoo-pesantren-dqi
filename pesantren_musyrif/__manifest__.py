@@ -62,6 +62,7 @@
         # wizard
         'wizard/res_partner_change_pin.xml',
         'wizard/saldo.xml',
+        'wizard/wizard_rekap_absensi_malam.xml',
         
         # views
         'views/cek_santri.xml',

@@ -6,7 +6,7 @@
             <field name="name">cdn.absensi_malam.view.list</field>
             <field name="model">cdn.absensi_malam</field>
             <field name="arch" type="xml">
-                <list default_order="id desc">
+                <list default_order="tgl desc, id desc">
                     <field name="row_number" string="#" />
                     <field name="name"/>
                     <field name="tgl"/>
