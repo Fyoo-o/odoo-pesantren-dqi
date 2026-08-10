@@ -72,8 +72,6 @@
         'views/pelanggaran.xml',
         'views/kesehatan.xml',
         'views/prestasi_siswa.xml',
-        'views/uang_saku.xml',
-        'views/pos_wallet_transaction.xml',
         # 'views/keterangan.xml',
 
     ],

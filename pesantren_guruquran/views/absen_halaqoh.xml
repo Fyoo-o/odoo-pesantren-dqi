@@ -48,5 +48,10 @@
         <menuitem id="cdn_absen_halaqoh_menu_act" name="Absensi Halaqoh"
             parent="pesantren_guru.absensi_pengajar" action="cdn_absen_halaqoh_action_guruquran"
             sequence="10" groups="pesantren_guruquran.group_guru_quran_staff" />
+
+        <!-- 🔑 Berikan hak akses menu Rekap Absensi tunggal kepada grup Guru Qur'an -->
+        <record id="pesantren_guru.menu_rekap_absensi_siswa" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4, ref('pesantren_guruquran.group_guru_quran_user')), (4, ref('pesantren_guruquran.group_guru_quran_staff')), (4, ref('pesantren_guruquran.group_guru_quran_manager')), (4, ref('pesantren_guru.group_guru_user')), (4, ref('pesantren_guru.group_guru_staff')), (4, ref('pesantren_guru.group_guru_manager'))]"/>
+        </record>
     </data>
 </odoo>

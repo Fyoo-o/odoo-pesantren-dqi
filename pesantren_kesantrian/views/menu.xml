@@ -2,6 +2,10 @@
 <odoo>
 
     <data>
+        <!-- Hapus menu yang sudah tidak terpakai dari database -->
+        <delete model="ir.ui.menu" id="kesantrian_mutasi_saldo_menu"/>
+        <delete model="ir.ui.menu" id="wizard_akun_pencairan_saldo"/>
+        <delete model="ir.ui.menu" id="wizard_keuangan_santri"/>
 
         <!-- This Menu Item will appear in the Upper bar, that's why It needs NO parent or action -->
         <menuitem id="kesantrian_menu_root" name="Kesantrian" sequence="10"
@@ -23,9 +27,6 @@
 
         <menuitem id="aktivitas_kesantrian_menu_categ" name="Aktivitas" sequence="30"
             parent="kesantrian_menu_root" />
-        <menuitem id="kesantrian_mutasi_saldo_menu" name="Mutasi Saldo"
-            parent="aktivitas_kesantrian_menu_categ"
-            action="pesantren_keuangan.cdn_uang_saku_action" sequence="50" />
 
         <menuitem id="pengaturan_menu_categ" name="Pengaturan" sequence="40"
             parent="kesantrian_menu_root" groups="pesantren_kesantrian.group_kesantrian_manager">

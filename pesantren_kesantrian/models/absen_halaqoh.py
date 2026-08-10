@@ -151,7 +151,7 @@ class Absenhalaqoh(models.Model):
         halaqoh = self.halaqoh_id
         if halaqoh:
             absen_ids = [(5, 0, 0)]
-            for siswa in halaqoh.siswa_ids:
+            for siswa in halaqoh.siswa_ids.sorted(key=lambda s: (s.name or '').lower()):
                 permission = self.env['cdn.perijinan'].search([
                     ('siswa_id', '=', siswa.id),
                     ('state', '=', 'Permission')
@@ -243,6 +243,7 @@ class Absenhalaqoh(models.Model):
 class AbsenTahsinQuranLine(models.Model):
     _name = 'cdn.absen_halaqoh_line'
     _description = 'Tabel Absen Halaqoh Line'
+    _order = 'name asc, id asc'
 
     absen_id = fields.Many2one(
         'cdn.absen_halaqoh', string='Absen', ondelete='cascade')

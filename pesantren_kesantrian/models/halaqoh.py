@@ -125,40 +125,45 @@ class Halaqoh(models.Model):
     #             siswa.halaqoh_ids = [(4, rec.id)]  # tambahkan ke M2M
     #             if not siswa.halaqoh_id:
     #                 siswa.halaqoh_id = rec          # isi halaqoh utama kalau kosong  
+
+
+    @api.constrains('siswa_ids', 'fiscalyear_id')
+    def _check_unique_siswa_per_fiscalyear(self):
+        for rec in self:
+            if not rec.fiscalyear_id or not rec.siswa_ids:
+                continue
+            conflicting_students = []
+            for siswa in rec.siswa_ids:
+                other_halaqohs = siswa.halaqoh_ids.filtered(
+                    lambda h: h.id != rec.id and h.fiscalyear_id == rec.fiscalyear_id
+                )
+                if other_halaqohs:
+                    h_names = ", ".join(other_halaqohs.mapped('name'))
+                    conflicting_students.append(f"• {siswa.name} (terdaftar di halaqoh: {h_names})")
+            if conflicting_students:
+                msg = "\n".join(conflicting_students)
+                raise UserError(
+                    f"Santri berikut sudah terdaftar di halaqoh lain pada Tahun Ajaran {rec.fiscalyear_id.name}:\n\n{msg}\n\n"
+                    f"Satu santri hanya boleh terdaftar di 1 halaqoh per Tahun Ajaran. "
+                    f"Silakan hapus/keluarkan santri tersebut dari halaqoh lama terlebih dahulu."
+                )
+
     def konfirmasi(self):
-            for rec in self:
-                # TIDAK ADA validasi konflik tahun ajaran!
-                # Karena santri BOLEH masuk multiple halaqah di tahun ajaran yang sama
-                
-                rec.status = 'konfirm'
-                
-                # Update relasi Many2many dan Many2one
-                for siswa in rec.siswa_ids:
-                    # Tambahkan ke M2M jika belum ada
-                    if rec.id not in siswa.halaqoh_ids.ids:
-                        siswa.halaqoh_ids = [(4, rec.id)]
-                    
-                    # Set sebagai halaqoh utama HANYA jika kosong
-                    # Atau biarkan user yang pilih manual halaqoh utamanya
-                    if not siswa.halaqoh_id:
-                        siswa.halaqoh_id = rec
-          
-    # def draft(self):
-    #     for rec in self:
-    #         rec.status = 'draft'
-    
+        for rec in self:
+            rec.status = 'konfirm'
+            for siswa in rec.siswa_ids:
+                if rec.id not in siswa.halaqoh_ids.ids:
+                    siswa.halaqoh_ids = [(4, rec.id)]
+                siswa.halaqoh_id = rec.id
+
     def draft(self):
         for rec in self:
             rec.status = 'draft'
-            
-            # Ketika di-draft, bersihkan halaqoh_id (Many2one) jika ref ke halaqah ini
             for siswa in rec.siswa_ids:
                 if siswa.halaqoh_id == rec:
-                    # Cari halaqah lain yang terkonfirmasi (prioritas tahun ajaran sama)
                     other_confirmed = siswa.halaqoh_ids.filtered(
                         lambda h: h.id != rec.id and h.status == 'konfirm'
                     )
-                    # Prioritaskan halaqah di tahun ajaran yang sama
                     same_year = other_confirmed.filtered(lambda h: h.fiscalyear_id == rec.fiscalyear_id)
                     siswa.halaqoh_id = same_year[0] if same_year else (other_confirmed[0] if other_confirmed else False)
     
@@ -170,6 +175,18 @@ class Halaqoh(models.Model):
     def _compute_jml_siswa(self):
         for record in self:
             record.jml_siswa = len(record.siswa_ids)
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        recs = super().create(vals_list)
+        recs._compute_jml_siswa()
+        return recs
+
+    def write(self, vals):
+        res = super().write(vals)
+        if 'siswa_ids' in vals:
+            self._compute_jml_siswa()
+        return res
             
     # _sql_constraints = [
     #     ('unique_halaqoh_name', 'unique(name)', 'Nama Halaqoh sudah ada!')

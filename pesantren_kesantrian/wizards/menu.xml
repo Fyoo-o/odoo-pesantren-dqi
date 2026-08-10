@@ -13,12 +13,10 @@
 
         <!-- Akun Santri -->
         <menuitem id="wizard_akun_santri" name="Akun Santri" parent="wizard_cari_santri" sequence="7">
-            <menuitem id="wizard_keuangan_santri" name="Keuangan" sequence="5"/>
             <menuitem id="wizard_pengaturan_akun_santri" name="Pengaturan Akun" sequence="5"/>
         </menuitem>
 
         <!-- Children -->
-        <menuitem id="wizard_akun_pencairan_saldo" name="Pencairan Saldo" action="action_wizard_pencairan_saldo" parent="wizard_keuangan_santri" sequence="10"/>
         <menuitem id="wizard_akun_penonaktifan_saldo" name="Penonaktifan Akun" action="action_wizard_penonaktifan_saldo" parent="wizard_pengaturan_akun_santri" sequence="15"/>
         <menuitem id="wizard_blokir_saldo_santri" name="Pemblokir Akun" action="action_wizard_blokir_saldo" parent="wizard_pengaturan_akun_santri" sequence="20"/> 
         <menuitem id="wizard_open_account" name="Pengaktifkan Akun" action="action_wizard_open_account" parent="wizard_pengaturan_akun_santri" sequence="25"/> 

@@ -137,6 +137,50 @@ class AbsensiMalam(models.Model):
         for index, record in enumerate(self):
             record.row_number = index + 1
 
+    @api.constrains('kamar_id', 'tgl')
+    def _check_unique_absensi_malam(self):
+        for record in self:
+            if record.kamar_id and record.tgl:
+                existing = self.search([
+                    ('kamar_id', '=', record.kamar_id.id),
+                    ('tgl', '=', record.tgl),
+                    ('id', '!=', record.id)
+                ], limit=1)
+                if existing:
+                    tgl_str = record.tgl.strftime('%d/%m/%Y') if record.tgl else '-'
+                    kamar_name = record.kamar_id.name if record.kamar_id else '-'
+                    musyrif_name = existing.musyrif_id.name if existing.musyrif_id else 'Tidak diketahui'
+                    ref_no = existing.name or '-'
+                    raise UserError(
+                        f"⛔ Absensi Malam untuk Kamar '{kamar_name}' pada tanggal {tgl_str} sudah pernah dibuat!\n\n"
+                        f"• No. Referensi: {ref_no}\n"
+                        f"• Musyrif Pengabsen: {musyrif_name}\n\n"
+                        f"Absensi Malam dibatasi hanya 1 kali sehari per Kamar untuk mencegah duplikasi data."
+                    )
+
+    @api.onchange('kamar_id', 'tgl')
+    def _onchange_check_duplikasi_kamar(self):
+        if self.kamar_id and self.tgl:
+            existing = self.search([
+                ('kamar_id', '=', self.kamar_id.id),
+                ('tgl', '=', self.tgl),
+                ('id', '!=', self._origin.id if self._origin else False)
+            ], limit=1)
+            if existing:
+                tgl_str = self.tgl.strftime('%d/%m/%Y') if self.tgl else '-'
+                kamar_name = self.kamar_id.name if self.kamar_id else '-'
+                musyrif_name = existing.musyrif_id.name if existing.musyrif_id else 'Tidak diketahui'
+                ref_no = existing.name or '-'
+                return {
+                    'warning': {
+                        'title': "⚠️ Absensi Malam Sudah Ada!",
+                        'message': (
+                            f"Absensi Malam untuk Kamar '{kamar_name}' pada tanggal {tgl_str} sudah pernah dibuat ({ref_no} oleh {musyrif_name}).\n"
+                            f"Mohon periksa data absensi yang sudah ada."
+                        )
+                    }
+                }
+
     # ---------- DEFAULT & DOMAIN FUNCTION ----------
     def _domain_musyrif(self):
         admin_user_ids = self.env.ref('base.group_system').users.ids
@@ -262,7 +306,7 @@ class AbsensiMalam(models.Model):
             absen_ids = [(5, 0, 0)]
 
             # Ambil semua santri di kamar yang dipilih
-            siswa_list = self.env['cdn.siswa'].search([('kamar_id', '=', kamar.id)])
+            siswa_list = self.env['cdn.siswa'].search([('kamar_id', '=', kamar.id)], order='name asc')
 
             # Jika tidak ada santri, beri peringatan
             if not siswa_list:
@@ -286,6 +330,8 @@ class AbsensiMalam(models.Model):
                     waktu_keluar = self.format_datetime_indonesia(permission.waktu_keluar) if permission.waktu_keluar else 'Tidak tercatat'
                     message = f"Santri Keluar pada {waktu_keluar}, karena {keperluan_name}"
                     
+                    st_kehadiran = 'Pulang-Sakit' if 'sakit' in keperluan_name.lower() else 'Pulang-Izin'
+                    
                     # PERBAIKAN: Ambil foto bukti dari perijinan
                     foto_bukti = permission.foto_bukti if permission.foto_bukti else False
                     
@@ -300,7 +346,7 @@ class AbsensiMalam(models.Model):
                     
                     absen_ids.append((0, 0, {
                         'siswa_id': siswa.id,
-                        'kehadiran_absen': 'keluar',
+                        'kehadiran_absen': st_kehadiran,
                         'keterangan': message,
                         'keterangan_izin': foto_bukti,  # Auto-fill foto bukti
                         'keterangan_izin_filename': nama_file,  # Auto-fill nama file
@@ -389,6 +435,7 @@ class AbsensiMalam(models.Model):
 class AbsensiMalamLine(models.Model):
     _name           = 'cdn.absensi_malam_line'
     _description    = 'Detail Absensi Malam Santri'
+    _order          = 'name asc, id asc'
 
     absen_id    = fields.Many2one('cdn.absensi_malam', string='Absen', ondelete='cascade', required=True)
     tanggal     = fields.Date(string='Tgl Absen', related='absen_id.tgl', readonly=True, store=True)
@@ -403,10 +450,9 @@ class AbsensiMalamLine(models.Model):
     
     kehadiran_absen = fields.Selection([
         ('Hadir', 'Hadir'),
-        ('Izin', 'Izin'),
-        ('keluar', 'Izin Keluar'),
-        ('Sakit', 'Sakit'),
-        ('Alpa', 'Alpa'),
+        ('Pulang-Sakit', 'Pulang-Sakit'),
+        ('Pulang-Izin', 'Pulang-Izin'),
+        ('Pulang-Alpa', 'Pulang-Alpa'),
     ], string='Kehadiran', default="Hadir", required=True)
     
     keterangan                  = fields.Char(string='Keterangan')
