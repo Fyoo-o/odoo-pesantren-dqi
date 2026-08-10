@@ -126,7 +126,6 @@ class AbsensiMalam(models.Model):
     
     state           = fields.Selection([
         ('draft', 'Draft'),
-        ('proses', 'Proses'),
         ('done', 'Selesai'),
     ], default='draft', string='Status')
     
@@ -148,7 +147,7 @@ class AbsensiMalam(models.Model):
                 ], limit=1)
                 if existing:
                     tgl_str = record.tgl.strftime('%d/%m/%Y') if record.tgl else '-'
-                    kamar_name = record.kamar_id.name if record.kamar_id else '-'
+                    kamar_name = record.kamar_id.display_name if record.kamar_id else '-'
                     musyrif_name = existing.musyrif_id.name if existing.musyrif_id else 'Tidak diketahui'
                     ref_no = existing.name or '-'
                     raise UserError(
@@ -168,7 +167,7 @@ class AbsensiMalam(models.Model):
             ], limit=1)
             if existing:
                 tgl_str = self.tgl.strftime('%d/%m/%Y') if self.tgl else '-'
-                kamar_name = self.kamar_id.name if self.kamar_id else '-'
+                kamar_name = self.kamar_id.display_name if self.kamar_id else '-'
                 musyrif_name = existing.musyrif_id.name if existing.musyrif_id else 'Tidak diketahui'
                 ref_no = existing.name or '-'
                 return {
@@ -426,7 +425,7 @@ class AbsensiMalam(models.Model):
         self.write({'state': 'draft'})
 
     def action_proses(self):
-        self.write({'state': 'proses'})
+        self.write({'state': 'done'})
         
     def action_done(self):
         self.write({'state': 'done'})
