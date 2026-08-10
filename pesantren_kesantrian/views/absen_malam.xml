@@ -49,10 +49,9 @@
             <field name="arch" type="xml">
                 <form string="Absensi Malam Santri">
                     <header>
-                        <button string="Proses" name="action_proses" type="object" class="oe_highlight" invisible="state in ['proses','done']"/>
-                        <button string="Done" name="action_done" type="object" class="oe_highlight" invisible="state in ['done','draft']"/>
+                        <button string="Done" name="action_proses" type="object" class="oe_highlight" invisible="state == 'done'"/>
                         <button string="Ubah ke Draft" name="action_draft" type="object" class="btn btn-secondary" invisible="state == 'draft'"/>
-                        <field name="state" widget="statusbar" statusbar_visible="draft,proses,done"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
                     </header>
                     <sheet>
                         <!-- Filter Absensi Malam -->
