@@ -2,6 +2,10 @@
 <odoo>
 
     <data>
+        <!-- Hapus menu yang sudah tidak terpakai dari database -->
+        <delete model="ir.ui.menu" id="kesantrian_mutasi_saldo_menu"/>
+        <delete model="ir.ui.menu" id="wizard_akun_pencairan_saldo"/>
+        <delete model="ir.ui.menu" id="wizard_keuangan_santri"/>
 
         <!-- This Menu Item will appear in the Upper bar, that's why It needs NO parent or action -->
         <menuitem id="kesantrian_menu_root" name="Kesantrian" sequence="10"
