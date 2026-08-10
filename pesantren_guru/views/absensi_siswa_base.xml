@@ -59,7 +59,6 @@
                         </group>
                         <notebook>
                             <page string="Absensi Siswa">
-                                <button name="action_sort_siswa" string="Urutkan A-Z" type="object" class="btn-secondary mb-2" icon="fa-sort-alpha-asc" invisible="state == 'done'" />
                                 <field name="absensi_ids" nolabel="1" readonly="1">
                                     <list create="false" edit="false" delete="false">
                                         <field name="row_number" string="#" />

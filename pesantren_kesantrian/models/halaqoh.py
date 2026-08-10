@@ -125,18 +125,7 @@ class Halaqoh(models.Model):
     #             siswa.halaqoh_ids = [(4, rec.id)]  # tambahkan ke M2M
     #             if not siswa.halaqoh_id:
     #                 siswa.halaqoh_id = rec          # isi halaqoh utama kalau kosong  
-    @api.onchange('fiscalyear_id')
-    def _onchange_fiscalyear_id_siswa_domain(self):
-        domain = [('active', '=', True)]
-        if self.fiscalyear_id:
-            other_halaqohs = self.env['cdn.halaqoh'].search([
-                ('fiscalyear_id', '=', self.fiscalyear_id.id),
-                ('id', '!=', self._origin.id if self._origin else False)
-            ])
-            assigned_siswa_ids = other_halaqohs.mapped('siswa_ids').ids
-            if assigned_siswa_ids:
-                domain.append(('id', 'not in', assigned_siswa_ids))
-        return {'domain': {'siswa_ids': domain}}
+
 
     @api.constrains('siswa_ids', 'fiscalyear_id')
     def _check_unique_siswa_per_fiscalyear(self):

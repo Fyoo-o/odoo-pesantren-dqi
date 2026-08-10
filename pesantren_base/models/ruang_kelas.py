@@ -35,7 +35,7 @@ class ruang_kelas(models.Model):
         'siswa_id',
         ondelete='cascade',
         string='Daftar Siswa',
-        domain="[('active', '=', True), ('jenjang', '=', jenjang), '|', ('ruang_kelas_id', '=', False), ('ruang_kelas_id', '=', id)]"
+        domain="[('active', '=', True), ('jenjang', '=', jenjang)]"
     )
 
     tahunajaran_id = fields.Many2one(
@@ -377,6 +377,24 @@ class ruang_kelas(models.Model):
                 'res_id': message_id.id,
                 'target': 'new'
             }
+
+    @api.constrains('siswa_ids', 'tahunajaran_id')
+    def _check_unique_siswa_per_tahunajaran(self):
+        for rec in self:
+            if not rec.tahunajaran_id or not rec.siswa_ids:
+                continue
+            conflicting_students = []
+            for siswa in rec.siswa_ids:
+                if siswa.ruang_kelas_id and siswa.ruang_kelas_id.id != rec.id and siswa.ruang_kelas_id.tahunajaran_id == rec.tahunajaran_id:
+                    k_name = siswa.ruang_kelas_id.name.name if (siswa.ruang_kelas_id.name and hasattr(siswa.ruang_kelas_id.name, 'name')) else (siswa.ruang_kelas_id.nama_kelas or '-')
+                    conflicting_students.append(f"• {siswa.name} (terdaftar di kelas: {k_name})")
+            if conflicting_students:
+                msg = "\n".join(conflicting_students)
+                raise UserError(
+                    f"⛔ Santri berikut sudah terdaftar di kelas lain pada Tahun Pelajaran {rec.tahunajaran_id.name}:\n\n{msg}\n\n"
+                    f"Satu santri hanya boleh terdaftar di 1 kelas per Tahun Pelajaran. "
+                    f"Silakan hapus/keluarkan santri tersebut dari kelas lama terlebih dahulu."
+                )
 
     def draft(self):
         for rec in self:
