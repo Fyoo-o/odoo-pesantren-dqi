@@ -75,7 +75,6 @@
         'wizards/wizard_santridata.xml',
         'wizards/wizard_checkin.xml',
         'wizards/Register/register.xml',
-        'wizards/Akun/pencairan_saldo.xml',
         'wizards/Akun/penonaktifan.xml',
         'wizards/Akun/blokir.xml',
         'wizards/Akun/open_account.xml',
