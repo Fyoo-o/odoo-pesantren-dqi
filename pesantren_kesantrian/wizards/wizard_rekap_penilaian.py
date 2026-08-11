@@ -5,9 +5,15 @@ import csv
 import io
 
 try:
-    import xlsxwriter
+    from docx import Document as DocxDocument
+    from docx.shared import Pt, Cm, RGBColor
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    from docx.enum.table import WD_TABLE_ALIGNMENT
+    from docx.oxml import parse_xml
+    from docx.oxml.ns import nsdecls
+    HAS_DOCX = True
 except ImportError:
-    xlsxwriter = None
+    HAS_DOCX = False
 
 
 class WizardRekapPenilaian(models.TransientModel):
@@ -151,59 +157,112 @@ class WizardRekapPenilaian(models.TransientModel):
             'target': 'self',
         }
 
-    def action_export_xlsx(self):
-        if not xlsxwriter:
+    def action_export_docx(self):
+        if not HAS_DOCX:
             raise UserError(
-                _("Modul 'xlsxwriter' tidak ditemukan. Silakan hubungi administrator."))
+                _("Modul 'python-docx' tidak ditemukan. Silakan hubungi administrator."))
 
         self._onchange_rekap_params()
         if not self.rekap_line_ids:
             raise UserError(_("Tidak ada data untuk diekspor."))
 
+        doc = DocxDocument()
+
+        # Page margins
+        for section in doc.sections:
+            section.top_margin = Cm(1.5)
+            section.bottom_margin = Cm(1.5)
+            section.left_margin = Cm(1.5)
+            section.right_margin = Cm(1.5)
+
+        # ---- Title ----
+        p_title = doc.add_paragraph()
+        p_title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_title.paragraph_format.space_after = Pt(12)
+        r_title = p_title.add_run('Rekap Penilaian Santri (Halaqoh)')
+        r_title.bold = True
+        r_title.font.size = Pt(14)
+        r_title.font.name = 'Times New Roman'
+
+        # ---- Info ----
+        info_data = [
+            ('Nama Siswa', self.siswa_id.name or '-'),
+            ('NIS', self.siswa_id.nis or '-'),
+            ('Periode', f'{self.tgl_awal} s/d {self.tgl_akhir}'),
+        ]
+        for label, value in info_data:
+            p = doc.add_paragraph()
+            p.paragraph_format.space_before = Pt(0)
+            p.paragraph_format.space_after = Pt(2)
+            p.paragraph_format.line_spacing = 1.0
+            r_l = p.add_run(f'{label:<20}')
+            r_l.bold = True
+            r_l.font.size = Pt(10)
+            r_l.font.name = 'Times New Roman'
+            r_v = p.add_run(f': {value}')
+            r_v.font.size = Pt(10)
+            r_v.font.name = 'Times New Roman'
+
+        doc.add_paragraph()
+
+        # ---- Data Table ----
+        headers = ['No', 'Tanggal', 'Kegiatan', 'Materi', 'Nilai', 'Predikat', 'Keterangan']
+        col_widths = [Cm(1.0), Cm(2.5), Cm(2.5), Cm(5.0), Cm(1.5), Cm(2.0), Cm(3.5)]
+
+        num_rows = len(self.rekap_line_ids) + 1
+        table = doc.add_table(rows=num_rows, cols=7)
+        table.style = 'Table Grid'
+        table.alignment = WD_TABLE_ALIGNMENT.CENTER
+        table.autofit = False
+
+        # Set column widths
+        for i, width in enumerate(col_widths):
+            for row_obj in table.rows:
+                row_obj.cells[i].width = width
+
+        # Header row
+        for i, header in enumerate(headers):
+            cell = table.rows[0].cells[i]
+            cell.text = ''
+            p = cell.paragraphs[0]
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            run = p.add_run(header)
+            run.bold = True
+            run.font.color.rgb = RGBColor(255, 255, 255)
+            run.font.size = Pt(9)
+            run.font.name = 'Times New Roman'
+            shd = parse_xml(f'<w:shd {nsdecls("w")} w:fill="D3D3D3"/>')
+            cell._tc.get_or_add_tcPr().append(shd)
+
+        # Data rows
+        for idx, line in enumerate(self.rekap_line_ids):
+            row_idx = idx + 1
+            tgl_str = line.tanggal.strftime('%d/%m/%Y') if line.tanggal else '-'
+            data = [
+                str(idx + 1), tgl_str, line.kegiatan or '',
+                line.materi or '', line.nilai or '',
+                line.predikat or '', line.keterangan or ''
+            ]
+            for col_idx, val in enumerate(data):
+                cell = table.rows[row_idx].cells[col_idx]
+                cell.text = ''
+                p = cell.paragraphs[0]
+                if col_idx in [0, 4, 5]:
+                    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                run = p.add_run(val)
+                run.font.size = Pt(9)
+                run.font.name = 'Times New Roman'
+
+        # ---- Save & Download ----
         output = io.BytesIO()
-        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
-        sheet = workbook.add_worksheet('Rekap Penilaian')
-
-        # Formats
-        header_format = workbook.add_format(
-            {'bold': True, 'bg_color': '#D3D3D3', 'border': 1})
-        title_format = workbook.add_format({'bold': True, 'font_size': 14})
-        date_format = workbook.add_format(
-            {'num_format': 'dd/mm/yyyy', 'border': 1})
-        border_format = workbook.add_format({'border': 1})
-
-        # Title
-        sheet.write(0, 0, 'Rekap Penilaian Santri (Halaqoh)', title_format)
-        sheet.write(1, 0, f'Nama Siswa: {self.siswa_id.name}')
-        sheet.write(2, 0, f'NIS: {self.siswa_id.nis}')
-        sheet.write(3, 0, f'Periode: {self.tgl_awal} s/d {self.tgl_akhir}')
-
-        # Table Header
-        headers = ['No', 'Tanggal', 'Kegiatan',
-                   'Materi', 'Nilai', 'Predikat', 'Keterangan']
-        for col, header in enumerate(headers):
-            sheet.write(5, col, header, header_format)
-
-        # Table Data
-        row = 6
-        for i, line in enumerate(self.rekap_line_ids, 1):
-            sheet.write(row, 0, i, border_format)
-            sheet.write(row, 1, line.tanggal, date_format)
-            sheet.write(row, 2, line.kegiatan, border_format)
-            sheet.write(row, 3, line.materi, border_format)
-            sheet.write(row, 4, line.nilai, border_format)
-            sheet.write(row, 5, line.predikat, border_format)
-            sheet.write(row, 6, line.keterangan, border_format)
-            row += 1
-
-        workbook.close()
+        doc.save(output)
         output.seek(0)
-        xlsx_data = output.read()
+        docx_data = output.read()
 
-        file_name = f"Rekap_Penilaian_{self.siswa_id.name}_{self.tgl_awal}_sd_{self.tgl_akhir}.xlsx"
+        file_name = f"Rekap_Penilaian_{self.siswa_id.name}_{self.tgl_awal}_sd_{self.tgl_akhir}.docx"
 
         self.write({
-            'data_file': base64.b64encode(xlsx_data),
+            'data_file': base64.b64encode(docx_data),
             'file_name': file_name
         })
 

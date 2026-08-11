@@ -69,7 +69,7 @@
                 <footer>
                     <button name="action_export_csv" string="Export CSV" type="object"
                         class="btn-primary" invisible="not rekap_line_ids" />
-                    <button name="action_export_xlsx" string="Export XLSX" type="object"
+                    <button name="action_export_docx" string="Export DOCX" type="object"
                         class="btn-primary" invisible="not rekap_line_ids" />
                     <button string="Tutup" class="btn-secondary" special="cancel" />
                 </footer>

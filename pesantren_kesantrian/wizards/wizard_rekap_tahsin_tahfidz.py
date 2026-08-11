@@ -7,9 +7,15 @@ from datetime import date
 import calendar
 
 try:
-    import xlsxwriter
+    from docx import Document as DocxDocument
+    from docx.shared import Pt, Inches, RGBColor, Cm
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    from docx.enum.table import WD_TABLE_ALIGNMENT
+    from docx.oxml import parse_xml
+    from docx.oxml.ns import nsdecls
+    HAS_DOCX = True
 except ImportError:
-    xlsxwriter = None
+    HAS_DOCX = False
 
 
 BULAN_SELECTION = [
@@ -50,9 +56,9 @@ class WizardRekapTahsinTahfidz(models.TransientModel):
     bulan = fields.Selection(
         BULAN_SELECTION, string='Bulan', required=True,
         default=lambda self: str(date.today().month))
-    tahun = fields.Integer(
+    tahun = fields.Char(
         string='Tahun', required=True,
-        default=lambda self: date.today().year)
+        default=lambda self: str(date.today().year))
 
     # Auto-filled from halaqoh
     pembimbing_id = fields.Many2one(
@@ -72,7 +78,7 @@ class WizardRekapTahsinTahfidz(models.TransientModel):
     def default_get(self, fields_list):
         res = super().default_get(fields_list)
         bulan = res.get('bulan', str(date.today().month))
-        tahun = res.get('tahun', date.today().year)
+        tahun = res.get('tahun', str(date.today().year))
 
         halaqoh_id = res.get('halaqoh_id')
         if not halaqoh_id:
@@ -230,147 +236,194 @@ class WizardRekapTahsinTahfidz(models.TransientModel):
             'target': 'self',
         }
 
-    def action_export_xlsx(self):
-        if not xlsxwriter:
+    def action_export_docx(self):
+        if not HAS_DOCX:
             raise UserError(
-                _("Modul 'xlsxwriter' tidak ditemukan. Silakan hubungi administrator."))
+                _("Modul 'python-docx' tidak ditemukan. Silakan hubungi administrator."))
 
         self._onchange_rekap_params()
         if not self.rekap_line_ids:
             raise UserError(_("Tidak ada data untuk diekspor."))
 
-        output = io.BytesIO()
-        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
-        sheet = workbook.add_worksheet('Rekap Tahsin Tahfidz')
+        doc = DocxDocument()
 
-        title_format = workbook.add_format({
-            'bold': True, 'font_size': 14, 'align': 'center',
-            'valign': 'vcenter'
-        })
-        subtitle_format = workbook.add_format({
-            'bold': True, 'font_size': 12, 'align': 'center',
-            'valign': 'vcenter'
-        })
-        info_format = workbook.add_format({
-            'font_size': 11, 'align': 'left'
-        })
-        info_bold_format = workbook.add_format({
-            'font_size': 11, 'bold': True, 'align': 'left'
-        })
-        header_format = workbook.add_format({
-            'bold': True, 'bg_color': '#4472C4', 'font_color': 'white',
-            'border': 1, 'align': 'center', 'valign': 'vcenter',
-            'text_wrap': True
-        })
-        cell_format = workbook.add_format({
-            'border': 1, 'valign': 'vcenter', 'text_wrap': True
-        })
-        cell_center_format = workbook.add_format({
-            'border': 1, 'align': 'center', 'valign': 'vcenter'
-        })
-        cell_number_format = workbook.add_format({
-            'border': 1, 'align': 'center', 'valign': 'vcenter',
-            'num_format': '0'
-        })
-        sign_format = workbook.add_format({
-            'font_size': 11, 'align': 'center', 'valign': 'vcenter'
-        })
-        sign_bold_format = workbook.add_format({
-            'font_size': 11, 'align': 'center', 'valign': 'vcenter',
-            'bold': True, 'bottom': 1
-        })
-
-        sheet.set_column(0, 0, 5)    # NO
-        sheet.set_column(1, 1, 25)   # NAMA
-        sheet.set_column(2, 2, 15)   # TAHSIN
-        sheet.set_column(3, 3, 15)   # MUROJAAH
-        sheet.set_column(4, 4, 18)   # HAFALAN BARU
-        sheet.set_column(5, 5, 22)   # JML SEMUA HAFALAN
-        sheet.set_column(6, 6, 10)   # NILAI
-        sheet.set_column(7, 7, 18)   # KETERANGAN
+        # Page margins
+        for section in doc.sections:
+            section.top_margin = Cm(1.5)
+            section.bottom_margin = Cm(1.5)
+            section.left_margin = Cm(1.5)
+            section.right_margin = Cm(1.5)
 
         nama_bulan = BULAN_DICT.get(self.bulan, '')
         company_name = self.env.user.company_id.name or ''
 
-        row = 0
-        sheet.merge_range(row, 0, row, 7,
-                          'LAPORAN PENCAPAIAN TAHFIZH SANTRI/WATI', title_format)
-        row += 1
-        sheet.merge_range(row, 0, row, 7, company_name, subtitle_format)
-        row += 2
+        # ---- Title ----
+        p_title = doc.add_paragraph()
+        p_title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_title.paragraph_format.space_after = Pt(0)
+        r_title = p_title.add_run('LAPORAN PENCAPAIAN TAHFIZH SANTRI/WATI')
+        r_title.bold = True
+        r_title.font.size = Pt(14)
+        r_title.font.name = 'Times New Roman'
 
-        sheet.write(row, 0, 'PEMBIMBING HALAQAH', info_bold_format)
-        sheet.merge_range(row, 1, row, 3,
-                          f': {self.pembimbing_id.name or "-"}', info_format)
-        row += 1
-        sheet.write(row, 0, 'HALAQOH', info_bold_format)
-        sheet.merge_range(row, 1, row, 3,
-                          f': {self.halaqoh_id.name}', info_format)
-        row += 1
-        sheet.write(row, 0, 'KELAS', info_bold_format)
-        sheet.merge_range(row, 1, row, 3,
-                          ': TAHSIN-TAHFIDZ', info_format)
-        row += 1
-        sheet.write(row, 0, 'BULAN', info_bold_format)
-        sheet.merge_range(row, 1, row, 3,
-                          f': {nama_bulan.upper()}', info_format)
-        row += 1
-        sheet.write(row, 0, 'TAHUN', info_bold_format)
-        sheet.merge_range(row, 1, row, 3,
-                          f': {self.tahun}', info_format)
-        row += 2
+        p_company = doc.add_paragraph()
+        p_company.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_company.paragraph_format.space_before = Pt(0)
+        p_company.paragraph_format.space_after = Pt(12)
+        r_company = p_company.add_run(company_name.upper())
+        r_company.bold = True
+        r_company.font.size = Pt(12)
+        r_company.font.name = 'Times New Roman'
 
-        sheet.merge_range(row, 0, row, 7,
-                          'PROGRAM TAHSIN TAHFIZH', subtitle_format)
-        row += 1
+        # ---- Info Lines ----
+        info_data = [
+            ('PEMBIMBING HALAQAH', self.pembimbing_id.name or '-'),
+            ('HP / WA', '-'),
+            ('KELAS', 'TAHSIN-TAHFIDZ'),
+            ('BULAN', nama_bulan.upper()),
+            ('TAHUN', str(self.tahun)),
+        ]
+        for label, value in info_data:
+            p_info = doc.add_paragraph()
+            p_info.paragraph_format.space_before = Pt(0)
+            p_info.paragraph_format.space_after = Pt(2)
+            p_info.paragraph_format.line_spacing = 1.0
+            r_label = p_info.add_run(f'{label:<24}')
+            r_label.bold = True
+            r_label.font.size = Pt(10)
+            r_label.font.name = 'Times New Roman'
+            r_val = p_info.add_run(f': {value}')
+            r_val.font.size = Pt(10)
+            r_val.font.name = 'Times New Roman'
 
+        # ---- Subtitle ----
+        doc.add_paragraph()
+        p_sub = doc.add_paragraph()
+        p_sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_sub.paragraph_format.space_after = Pt(6)
+        r_sub = p_sub.add_run('PROGRAM TAHSIN TAHFIZH')
+        r_sub.bold = True
+        r_sub.font.size = Pt(11)
+        r_sub.font.name = 'Times New Roman'
+
+        # ---- Data Table ----
         headers = ['NO', 'NAMA', 'TAHSIN', 'MUROJAAH',
-                   'HAFALAN BARU', 'JUMLAH SEMUA\nHAFALAN',
+                   'HAFALAN BARU', 'JUMLAH SEMUA HAFALAN',
                    'NILAI', 'KETERANGAN']
-        for col, header in enumerate(headers):
-            sheet.write(row, col, header, header_format)
-        sheet.set_row(row, 30)
-        row += 1
+        col_widths = [Cm(1.2), Cm(4.0), Cm(2.5), Cm(2.5),
+                      Cm(3.0), Cm(3.5), Cm(1.5), Cm(3.0)]
 
-        for line in self.rekap_line_ids:
-            sheet.write(row, 0, line.no, cell_center_format)
-            sheet.write(row, 1, line.nama, cell_format)
-            sheet.write(row, 2, line.tahsin, cell_format)
-            sheet.write(row, 3, line.murojaah, cell_format)
-            sheet.write(row, 4, line.hafalan_baru, cell_format)
-            sheet.write(row, 5, line.jml_semua_hafalan, cell_format)
-            sheet.write(row, 6, line.nilai, cell_number_format)
-            sheet.write(row, 7, line.keterangan or '', cell_format)
-            row += 1
+        num_rows = len(self.rekap_line_ids) + 1
+        table = doc.add_table(rows=num_rows, cols=8)
+        table.style = 'Table Grid'
+        table.alignment = WD_TABLE_ALIGNMENT.CENTER
+        table.autofit = False
 
-        row += 2
+        # Set column widths
+        for i, width in enumerate(col_widths):
+            for row_obj in table.rows:
+                row_obj.cells[i].width = width
+
+        # Header row
+        for i, header in enumerate(headers):
+            cell = table.rows[0].cells[i]
+            cell.text = ''
+            p = cell.paragraphs[0]
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            run = p.add_run(header)
+            run.bold = True
+            run.font.color.rgb = RGBColor(255, 255, 255)
+            run.font.size = Pt(9)
+            run.font.name = 'Times New Roman'
+            # Blue background
+            shd = parse_xml(f'<w:shd {nsdecls("w")} w:fill="4472C4"/>')
+            cell._tc.get_or_add_tcPr().append(shd)
+
+        # Data rows
+        for idx, line in enumerate(self.rekap_line_ids):
+            row_idx = idx + 1
+            data = [
+                str(line.no), line.nama or '', line.tahsin or '',
+                line.murojaah or '', line.hafalan_baru or '',
+                line.jml_semua_hafalan or '', str(line.nilai) if line.nilai else '',
+                line.keterangan or ''
+            ]
+            for col_idx, val in enumerate(data):
+                cell = table.rows[row_idx].cells[col_idx]
+                cell.text = ''
+                p = cell.paragraphs[0]
+                if col_idx in [0, 6]:  # NO & NILAI centered
+                    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                run = p.add_run(val)
+                run.font.size = Pt(9)
+                run.font.name = 'Times New Roman'
+
+        # ---- Signatures ----
+        doc.add_paragraph()
+        doc.add_paragraph()
         today = date.today()
         tgl_str = f"{today.day} {BULAN_DICT.get(str(today.month), '')} {today.year}"
 
-        sheet.merge_range(row, 0, row, 3,
-                          'Mengetahui,', sign_format)
-        sheet.merge_range(row, 4, row, 7,
-                          f'Pelaihari, {tgl_str}', sign_format)
-        row += 1
-        sheet.merge_range(row, 0, row, 3,
-                          f'Kepala {company_name}', sign_format)
-        sheet.merge_range(row, 4, row, 7,
-                          'Pembimbing', sign_format)
-        row += 4
-        sheet.merge_range(row, 0, row, 3,
-                          '(______________________________)', sign_bold_format)
-        sheet.merge_range(row, 4, row, 7,
-                          f'({self.pembimbing_id.name or "______________________________"})',
-                          sign_bold_format)
+        sig_table = doc.add_table(rows=4, cols=2)
+        sig_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+        sig_table.autofit = True
 
-        workbook.close()
+        # Remove borders from signature table
+        for row_obj in sig_table.rows:
+            for cell in row_obj.cells:
+                for border_name in ['top', 'bottom', 'left', 'right']:
+                    tag = f'w:{border_name}'
+                    element = parse_xml(
+                        f'<w:tcBorders {nsdecls("w")}>'
+                        f'<{tag} w:val="none" w:sz="0" w:space="0" w:color="auto"/>'
+                        f'</w:tcBorders>'
+                    )
+                    cell._tc.get_or_add_tcPr().append(element)
+
+        # Row 0: Mengetahui / Tanggal
+        for i, text in enumerate(['Mengetahui,', f'Pelaihari, {tgl_str}']):
+            p = sig_table.rows[0].cells[i].paragraphs[0]
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            run = p.add_run(text)
+            run.font.size = Pt(10)
+            run.font.name = 'Times New Roman'
+
+        # Row 1: Jabatan
+        for i, text in enumerate([f'Kepala {company_name}', 'Pembimbing']):
+            p = sig_table.rows[1].cells[i].paragraphs[0]
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            run = p.add_run(text)
+            run.font.size = Pt(10)
+            run.font.name = 'Times New Roman'
+
+        # Row 2: spacer (empty)
+        for i in range(2):
+            sig_table.rows[2].cells[i].text = ''
+            # Add space
+            p = sig_table.rows[2].cells[i].paragraphs[0]
+            p.paragraph_format.space_before = Pt(40)
+
+        # Row 3: Names
+        pembimbing_name = self.pembimbing_id.name or '______________________________'
+        for i, text in enumerate(['(______________________________)', f'({pembimbing_name})']):
+            p = sig_table.rows[3].cells[i].paragraphs[0]
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            run = p.add_run(text)
+            run.bold = True
+            run.font.size = Pt(10)
+            run.font.name = 'Times New Roman'
+            run.font.underline = True
+
+        # ---- Save & Download ----
+        output = io.BytesIO()
+        doc.save(output)
         output.seek(0)
-        xlsx_data = output.read()
+        docx_data = output.read()
 
-        file_name = f"Rekap_TahsinTahfidz_{self.halaqoh_id.name}_{nama_bulan}_{self.tahun}.xlsx"
+        file_name = f"Rekap_TahsinTahfidz_{self.halaqoh_id.name}_{nama_bulan}_{self.tahun}.docx"
 
         self.write({
-            'data_file': base64.b64encode(xlsx_data),
+            'data_file': base64.b64encode(docx_data),
             'file_name': file_name
         })
 
