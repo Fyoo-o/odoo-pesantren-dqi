@@ -44,6 +44,7 @@
                     </notebook>
                 </sheet>
                 <footer>
+                    <button name="action_export_docx" string="Export DOCX" type="object" class="btn-primary" icon="fa-file-word-o"/>
                     <button name="action_export_xlsx" string="Export Excel" type="object" class="btn-success" icon="fa-file-excel-o"/>
                     <button string="Tutup" class="btn-secondary" special="cancel" icon="fa-times"/>
                 </footer>

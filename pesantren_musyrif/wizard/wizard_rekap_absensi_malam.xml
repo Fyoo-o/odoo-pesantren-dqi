@@ -43,12 +43,16 @@
                     </group>
 
                     <!-- Summary Cards -->
-                    <group string="Ringkasan Kehadiran" col="5">
-                        <field name="jml_hadir" string="Hadir" />
-                        <field name="jml_izin" string="Izin" />
-                        <field name="jml_sakit" string="Sakit" />
-                        <field name="jml_alpa" string="Alpa" />
-                        <field name="jml_keluar" string="Izin Keluar" />
+                    <group string="Ringkasan Kehadiran">
+                        <group>
+                            <field name="jml_hadir" string="Hadir" readonly="1" />
+                            <field name="jml_izin" string="Izin" readonly="1" />
+                            <field name="jml_sakit" string="Sakit" readonly="1" />
+                        </group>
+                        <group>
+                            <field name="jml_alpa" string="Alpa" readonly="1" />
+                            <field name="jml_keluar" string="Izin Keluar" readonly="1" />
+                        </group>
                     </group>
 
                     <notebook>
@@ -65,7 +69,7 @@
                     </group>
                 </sheet>
                 <footer>
-                    <button name="action_export_xlsx" string="Export XLSX" type="object"
+                    <button name="action_export_docx" string="Export DOCX" type="object"
                         class="btn-primary" invisible="not rekap_line_ids" />
                     <button name="action_export_csv" string="Export CSV" type="object"
                         class="btn-secondary" invisible="not rekap_line_ids" />

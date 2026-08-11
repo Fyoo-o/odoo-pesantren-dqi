@@ -6,9 +6,15 @@ import io
 from datetime import date
 
 try:
-    import xlsxwriter
+    from docx import Document as DocxDocument
+    from docx.shared import Pt, Cm, RGBColor
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    from docx.enum.table import WD_TABLE_ALIGNMENT
+    from docx.oxml import parse_xml
+    from docx.oxml.ns import nsdecls
+    HAS_DOCX = True
 except ImportError:
-    xlsxwriter = None
+    HAS_DOCX = False
 
 
 class WizardRekapAbsensiMalam(models.TransientModel):
@@ -285,93 +291,127 @@ class WizardRekapAbsensiMalam(models.TransientModel):
             'target': 'self',
         }
 
-    def action_export_xlsx(self):
-        if not xlsxwriter:
+    def action_export_docx(self):
+        if not HAS_DOCX:
             raise UserError(
-                _("Modul 'xlsxwriter' tidak ditemukan. Silakan hubungi administrator."))
+                _("Modul 'python-docx' tidak ditemukan. Silakan hubungi administrator."))
 
         self._onchange_rekap_params()
         if not self.rekap_line_ids:
             raise UserError(_("Tidak ada data untuk diekspor."))
 
-        output = io.BytesIO()
-        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
-        sheet = workbook.add_worksheet('Rekap Absensi Malam')
+        doc = DocxDocument()
 
-        # Formats
-        title_format = workbook.add_format({
-            'bold': True, 'font_size': 14, 'align': 'center', 'valign': 'vcenter'
-        })
-        subtitle_format = workbook.add_format({
-            'bold': True, 'font_size': 12, 'align': 'center', 'valign': 'vcenter'
-        })
-        info_bold_format = workbook.add_format({'font_size': 11, 'bold': True})
-        info_format = workbook.add_format({'font_size': 11})
-
-        header_format = workbook.add_format({
-            'bold': True, 'bg_color': '#203764', 'font_color': 'white',
-            'border': 1, 'align': 'center', 'valign': 'vcenter'
-        })
-        cell_border = workbook.add_format({'border': 1, 'valign': 'vcenter'})
-        cell_center = workbook.add_format({'border': 1, 'align': 'center', 'valign': 'vcenter'})
-        date_format = workbook.add_format({'num_format': 'dd/mm/yyyy', 'border': 1, 'align': 'center', 'valign': 'vcenter'})
-
-        # Column widths
-        sheet.set_column(0, 0, 5)    # No
-        sheet.set_column(1, 1, 14)   # Tanggal
-        sheet.set_column(2, 2, 22)   # Kamar
-        sheet.set_column(3, 3, 14)   # NIS
-        sheet.set_column(4, 4, 25)   # Nama
-        sheet.set_column(5, 5, 14)   # Kehadiran
-        sheet.set_column(6, 6, 25)   # Keterangan
+        # Page margins
+        for section in doc.sections:
+            section.top_margin = Cm(1.5)
+            section.bottom_margin = Cm(1.5)
+            section.left_margin = Cm(1.5)
+            section.right_margin = Cm(1.5)
 
         company_name = self.env.user.company_id.name or ''
 
-        # Header Info
-        row = 0
-        sheet.merge_range(row, 0, row, 6, 'LAPORAN REKAP ABSENSI MALAM SANTRI', title_format)
-        row += 1
-        sheet.merge_range(row, 0, row, 6, company_name, subtitle_format)
-        row += 2
+        # ---- Title ----
+        p_title = doc.add_paragraph()
+        p_title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_title.paragraph_format.space_after = Pt(0)
+        r_title = p_title.add_run('LAPORAN REKAP ABSENSI MALAM SANTRI')
+        r_title.bold = True
+        r_title.font.size = Pt(14)
+        r_title.font.name = 'Times New Roman'
 
-        sheet.write(row, 0, 'MUSYRIF / PEMBINA', info_bold_format)
-        sheet.merge_range(row, 1, row, 3, f': {self.musyrif_id.name if self.musyrif_id else "Semua Musyrif"}', info_format)
-        row += 1
-        sheet.write(row, 0, 'KAMAR', info_bold_format)
-        sheet.merge_range(row, 1, row, 3, f': {self.kamar_id.display_name if self.kamar_id else "Semua Kamar"}', info_format)
-        row += 1
-        sheet.write(row, 0, 'PERIODE', info_bold_format)
-        sheet.merge_range(row, 1, row, 3, f': {self.tgl_awal} s/d {self.tgl_akhir}', info_format)
-        row += 2
+        p_company = doc.add_paragraph()
+        p_company.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_company.paragraph_format.space_before = Pt(0)
+        p_company.paragraph_format.space_after = Pt(12)
+        r_company = p_company.add_run(company_name.upper())
+        r_company.bold = True
+        r_company.font.size = Pt(12)
+        r_company.font.name = 'Times New Roman'
 
-        # Table Header
-        headers = ['No', 'Tanggal', 'Kamar', 'NIS', 'Nama Santri', 'Kehadiran', 'Keterangan']
-        for col, h in enumerate(headers):
-            sheet.write(row, col, h, header_format)
-        sheet.set_row(row, 25)
-        row += 1
+        # ---- Info Lines ----
+        info_data = [
+            ('MUSYRIF / PEMBINA', self.musyrif_id.name if self.musyrif_id else 'Semua Musyrif'),
+            ('KAMAR', self.kamar_id.display_name if self.kamar_id else 'Semua Kamar'),
+            ('PERIODE', f'{self.tgl_awal} s/d {self.tgl_akhir}'),
+        ]
+        for label, value in info_data:
+            p_info = doc.add_paragraph()
+            p_info.paragraph_format.space_before = Pt(0)
+            p_info.paragraph_format.space_after = Pt(2)
+            p_info.paragraph_format.line_spacing = 1.0
+            r_label = p_info.add_run(f'{label:<24}')
+            r_label.bold = True
+            r_label.font.size = Pt(10)
+            r_label.font.name = 'Times New Roman'
+            r_val = p_info.add_run(f': {value}')
+            r_val.font.size = Pt(10)
+            r_val.font.name = 'Times New Roman'
 
-        # Table Data
-        for line in self.rekap_line_ids:
-            sheet.write(row, 0, line.no, cell_center)
-            sheet.write(row, 1, line.tanggal, date_format)
-            sheet.write(row, 2, line.kamar_id.display_name if line.kamar_id else '-', cell_border)
-            sheet.write(row, 3, line.nis or '-', cell_center)
-            sheet.write(row, 4, line.nama or '-', cell_border)
-            keh_label = dict(line._fields['kehadiran'].selection).get(line.kehadiran, line.kehadiran) if line.kehadiran else '-'
-            sheet.write(row, 5, keh_label, cell_center)
-            sheet.write(row, 6, line.keterangan or '-', cell_border)
-            row += 1
+        doc.add_paragraph()
 
-        # Summary Table
-        row += 2
-        sheet.merge_range(row, 0, row, 2, 'Ringkasan Kehadiran:', info_bold_format)
-        row += 1
+        # ---- Data Table ----
+        headers = ['NO', 'TANGGAL', 'KAMAR', 'NIS', 'NAMA SANTRI', 'KEHADIRAN', 'KETERANGAN']
+        col_widths = [Cm(1.0), Cm(2.5), Cm(3.5), Cm(2.5), Cm(4.0), Cm(2.5), Cm(3.5)]
 
-        summary_headers = ['Status Kehadiran', 'Jumlah']
-        sheet.write(row, 0, summary_headers[0], header_format)
-        sheet.write(row, 1, summary_headers[1], header_format)
-        row += 1
+        num_rows = len(self.rekap_line_ids) + 1
+        table = doc.add_table(rows=num_rows, cols=7)
+        table.style = 'Table Grid'
+        table.alignment = WD_TABLE_ALIGNMENT.CENTER
+        table.autofit = False
+
+        # Set column widths
+        for i, width in enumerate(col_widths):
+            for row_obj in table.rows:
+                row_obj.cells[i].width = width
+
+        # Header row
+        for i, header in enumerate(headers):
+            cell = table.rows[0].cells[i]
+            cell.text = ''
+            p = cell.paragraphs[0]
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            run = p.add_run(header)
+            run.bold = True
+            run.font.color.rgb = RGBColor(255, 255, 255)
+            run.font.size = Pt(9)
+            run.font.name = 'Times New Roman'
+            # Blue background
+            shd = parse_xml(f'<w:shd {nsdecls("w")} w:fill="203764"/>')
+            cell._tc.get_or_add_tcPr().append(shd)
+
+        # Data rows
+        for idx, line in enumerate(self.rekap_line_ids):
+            row_idx = idx + 1
+            keh_label = dict(line._fields['kehadiran'].selection).get(
+                line.kehadiran, line.kehadiran) if line.kehadiran else '-'
+            data = [
+                str(line.no),
+                str(line.tanggal) if line.tanggal else '',
+                line.kamar_id.display_name if line.kamar_id else '-',
+                line.nis or '-',
+                line.nama or '-',
+                keh_label,
+                line.keterangan or '-'
+            ]
+            for col_idx, val in enumerate(data):
+                cell = table.rows[row_idx].cells[col_idx]
+                cell.text = ''
+                p = cell.paragraphs[0]
+                if col_idx in [0, 1, 3, 5]:  # NO, TANGGAL, NIS, KEHADIRAN centered
+                    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                run = p.add_run(val)
+                run.font.size = Pt(9)
+                run.font.name = 'Times New Roman'
+
+        # ---- Summary Table ----
+        doc.add_paragraph()
+        p_sum = doc.add_paragraph()
+        p_sum.paragraph_format.space_after = Pt(6)
+        r_sum = p_sum.add_run('RINGKASAN KEHADIRAN')
+        r_sum.bold = True
+        r_sum.font.size = Pt(11)
+        r_sum.font.name = 'Times New Roman'
 
         summary_data = [
             ('Hadir', self.jml_hadir),
@@ -380,32 +420,121 @@ class WizardRekapAbsensiMalam(models.TransientModel):
             ('Alpa', self.jml_alpa),
             ('Izin Keluar', self.jml_keluar),
         ]
-        for label, val in summary_data:
-            sheet.write(row, 0, label, cell_border)
-            sheet.write(row, 1, val, cell_center)
-            row += 1
 
-        # Signatures
-        row += 3
+        sum_table = doc.add_table(rows=len(summary_data) + 1, cols=2)
+        sum_table.style = 'Table Grid'
+        sum_table.alignment = WD_TABLE_ALIGNMENT.LEFT
+        sum_table.autofit = False
+
+        # Summary column widths
+        for row_obj in sum_table.rows:
+            row_obj.cells[0].width = Cm(5.0)
+            row_obj.cells[1].width = Cm(2.5)
+
+        # Summary header
+        for i, header in enumerate(['STATUS KEHADIRAN', 'JUMLAH']):
+            cell = sum_table.rows[0].cells[i]
+            cell.text = ''
+            p = cell.paragraphs[0]
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            run = p.add_run(header)
+            run.bold = True
+            run.font.color.rgb = RGBColor(255, 255, 255)
+            run.font.size = Pt(9)
+            run.font.name = 'Times New Roman'
+            shd = parse_xml(f'<w:shd {nsdecls("w")} w:fill="203764"/>')
+            cell._tc.get_or_add_tcPr().append(shd)
+
+        # Summary data rows
+        for idx, (label, val) in enumerate(summary_data):
+            row_idx = idx + 1
+            cell_label = sum_table.rows[row_idx].cells[0]
+            cell_label.text = ''
+            p = cell_label.paragraphs[0]
+            run = p.add_run(label)
+            run.font.size = Pt(9)
+            run.font.name = 'Times New Roman'
+
+            cell_val = sum_table.rows[row_idx].cells[1]
+            cell_val.text = ''
+            p = cell_val.paragraphs[0]
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            run = p.add_run(str(val))
+            run.font.size = Pt(9)
+            run.font.name = 'Times New Roman'
+
+        # ---- Signatures ----
+        doc.add_paragraph()
+        doc.add_paragraph()
         today = date.today()
-        sheet.merge_range(row, 0, row, 2, 'Mengetahui,', cell_center)
-        sheet.merge_range(row, 4, row, 6, f'Tanggal: {today.strftime("%d/%m/%Y")}', cell_center)
-        row += 1
-        sheet.merge_range(row, 0, row, 2, 'Kepala Pengasuhan / Kesantrian', cell_center)
-        sheet.merge_range(row, 4, row, 6, 'Musyrif Pembina', cell_center)
-        row += 4
-        sheet.merge_range(row, 0, row, 2, '(______________________________)', cell_center)
-        sheet.merge_range(row, 4, row, 6, f'({self.musyrif_id.name if self.musyrif_id else "______________________________"})', cell_center)
 
-        workbook.close()
+        BULAN_DICT = {
+            '1': 'Januari', '2': 'Februari', '3': 'Maret', '4': 'April',
+            '5': 'Mei', '6': 'Juni', '7': 'Juli', '8': 'Agustus',
+            '9': 'September', '10': 'Oktober', '11': 'November', '12': 'Desember',
+        }
+        tgl_str = f"{today.day} {BULAN_DICT.get(str(today.month), '')} {today.year}"
+
+        sig_table = doc.add_table(rows=4, cols=2)
+        sig_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+        sig_table.autofit = True
+
+        # Remove borders from signature table
+        for row_obj in sig_table.rows:
+            for cell in row_obj.cells:
+                for border_name in ['top', 'bottom', 'left', 'right']:
+                    tag = f'w:{border_name}'
+                    element = parse_xml(
+                        f'<w:tcBorders {nsdecls("w")}>'
+                        f'<{tag} w:val="none" w:sz="0" w:space="0" w:color="auto"/>'
+                        f'</w:tcBorders>'
+                    )
+                    cell._tc.get_or_add_tcPr().append(element)
+
+        # Row 0: Mengetahui / Tanggal
+        for i, text in enumerate(['Mengetahui,', f'Tanggal: {tgl_str}']):
+            p = sig_table.rows[0].cells[i].paragraphs[0]
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            run = p.add_run(text)
+            run.font.size = Pt(10)
+            run.font.name = 'Times New Roman'
+
+        # Row 1: Jabatan
+        for i, text in enumerate(['Kepala Pengasuhan / Kesantrian', 'Musyrif Pembina']):
+            p = sig_table.rows[1].cells[i].paragraphs[0]
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            run = p.add_run(text)
+            run.font.size = Pt(10)
+            run.font.name = 'Times New Roman'
+
+        # Row 2: spacer
+        for i in range(2):
+            sig_table.rows[2].cells[i].text = ''
+            p = sig_table.rows[2].cells[i].paragraphs[0]
+            p.paragraph_format.space_before = Pt(40)
+
+        # Row 3: Names
+        musyrif_name = self.musyrif_id.name if self.musyrif_id else '______________________________'
+        for i, text in enumerate(['(______________________________)', f'({musyrif_name})']):
+            p = sig_table.rows[3].cells[i].paragraphs[0]
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            run = p.add_run(text)
+            run.bold = True
+            run.font.size = Pt(10)
+            run.font.name = 'Times New Roman'
+            run.font.underline = True
+
+        # ---- Save & Download ----
+        output = io.BytesIO()
+        doc.save(output)
         output.seek(0)
-        xlsx_data = output.read()
+        docx_data = output.read()
 
         kamar_str = self.kamar_id.display_name if self.kamar_id else 'Semua'
-        file_name = f"Rekap_Absensi_Malam_{kamar_str}_{self.tgl_awal}_sd_{self.tgl_akhir}.xlsx"
+        file_name = f"Rekap_Absensi_Malam_{kamar_str}_{self.tgl_awal}_sd_{self.tgl_akhir}.docx"
 
         self.write({
-            'data_file': base64.b64encode(xlsx_data),
+            'data_file': base64.b64encode(docx_data),
             'file_name': file_name
         })
 

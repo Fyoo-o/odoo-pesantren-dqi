@@ -3,9 +3,7 @@ from odoo.exceptions import UserError
 
 class Santri(models.Model):
     _inherit = 'cdn.siswa'
-    _sql_constraints = [
-        ('nis_unique', 'unique(nis)', 'NIS harus unik!'),
-    ]
+
     partner_id          = fields.Many2one('res.partner', string='Siswa', required=True)
     last_tahfidz        = fields.Many2one('cdn.tahfidz_quran', string='Tahfidz Terakhir', readonly=True )
     tahfidz_terakhir_id = fields.Many2one(

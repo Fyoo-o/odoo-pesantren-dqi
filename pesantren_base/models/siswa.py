@@ -27,6 +27,9 @@ class siswa(models.Model):
     _description = "Tabel siswa"
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _inherits = {"res.partner": "partner_id"}
+    _sql_constraints = [
+        ('nis_unique', 'unique(nis)', 'NIS sudah terdaftar! NIS harus unik untuk setiap santri.'),
+    ]
 
     partner_id = fields.Many2one('res.partner', 'Partner', ondelete="cascade")
     active_id = fields.Many2one(
@@ -151,7 +154,7 @@ class siswa(models.Model):
         _logger.info(f"Berhasil update {count} data nama sekolah santri")
         return True
 
-    nis = fields.Char(string="NIS",  help="Nomor Induk Siswa/Santri (Lokal)")
+    nis = fields.Char(string="NIS", help="Nomor Induk Siswa/Santri (Lokal)", copy=False)
     namapanggilan = fields.Char(string="Nama Panggilan")
     nisn = fields.Char(string="NISN",  help="Nomor Induk Siswa Nasional")
     tmp_lahir = fields.Char(string="Tempat Lahir",  help="")
@@ -284,9 +287,83 @@ class siswa(models.Model):
             _logger.error(f"Error creating orangtua: {str(e)}")
             raise UserError(f"Gagal membuat akun orang tua: {str(e)}")
 
+    def _generate_auto_nis(self, vals=None):
+        vals = vals or {}
+        jenjang = vals.get('jenjang') or (self.jenjang if self else False)
+        tgl = vals.get('tanggal_daftar') or (self.tanggal_daftar if self else False) or fields.Date.today()
+
+        try:
+            tahun_daftar = tgl.strftime('%Y')[-2:]
+        except AttributeError:
+            tahun_daftar = fields.Date.today().strftime('%Y')[-2:]
+
+        lembaga = {
+            'paud': '01', 'tk': '02', 'sdmi': '03',
+            'smpmts': '04', 'smama': '05', 'smk': '10', 'nonformal': '06',
+        }.get(jenjang, '00')
+
+        nomor_pendaftaran = vals.get('nomor_pendaftaran') or (self.nomor_pendaftaran if self else False)
+        if nomor_pendaftaran and str(nomor_pendaftaran).isdigit():
+            nomor = str(nomor_pendaftaran).zfill(4)
+        else:
+            nomor = str(random.randint(1000, 9999))
+
+        nis_candidate = f"{lembaga}.{tahun_daftar}.{nomor}"
+
+        rec_id = self.id if self else False
+        domain = [('nis', '=', nis_candidate)]
+        if rec_id:
+            domain.append(('id', '!=', rec_id))
+
+        count = 1
+        final_nis = nis_candidate
+        while self.with_context(active_test=False).search(domain, limit=1):
+            final_nis = f"{lembaga}.{tahun_daftar}.{random.randint(1000, 9999)}"
+            domain = [('nis', '=', final_nis)]
+            if rec_id:
+                domain.append(('id', '!=', rec_id))
+
+        return final_nis
+
+    def _validate_nama_nis(self, vals, record=None):
+        """Validasi wajib: Nama tidak boleh kosong, NIS wajib & unik"""
+        is_create = record is None
+
+        # ---- Validasi NAMA ----
+        name_val = vals.get('name')
+        if name_val is not None:
+            if not name_val or not str(name_val).strip():
+                raise ValidationError('Nama santri wajib diisi dan tidak boleh kosong!')
+        elif is_create and not vals.get('partner_id'):
+            raise ValidationError('Nama santri wajib diisi!')
+
+        # ---- Validasi NIS ----
+        nis_val = vals.get('nis')
+        if nis_val is not None and nis_val:
+            nis_str = str(nis_val).strip()
+            if not nis_str:
+                raise ValidationError('NIS (Nomor Induk Santri) wajib diisi dan tidak boleh kosong!')
+            # Cek keunikan NIS termasuk santri nonaktif
+            domain = [('nis', '=', nis_str)]
+            if record:
+                domain += [('id', 'not in', record.ids)]
+            exists = self.with_context(active_test=False).search(domain, limit=1)
+            if exists:
+                raise ValidationError(
+                    f'NIS "{nis_str}" sudah terdaftar pada santri "{exists.name}". '
+                    'NIS harus unik untuk setiap santri (aktif maupun nonaktif)!')
+
     @api.model
     def create(self, vals):
-        """Override create untuk auto-create orangtua jika belum ada"""
+        """Override create untuk validasi Nama & NIS wajib + auto-create orangtua"""
+        if vals.get('nis'):
+            vals['nis'] = str(vals['nis']).strip()
+
+        # Jika NIS tidak terisi saat create, otomatis buat NIS unik
+        if not vals.get('nis') or not str(vals.get('nis')).strip():
+            vals['nis'] = self._generate_auto_nis(vals)
+
+        self._validate_nama_nis(vals, record=None)
         res = super(siswa, self).create(vals)
 
         # Create orangtua jika data akun diisi tapi orangtua_id kosong
@@ -296,7 +373,36 @@ class siswa(models.Model):
         return res
 
     def write(self, vals):
-        """Override write untuk auto-create orangtua jika belum ada dan auto-reactivate status_akun ketika unarchive"""
+        """Override write untuk validasi Nama & NIS, auto-create orangtua, dan auto-reactivate status_akun"""
+        if 'nis' in vals and vals.get('nis'):
+            vals['nis'] = str(vals['nis']).strip()
+
+        # Validasi: NIS tidak boleh dikosongkan jika sebelumnya sudah terisi
+        if 'nis' in vals:
+            nis_val = vals.get('nis')
+            if not nis_val or not str(nis_val).strip():
+                for record in self:
+                    if record.nis:
+                        raise ValidationError(
+                            f'NIS santri "{record.name}" tidak boleh dikosongkan! '
+                            'NIS yang sudah ada tidak bisa dihapus.')
+
+        # Validasi: Nama tidak boleh dikosongkan secara eksplisit
+        if 'name' in vals:
+            name_val = vals.get('name')
+            if not name_val or not str(name_val).strip():
+                raise ValidationError('Nama santri wajib diisi dan tidak boleh dikosongkan!')
+
+        # Cek keunikan NIS jika NIS diubah
+        if 'nis' in vals and vals.get('nis'):
+            nis_str = str(vals['nis']).strip()
+            domain = [('nis', '=', nis_str), ('id', 'not in', self.ids)]
+            exists = self.with_context(active_test=False).search(domain, limit=1)
+            if exists:
+                raise ValidationError(
+                    f'NIS "{nis_str}" sudah terdaftar pada santri "{exists.name}". '
+                    'NIS harus unik untuk setiap santri (aktif maupun nonaktif)!')
+
         if vals.get('active') is True:
             if 'status_akun' not in vals:
                 vals['status_akun'] = 'aktif'
@@ -431,6 +537,20 @@ class siswa(models.Model):
                     raise UserError(
                         'Data NIK tersebut sudah pernah terdaftar, pastikan NIK harus unik!')
 
+    @api.constrains('nis')
+    def _check_nis_unique(self):
+        """Validasi keunikan NIS — termasuk santri yang sudah nonaktif/diarsipkan"""
+        for record in self:
+            if record.nis and record.nis.strip():
+                nis_str = record.nis.strip()
+                # Cek keunikan NIS termasuk santri nonaktif (active=False)
+                exists = self.with_context(active_test=False).search(
+                    [('nis', '=', nis_str), ('id', '!=', record.id)], limit=1)
+                if exists:
+                    raise ValidationError(
+                        f'NIS "{nis_str}" sudah terdaftar pada santri "{exists.name}". '
+                        'NIS harus unik untuk setiap santri (aktif maupun nonaktif)!')
+
     @api.depends('password')
     def _compute_show_password_button(self):
         for rec in self:
@@ -489,31 +609,9 @@ class siswa(models.Model):
         return partner_model.action_recharge()
 
     def action_generate_nis(self):
-        if not self.nomor_pendaftaran or not self.tanggal_daftar:
-            _logger.warning(
-                "NIS tidak bisa dibuat: Tanggal pendaftaran atau jenjang kosong.")
-            return False
+        for rec in self:
+            rec.nis = rec._generate_auto_nis()
 
-        # Mapping Kode Lembaga
-        lembaga = {
-            'paud': '01', 'tk': '02', 'sdmi': '03',
-            'smpmts': '04', 'smama': '05', 'smk': '10', 'nonformal': '06',
-        }.get(self.jenjang, '00')  # Default '00' jika tidak cocok
-
-        # Konversi Tahun Daftar
-        try:
-            tahun_daftar = self.tanggal_daftar.strftime('%Y')[-2:]
-        except AttributeError:
-            tahun_daftar = '00'
-
-        # Gunakan nomor_pendaftaran sebagai bagian dari NIS
-        nomor = self.nomor_pendaftaran if self.nomor_pendaftaran and self.nomor_pendaftaran.isdigit() else "000"
-
-        # Format NIS
-        nis = f"{lembaga}.{tahun_daftar}.{nomor}"
-        _logger.info(f"NIS yang dihasilkan: {nis}")
-        self.nis = nis
-        # return nis
 
     def action_recharge_wallet_mass(self):
         partner_model = self.env['res.partner']

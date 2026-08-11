@@ -2,11 +2,24 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 import base64
 import io
+from datetime import date
 
 try:
     import xlsxwriter
 except ImportError:
     xlsxwriter = None
+
+try:
+    from docx import Document as DocxDocument
+    from docx.shared import Pt, Cm, RGBColor, Inches
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    from docx.enum.table import WD_TABLE_ALIGNMENT
+    from docx.enum.section import WD_ORIENT
+    from docx.oxml import parse_xml
+    from docx.oxml.ns import nsdecls
+    HAS_DOCX = True
+except ImportError:
+    HAS_DOCX = False
 
 
 class WizardRekapAbsensiSiswa(models.TransientModel):
@@ -200,6 +213,477 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
             'res_id': self.id,
             'view_mode': 'form',
             'target': 'new',
+        }
+
+    def action_export_docx(self):
+        if not HAS_DOCX:
+            raise UserError(_("Modul 'python-docx' tidak ditemukan. Silakan hubungi administrator."))
+
+        if self.tgl_awal > self.tgl_akhir:
+            raise UserError(_('Tanggal Awal tidak boleh lebih besar dari Tanggal Akhir.'))
+
+        if self.tipe_absensi == 'kelas' and not self.kelas_id:
+            raise UserError(_('Silakan pilih Kelas terlebih dahulu.'))
+
+        if self.tipe_absensi == 'halaqoh' and not self.halaqoh_id:
+            raise UserError(_('Silakan pilih Halaqoh terlebih dahulu.'))
+
+        # 1. Ambil data Absensi berdasarkan Tipe Absensi
+        kbm_lines = self.env['cdn.absensi_siswa_lines']
+        halaqoh_lines = self.env['cdn.absen_halaqoh_line']
+
+        if self.tipe_absensi == 'kelas':
+            domain_kbm = [
+                ('tanggal', '>=', self.tgl_awal),
+                ('tanggal', '<=', self.tgl_akhir),
+                ('kelas_id', '=', self.kelas_id.id)
+            ]
+            if self.jenjang:
+                domain_kbm.append(('kelas_id.jenjang', '=', self.jenjang))
+            kbm_lines = self.env['cdn.absensi_siswa_lines'].search(domain_kbm)
+
+        elif self.tipe_absensi == 'halaqoh':
+            domain_halaqoh = [
+                ('tanggal', '>=', self.tgl_awal),
+                ('tanggal', '<=', self.tgl_akhir),
+                ('halaqoh_id', '=', self.halaqoh_id.id)
+            ]
+            halaqoh_lines = self.env['cdn.absen_halaqoh_line'].search(domain_halaqoh)
+
+        if not kbm_lines and not halaqoh_lines:
+            raise UserError(_("Tidak ada data presensi pada rentang tanggal dan filter tersebut."))
+
+        # 2. Kumpulkan daftar Tanggal Unik & daftar Santri Unik
+        dates_set = set()
+        siswa_set = set()
+        
+        attendance_map = {}
+        guru_pengganti_map = {}
+        keterangan_map = {}
+
+        PRESENCE_CODE = {
+            'Hadir': 'H',
+            'Sakit': 'S',
+            'Izin': 'I',
+            'Alpa': 'A',
+            'Pulang-Sakit': 'PS',
+            'Pulang-Izin': 'PI',
+            'Pulang-Alpa': 'PA',
+            'keluar': 'K',
+        }
+
+        def clean_note(note_str):
+            if not note_str or not str(note_str).strip():
+                return '-'
+            s = str(note_str).strip().lower()
+            if s.startswith('absensi halaqoh') or s.startswith('absen halaqoh') or s.startswith('absensi kelas'):
+                return '-'
+            return str(note_str).strip()
+
+        for line in kbm_lines:
+            if not line.siswa_id or not line.tanggal:
+                continue
+            dates_set.add(line.tanggal)
+            siswa_set.add(line.siswa_id)
+            attendance_map[(line.siswa_id.id, line.tanggal)] = PRESENCE_CODE.get(line.kehadiran, line.kehadiran or 'H')
+            
+            absen_hdr = line.absensi_id
+            if absen_hdr:
+                is_pengganti = getattr(absen_hdr, 'is_guru_pengganti', False)
+                guru = getattr(absen_hdr, 'guru_id', False)
+                if is_pengganti and guru:
+                    existing_gp = guru_pengganti_map.get(line.tanggal, '-')
+                    if existing_gp == '-' or not existing_gp:
+                        guru_pengganti_map[line.tanggal] = guru.name
+                    elif guru.name not in existing_gp:
+                        guru_pengganti_map[line.tanggal] += f", {guru.name}"
+                elif line.tanggal not in guru_pengganti_map:
+                    guru_pengganti_map[line.tanggal] = '-'
+                
+                ket = getattr(absen_hdr, 'keterangan', False)
+                cleaned_k = clean_note(ket)
+                if cleaned_k != '-':
+                    existing_ket = keterangan_map.get(line.tanggal, '-')
+                    if existing_ket == '-' or not existing_ket:
+                        keterangan_map[line.tanggal] = cleaned_k
+                    elif cleaned_k not in existing_ket:
+                        keterangan_map[line.tanggal] += f" | {cleaned_k}"
+                elif line.tanggal not in keterangan_map:
+                    keterangan_map[line.tanggal] = '-'
+
+        for line in halaqoh_lines:
+            if not line.siswa_id or not line.tanggal:
+                continue
+            dates_set.add(line.tanggal)
+            siswa_set.add(line.siswa_id)
+            attendance_map[(line.siswa_id.id, line.tanggal)] = PRESENCE_CODE.get(line.kehadiran, line.kehadiran or 'H')
+
+            absen_hdr = line.absen_id
+            if absen_hdr and line.tanggal not in guru_pengganti_map:
+                is_pengganti = getattr(absen_hdr, 'is_guru_pengganti', False)
+                ustadz = getattr(absen_hdr, 'ustadz_id', False)
+                pj = getattr(absen_hdr, 'penanggung_jawab_id', False)
+                
+                if ustadz and (is_pengganti or (pj and ustadz.id != pj.id)):
+                    guru_pengganti_map[line.tanggal] = ustadz.name
+                else:
+                    guru_pengganti_map[line.tanggal] = '-'
+                
+                ket = getattr(absen_hdr, 'keterangan', False)
+                keterangan_map[line.tanggal] = clean_note(ket)
+
+        import datetime
+        sorted_dates = []
+        curr_d = self.tgl_awal
+        while curr_d <= self.tgl_akhir:
+            sorted_dates.append(curr_d)
+            curr_d += datetime.timedelta(days=1)
+
+        if self.tipe_absensi == 'halaqoh' and self.halaqoh_id:
+            h_siswa = set(self.halaqoh_id.siswa_ids) if self.halaqoh_id.siswa_ids else set()
+            all_siswa = h_siswa.union(siswa_set)
+            sorted_siswa = sorted(list(all_siswa), key=lambda s: s.name or '')
+        elif self.tipe_absensi == 'kelas' and self.kelas_id:
+            s_domain = [('ruang_kelas_id', '=', self.kelas_id.id)]
+            k_siswa = set(self.env['cdn.siswa'].search(s_domain))
+            all_siswa = k_siswa.union(siswa_set)
+            sorted_siswa = sorted(list(all_siswa), key=lambda s: s.name or '')
+        else:
+            sorted_siswa = sorted(list(siswa_set), key=lambda s: (s.name or ''))
+
+        doc = DocxDocument()
+
+        # Landscape Orientation
+        for section in doc.sections:
+            section.orientation = WD_ORIENT.LANDSCAPE
+            new_width, new_height = section.page_height, section.page_width
+            section.page_width = new_width
+            section.page_height = new_height
+            section.top_margin = Cm(1.5)
+            section.bottom_margin = Cm(1.5)
+            section.left_margin = Cm(1.5)
+            section.right_margin = Cm(1.5)
+
+        company_name = self.env.user.company_id.name or ''
+
+        # Title
+        if self.tipe_absensi == 'kelas':
+            title_text = 'REKAP ABSENSI KELAS'
+        elif self.tipe_absensi == 'halaqoh':
+            title_text = 'REKAP ABSENSI HALAQOH'
+        else:
+            title_text = 'REKAP ABSENSI KELAS / HALAQOH'
+
+        p_title = doc.add_paragraph()
+        p_title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_title.paragraph_format.space_after = Pt(0)
+        r_title = p_title.add_run(title_text)
+        r_title.bold = True
+        r_title.font.size = Pt(14)
+        r_title.font.name = 'Times New Roman'
+
+        p_company = doc.add_paragraph()
+        p_company.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_company.paragraph_format.space_before = Pt(0)
+        p_company.paragraph_format.space_after = Pt(12)
+        r_company = p_company.add_run(company_name.upper())
+        r_company.bold = True
+        r_company.font.size = Pt(12)
+        r_company.font.name = 'Times New Roman'
+
+        MONTHS = {
+            1: 'Januari', 2: 'Februari', 3: 'Maret', 4: 'April',
+            5: 'Mei', 6: 'Juni', 7: 'Juli', 8: 'Agustus',
+            9: 'September', 10: 'Oktober', 11: 'November', 12: 'Desember'
+        }
+        if self.tgl_awal.month == self.tgl_akhir.month and self.tgl_awal.year == self.tgl_akhir.year:
+            periode_str = f"{self.tgl_awal.day} - {self.tgl_akhir.day} {MONTHS[self.tgl_akhir.month]} {self.tgl_akhir.year}"
+        else:
+            periode_str = f"{self.tgl_awal.day} {MONTHS[self.tgl_awal.month]} - {self.tgl_akhir.day} {MONTHS[self.tgl_akhir.month]} {self.tgl_akhir.year}"
+
+        tipe_dict = dict(self._fields['tipe_absensi'].selection)
+        info_lines = [
+            ('PERIODE', periode_str),
+            ('TIPE ABSENSI', tipe_dict.get(self.tipe_absensi, self.tipe_absensi)),
+        ]
+        if self.kelas_id:
+            k_name = self.kelas_id.name.name if hasattr(self.kelas_id.name, 'name') and self.kelas_id.name.name else self.kelas_id.display_name
+            info_lines.append(('KELAS', k_name))
+            if hasattr(self.kelas_id, 'walikelas_id') and self.kelas_id.walikelas_id:
+                info_lines.append(('WALI KELAS', self.kelas_id.walikelas_id.name))
+        if self.halaqoh_id:
+            info_lines.append(('HALAQOH', self.halaqoh_id.name))
+            if self.halaqoh_id.penanggung_jawab_id:
+                info_lines.append(('USTADZ UTAMA', self.halaqoh_id.penanggung_jawab_id.name))
+
+        for label, value in info_lines:
+            p_info = doc.add_paragraph()
+            p_info.paragraph_format.space_before = Pt(0)
+            p_info.paragraph_format.space_after = Pt(2)
+            p_info.paragraph_format.line_spacing = 1.0
+            r_label = p_info.add_run(f'{label:<20}')
+            r_label.bold = True
+            r_label.font.size = Pt(9)
+            r_label.font.name = 'Times New Roman'
+            r_val = p_info.add_run(f': {value}')
+            r_val.font.size = Pt(9)
+            r_val.font.name = 'Times New Roman'
+
+        doc.add_paragraph()
+
+        # Data Table
+        headers = ['No', 'Nama Santri'] + [d.strftime('%d/%m') for d in sorted_dates] + ['H', 'S', 'I', 'A', 'PS', 'PI', 'PA']
+        num_cols = len(headers)
+        num_rows = len(sorted_siswa) + 1 + 2
+
+        table = doc.add_table(rows=num_rows, cols=num_cols)
+        table.style = 'Table Grid'
+        table.alignment = WD_TABLE_ALIGNMENT.CENTER
+        table.autofit = True
+
+        # Header Row
+        for i, header in enumerate(headers):
+            cell = table.rows[0].cells[i]
+            cell.text = ''
+            p = cell.paragraphs[0]
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            run = p.add_run(header)
+            run.bold = True
+            run.font.color.rgb = RGBColor(255, 255, 255)
+            run.font.size = Pt(8)
+            run.font.name = 'Times New Roman'
+            shd = parse_xml(f'<w:shd {nsdecls("w")} w:fill="203764"/>')
+            cell._tc.get_or_add_tcPr().append(shd)
+
+        # Student Rows
+        for idx, s in enumerate(sorted_siswa):
+            row_idx = idx + 1
+            row_cells = table.rows[row_idx].cells
+            
+            p = row_cells[0].paragraphs[0]
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            r = p.add_run(str(idx + 1))
+            r.font.size = Pt(8)
+            r.font.name = 'Times New Roman'
+
+            p = row_cells[1].paragraphs[0]
+            r = p.add_run(s.name or '-')
+            r.font.size = Pt(8)
+            r.font.name = 'Times New Roman'
+
+            counts = {'H': 0, 'S': 0, 'I': 0, 'A': 0, 'PS': 0, 'PI': 0, 'PA': 0, 'K': 0}
+
+            col_c = 2
+            for d in sorted_dates:
+                st = attendance_map.get((s.id, d), '-')
+                p = row_cells[col_c].paragraphs[0]
+                p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                r = p.add_run(st)
+                r.font.size = Pt(8)
+                r.font.name = 'Times New Roman'
+                if st in counts:
+                    counts[st] += 1
+                col_c += 1
+
+            for code in ['H', 'S', 'I', 'A', 'PS', 'PI', 'PA']:
+                p = row_cells[col_c].paragraphs[0]
+                p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                r = p.add_run(str(counts[code]))
+                r.font.size = Pt(8)
+                r.font.name = 'Times New Roman'
+                col_c += 1
+
+        # Bottom Row 1: Guru Pengganti
+        gp_row_idx = len(sorted_siswa) + 1
+        gp_cells = table.rows[gp_row_idx].cells
+        gp_cells[0].merge(gp_cells[1])
+        p = gp_cells[0].paragraphs[0]
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        r = p.add_run('Guru Pengganti')
+        r.bold = True
+        r.font.size = Pt(8)
+        r.font.name = 'Times New Roman'
+        shd = parse_xml(f'<w:shd {nsdecls("w")} w:fill="EFEFEF"/>')
+        gp_cells[0]._tc.get_or_add_tcPr().append(shd)
+
+        col_c = 2
+        for d in sorted_dates:
+            g_name = guru_pengganti_map.get(d, '-')
+            p = gp_cells[col_c].paragraphs[0]
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            r = p.add_run(g_name)
+            r.font.size = Pt(7)
+            r.font.name = 'Times New Roman'
+            col_c += 1
+
+        # Bottom Row 2: Keterangan
+        ket_row_idx = len(sorted_siswa) + 2
+        ket_cells = table.rows[ket_row_idx].cells
+        ket_cells[0].merge(ket_cells[1])
+        p = ket_cells[0].paragraphs[0]
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        r = p.add_run('Keterangan')
+        r.bold = True
+        r.font.size = Pt(8)
+        r.font.name = 'Times New Roman'
+        shd = parse_xml(f'<w:shd {nsdecls("w")} w:fill="EFEFEF"/>')
+        ket_cells[0]._tc.get_or_add_tcPr().append(shd)
+
+        col_c = 2
+        for d in sorted_dates:
+            ket_val = keterangan_map.get(d, '-')
+            p = ket_cells[col_c].paragraphs[0]
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            r = p.add_run(ket_val)
+            r.font.size = Pt(7)
+            r.font.name = 'Times New Roman'
+            col_c += 1
+
+        # Legend Table
+        doc.add_paragraph()
+        p_leg = doc.add_paragraph()
+        p_leg.paragraph_format.space_after = Pt(4)
+        r_leg = p_leg.add_run('KETERANGAN KODE PRESENSI')
+        r_leg.bold = True
+        r_leg.font.size = Pt(10)
+        r_leg.font.name = 'Times New Roman'
+
+        legends = [
+            ('H', 'Hadir'), ('S', 'Sakit'), ('I', 'Izin'), ('A', 'Alpa'),
+            ('PS', 'Pulang - Sakit'), ('PI', 'Pulang - Izin'), ('PA', 'Pulang - Alpa'), ('K', 'Izin Keluar')
+        ]
+
+        leg_table = doc.add_table(rows=len(legends) + 1, cols=2)
+        leg_table.style = 'Table Grid'
+        leg_table.alignment = WD_TABLE_ALIGNMENT.LEFT
+        leg_table.autofit = False
+
+        for row_obj in leg_table.rows:
+            row_obj.cells[0].width = Cm(2.0)
+            row_obj.cells[1].width = Cm(5.0)
+
+        for i, header in enumerate(['KODE', 'KETERANGAN']):
+            cell = leg_table.rows[0].cells[i]
+            cell.text = ''
+            p = cell.paragraphs[0]
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            run = p.add_run(header)
+            run.bold = True
+            run.font.color.rgb = RGBColor(255, 255, 255)
+            run.font.size = Pt(8)
+            run.font.name = 'Times New Roman'
+            shd = parse_xml(f'<w:shd {nsdecls("w")} w:fill="203764"/>')
+            cell._tc.get_or_add_tcPr().append(shd)
+
+        for idx, (code, name) in enumerate(legends):
+            r_i = idx + 1
+            c_code = leg_table.rows[r_i].cells[0]
+            p = c_code.paragraphs[0]
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            r = p.add_run(code)
+            r.bold = True
+            r.font.size = Pt(8)
+            r.font.name = 'Times New Roman'
+
+            c_name = leg_table.rows[r_i].cells[1]
+            p = c_name.paragraphs[0]
+            r = p.add_run(name)
+            r.font.size = Pt(8)
+            r.font.name = 'Times New Roman'
+
+        # Signatures
+        doc.add_paragraph()
+        today = date.today()
+        tgl_str = f"{today.day} {MONTHS.get(today.month, '')} {today.year}"
+
+        sig_table = doc.add_table(rows=4, cols=2)
+        sig_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+        sig_table.autofit = True
+
+        for row_obj in sig_table.rows:
+            for cell in row_obj.cells:
+                for border_name in ['top', 'bottom', 'left', 'right']:
+                    tag = f'w:{border_name}'
+                    element = parse_xml(
+                        f'<w:tcBorders {nsdecls("w")}>'
+                        f'<{tag} w:val="none" w:sz="0" w:space="0" w:color="auto"/>'
+                        f'</w:tcBorders>'
+                    )
+                    cell._tc.get_or_add_tcPr().append(element)
+
+        for i, text in enumerate(['Mengetahui,', f'Tanggal: {tgl_str}']):
+            p = sig_table.rows[0].cells[i].paragraphs[0]
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            run = p.add_run(text)
+            run.font.size = Pt(9)
+            run.font.name = 'Times New Roman'
+
+        for i, text in enumerate(['Kepala Pengasuhan / Kesantrian', 'Wali Kelas / Ustadz Utama']):
+            p = sig_table.rows[1].cells[i].paragraphs[0]
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            run = p.add_run(text)
+            run.font.size = Pt(9)
+            run.font.name = 'Times New Roman'
+
+        for i in range(2):
+            sig_table.rows[2].cells[i].text = ''
+            p = sig_table.rows[2].cells[i].paragraphs[0]
+            p.paragraph_format.space_before = Pt(35)
+
+        for i, text in enumerate(['(______________________________)', '(______________________________)']):
+            p = sig_table.rows[3].cells[i].paragraphs[0]
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            run = p.add_run(text)
+            run.bold = True
+            run.font.size = Pt(9)
+            run.font.name = 'Times New Roman'
+            run.font.underline = True
+
+        # Save & Download
+        output = io.BytesIO()
+        doc.save(output)
+        output.seek(0)
+        docx_data = output.read()
+
+        target_name = ""
+        if self.tipe_absensi == 'kelas':
+            tipe_str = "Kelas"
+            if self.kelas_id:
+                k_name = self.kelas_id.name.name if (hasattr(self.kelas_id, 'name') and hasattr(self.kelas_id.name, 'name') and self.kelas_id.name.name) else (self.kelas_id.display_name or str(self.kelas_id.name))
+                target_name = f" {k_name}"
+        elif self.tipe_absensi == 'halaqoh':
+            tipe_str = "Halaqoh"
+            if self.halaqoh_id and self.halaqoh_id.name:
+                target_name = f" {self.halaqoh_id.name}"
+        else:
+            tipe_str = "Kelas dan Halaqoh"
+
+        tgl_awal_str = self.tgl_awal.strftime('%d-%m-%Y') if self.tgl_awal else ''
+        tgl_akhir_str = self.tgl_akhir.strftime('%d-%m-%Y') if self.tgl_akhir else ''
+        file_name = f"Rekap Absensi {tipe_str}{target_name} {tgl_awal_str} sd {tgl_akhir_str}.docx"
+
+        for char in ['/', '\\', ':', '*', '?', '"', '<', '>', '|']:
+            file_name = file_name.replace(char, '-')
+
+        self.write({
+            'data_file': base64.b64encode(docx_data),
+            'file_name': file_name
+        })
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Export Berhasil!'),
+                'message': _("File DOCX '%s' telah berhasil di-generate dan berhasil diunduh.") % self.file_name,
+                'type': 'success',
+                'sticky': False,
+                'next': {
+                    'type': 'ir.actions.act_url',
+                    'url': f'/web/content/?model={self._name}&id={self.id}&field=data_file&download=true&filename={self.file_name}',
+                    'target': 'self',
+                }
+            }
         }
 
     def action_export_xlsx(self):
