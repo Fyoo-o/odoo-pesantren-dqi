@@ -2,7 +2,6 @@
 <odoo>
     <data>
 
-        
         <record id="musyrif_keterangan_tree_view" model="ir.ui.view">
             <field name="name">master.keterangan.tree</field>
             <field name="model">master.keterangan</field>
@@ -13,28 +12,40 @@
             </field>
         </record>
 
-         <record id="musyrif_keterangan_form_view" model="ir.ui.view">
+        <record id="musyrif_keterangan_form_view" model="ir.ui.view">
             <field name="name">master.keterangan.form</field>
             <field name="model">master.keterangan</field>
             <field name="arch" type="xml">
                 <form string="Tambah Keterangan Izin">
                     <sheet>
+                        <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
                         <group>
                             <field name="name"/>
+                            <field name="active" invisible="1"/>
                         </group>
                     </sheet>
                 </form>
             </field>
         </record>
 
+        <record id="musyrif_keterangan_search_view" model="ir.ui.view">
+            <field name="name">master.keterangan.search</field>
+            <field name="model">master.keterangan</field>
+            <field name="arch" type="xml">
+                <search string="Keterangan Izin">
+                    <field name="name"/>
+                    <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                </search>
+            </field>
+        </record>
 
         <record id="musyrif_keterangan_action" model="ir.actions.act_window">
             <field name="name">Keterangan Izin</field>
             <field name="res_model">master.keterangan</field>
             <field name="view_mode">list,form</field>
+            <field name="search_view_id" ref="musyrif_keterangan_search_view"/>
             <field name="context">{'from_musyrif': True}</field>
         </record>
-
 
         <menuitem id="musyrif_keterangan_menu_act"
                   name="Atur Keterangan Izin"
