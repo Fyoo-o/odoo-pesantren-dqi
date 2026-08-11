@@ -455,6 +455,17 @@
                 model.update_nama_sekolah_all()
             </field>
         </record>
+
+        <record id="action_generate_nis_mass" model="ir.actions.server">
+            <field name="name">Generate NIS</field>
+            <field name="model_id" ref="model_cdn_siswa" />
+            <field name="binding_model_id" ref="model_cdn_siswa" />
+            <field name="binding_view_types">list,form</field>
+            <field name="state">code</field>
+            <field name="code">
+                action = records.action_generate_nis()
+            </field>
+        </record>
         <!-- action window -->
         <record id="action_cdn_siswa" model="ir.actions.act_window">
             <field name="name">Siswa</field>

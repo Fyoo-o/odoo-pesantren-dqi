@@ -625,8 +625,20 @@ class siswa(models.Model):
         return partner_model.action_recharge()
 
     def action_generate_nis(self):
+        count = 0
         for rec in self:
             rec.nis = rec._generate_auto_nis()
+            count += 1
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': '✅ Generate NIS Berhasil',
+                'message': f'Berhasil membuat NIS untuk {count} santri.',
+                'type': 'success',
+                'sticky': False,
+            }
+        }
 
 
     def action_recharge_wallet_mass(self):
