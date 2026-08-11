@@ -45,7 +45,6 @@ class Absenhalaqoh(models.Model):
                                 'Done': [('readonly', True)]})
     state = fields.Selection([
         ('Draft', 'Draft'),
-        ('Proses', 'Proses'),
         ('Done', 'Selesai'),
     ], default='Draft', string='Status')
     penanggung_jawab_id = fields.Many2one(
@@ -68,7 +67,7 @@ class Absenhalaqoh(models.Model):
             record.row_number = index + 1
 
     def action_proses(self):
-        self.state = 'Proses'
+        self.state = 'Done'
         Penilaian = self.env['cdn.penilaian_quran'].with_context(
             from_guru_quran=True)
         for absen in self.absen_ids.filtered(lambda l: l.kehadiran == 'Hadir'):
@@ -93,6 +92,9 @@ class Absenhalaqoh(models.Model):
 
     def action_confirm(self):
         self.state = 'Done'
+
+    def action_draft(self):
+        self.state = 'Draft'
 
     def action_sync_penilaian(self):
         Penilaian = self.env['cdn.penilaian_quran'].with_context(

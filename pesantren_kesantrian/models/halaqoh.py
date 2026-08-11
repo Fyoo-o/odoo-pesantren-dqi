@@ -137,15 +137,36 @@ class Halaqoh(models.Model):
                 other_halaqohs = siswa.halaqoh_ids.filtered(
                     lambda h: h.id != rec.id and h.fiscalyear_id == rec.fiscalyear_id
                 )
-                if other_halaqohs:
+                if not other_halaqohs:
+                    continue
+
+                # Cek apakah santri berjenjang Rumah Tahfidz Quran (RTQ)
+                is_rtq = (siswa.jenjang == 'rtq') or (
+                    siswa.ruang_kelas_id and siswa.ruang_kelas_id.name and siswa.ruang_kelas_id.name.jenjang == 'rtq'
+                )
+
+                max_allowed = 2 if is_rtq else 1
+                total_halaqoh = len(other_halaqohs) + 1
+
+                if total_halaqoh > max_allowed:
                     h_names = ", ".join(other_halaqohs.mapped('name'))
-                    conflicting_students.append(f"• {siswa.name} (terdaftar di halaqoh: {h_names})")
+                    if is_rtq:
+                        conflicting_students.append(
+                            f"• {siswa.name} [Rumah Tahfidz Quran] (sudah terdaftar di {len(other_halaqohs)} halaqoh: {h_names})"
+                        )
+                    else:
+                        conflicting_students.append(
+                            f"• {siswa.name} (terdaftar di halaqoh: {h_names})"
+                        )
+
             if conflicting_students:
                 msg = "\n".join(conflicting_students)
                 raise UserError(
-                    f"Santri berikut sudah terdaftar di halaqoh lain pada Tahun Ajaran {rec.fiscalyear_id.name}:\n\n{msg}\n\n"
-                    f"Satu santri hanya boleh terdaftar di 1 halaqoh per Tahun Ajaran. "
-                    f"Silakan hapus/keluarkan santri tersebut dari halaqoh lama terlebih dahulu."
+                    f"⛔ Batas Maksimal Halaqoh per Santri Terlampaui (Tahun Ajaran {rec.fiscalyear_id.name}):\n\n{msg}\n\n"
+                    f"Catatan Aturan:\n"
+                    f"- Santri Reguler: Maksimal 1 Halaqoh per Tahun Ajaran.\n"
+                    f"- Santri Rumah Tahfidz Quran (RTQ): Maksimal 2 Halaqoh per Tahun Ajaran.\n\n"
+                    f"Silakan hapus/keluarkan santri dari halaqoh lama terlebih dahulu."
                 )
 
     def konfirmasi(self):

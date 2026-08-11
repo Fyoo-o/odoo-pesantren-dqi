@@ -7,5 +7,7 @@ import logging
 
 class MasterKeterangan(models.Model):
     _name = 'master.keterangan'
+    _description = 'Master Keterangan Izin'
     
-    name = fields.Char("Keterangan Ijin")
+    name = fields.Char("Keterangan Ijin", required=True)
+    active = fields.Boolean("Aktif", default=True)
