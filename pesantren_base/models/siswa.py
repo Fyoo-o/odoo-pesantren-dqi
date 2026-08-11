@@ -290,6 +290,9 @@ class siswa(models.Model):
     def _generate_auto_nis(self, vals=None):
         vals = vals or {}
         jenjang = vals.get('jenjang') or (self.jenjang if self else False)
+        if not jenjang and self and self.ruang_kelas_id and self.ruang_kelas_id.name:
+            jenjang = self.ruang_kelas_id.name.jenjang
+
         tgl = vals.get('tanggal_daftar') or (self.tanggal_daftar if self else False) or fields.Date.today()
 
         try:
@@ -297,33 +300,46 @@ class siswa(models.Model):
         except AttributeError:
             tahun_daftar = fields.Date.today().strftime('%Y')[-2:]
 
-        lembaga = {
-            'paud': '01', 'tk': '02', 'sdmi': '03',
-            'smpmts': '04', 'smama': '05', 'smk': '10', 'nonformal': '06',
-        }.get(jenjang, '00')
+        lembaga_map = {
+            'paud': '01',
+            'tk': '02',
+            'sd': '03',
+            'sdmi': '03',
+            'smp': '04',
+            'smpmts': '04',
+            'sma': '05',
+            'smama': '05',
+            'smk': '05',
+            'nonformal': '06',
+            'rtq': '07',
+        }
+        lembaga = lembaga_map.get(jenjang, '01')
+
+        # Prefix 4-digit murni: JJYY (contoh: 0326 untuk SD 2026)
+        prefix = f"{lembaga}{tahun_daftar}"
 
         nomor_pendaftaran = vals.get('nomor_pendaftaran') or (self.nomor_pendaftaran if self else False)
         if nomor_pendaftaran and str(nomor_pendaftaran).isdigit():
-            nomor = str(nomor_pendaftaran).zfill(4)
+            nomor_str = str(nomor_pendaftaran).zfill(5)[-5:]
+            nis_candidate = f"{prefix}{nomor_str}"
         else:
-            nomor = str(random.randint(1000, 9999))
+            existing_records = self.env['cdn.siswa'].sudo().with_context(active_test=False).search([
+                ('nis', '=like', f"{prefix}%")
+            ])
+            max_seq = 0
+            for rec in existing_records:
+                if rec.nis:
+                    clean_nis = "".join(filter(str.isdigit, rec.nis))
+                    if clean_nis.startswith(prefix) and len(clean_nis) == 9:
+                        seq_str = clean_nis[4:]
+                        if seq_str.isdigit():
+                            seq = int(seq_str)
+                            if seq > max_seq:
+                                max_seq = seq
+            next_seq = max_seq + 1
+            nis_candidate = f"{prefix}{str(next_seq).zfill(5)}"
 
-        nis_candidate = f"{lembaga}.{tahun_daftar}.{nomor}"
-
-        rec_id = self.id if self else False
-        domain = [('nis', '=', nis_candidate)]
-        if rec_id:
-            domain.append(('id', '!=', rec_id))
-
-        count = 1
-        final_nis = nis_candidate
-        while self.with_context(active_test=False).search(domain, limit=1):
-            final_nis = f"{lembaga}.{tahun_daftar}.{random.randint(1000, 9999)}"
-            domain = [('nis', '=', final_nis)]
-            if rec_id:
-                domain.append(('id', '!=', rec_id))
-
-        return final_nis
+        return nis_candidate
 
     def _validate_nama_nis(self, vals, record=None):
         """Validasi wajib: Nama tidak boleh kosong, NIS wajib & unik"""
