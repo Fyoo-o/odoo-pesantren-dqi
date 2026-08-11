@@ -5,6 +5,7 @@
         <delete model="ir.ui.menu" id="musyrif_uang_saku_menu_act"/>
         <delete model="ir.ui.menu" id="musyrif_pos_wallet_transaction_menu_act"/>
         <delete model="ir.ui.menu" id="musyrif_mutasi_saldo_menu"/>
+        <delete model="ir.ui.menu" id="wizard_isi_saldo_menu_categ"/>
 
         <menuitem id="musyrif_menu_root" name="Musyrif" sequence="10" groups="pesantren_musyrif.group_musyrif_user" web_icon="pesantren_base,static/description/musyrif.png"/>
         <!-- <menuitem id="musyrif_perijinan_santri_menu_categ" name="Perijinan Santri" parent="musyrif_menu_root" sequence="20"/> -->
