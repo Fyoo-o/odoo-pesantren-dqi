@@ -288,6 +288,24 @@ class siswa(models.Model):
             raise UserError(f"Gagal membuat akun orang tua: {str(e)}")
 
     def _generate_auto_nis(self, vals=None):
+        """
+        Generate NIS sesuai standar YPI DQI:
+        Format: JJ.YY.NNNNNN (10 digit + 2 titik pemisah)
+        - JJ     = Kode Lembaga (2 digit)
+        - YY     = Kode Tahun Masuk (2 digit terakhir)
+        - NNNNNN = Nomor Urut GLOBAL (6 digit, berlanjut lintas lembaga)
+
+        Kode Lembaga:
+          01 = KB Tahfizh Baby-Qu (PAUD)
+          02 = TK Tahfizh Baby-Qu
+          03 = SD Tahfizh Bilingual
+          04 = SMP Tahfizh Bilingual
+          05 = MA Tahfizh Bilingual
+          06 = Rumah Tahfizh Qur'an
+          07 = Pesantren Tahfizh Putra
+          08 = Pesantren Tahfizh Putri
+          09 = Asrama Shigor
+        """
         vals = vals or {}
         jenjang = vals.get('jenjang') or (self.jenjang if self else False)
         if not jenjang and self and self.ruang_kelas_id and self.ruang_kelas_id.name:
@@ -300,44 +318,53 @@ class siswa(models.Model):
         except AttributeError:
             tahun_daftar = fields.Date.today().strftime('%Y')[-2:]
 
+        # Mapping jenjang sistem ke Kode Lembaga YPI DQI
         lembaga_map = {
-            'paud': '01',
-            'tk': '02',
-            'sd': '03',
-            'sdmi': '03',
-            'smp': '04',
-            'smpmts': '04',
-            'sma': '05',
-            'smama': '05',
-            'smk': '05',
-            'nonformal': '06',
-            'rtq': '07',
+            'paud': '01',       # KB Tahfizh Baby-Qu
+            'tk': '02',         # TK Tahfizh Baby-Qu
+            'sd': '03',         # SD Tahfizh Bilingual
+            'sdmi': '03',       # alias SD/MI
+            'smp': '04',        # SMP Tahfizh Bilingual
+            'smpmts': '04',     # alias SMP/MTS
+            'sma': '05',        # MA Tahfizh Bilingual
+            'smama': '05',      # alias SMA/MA
+            'smk': '05',        # alias SMK
+            'nonformal': '06',  # Non Formal
+            'rtq': '06',        # Rumah Tahfizh Qur'an
         }
-        lembaga = lembaga_map.get(jenjang, '01')
+        lembaga = lembaga_map.get(jenjang, '03')
 
-        # Prefix 4-digit murni: JJYY (contoh: 0326 untuk SD 2026)
-        prefix = f"{lembaga}{tahun_daftar}"
+        # Nomor urut GLOBAL: cari nomor urut terbesar dari SEMUA NIS yang ada
+        # Format NIS: JJ.YY.NNNNNN → ambil 6 digit terakhir setelah titik kedua
+        all_records = self.env['cdn.siswa'].sudo().with_context(active_test=False).search([
+            ('nis', '!=', False),
+            ('nis', '!=', ''),
+        ])
+        max_seq = 0
+        for rec in all_records:
+            if rec.nis:
+                # Hapus semua karakter non-digit untuk ambil angka murni
+                clean_nis = "".join(filter(str.isdigit, rec.nis))
+                if len(clean_nis) >= 10:
+                    # 6 digit terakhir = nomor urut
+                    seq_str = clean_nis[-6:]
+                    if seq_str.isdigit():
+                        seq = int(seq_str)
+                        if seq > max_seq:
+                            max_seq = seq
+                elif len(clean_nis) >= 6:
+                    # Fallback: coba ambil 6 digit terakhir
+                    seq_str = clean_nis[-6:]
+                    if seq_str.isdigit():
+                        seq = int(seq_str)
+                        if seq > max_seq:
+                            max_seq = seq
 
-        nomor_pendaftaran = vals.get('nomor_pendaftaran') or (self.nomor_pendaftaran if self else False)
-        if nomor_pendaftaran and str(nomor_pendaftaran).isdigit():
-            nomor_str = str(nomor_pendaftaran).zfill(5)[-5:]
-            nis_candidate = f"{prefix}{nomor_str}"
-        else:
-            existing_records = self.env['cdn.siswa'].sudo().with_context(active_test=False).search([
-                ('nis', '=like', f"{prefix}%")
-            ])
-            max_seq = 0
-            for rec in existing_records:
-                if rec.nis:
-                    clean_nis = "".join(filter(str.isdigit, rec.nis))
-                    if clean_nis.startswith(prefix) and len(clean_nis) == 9:
-                        seq_str = clean_nis[4:]
-                        if seq_str.isdigit():
-                            seq = int(seq_str)
-                            if seq > max_seq:
-                                max_seq = seq
-            next_seq = max_seq + 1
-            nis_candidate = f"{prefix}{str(next_seq).zfill(5)}"
+        next_seq = max_seq + 1
+        nomor_urut = str(next_seq).zfill(6)
+
+        # Format final: JJ.YY.NNNNNN
+        nis_candidate = f"{lembaga}.{tahun_daftar}.{nomor_urut}"
 
         return nis_candidate
 
@@ -625,9 +652,47 @@ class siswa(models.Model):
         return partner_model.action_recharge()
 
     def action_generate_nis(self):
+        # Pre-compute global max nomor urut sekali untuk batch
+        all_records = self.env['cdn.siswa'].sudo().with_context(active_test=False).search([
+            ('nis', '!=', False),
+            ('nis', '!=', ''),
+        ])
+        max_seq = 0
+        for rec in all_records:
+            if rec.nis:
+                clean_nis = "".join(filter(str.isdigit, rec.nis))
+                if len(clean_nis) >= 6:
+                    seq_str = clean_nis[-6:]
+                    if seq_str.isdigit():
+                        seq = int(seq_str)
+                        if seq > max_seq:
+                            max_seq = seq
+
+        # Mapping jenjang ke kode lembaga YPI DQI
+        lembaga_map = {
+            'paud': '01', 'tk': '02',
+            'sd': '03', 'sdmi': '03',
+            'smp': '04', 'smpmts': '04',
+            'sma': '05', 'smama': '05', 'smk': '05',
+            'nonformal': '06', 'rtq': '06',
+        }
+
         count = 0
         for rec in self:
-            rec.nis = rec._generate_auto_nis()
+            jenjang = rec.jenjang
+            if not jenjang and rec.ruang_kelas_id and rec.ruang_kelas_id.name:
+                jenjang = rec.ruang_kelas_id.name.jenjang
+
+            tgl = rec.tanggal_daftar or fields.Date.today()
+            try:
+                tahun_daftar = tgl.strftime('%Y')[-2:]
+            except AttributeError:
+                tahun_daftar = fields.Date.today().strftime('%Y')[-2:]
+
+            lembaga = lembaga_map.get(jenjang, '03')
+            max_seq += 1
+            nomor_urut = str(max_seq).zfill(6)
+            rec.nis = f"{lembaga}.{tahun_daftar}.{nomor_urut}"
             count += 1
         return {
             'type': 'ir.actions.client',

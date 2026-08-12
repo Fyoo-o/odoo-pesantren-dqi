@@ -140,19 +140,23 @@ class Halaqoh(models.Model):
                 if not other_halaqohs:
                     continue
 
-                # Cek apakah santri berjenjang Rumah Tahfidz Quran (RTQ)
-                is_rtq = (siswa.jenjang == 'rtq') or (
-                    siswa.ruang_kelas_id and siswa.ruang_kelas_id.name and siswa.ruang_kelas_id.name.jenjang == 'rtq'
-                )
+                # Cek apakah santri berjenjang Rumah Tahfidz Quran (RTQ) atau TK/PAUD
+                j_siswa = siswa.jenjang
+                j_rk = siswa.ruang_kelas_id.jenjang if siswa.ruang_kelas_id else False
+                j_rk_name = siswa.ruang_kelas_id.name.jenjang if (siswa.ruang_kelas_id and siswa.ruang_kelas_id.name) else False
 
-                max_allowed = 2 if is_rtq else 1
+                is_rtq_or_tk = any(j in ['rtq', 'tk', 'paud'] for j in [j_siswa, j_rk, j_rk_name] if j)
+
+                max_allowed = 2 if is_rtq_or_tk else 1
                 total_halaqoh = len(other_halaqohs) + 1
 
                 if total_halaqoh > max_allowed:
                     h_names = ", ".join(other_halaqohs.mapped('name'))
-                    if is_rtq:
+                    if is_rtq_or_tk:
+                        is_tk = any(j in ['tk', 'paud'] for j in [j_siswa, j_rk, j_rk_name] if j)
+                        jenjang_name = "TK/PAUD" if is_tk else "Rumah Tahfidz Quran"
                         conflicting_students.append(
-                            f"• {siswa.name} [Rumah Tahfidz Quran] (sudah terdaftar di {len(other_halaqohs)} halaqoh: {h_names})"
+                            f"• {siswa.name} [{jenjang_name}] (sudah terdaftar di {len(other_halaqohs)} halaqoh: {h_names})"
                         )
                     else:
                         conflicting_students.append(
@@ -165,7 +169,7 @@ class Halaqoh(models.Model):
                     f"⛔ Batas Maksimal Halaqoh per Santri Terlampaui (Tahun Ajaran {rec.fiscalyear_id.name}):\n\n{msg}\n\n"
                     f"Catatan Aturan:\n"
                     f"- Santri Reguler: Maksimal 1 Halaqoh per Tahun Ajaran.\n"
-                    f"- Santri Rumah Tahfidz Quran (RTQ): Maksimal 2 Halaqoh per Tahun Ajaran.\n\n"
+                    f"- Santri Rumah Tahfidz Quran (RTQ) & TK: Maksimal 2 Halaqoh per Tahun Ajaran.\n\n"
                     f"Silakan hapus/keluarkan santri dari halaqoh lama terlebih dahulu."
                 )
 
