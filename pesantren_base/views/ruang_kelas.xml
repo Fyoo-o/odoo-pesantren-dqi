@@ -37,6 +37,10 @@
                         <button string="Draft" name="draft" type="object" class="oe_highlight"
                             invisible="status != 'konfirm'"
                             groups="pesantren_kesantrian.group_kesantrian_staff" />
+                        <button string="Sinkronkan Data Siswa" name="action_sync_all_ruang_kelas" type="object"
+                            class="btn-secondary"
+                            confirm="Apakah Anda yakin ingin menyinkronkan data siswa di seluruh ruang kelas?"
+                            groups="pesantren_kesantrian.group_kesantrian_staff" />
                         <field name="status" widget="statusbar" statusbar_visible="draft,konfirm" />
                     </header>
                     <sheet>

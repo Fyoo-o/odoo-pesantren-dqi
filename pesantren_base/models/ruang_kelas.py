@@ -291,6 +291,79 @@ class ruang_kelas(models.Model):
             self.nama_kelas = self.name.nama_kelas
             self.walikelas_id = self.walikelas_id.id
 
+    def _extract_siswa_ids_from_vals(self, vals_siswa_ids):
+        """
+        Mengekstrak ID siswa yang ditambahkan, dihapus, dan digantikan dari tuple commands Many2many Odoo
+        """
+        added_ids = set()
+        removed_ids = set()
+        replaced_ids = None
+
+        if not vals_siswa_ids:
+            return added_ids, removed_ids, replaced_ids
+
+        for cmd in vals_siswa_ids:
+            if not isinstance(cmd, (tuple, list)) or len(cmd) == 0:
+                continue
+            code = cmd[0]
+            if code == 6:  # (6, 0, [ids])
+                replaced_ids = set(cmd[2]) if len(cmd) > 2 and cmd[2] else set()
+            elif code == 4:  # (4, id, 0)
+                added_ids.add(cmd[1])
+            elif code in (2, 3):  # (2, id, 0) or (3, id, 0)
+                removed_ids.add(cmd[1])
+            elif code == 5:  # (5, 0, 0)
+                replaced_ids = set()
+
+        return added_ids, removed_ids, replaced_ids
+
+    def _sync_siswa_ruang_kelas(self, vals=None):
+        """
+        Sinkronisasi otomatis antara siswa_ids di cdn.ruang_kelas dan ruang_kelas_id di cdn.siswa
+        """
+        if self.env.context.get('skip_ruang_kelas_sync'):
+            return
+
+        for record in self:
+            vals_siswa_ids = vals.get('siswa_ids') if vals else None
+            added_ids, removed_ids, replaced_ids = self._extract_siswa_ids_from_vals(vals_siswa_ids)
+
+            if replaced_ids is not None:
+                current_ids = set(record.siswa_ids.ids)
+                target_added_ids = replaced_ids - current_ids
+                target_removed_ids = current_ids - replaced_ids
+            else:
+                target_added_ids = added_ids
+                target_removed_ids = removed_ids
+
+            # Jika tidak dari vals (misal call manual/bulk sync), hitung dari record.siswa_ids
+            if vals is None:
+                target_added_ids = set(record.siswa_ids.ids)
+                siswa_removed = self.env['cdn.siswa'].search([('ruang_kelas_id', '=', record.id)])
+                target_removed_ids = set(siswa_removed.ids) - target_added_ids
+
+            # Update siswa yang ditambahkan
+            if target_added_ids:
+                added_siswa = self.env['cdn.siswa'].browse(list(target_added_ids))
+                for siswa in added_siswa:
+                    if siswa.ruang_kelas_id and siswa.ruang_kelas_id.id != record.id:
+                        old_kelas = siswa.ruang_kelas_id
+                        old_kelas.with_context(skip_ruang_kelas_sync=True).write({
+                            'siswa_ids': [(3, siswa.id)]
+                        })
+
+                added_siswa.with_context(skip_ruang_kelas_sync=True).write({
+                    'ruang_kelas_id': record.id,
+                    'tahunajaran_id': record.tahunajaran_id.id if record.tahunajaran_id else False,
+                })
+
+            # Reset siswa yang dikeluarkan
+            if target_removed_ids:
+                removed_siswa = self.env['cdn.siswa'].browse(list(target_removed_ids))
+                removed_siswa.with_context(skip_ruang_kelas_sync=True).write({
+                    'ruang_kelas_id': False,
+                })
+
     # Tambahkan method untuk memastikan nama_kelas selalu diisi dari name
     @api.model
     def create(self, vals):
@@ -298,15 +371,55 @@ class ruang_kelas(models.Model):
             kelas = self.env['cdn.master_kelas'].browse(vals.get('name'))
             if kelas and kelas.nama_kelas:
                 vals['nama_kelas'] = kelas.nama_kelas
-        return super(ruang_kelas, self).create(vals)
+        res = super(ruang_kelas, self).create(vals)
+        if 'siswa_ids' in vals:
+            res._sync_siswa_ruang_kelas(vals=vals)
+        return res
 
     def write(self, vals):
         if vals.get('name'):
             kelas = self.env['cdn.master_kelas'].browse(vals.get('name'))
             if kelas and kelas.nama_kelas:
                 vals['nama_kelas'] = kelas.nama_kelas
+
+        # Sinkronkan profil siswa SEBELUM super().write agar constraint unique_siswa_per_tahunajaran tidak terganggu
+        if 'siswa_ids' in vals or 'tahunajaran_id' in vals:
+            self._sync_siswa_ruang_kelas(vals=vals)
+
         result = super(ruang_kelas, self).write(vals)
+
+        # Pastikan sinkronisasi akhir beres
+        if 'siswa_ids' in vals or 'tahunajaran_id' in vals:
+            self._sync_siswa_ruang_kelas()
+
         return result
+
+    def action_sync_all_ruang_kelas(self):
+        """
+        Action / Method untuk melakukan sinkronisasi massal seluruh data Ruang Kelas dan Santri
+        """
+        all_classes = self.search([])
+        all_classes._sync_siswa_ruang_kelas()
+
+        # Juga pastikan santri yang ruang_kelas_id-nya terisi dimasukkan ke siswa_ids ruang kelas tersebut
+        all_siswa = self.env['cdn.siswa'].search([('ruang_kelas_id', '!=', False)])
+        for s in all_siswa:
+            if s.ruang_kelas_id and s.id not in s.ruang_kelas_id.siswa_ids.ids:
+                s.ruang_kelas_id.with_context(skip_ruang_kelas_sync=True).write({
+                    'siswa_ids': [(4, s.id)]
+                })
+
+        message_id = self.env['message.wizard'].create({
+            'message': _("Sinkronisasi Data Santri & Ruang Kelas Berhasil !!")
+        })
+        return {
+            'name': _('Berhasil'),
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'res_model': 'message.wizard',
+            'res_id': message_id.id,
+            'target': 'new'
+        }
 
     def konfirmasi(self):
         for rec in self:

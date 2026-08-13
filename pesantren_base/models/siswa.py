@@ -397,6 +397,28 @@ class siswa(models.Model):
                     'NIS harus unik untuk setiap santri (aktif maupun nonaktif)!')
 
     @api.model
+    def _sync_ruang_kelas_siswa(self, old_kelas_map=None):
+        if self.env.context.get('skip_ruang_kelas_sync'):
+            return
+
+        for record in self:
+            new_kelas = record.ruang_kelas_id
+            old_kelas_id = old_kelas_map.get(record.id) if old_kelas_map else False
+
+            # Jika kelas berubah, hapus dari kelas lama
+            if old_kelas_id and (not new_kelas or old_kelas_id != new_kelas.id):
+                old_kelas = self.env['cdn.ruang_kelas'].browse(old_kelas_id)
+                if old_kelas.exists() and record.id in old_kelas.siswa_ids.ids:
+                    old_kelas.with_context(skip_ruang_kelas_sync=True).write({
+                        'siswa_ids': [(3, record.id)]
+                    })
+
+            # Tambahkan ke kelas baru jika belum ada
+            if new_kelas and record.id not in new_kelas.siswa_ids.ids:
+                new_kelas.with_context(skip_ruang_kelas_sync=True).write({
+                    'siswa_ids': [(4, record.id)]
+                })
+
     def create(self, vals):
         """Override create untuk validasi Nama & NIS wajib + auto-create orangtua"""
         if vals.get('nis'):
@@ -412,6 +434,9 @@ class siswa(models.Model):
         # Create orangtua jika data akun diisi tapi orangtua_id kosong
         if (vals.get('email') or vals.get('nomor_login')) and not vals.get('orangtua_id'):
             res._create_orangtua_from_akun()
+
+        if vals.get('ruang_kelas_id'):
+            res._sync_ruang_kelas_siswa()
 
         return res
 
@@ -454,6 +479,11 @@ class siswa(models.Model):
             if 'tanggal_keluar' not in vals:
                 vals['tanggal_keluar'] = False
 
+        old_kelas_map = {}
+        if 'ruang_kelas_id' in vals:
+            for record in self:
+                old_kelas_map[record.id] = record.ruang_kelas_id.id if record.ruang_kelas_id else False
+
         res = super(siswa, self).write(vals)
 
         # Jika edit akun tapi belum ada orangtua, buat baru
@@ -464,6 +494,9 @@ class siswa(models.Model):
             for record in self:
                 if not record.orangtua_id and (record.email or record.nomor_login):
                     record._create_orangtua_from_akun()
+
+        if 'ruang_kelas_id' in vals:
+            self._sync_ruang_kelas_siswa(old_kelas_map=old_kelas_map)
 
         return res
 
