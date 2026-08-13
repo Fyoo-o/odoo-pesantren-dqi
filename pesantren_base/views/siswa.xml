@@ -466,6 +466,17 @@
                 action = records.action_generate_nis()
             </field>
         </record>
+
+        <record id="action_sync_restore_siswa_server" model="ir.actions.server">
+            <field name="name">Sinkronkan &amp; Pemulihan Kartu Santri</field>
+            <field name="model_id" ref="model_cdn_siswa" />
+            <field name="binding_model_id" ref="model_cdn_siswa" />
+            <field name="binding_view_types">list,form</field>
+            <field name="state">code</field>
+            <field name="code">
+                action = env['cdn.siswa'].action_sync_and_restore_siswa()
+            </field>
+        </record>
         <!-- action window -->
         <record id="action_cdn_siswa" model="ir.actions.act_window">
             <field name="name">Siswa</field>

@@ -420,15 +420,21 @@ class ruang_kelas(models.Model):
                 })
                 s.ruang_kelas_id._compute_jml_siswa()
 
-        # Otomatis aktifkan kembali status_akun santri aktif yang dipulihkan dari Alumni
-        restored_siswa = self.env['cdn.siswa'].search([
+        # Otomatis aktifkan kembali status_akun & bersihkan alasan_keluar santri aktif yang dipulihkan dari Alumni
+        active_siswa_to_fix = self.env['cdn.siswa'].search([
             ('active', '=', True),
-            ('alasan_keluar', '=', False),
-            ('status_akun', '=', 'blokir')
+            '|', ('alasan_keluar', '!=', False), ('status_akun', '=', 'blokir')
         ])
-        for s in restored_siswa:
-            if not getattr(s, 'alasan_akun', False):
-                s.write({'status_akun': 'aktif'})
+        for s in active_siswa_to_fix:
+            fix_vals = {}
+            if s.alasan_keluar:
+                fix_vals['alasan_keluar'] = False
+            if s.tanggal_keluar:
+                fix_vals['tanggal_keluar'] = False
+            if s.status_akun == 'blokir' and not getattr(s, 'alasan_akun', False):
+                fix_vals['status_akun'] = 'aktif'
+            if fix_vals:
+                s.write(fix_vals)
 
         message_id = self.env['message.wizard'].create({
             'message': _("Sinkronisasi Data Santri, Ruang Kelas, & Pemulihan Kartu Berhasil !!")

@@ -505,6 +505,37 @@ class siswa(models.Model):
 
         return res
 
+    def action_sync_and_restore_siswa(self):
+        """
+        Action / Method untuk memulihkan status kartu santri aktif yang data alumni/blokirnya masih tertinggal
+        """
+        active_siswa_to_fix = self.env['cdn.siswa'].search([
+            ('active', '=', True),
+            '|', ('alasan_keluar', '!=', False), ('status_akun', '=', 'blokir')
+        ])
+        for s in active_siswa_to_fix:
+            fix_vals = {}
+            if s.alasan_keluar:
+                fix_vals['alasan_keluar'] = False
+            if s.tanggal_keluar:
+                fix_vals['tanggal_keluar'] = False
+            if s.status_akun == 'blokir' and not getattr(s, 'alasan_akun', False):
+                fix_vals['status_akun'] = 'aktif'
+            if fix_vals:
+                s.write(fix_vals)
+
+        message_id = self.env['message.wizard'].create({
+            'message': _("Pemulihan & Sinkronisasi Santri Berhasil! Seluruh status kartu santri aktif telah dipulihkan.")
+        })
+        return {
+            'name': _('Berhasil'),
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'res_model': 'message.wizard',
+            'res_id': message_id.id,
+            'target': 'new'
+        }
+
     # Data Orang Tua
     ayah_nama = fields.Char(string="Nama Ayah",  help="")
     ayah_tmp_lahir = fields.Char(string="Tmp Lahir (Ayah)",  help="")
