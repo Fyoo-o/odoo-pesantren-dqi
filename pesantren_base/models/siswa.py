@@ -471,12 +471,17 @@ class siswa(models.Model):
                     f'NIS "{nis_str}" sudah terdaftar pada santri "{exists.name}". '
                     'NIS harus unik untuk setiap santri (aktif maupun nonaktif)!')
 
-        if vals.get('active') is True:
+        # Jika santri diaktifkan kembali ATAU dikeluarkan dari daftar Alumni (alasan_keluar diset False)
+        if vals.get('active') is True or vals.get('alasan_keluar') is False:
             if 'status_akun' not in vals:
-                vals['status_akun'] = 'aktif'
-            if 'alasan_keluar' not in vals:
+                # Hanya reset ke aktif jika santri tidak memiliki alasan_akun (blokir manual karena pelanggaran/saldo)
+                for rec in self:
+                    if not getattr(rec, 'alasan_akun', False):
+                        vals['status_akun'] = 'aktif'
+                        break
+            if 'alasan_keluar' not in vals and vals.get('active') is True:
                 vals['alasan_keluar'] = False
-            if 'tanggal_keluar' not in vals:
+            if 'tanggal_keluar' not in vals and vals.get('active') is True:
                 vals['tanggal_keluar'] = False
 
         old_kelas_map = {}

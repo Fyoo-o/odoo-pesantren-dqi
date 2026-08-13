@@ -399,18 +399,39 @@ class ruang_kelas(models.Model):
         Action / Method untuk melakukan sinkronisasi massal seluruh data Ruang Kelas dan Santri
         """
         all_classes = self.search([])
-        all_classes._sync_siswa_ruang_kelas()
+        for kelas in all_classes:
+            # Cari siswa aktif yang terdaftar di kelas ini
+            siswa_in_kelas = self.env['cdn.siswa'].search([
+                ('ruang_kelas_id', '=', kelas.id),
+                ('active', '=', True)
+            ])
+            # Set siswa_ids agar persis sama dengan siswa aktif kelas tersebut
+            kelas.with_context(skip_ruang_kelas_sync=True).write({
+                'siswa_ids': [(6, 0, siswa_in_kelas.ids)]
+            })
+            kelas._compute_jml_siswa()
 
-        # Juga pastikan santri yang ruang_kelas_id-nya terisi dimasukkan ke siswa_ids ruang kelas tersebut
-        all_siswa = self.env['cdn.siswa'].search([('ruang_kelas_id', '!=', False)])
+        # Dan pastikan semua santri aktif dengan ruang_kelas_id terisi disinkronkan
+        all_siswa = self.env['cdn.siswa'].search([('ruang_kelas_id', '!=', False), ('active', '=', True)])
         for s in all_siswa:
             if s.ruang_kelas_id and s.id not in s.ruang_kelas_id.siswa_ids.ids:
                 s.ruang_kelas_id.with_context(skip_ruang_kelas_sync=True).write({
                     'siswa_ids': [(4, s.id)]
                 })
+                s.ruang_kelas_id._compute_jml_siswa()
+
+        # Otomatis aktifkan kembali status_akun santri aktif yang dipulihkan dari Alumni
+        restored_siswa = self.env['cdn.siswa'].search([
+            ('active', '=', True),
+            ('alasan_keluar', '=', False),
+            ('status_akun', '=', 'blokir')
+        ])
+        for s in restored_siswa:
+            if not getattr(s, 'alasan_akun', False):
+                s.write({'status_akun': 'aktif'})
 
         message_id = self.env['message.wizard'].create({
-            'message': _("Sinkronisasi Data Santri & Ruang Kelas Berhasil !!")
+            'message': _("Sinkronisasi Data Santri, Ruang Kelas, & Pemulihan Kartu Berhasil !!")
         })
         return {
             'name': _('Berhasil'),
@@ -513,10 +534,14 @@ class ruang_kelas(models.Model):
         for rec in self:
             rec.status = 'draft'
 
-    @api.depends('siswa_ids')
+    @api.depends('siswa_ids', 'siswa_ids.active', 'siswa_ids.ruang_kelas_id')
     def _compute_jml_siswa(self):
         for record in self:
-            record.jml_siswa = len(record.siswa_ids)
+            # Filter hanya siswa yang aktif dan memiliki ruang_kelas_id sesuai dengan kelas ini
+            siswa_aktif = record.siswa_ids.filtered(
+                lambda s: s.active and s.ruang_kelas_id and s.ruang_kelas_id.id == record.id
+            )
+            record.jml_siswa = len(siswa_aktif)
 
 
 class MessageWizard(models.TransientModel):
