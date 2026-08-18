@@ -44,6 +44,5 @@
             <field name="target">new</field>
         </record>      
 
-        <menuitem id="wizard_isi_saldo_menu_categ" name="Transfer Saldo" parent="musyrif_menu_root" action="action_wizard_recharge_wallet" sequence="60"/>
     </data>
 </odoo>

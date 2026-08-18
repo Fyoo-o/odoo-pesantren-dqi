@@ -36,10 +36,10 @@
                         <button string="Done" type="object" name="action_confirm" 
                                 invisible="state != 'draft' or state != 'done'"/> -->
                     <!-- <field name="state" widget="statusbar"/>         -->
-                        <button string="Proses" name="action_proses" type="object" class="oe_highlight" invisible="state != 'Draft'" context="{'from_guru_quran': True}"/>
-                        <button string="Selesai" name="action_confirm" type="object" class="oe_highlight" invisible="state != 'Proses'"/>
+                        <button string="Proses" name="action_proses" type="object" class="oe_highlight" invisible="state == 'Done'" context="{'from_guru_quran': True}"/>
+                        <button string="Ubah ke Draft" name="action_draft" type="object" class="btn btn-secondary" invisible="state == 'Draft'"/>
                         <button string="Sinkronkan Penilaian" name="action_sync_penilaian" type="object" class="oe_highlight" invisible="state == 'Draft'" context="{'from_guru_quran': True}"/>
-                        <field name="state" widget="statusbar" />
+                        <field name="state" widget="statusbar" statusbar_visible="Draft,Done"/>
                     </header>
                     <sheet>
                         <group>

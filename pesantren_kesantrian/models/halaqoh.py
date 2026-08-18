@@ -137,15 +137,40 @@ class Halaqoh(models.Model):
                 other_halaqohs = siswa.halaqoh_ids.filtered(
                     lambda h: h.id != rec.id and h.fiscalyear_id == rec.fiscalyear_id
                 )
-                if other_halaqohs:
+                if not other_halaqohs:
+                    continue
+
+                # Cek apakah santri berjenjang Rumah Tahfidz Quran (RTQ) atau TK/PAUD
+                j_siswa = siswa.jenjang
+                j_rk = siswa.ruang_kelas_id.jenjang if siswa.ruang_kelas_id else False
+                j_rk_name = siswa.ruang_kelas_id.name.jenjang if (siswa.ruang_kelas_id and siswa.ruang_kelas_id.name) else False
+
+                is_rtq_or_tk = any(j in ['rtq', 'tk', 'paud'] for j in [j_siswa, j_rk, j_rk_name] if j)
+
+                max_allowed = 2 if is_rtq_or_tk else 1
+                total_halaqoh = len(other_halaqohs) + 1
+
+                if total_halaqoh > max_allowed:
                     h_names = ", ".join(other_halaqohs.mapped('name'))
-                    conflicting_students.append(f"• {siswa.name} (terdaftar di halaqoh: {h_names})")
+                    if is_rtq_or_tk:
+                        is_tk = any(j in ['tk', 'paud'] for j in [j_siswa, j_rk, j_rk_name] if j)
+                        jenjang_name = "TK/PAUD" if is_tk else "Rumah Tahfidz Quran"
+                        conflicting_students.append(
+                            f"• {siswa.name} [{jenjang_name}] (sudah terdaftar di {len(other_halaqohs)} halaqoh: {h_names})"
+                        )
+                    else:
+                        conflicting_students.append(
+                            f"• {siswa.name} (terdaftar di halaqoh: {h_names})"
+                        )
+
             if conflicting_students:
                 msg = "\n".join(conflicting_students)
                 raise UserError(
-                    f"Santri berikut sudah terdaftar di halaqoh lain pada Tahun Ajaran {rec.fiscalyear_id.name}:\n\n{msg}\n\n"
-                    f"Satu santri hanya boleh terdaftar di 1 halaqoh per Tahun Ajaran. "
-                    f"Silakan hapus/keluarkan santri tersebut dari halaqoh lama terlebih dahulu."
+                    f"⛔ Batas Maksimal Halaqoh per Santri Terlampaui (Tahun Ajaran {rec.fiscalyear_id.name}):\n\n{msg}\n\n"
+                    f"Catatan Aturan:\n"
+                    f"- Santri Reguler: Maksimal 1 Halaqoh per Tahun Ajaran.\n"
+                    f"- Santri Rumah Tahfidz Quran (RTQ) & TK: Maksimal 2 Halaqoh per Tahun Ajaran.\n\n"
+                    f"Silakan hapus/keluarkan santri dari halaqoh lama terlebih dahulu."
                 )
 
     def konfirmasi(self):

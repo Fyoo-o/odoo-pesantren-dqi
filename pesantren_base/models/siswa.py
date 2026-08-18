@@ -288,8 +288,29 @@ class siswa(models.Model):
             raise UserError(f"Gagal membuat akun orang tua: {str(e)}")
 
     def _generate_auto_nis(self, vals=None):
+        """
+        Generate NIS sesuai standar YPI DQI:
+        Format: JJ.YY.NNNNNN (10 digit + 2 titik pemisah)
+        - JJ     = Kode Lembaga (2 digit)
+        - YY     = Kode Tahun Masuk (2 digit terakhir)
+        - NNNNNN = Nomor Urut GLOBAL (6 digit, berlanjut lintas lembaga)
+
+        Kode Lembaga:
+          01 = KB Tahfizh Baby-Qu (PAUD)
+          02 = TK Tahfizh Baby-Qu
+          03 = SD Tahfizh Bilingual
+          04 = SMP Tahfizh Bilingual
+          05 = MA Tahfizh Bilingual
+          06 = Rumah Tahfizh Qur'an
+          07 = Pesantren Tahfizh Putra
+          08 = Pesantren Tahfizh Putri
+          09 = Asrama Shigor
+        """
         vals = vals or {}
         jenjang = vals.get('jenjang') or (self.jenjang if self else False)
+        if not jenjang and self and self.ruang_kelas_id and self.ruang_kelas_id.name:
+            jenjang = self.ruang_kelas_id.name.jenjang
+
         tgl = vals.get('tanggal_daftar') or (self.tanggal_daftar if self else False) or fields.Date.today()
 
         try:
@@ -297,33 +318,55 @@ class siswa(models.Model):
         except AttributeError:
             tahun_daftar = fields.Date.today().strftime('%Y')[-2:]
 
-        lembaga = {
-            'paud': '01', 'tk': '02', 'sdmi': '03',
-            'smpmts': '04', 'smama': '05', 'smk': '10', 'nonformal': '06',
-        }.get(jenjang, '00')
+        # Mapping jenjang sistem ke Kode Lembaga YPI DQI
+        lembaga_map = {
+            'paud': '01',       # KB Tahfizh Baby-Qu
+            'tk': '02',         # TK Tahfizh Baby-Qu
+            'sd': '03',         # SD Tahfizh Bilingual
+            'sdmi': '03',       # alias SD/MI
+            'smp': '04',        # SMP Tahfizh Bilingual
+            'smpmts': '04',     # alias SMP/MTS
+            'sma': '05',        # MA Tahfizh Bilingual
+            'smama': '05',      # alias SMA/MA
+            'smk': '05',        # alias SMK
+            'nonformal': '06',  # Non Formal
+            'rtq': '06',        # Rumah Tahfizh Qur'an
+        }
+        lembaga = lembaga_map.get(jenjang, '03')
 
-        nomor_pendaftaran = vals.get('nomor_pendaftaran') or (self.nomor_pendaftaran if self else False)
-        if nomor_pendaftaran and str(nomor_pendaftaran).isdigit():
-            nomor = str(nomor_pendaftaran).zfill(4)
-        else:
-            nomor = str(random.randint(1000, 9999))
+        # Nomor urut GLOBAL: cari nomor urut terbesar dari SEMUA NIS yang ada
+        # Format NIS: JJ.YY.NNNNNN → ambil 6 digit terakhir setelah titik kedua
+        all_records = self.env['cdn.siswa'].sudo().with_context(active_test=False).search([
+            ('nis', '!=', False),
+            ('nis', '!=', ''),
+        ])
+        max_seq = 0
+        for rec in all_records:
+            if rec.nis:
+                # Hapus semua karakter non-digit untuk ambil angka murni
+                clean_nis = "".join(filter(str.isdigit, rec.nis))
+                if len(clean_nis) >= 10:
+                    # 6 digit terakhir = nomor urut
+                    seq_str = clean_nis[-6:]
+                    if seq_str.isdigit():
+                        seq = int(seq_str)
+                        if seq > max_seq:
+                            max_seq = seq
+                elif len(clean_nis) >= 6:
+                    # Fallback: coba ambil 6 digit terakhir
+                    seq_str = clean_nis[-6:]
+                    if seq_str.isdigit():
+                        seq = int(seq_str)
+                        if seq > max_seq:
+                            max_seq = seq
 
-        nis_candidate = f"{lembaga}.{tahun_daftar}.{nomor}"
+        next_seq = max_seq + 1
+        nomor_urut = str(next_seq).zfill(6)
 
-        rec_id = self.id if self else False
-        domain = [('nis', '=', nis_candidate)]
-        if rec_id:
-            domain.append(('id', '!=', rec_id))
+        # Format final: JJ.YY.NNNNNN
+        nis_candidate = f"{lembaga}.{tahun_daftar}.{nomor_urut}"
 
-        count = 1
-        final_nis = nis_candidate
-        while self.with_context(active_test=False).search(domain, limit=1):
-            final_nis = f"{lembaga}.{tahun_daftar}.{random.randint(1000, 9999)}"
-            domain = [('nis', '=', final_nis)]
-            if rec_id:
-                domain.append(('id', '!=', rec_id))
-
-        return final_nis
+        return nis_candidate
 
     def _validate_nama_nis(self, vals, record=None):
         """Validasi wajib: Nama tidak boleh kosong, NIS wajib & unik"""
@@ -354,6 +397,28 @@ class siswa(models.Model):
                     'NIS harus unik untuk setiap santri (aktif maupun nonaktif)!')
 
     @api.model
+    def _sync_ruang_kelas_siswa(self, old_kelas_map=None):
+        if self.env.context.get('skip_ruang_kelas_sync'):
+            return
+
+        for record in self:
+            new_kelas = record.ruang_kelas_id
+            old_kelas_id = old_kelas_map.get(record.id) if old_kelas_map else False
+
+            # Jika kelas berubah, hapus dari kelas lama
+            if old_kelas_id and (not new_kelas or old_kelas_id != new_kelas.id):
+                old_kelas = self.env['cdn.ruang_kelas'].browse(old_kelas_id)
+                if old_kelas.exists() and record.id in old_kelas.siswa_ids.ids:
+                    old_kelas.with_context(skip_ruang_kelas_sync=True).write({
+                        'siswa_ids': [(3, record.id)]
+                    })
+
+            # Tambahkan ke kelas baru jika belum ada
+            if new_kelas and record.id not in new_kelas.siswa_ids.ids:
+                new_kelas.with_context(skip_ruang_kelas_sync=True).write({
+                    'siswa_ids': [(4, record.id)]
+                })
+
     def create(self, vals):
         """Override create untuk validasi Nama & NIS wajib + auto-create orangtua"""
         if vals.get('nis'):
@@ -369,6 +434,9 @@ class siswa(models.Model):
         # Create orangtua jika data akun diisi tapi orangtua_id kosong
         if (vals.get('email') or vals.get('nomor_login')) and not vals.get('orangtua_id'):
             res._create_orangtua_from_akun()
+
+        if vals.get('ruang_kelas_id'):
+            res._sync_ruang_kelas_siswa()
 
         return res
 
@@ -403,13 +471,23 @@ class siswa(models.Model):
                     f'NIS "{nis_str}" sudah terdaftar pada santri "{exists.name}". '
                     'NIS harus unik untuk setiap santri (aktif maupun nonaktif)!')
 
-        if vals.get('active') is True:
+        # Jika santri diaktifkan kembali ATAU dikeluarkan dari daftar Alumni (alasan_keluar diset False)
+        if vals.get('active') is True or vals.get('alasan_keluar') is False:
             if 'status_akun' not in vals:
-                vals['status_akun'] = 'aktif'
-            if 'alasan_keluar' not in vals:
+                # Hanya reset ke aktif jika santri tidak memiliki alasan_akun (blokir manual karena pelanggaran/saldo)
+                for rec in self:
+                    if not getattr(rec, 'alasan_akun', False):
+                        vals['status_akun'] = 'aktif'
+                        break
+            if 'alasan_keluar' not in vals and vals.get('active') is True:
                 vals['alasan_keluar'] = False
-            if 'tanggal_keluar' not in vals:
+            if 'tanggal_keluar' not in vals and vals.get('active') is True:
                 vals['tanggal_keluar'] = False
+
+        old_kelas_map = {}
+        if 'ruang_kelas_id' in vals:
+            for record in self:
+                old_kelas_map[record.id] = record.ruang_kelas_id.id if record.ruang_kelas_id else False
 
         res = super(siswa, self).write(vals)
 
@@ -422,7 +500,41 @@ class siswa(models.Model):
                 if not record.orangtua_id and (record.email or record.nomor_login):
                     record._create_orangtua_from_akun()
 
+        if 'ruang_kelas_id' in vals:
+            self._sync_ruang_kelas_siswa(old_kelas_map=old_kelas_map)
+
         return res
+
+    def action_sync_and_restore_siswa(self):
+        """
+        Action / Method untuk memulihkan status kartu santri aktif yang data alumni/blokirnya masih tertinggal
+        """
+        active_siswa_to_fix = self.env['cdn.siswa'].search([
+            ('active', '=', True),
+            '|', ('alasan_keluar', '!=', False), ('status_akun', '=', 'blokir')
+        ])
+        for s in active_siswa_to_fix:
+            fix_vals = {}
+            if s.alasan_keluar:
+                fix_vals['alasan_keluar'] = False
+            if s.tanggal_keluar:
+                fix_vals['tanggal_keluar'] = False
+            if s.status_akun == 'blokir' and not getattr(s, 'alasan_akun', False):
+                fix_vals['status_akun'] = 'aktif'
+            if fix_vals:
+                s.write(fix_vals)
+
+        message_id = self.env['message.wizard'].create({
+            'message': _("Pemulihan & Sinkronisasi Santri Berhasil! Seluruh status kartu santri aktif telah dipulihkan.")
+        })
+        return {
+            'name': _('Berhasil'),
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'res_model': 'message.wizard',
+            'res_id': message_id.id,
+            'target': 'new'
+        }
 
     # Data Orang Tua
     ayah_nama = fields.Char(string="Nama Ayah",  help="")
@@ -609,8 +721,58 @@ class siswa(models.Model):
         return partner_model.action_recharge()
 
     def action_generate_nis(self):
+        # Pre-compute global max nomor urut sekali untuk batch
+        all_records = self.env['cdn.siswa'].sudo().with_context(active_test=False).search([
+            ('nis', '!=', False),
+            ('nis', '!=', ''),
+        ])
+        max_seq = 0
+        for rec in all_records:
+            if rec.nis:
+                clean_nis = "".join(filter(str.isdigit, rec.nis))
+                if len(clean_nis) >= 6:
+                    seq_str = clean_nis[-6:]
+                    if seq_str.isdigit():
+                        seq = int(seq_str)
+                        if seq > max_seq:
+                            max_seq = seq
+
+        # Mapping jenjang ke kode lembaga YPI DQI
+        lembaga_map = {
+            'paud': '01', 'tk': '02',
+            'sd': '03', 'sdmi': '03',
+            'smp': '04', 'smpmts': '04',
+            'sma': '05', 'smama': '05', 'smk': '05',
+            'nonformal': '06', 'rtq': '06',
+        }
+
+        count = 0
         for rec in self:
-            rec.nis = rec._generate_auto_nis()
+            jenjang = rec.jenjang
+            if not jenjang and rec.ruang_kelas_id and rec.ruang_kelas_id.name:
+                jenjang = rec.ruang_kelas_id.name.jenjang
+
+            tgl = rec.tanggal_daftar or fields.Date.today()
+            try:
+                tahun_daftar = tgl.strftime('%Y')[-2:]
+            except AttributeError:
+                tahun_daftar = fields.Date.today().strftime('%Y')[-2:]
+
+            lembaga = lembaga_map.get(jenjang, '03')
+            max_seq += 1
+            nomor_urut = str(max_seq).zfill(6)
+            rec.nis = f"{lembaga}.{tahun_daftar}.{nomor_urut}"
+            count += 1
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': '✅ Generate NIS Berhasil',
+                'message': f'Berhasil membuat NIS untuk {count} santri.',
+                'type': 'success',
+                'sticky': False,
+            }
+        }
 
 
     def action_recharge_wallet_mass(self):
