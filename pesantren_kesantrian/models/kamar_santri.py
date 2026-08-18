@@ -80,3 +80,18 @@ class KamarSantri(models.Model):
     def _compute_jml_siswa(self):
         for record in self:
             record.jml_siswa = len(record.siswa_ids)
+
+    @api.model
+    def create(self, vals):
+        rec = super(KamarSantri, self).create(vals)
+        if rec.status == 'draft':
+            rec.konfirmasi()
+        return rec
+
+    def write(self, vals):
+        res = super(KamarSantri, self).write(vals)
+        if 'status' not in vals:
+            for rec in self:
+                if rec.status == 'draft':
+                    rec.konfirmasi()
+        return res

@@ -87,7 +87,17 @@ class Mutabaah_harian(models.Model):
     @api.model
     def create(self, vals):
         vals["name"] = self.env["ir.sequence"].next_by_code("cdn.mutabaah_harian")
+        if 'state' not in vals or vals.get('state') == 'Draft':
+            vals['state'] = 'Done'
         return super(Mutabaah_harian, self).create(vals)
+
+    def write(self, vals):
+        res = super(Mutabaah_harian, self).write(vals)
+        if 'state' not in vals:
+            draft_recs = self.filtered(lambda r: r.state == 'Draft')
+            if draft_recs:
+                draft_recs.write({'state': 'Done'})
+        return res
     
     #insert one2many
     # @api.onchange('siswa_id')

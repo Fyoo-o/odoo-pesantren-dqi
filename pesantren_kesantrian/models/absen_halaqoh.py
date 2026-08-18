@@ -8,8 +8,12 @@ class Absenhalaqoh(models.Model):
     _description = 'Tabel Halaqoh'
 
     def _domain_halaqoh_id(self):
-        """Mengembalikan domain untuk field halaqoh_id berdasarkan tahun ajaran aktif."""
-        tahun_ajaran = self.env.user.company_id.tahun_ajaran_aktif.id
+        """Mengembalikan domain untuk field halaqoh_id berdasarkan tahun ajaran aktif.
+
+        Menampilkan seluruh halaqoh pada tahun ajaran aktif agar guru utama
+        maupun guru pengganti dapat memilih halaqoh yang sesuai.
+        """
+        tahun_ajaran = self.env.company.tahun_ajaran_aktif.id or self.env.user.company_id.tahun_ajaran_aktif.id
         return [('fiscalyear_id', '=', tahun_ajaran)]
 
     def _get_domain_guru(self):
@@ -237,7 +241,20 @@ class Absenhalaqoh(models.Model):
     @api.model
     def create(self, vals):
         """Membuat absensi tanpa batasan ustadz_id untuk staff."""
-        return super().create(vals)
+        rec = super().create(vals)
+        if rec.state in ('Draft', 'Proses'):
+            rec.action_proses()
+            rec.action_confirm()
+        return rec
+
+    def write(self, vals):
+        res = super().write(vals)
+        if 'state' not in vals:
+            for rec in self:
+                if rec.state in ('Draft', 'Proses'):
+                    rec.action_proses()
+                    rec.action_confirm()
+        return res
 
 
 class AbsenTahsinQuranLine(models.Model):

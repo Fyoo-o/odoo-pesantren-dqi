@@ -180,12 +180,19 @@ class Halaqoh(models.Model):
     def create(self, vals_list):
         recs = super().create(vals_list)
         recs._compute_jml_siswa()
+        for rec in recs:
+            if rec.status == 'draft':
+                rec.konfirmasi()
         return recs
 
     def write(self, vals):
         res = super().write(vals)
         if 'siswa_ids' in vals:
             self._compute_jml_siswa()
+        if 'status' not in vals:
+            for rec in self:
+                if rec.status == 'draft':
+                    rec.konfirmasi()
         return res
             
     # _sql_constraints = [

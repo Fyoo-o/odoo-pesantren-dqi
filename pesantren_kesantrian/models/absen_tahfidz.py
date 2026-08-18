@@ -104,6 +104,23 @@ class AbsenTahfidzQuran(models.Model):
     def action_confirm(self):
         self.state = 'done'
 
+    @api.model
+    def create(self, vals):
+        rec = super(AbsenTahfidzQuran, self).create(vals)
+        if rec.state in ('draft', 'proses'):
+            rec.action_proses()
+            rec.action_confirm()
+        return rec
+
+    def write(self, vals):
+        res = super(AbsenTahfidzQuran, self).write(vals)
+        if 'state' not in vals:
+            for rec in self:
+                if rec.state in ('draft', 'proses'):
+                    rec.action_proses()
+                    rec.action_confirm()
+        return res
+
     @staticmethod
     def format_datetime_indonesia(dt):
         bulan_dict = {

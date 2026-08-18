@@ -298,7 +298,10 @@ class ruang_kelas(models.Model):
             kelas = self.env['cdn.master_kelas'].browse(vals.get('name'))
             if kelas and kelas.nama_kelas:
                 vals['nama_kelas'] = kelas.nama_kelas
-        return super(ruang_kelas, self).create(vals)
+        rec = super(ruang_kelas, self).create(vals)
+        if rec.status == 'draft':
+            rec.konfirmasi()
+        return rec
 
     def write(self, vals):
         if vals.get('name'):
@@ -306,6 +309,10 @@ class ruang_kelas(models.Model):
             if kelas and kelas.nama_kelas:
                 vals['nama_kelas'] = kelas.nama_kelas
         result = super(ruang_kelas, self).write(vals)
+        if 'status' not in vals:
+            for rec in self:
+                if rec.status == 'draft':
+                    rec.konfirmasi()
         return result
 
     def konfirmasi(self):

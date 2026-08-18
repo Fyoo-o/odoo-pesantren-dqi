@@ -25,3 +25,18 @@ class Konfigurasi(models.Model):
     def draft(self):
         for record in self:
             record.status = 'draft'
+
+    @api.model
+    def create(self, vals):
+        rec = super(Konfigurasi, self).create(vals)
+        if rec.status == 'draft':
+            rec.konfirmasi()
+        return rec
+
+    def write(self, vals):
+        res = super(Konfigurasi, self).write(vals)
+        if 'status' not in vals:
+            for rec in self:
+                if rec.status == 'draft':
+                    rec.konfirmasi()
+        return res

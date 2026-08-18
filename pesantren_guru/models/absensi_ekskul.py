@@ -199,7 +199,7 @@ class AbsensiEkskul(models.Model):
             return {'value': {'absen_ids': absen_list}}
         return {}
 
-    # Override create to ensure guru is set
+    # Override create to ensure guru is set and auto-confirm
     @api.model
     def create(self, vals):
         if 'ekskul_id' in vals:
@@ -211,6 +211,8 @@ class AbsensiEkskul(models.Model):
             vals['penanggung_id'] = ekskul.penanggung_id.id
         elif 'guru' not in vals or not vals['guru']:
             raise UserError("Guru Pengampu harus diisi.")
+        if 'states' not in vals or vals.get('states') == 'Proses':
+            vals['states'] = 'Done'
         return super(AbsensiEkskul, self).create(vals)
 
     # Button Actions
@@ -223,10 +225,15 @@ class AbsensiEkskul(models.Model):
     # Opsional: Cegah edit jika sudah Done
     def write(self, vals):
         for rec in self:
-            if rec.states == 'Done' and any(field in vals for field in ['ekskul_id', 'absen_ids']):
+            if rec.states == 'Done' and any(field in vals for field in ['ekskul_id', 'absen_ids']) and 'states' not in vals:
                 raise UserError(
                     "Tidak dapat mengubah absensi yang sudah Selesai.")
-        return super(AbsensiEkskul, self).write(vals)
+        res = super(AbsensiEkskul, self).write(vals)
+        if 'states' not in vals:
+            proses_recs = self.filtered(lambda r: r.states == 'Proses')
+            if proses_recs:
+                proses_recs.write({'states': 'Done'})
+        return res
 
     @staticmethod
     def format_datetime_indonesia(dt):

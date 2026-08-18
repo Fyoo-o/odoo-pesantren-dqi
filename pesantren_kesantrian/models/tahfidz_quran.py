@@ -321,15 +321,16 @@ class TahfidzQuran(models.Model):
     def create(self, vals):
         vals['name'] = self.env['ir.sequence'].next_by_code('cdn.tahfidz_quran')
         
-        # return super(TahfidzQuran, self).create(vals)
-
         # If siswa_id is provided but barcode is not, get the barcode from the siswa record
         if vals.get('siswa_id') and not vals.get('barcode'):
             siswa = self.env['cdn.siswa'].browse(vals.get('siswa_id'))
             if siswa and siswa.barcode_santri:
                 vals['barcode'] = siswa.barcode_santri
                 
-        return super(TahfidzQuran, self).create(vals)
+        rec = super(TahfidzQuran, self).create(vals)
+        if rec.state == 'draft':
+            rec.action_confirm()
+        return rec
         
     def write(self, vals):
         # If siswa_id is changed, update barcode accordingly
@@ -338,7 +339,12 @@ class TahfidzQuran(models.Model):
             if siswa and siswa.barcode_santri:
                 vals['barcode'] = siswa.barcode_santri
                 
-        return super(TahfidzQuran, self).write(vals)
+        res = super(TahfidzQuran, self).write(vals)
+        if 'state' not in vals:
+            for rec in self:
+                if rec.state == 'draft':
+                    rec.action_confirm()
+        return res
 
 
     def name_get(self):

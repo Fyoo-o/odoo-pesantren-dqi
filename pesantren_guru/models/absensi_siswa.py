@@ -127,6 +127,21 @@ class AbsensiSiswa(models.Model):
     def action_done(self):
         self.state = 'done'
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if 'state' not in vals or vals.get('state') == 'draft':
+                vals['state'] = 'done'
+        return super(AbsensiSiswa, self).create(vals_list)
+
+    def write(self, vals):
+        res = super(AbsensiSiswa, self).write(vals)
+        if 'state' not in vals:
+            draft_recs = self.filtered(lambda r: r.state == 'draft')
+            if draft_recs:
+                draft_recs.write({'state': 'done'})
+        return res
+
     def action_sort_siswa(self):
         for record in self:
             sorted_lines = record.absensi_ids.sorted(key=lambda l: (l.siswa_id.name or '').lower())

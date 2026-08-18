@@ -182,6 +182,8 @@ class Penilaian(models.Model):
             ], limit=1)
             if guru:
                 vals['guru_id'] = guru.id
+        if 'state' not in vals or vals.get('state') == 'draft':
+            vals['state'] = 'done'
         rec = super().create(vals)
         rec._check_mapel_guru_kelas()
         return rec
@@ -189,6 +191,10 @@ class Penilaian(models.Model):
     def write(self, vals):
         res = super().write(vals)
         self._check_mapel_guru_kelas()
+        if 'state' not in vals:
+            draft_recs = self.filtered(lambda r: r.state == 'draft')
+            if draft_recs:
+                draft_recs.write({'state': 'done'})
         return res
 
     # action buttons

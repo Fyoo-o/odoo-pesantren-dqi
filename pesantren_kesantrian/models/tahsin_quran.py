@@ -69,7 +69,18 @@ class TahsinQuran(models.Model):
     @api.model
     def create(self, vals):
         vals['name'] = self.env['ir.sequence'].next_by_code('cdn.tahsin_quran')
-        return super(TahsinQuran, self).create(vals)
+        rec = super(TahsinQuran, self).create(vals)
+        if rec.state == 'draft' and rec.buku_tahsin_id and rec.jilid_tahsin_id and rec.halaman_tahsin:
+            rec.action_confirm()
+        return rec
+
+    def write(self, vals):
+        res = super(TahsinQuran, self).write(vals)
+        if 'state' not in vals:
+            for rec in self:
+                if rec.state == 'draft' and rec.buku_tahsin_id and rec.jilid_tahsin_id and rec.halaman_tahsin:
+                    rec.action_confirm()
+        return res
     # def write(self, vals):
     #     if not vals.get('level_tahsin_id',self.level_tahsin_id.id) or not vals.get('nilai_tajwid',self.nilai_tajwid) or not vals.get('nilai_makhroj',self.nilai_makhroj) or not vals.get('nilai_mad',self.nilai_mad):
     #         raise models.ValidationError('ERROR ! Periksa kembali pengisian KATEGORI Tahsin dan Nilai-nilainya !')

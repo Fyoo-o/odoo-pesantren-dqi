@@ -10,24 +10,8 @@ class Penilaian(models.Model):
 
     # get domain
     def _domain_halaqoh_id(self):
-        tahun_ajaran = self.env.user.company_id.tahun_ajaran_aktif.id
-
-        # Jika user adalah Manager Kesantrian -> lihat semua halaqoh di tahun ajaran aktif
-        if self.env.user.has_group('pesantren_kesantrian.group_kesantrian_manager'):
-            return [
-                ('fiscalyear_id', '=', tahun_ajaran)
-            ]
-
-        # Jika bukan manager -> halaqoh di tahun ajaran aktif yang user ini sebagai pengganti
-        return [
-            '|',
-            '&',
-            ('penanggung_jawab_id.user_id', '=', self.env.user.id),
-            ('fiscalyear_id', '=', tahun_ajaran),
-            '&',
-            ('pengganti_ids.user_id', '=', self.env.user.id),
-            ('fiscalyear_id', '=', tahun_ajaran)
-        ]
+        tahun_ajaran = self.env.company.tahun_ajaran_aktif.id or self.env.user.company_id.tahun_ajaran_aktif.id
+        return [('fiscalyear_id', '=', tahun_ajaran)]
 
     name = fields.Char(string='Nama', compute='_compute_name', default=False)
     halaqoh_id = fields.Many2one('cdn.halaqoh', string='Halaqoh', required=True,
@@ -114,9 +98,10 @@ class Penilaian(models.Model):
         for rec in self:
             # Gunakan sudo() agar bisa membaca halaqoh lintas company
             halaqoh = rec.halaqoh_id.sudo()
-            if rec.guru_id not in halaqoh.penanggung_jawab_id:
-                raise UserError(
-                    _(f"Guru ini tidak mengajar di halaqoh tersebut."))
+            if rec.guru_id not in (halaqoh.penanggung_jawab_id | halaqoh.pengganti_ids):
+                # Izinkan jika user adalah manager
+                if not self.env.user.has_group('pesantren_guruquran.group_guru_quran_manager') and not self.env.user.has_group('pesantren_kesantrian.group_kesantrian_manager'):
+                    pass
 
     @api.model
     def create(self, vals):
@@ -128,6 +113,8 @@ class Penilaian(models.Model):
             ], limit=1)
             if guru:
                 vals['guru_id'] = guru.id
+        if 'state' not in vals or vals.get('state') == 'draft':
+            vals['state'] = 'done'
         rec = super().create(vals)
         rec._check_halaqoh_guru_quran()
         return rec
@@ -137,6 +124,10 @@ class Penilaian(models.Model):
         # Hanya validasi jika field terkait halaqoh atau guru yang berubah
         if 'halaqoh_id' in vals or 'guru_id' in vals:
             self._check_halaqoh_guru_quran()
+        if 'state' not in vals:
+            draft_recs = self.filtered(lambda r: r.state == 'draft')
+            if draft_recs:
+                draft_recs.write({'state': 'done'})
         return res
 
     # action buttons

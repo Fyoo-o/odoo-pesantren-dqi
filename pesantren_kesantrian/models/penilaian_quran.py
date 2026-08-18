@@ -630,7 +630,18 @@ class TahfidzTahsin(models.Model):
         if vals.get('name', '/') == '/':
             vals['name'] = self.env['ir.sequence'].next_by_code(
                 'cdn.penilaian_quran') or '/'
-        return super().create(vals)
+        rec = super().create(vals)
+        if rec.state == 'draft' and not self.env.context.get('from_guru_quran'):
+            rec.action_confirm()
+        return rec
+
+    def write(self, vals):
+        res = super().write(vals)
+        if 'state' not in vals:
+            for rec in self:
+                if rec.state == 'draft':
+                    rec.action_confirm()
+        return res
 
     def name_get(self):
         result = []
