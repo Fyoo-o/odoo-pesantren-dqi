@@ -30,13 +30,6 @@
             <field name="arch" type="xml">
                 <form string="Ruang kelas">
                     <header>
-                        <button string="Konfirmasi" name="konfirmasi" type="object"
-                            class="oe_highlight" invisible="status == 'konfirm'"
-                            confirm="Apakah Anda yakin ingin mengkonfirmasi kelas ini?"
-                            groups="pesantren_kesantrian.group_kesantrian_staff" />
-                        <button string="Draft" name="draft" type="object" class="oe_highlight"
-                            invisible="status != 'konfirm'"
-                            groups="pesantren_kesantrian.group_kesantrian_staff" />
                         <button string="Sinkronkan Data Siswa" name="action_sync_all_ruang_kelas" type="object"
                             class="btn-secondary"
                             confirm="Apakah Anda yakin ingin menyinkronkan data siswa di seluruh ruang kelas?"
@@ -50,40 +43,36 @@
                         <div class="oe_title">
                             <label for="name" class="oe_edit_only" string="Ruang Kelas" />
                             <h1>
-                                <field name="name" readonly="status == 'konfirm'" />
+                                <field name="name" />
                             </h1>
                         </div>
                         <group>
                             <group>
 
-                                <field name="nama_kelas" readonly="status == 'konfirm'" />
+                                <field name="nama_kelas" />
 
-                                <field name="jenjang" readonly="status == 'konfirm'" />
+                                <field name="jenjang" />
                                 <field name="tingkat" domain="[('jenjang', '=', jenjang)]"
-                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"
-                                    readonly="status == 'konfirm'" />
+                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
                                 <field name="aktif_tidak" widget="radio"
-                                    options="{'horizontal': true}" readonly="status == 'konfirm'" />
-                                <field name="walikelas_id" readonly="status == 'konfirm'" />
+                                    options="{'horizontal': true}" />
+                                <field name="walikelas_id" />
                                 <field name="active" invisible="1" />
                             </group>
 
                             <group>
-                                <field name="tahunajaran_id" readonly="status == 'konfirm'" />
-                                <field name="angkatan_id" invisible="1"
-                                    readonly="status == 'konfirm'" />
+                                <field name="tahunajaran_id" />
+                                <field name="angkatan_id" invisible="1" />
                                 <field name="jml_siswa" />
-                                <field name="jurusan_id" readonly="status == 'konfirm'"
-                                    invisible="jenjang != 'sma'" />
-                                <field name="keterangan" readonly="status == 'konfirm'" />
+                                <field name="jurusan_id" invisible="jenjang != 'sma'" />
+                                <field name="keterangan" />
                             </group>
                         </group>
 
                         <notebook>
                             <page string="Siswa">
                                 <div class="card mb-3"
-                                    style="border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
-                                    invisible="status == 'konfirm'">
+                                    style="border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                                     <div class="card-body">
                                         <div class="row align-items-start">
                                             <!-- Field Section (60%) -->

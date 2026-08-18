@@ -26,18 +26,6 @@
             <field name="arch" type="xml">
                 <form string="Absensi Halaqoh">
                     <header>
-                        <!-- <field name="state" widget="statusbar" statusbar_visible="draft,proses,done"/> -->
-                        <!-- <button string="Proses" name="action_proses" type="object" class="btn btn-primary"
-                                invisible="state == 'proses' or state == 'done'"/>
-                        <button string="Selesai" name="action_confirm" type="object" class="btn btn-primary"
-                                invisible="state == 'draft' or state == 'done'"/> -->
-                        <!-- <button string="Proses" type="object" name="action_proses" 
-                                invisible="state != 'proses' or state != 'done'" class="oe_highlight"/>
-                        <button string="Done" type="object" name="action_confirm" 
-                                invisible="state != 'draft' or state != 'done'"/> -->
-                    <!-- <field name="state" widget="statusbar"/>         -->
-                        <button string="Proses" name="action_proses" type="object" class="oe_highlight" invisible="state == 'Done'" context="{'from_guru_quran': True}"/>
-                        <button string="Ubah ke Draft" name="action_draft" type="object" class="btn btn-secondary" invisible="state == 'Draft'"/>
                         <button string="Sinkronkan Penilaian" name="action_sync_penilaian" type="object" class="oe_highlight" invisible="state == 'Draft'" context="{'from_guru_quran': True}"/>
                         <field name="state" widget="statusbar" statusbar_visible="Draft,Done"/>
                     </header>

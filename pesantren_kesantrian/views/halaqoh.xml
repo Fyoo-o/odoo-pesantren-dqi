@@ -25,8 +25,6 @@
             <field name="arch" type="xml">
                 <form>
                     <header> 
-                        <button string="Konfirmasi" name="konfirmasi" type="object" class="oe_highlight" invisible="status == 'konfirm'" confirm="Apakah Anda yakin ingin mengkonfirmasi Halaqoh ini?" groups="pesantren_kesantrian.group_kesantrian_staff"/>
-                        <button string="Draft" name="draft" type="object" class="oe_highlight" invisible="status  != 'konfirm'" groups="pesantren_kesantrian.group_kesantrian_staff"/>
                         <field name="status" widget="statusbar" statusbar_visible="draft,konfirm" />
                     </header>
                     <sheet>
@@ -34,19 +32,19 @@
                         <group string="Halaqah">
 
                             <group>
-                                <field name="name" readonly="status ==  'konfirm'"/>
+                                <field name="name" />
                                 <field name="penanggung_jawab_id"
-                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="status == 'konfirm'"/>
+                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
                                 <field name="pengganti_ids" widget="many2many_tags"
-                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="status == 'konfirm'"/>
+                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
                                 <field name="company_id" 
-                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="status ==  'konfirm'"/>
+                                    options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
                             </group>
 
                             <group>
-                                <field name="fiscalyear_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="status ==  'konfirm'"/>
+                                <field name="fiscalyear_id" options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
                                 <field name="jml_siswa" />
-                                <field name="keterangan" readonly="status ==  'konfirm'"/>
+                                <field name="keterangan" />
                             </group>
 
                         </group>

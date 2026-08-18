@@ -49,30 +49,28 @@
             <field name="arch" type="xml">
                 <form string="Absensi Malam Santri">
                     <header>
-                        <button string="Done" name="action_proses" type="object" class="oe_highlight" invisible="state == 'done'"/>
-                        <button string="Ubah ke Draft" name="action_draft" type="object" class="btn btn-secondary" invisible="state == 'draft'"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
                     </header>
                     <sheet>
                         <!-- Filter Absensi Malam -->
                         <group string="Absensi Malam">
                             <group>
-                                <field name="tgl" readonly="state == 'done'"/>
+                                <field name="tgl" />
                                 <field name="fiscalyear_id" readonly="1"/>
                                 <field name="company_id" 
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" readonly="1"/>
                             </group>
                             <group>
-                                <field name="kamar_id" options="{'no_create_edit': True, 'no_create': True}" readonly="state == 'done'"/>
-                                <field name="musyrif_id" options="{'no_create_edit': True, 'no_create': True}" readonly="state == 'done'"/>
-                                <field name="keterangan" readonly="state == 'done'"/>
+                                <field name="kamar_id" options="{'no_create_edit': True, 'no_create': True}" />
+                                <field name="musyrif_id" options="{'no_create_edit': True, 'no_create': True}" />
+                                <field name="keterangan" />
                             </group>
                         </group>
 
                         <!-- Daftar Kehadiran -->
                         <notebook>
                             <page string="Daftar Kehadiran">
-                                <field name="absen_ids" nolabel="1" widget="one2many_list" readonly="state == 'done'">
+                                <field name="absen_ids" nolabel="1" widget="one2many_list">
                                     <list string="" editable="top">
                                         <field name="row_number" string="#"/>
                                         <field name="siswa_id" options="{'no_create_edit': True, 'no_create': True}" string="Santri"/>
