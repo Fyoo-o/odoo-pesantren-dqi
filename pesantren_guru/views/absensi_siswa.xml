@@ -126,6 +126,7 @@
                                         <field name="tingkat_id" invisible="1" />
                                         <field name="tema" />
                                         <field name="materi" />
+                                        <field name="catatan" />
                                     </group>
                                     <group>
                                         <field name="rpp_id"

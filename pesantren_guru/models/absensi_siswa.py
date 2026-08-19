@@ -76,6 +76,7 @@ class AbsensiSiswa(models.Model):
         string='Dokumen', related='rpp_id.dokumen', readonly=True, store=True)
     tema = fields.Char(string='Tema', required=True)
     materi = fields.Text(string='Materi', required=True)
+    catatan = fields.Text(string='Catatan')
     state = fields.Selection(
         selection=[('draft', 'Draft'), ('done', 'Done')], string='State', default='draft')
     absensi_ids = fields.One2many(
