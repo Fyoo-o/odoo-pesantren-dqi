@@ -43,7 +43,7 @@
                     'view_id': ref('pesantren_kesantrian.cdn_absensi_malam_view_form')
                 })
             ]"/>
-            <field name="context">{'from_musyrif': True, 'search_default_group_by_kamar': 1, 'search_default_group_by_musyrif': 1}</field>
+            <field name="context">{'from_musyrif': True}</field>
         </record>
 
         <!-- Menu Musyrif > Aktivitas > Absensi Malam -->
