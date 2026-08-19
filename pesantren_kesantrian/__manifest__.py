@@ -13,7 +13,7 @@
     'author': "PT. Cendana Teknika Utama",
     'website': "https://www.cendana2000.co.id",
     'category': 'Education',
-    'version': '18.0.1.0',
+    'version': '18.0.1.1',
     'license': 'LGPL-3',
 
     'depends': ['base', 'pesantren_base'],
@@ -96,4 +96,5 @@
     "installable": True,
     "auto_install": False,
     "application": True,
+    'post_init_hook': '_post_init_fix_absensi_malam_filters',
 }

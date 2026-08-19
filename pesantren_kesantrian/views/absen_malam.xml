@@ -129,16 +129,6 @@
             </field>
         </record>
 
-        <!-- Filter Favorit: Absensi Malam Santri Per kamar (Kamar & Musyrif, Tanpa Tanggal) -->
-        <record id="filter_absensi_malam_per_kamar" model="ir.filters">
-            <field name="name">Absensi Malam Santri Per kamar</field>
-            <field name="model_id">cdn.absensi_malam</field>
-            <field name="user_id" eval="False"/>
-            <field name="is_default" eval="False"/>
-            <field name="action_id" ref="cdn_absensi_malam_action"/>
-            <field name="context">{'group_by': ['kamar_id', 'musyrif_id']}</field>
-        </record>
-
         <!-- Menu -->
         <menuitem id="absensi_malam_menu_act" name="Absensi Malam Santri" parent="kepesantrenan_kepengasuhan_menu_categ" action="cdn_absensi_malam_action" sequence="11"/>
     </data>
