@@ -51,7 +51,7 @@
                       
                         <notebook>
 							<page string="Santri">
-                                <div class="card mb-3" style="border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" invisible="status == 'konfirm'">
+                                <div class="card mb-3" style="border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                                     <div class="card-body">
                                         <div class="row align-items-start">
                                             <!-- Field Section (60%) -->
