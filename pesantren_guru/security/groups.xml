@@ -287,5 +287,28 @@
 			<field name="model_id" ref="model_cdn_penilaian_akhir" />
 			<field name="domain_force">[('company_id', 'in', company_ids)]</field>
 		</record>
+
+		<!-- Rule Ruang Kelas Wali Kelas -->
+		<record id="cdn_ruang_kelas_rule_guru_walikelas" model="ir.rule">
+			<field name="name">Access Classroom - Wali Kelas</field>
+			<field name="model_id" ref="pesantren_base.model_cdn_ruang_kelas" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_walikelas'))]" />
+			<field name="domain_force">[('walikelas_id.user_id', '=', user.id)]</field>
+			<field name="perm_read" eval="True"/>
+			<field name="perm_write" eval="True"/>
+			<field name="perm_create" eval="False"/>
+			<field name="perm_unlink" eval="False"/>
+		</record>
+
+		<record id="cdn_ruang_kelas_rule_guru_manager" model="ir.rule">
+			<field name="name">Access Classroom - Manager</field>
+			<field name="model_id" ref="pesantren_base.model_cdn_ruang_kelas" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_manager'))]" />
+			<field name="domain_force">[(1, '=', 1)]</field>
+			<field name="perm_read" eval="True"/>
+			<field name="perm_write" eval="True"/>
+			<field name="perm_create" eval="True"/>
+			<field name="perm_unlink" eval="True"/>
+		</record>
 	</data>
 </odoo>
