@@ -14,3 +14,28 @@ def migrate(cr, version):
                 })
             else:
                 employee._sync_user_groups()
+
+    # 2. Recompute company_id (Lembaga) for all historical attendance records
+    absensi = env['cdn.absensi_siswa'].search([])
+    companies = env['res.company'].sudo().search([])
+    company_dict = {}
+    for c in companies:
+        name_lower = c.name.lower()
+        if 'kb' in name_lower or 'paud' in name_lower:
+            company_dict['paud'] = c.id
+        if 'tk' in name_lower:
+            company_dict['tk'] = c.id
+        if 'sd' in name_lower:
+            company_dict['sd'] = c.id
+        if 'smp' in name_lower:
+            company_dict['smp'] = c.id
+        if 'ma' in name_lower or 'sma' in name_lower:
+            company_dict['sma'] = c.id
+        if 'rumah tahf' in name_lower or 'rtq' in name_lower:
+            company_dict['rtq'] = c.id
+
+    for rec in absensi:
+        if rec.kelas_id and rec.kelas_id.jenjang:
+            target_company_id = company_dict.get(rec.kelas_id.jenjang)
+            if target_company_id and rec.company_id.id != target_company_id:
+                rec.write({'company_id': target_company_id})

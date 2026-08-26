@@ -44,7 +44,7 @@ class siswa(models.Model):
 
     @api.model
     def _get_pilihan_nama_sekolah(self):
-        pendidikan = self.env['ubig.pendidikan'].search([])
+        pendidikan = self.env['ubig.pendidikan'].sudo().search([])
         return [(p.name, p.name) for p in pendidikan]
 
     @api.depends('partner_id', 'jenjang')
@@ -62,7 +62,7 @@ class siswa(models.Model):
             nama_sekolah = False
 
             # 1. Coba dari pendaftaran
-            pendaftaran = self.env['ubig.pendaftaran'].search([
+            pendaftaran = self.env['ubig.pendaftaran'].sudo().search([
                 ('siswa_id', '=', rec.id)
             ], limit=1)
 
@@ -71,7 +71,7 @@ class siswa(models.Model):
             else:
                 # 2. Alternatif dari partner
                 partner_name = rec.partner_id.name
-                alt_pendaftaran = self.env['ubig.pendaftaran'].search([
+                alt_pendaftaran = self.env['ubig.pendaftaran'].sudo().search([
                     ('partner_id.name', '=', partner_name)
                 ], limit=1)
                 if alt_pendaftaran and alt_pendaftaran.jenjang_id and alt_pendaftaran.jenjang_id.name:
@@ -80,7 +80,7 @@ class siswa(models.Model):
                     # 3. Coba mapping dari jenjang
                     kode_jenjang = mapping_jenjang.get(rec.jenjang)
                     if kode_jenjang:
-                        pendidikan = self.env['ubig.pendidikan'].search([
+                        pendidikan = self.env['ubig.pendidikan'].sudo().search([
                             ('jenjang', '=', kode_jenjang)
                         ], limit=1)
                         nama_sekolah = pendidikan.name if pendidikan else False
@@ -104,7 +104,7 @@ class siswa(models.Model):
 
         if self.nama_sekolah:
             # Cari data pendidikan berdasarkan nama sekolah
-            pendidikan = self.env['ubig.pendidikan'].search([
+            pendidikan = self.env['ubig.pendidikan'].sudo().search([
                 ('name', '=', self.nama_sekolah)
             ], limit=1)
 
@@ -133,7 +133,7 @@ class siswa(models.Model):
         count = 0
         for siswa in siswa_ids:
             # Cari data pendaftaran yang punya siswa_id = siswa ini
-            pendaftaran = self.env['ubig.pendaftaran'].search([
+            pendaftaran = self.env['ubig.pendaftaran'].sudo().search([
                 ('siswa_id', '=', siswa.id)
             ], limit=1)
 
@@ -143,7 +143,7 @@ class siswa(models.Model):
             else:
                 # Coba metode alternatif jika pendaftaran tidak ditemukan
                 partner_name = siswa.partner_id.name
-                alt_pendaftaran = self.env['ubig.pendaftaran'].search([
+                alt_pendaftaran = self.env['ubig.pendaftaran'].sudo().search([
                     ('partner_id.name', '=', partner_name)
                 ], limit=1)
 
