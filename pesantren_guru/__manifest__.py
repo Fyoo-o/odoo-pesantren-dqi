@@ -32,7 +32,7 @@
     'author': "PT. Cendana Teknika Utama",
     'website': "https://www.cendana2000.co.id",
     'category': 'Education',
-    'version': '18.0.1.1',
+    'version': '18.0.1.2',
     'license': 'LGPL-3',
 
     # any module necessary for this one to work correctly
@@ -42,6 +42,7 @@
     'data': [
         'security/groups.xml',
         'security/ir.model.access.csv',
+        'data/jenis_pegawai_data.xml',
 
         # wizard
         'wizard/absensi_filter_wizard.xml',

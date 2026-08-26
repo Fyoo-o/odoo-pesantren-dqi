@@ -16,7 +16,7 @@ class AbsensiSiswa(models.Model):
 
     def _get_domain_guru(self):
         user = self.env.user
-        guru_domain = [('jns_pegawai_ids.code', 'in', ['guru'])]
+        guru_domain = [('jns_pegawai_ids.code', 'in', ['guru', 'walikelas'])]
         if user.has_group('pesantren_guru.group_guru_manager'):
             return [('user_id', '=', self.env.user.id)] + guru_domain
         elif user.has_group('pesantren_guru.group_guru_staff'):
@@ -84,7 +84,8 @@ class AbsensiSiswa(models.Model):
     row_number = fields.Integer(
         string='No', compute='_compute_row_number', store=False)
     company_id = fields.Many2one(
-        'res.company', string='Lembaga', default=lambda self: self.env.company)
+        'res.company', string='Lembaga', compute='_compute_company_id', store=True, readonly=False,
+        default=lambda self: self.env.company)
     jml_jampelajaran = fields.Integer(
         string='Jumlah JP', compute='_compute_jml_jampelajaran', store=True, help='Jumlah Jam Pelajaran')
     jenjang = fields.Selection(
@@ -115,12 +116,37 @@ class AbsensiSiswa(models.Model):
         return [
             '|',
             ('user_id', 'in', admin_user_ids),
-            ('jns_pegawai_ids.code', 'in', ['guru', 'superadmin'])
+            ('jns_pegawai_ids.code', 'in', ['guru', 'walikelas', 'superadmin'])
         ]
 
     def _compute_row_number(self):
         for index, record in enumerate(self):
             record.row_number = index + 1
+
+    @api.depends('kelas_id.jenjang')
+    def _compute_company_id(self):
+        companies = self.env['res.company'].sudo().search([])
+        company_dict = {}
+        for c in companies:
+            name_lower = c.name.lower()
+            if 'kb' in name_lower or 'paud' in name_lower:
+                company_dict['paud'] = c.id
+            if 'tk' in name_lower:
+                company_dict['tk'] = c.id
+            if 'sd' in name_lower:
+                company_dict['sd'] = c.id
+            if 'smp' in name_lower:
+                company_dict['smp'] = c.id
+            if 'ma' in name_lower or 'sma' in name_lower:
+                company_dict['sma'] = c.id
+            if 'rumah tahf' in name_lower or 'rtq' in name_lower:
+                company_dict['rtq'] = c.id
+
+        for rec in self:
+            if rec.kelas_id and rec.kelas_id.jenjang:
+                rec.company_id = company_dict.get(rec.kelas_id.jenjang, self.env.company.id)
+            else:
+                rec.company_id = self.env.company.id
 
     def action_draft(self):
         self.state = 'draft'
@@ -302,7 +328,7 @@ class AbsensiSiswa(models.Model):
     def _onchange_guru_domain(self):
         return {
             'domain': {
-                'guru_id': [('jns_pegawai_ids.code', 'in', ['guru'])]
+                 'guru_id': [('jns_pegawai_ids.code', 'in', ['guru', 'walikelas'])]
             }
         }
 

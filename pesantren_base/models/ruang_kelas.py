@@ -17,7 +17,7 @@ class ruang_kelas(models.Model):
         return [
             '|',
             ('user_id', '=', admin_user_ids),
-            ('jns_pegawai_ids.code', 'in', ['guru', 'superadmin'])
+            ('jns_pegawai_ids.code', 'in', ['guru', 'walikelas', 'superadmin'])
         ]
 
     name = fields.Many2one(
@@ -364,6 +364,33 @@ class ruang_kelas(models.Model):
                     'ruang_kelas_id': False,
                 })
 
+    def _sync_walikelas_roles(self, old_walikelas_id=None, new_walikelas_id=None):
+        role_walikelas = self.env['cdn.jenis_pegawai'].sudo().search([('code', '=', 'walikelas')], limit=1)
+        if not role_walikelas:
+            return
+
+        # 1. Handle new walikelas: add role
+        if new_walikelas_id:
+            employee = self.env['hr.employee'].sudo().browse(new_walikelas_id)
+            if employee and role_walikelas not in employee.jns_pegawai_ids:
+                employee.write({
+                    'jns_pegawai_ids': [(4, role_walikelas.id)]
+                })
+
+        # 2. Handle old walikelas: remove role if they don't have any other class bimbingan
+        if old_walikelas_id and old_walikelas_id != new_walikelas_id:
+            # Check if this old walikelas is still assigned to other classes
+            other_classes = self.env['cdn.ruang_kelas'].search([
+                ('walikelas_id', '=', old_walikelas_id),
+                ('id', 'not in', self.ids)
+            ])
+            if not other_classes:
+                employee = self.env['hr.employee'].sudo().browse(old_walikelas_id)
+                if employee and role_walikelas in employee.jns_pegawai_ids:
+                    employee.write({
+                        'jns_pegawai_ids': [(3, role_walikelas.id)]
+                    })
+
     # Tambahkan method untuk memastikan nama_kelas selalu diisi dari name
     @api.model
     def create(self, vals):
@@ -372,6 +399,8 @@ class ruang_kelas(models.Model):
             if kelas and kelas.nama_kelas:
                 vals['nama_kelas'] = kelas.nama_kelas
         rec = super(ruang_kelas, self).create(vals)
+        if rec.walikelas_id:
+            rec._sync_walikelas_roles(new_walikelas_id=rec.walikelas_id.id)
         if 'siswa_ids' in vals:
             rec._sync_siswa_ruang_kelas(vals=vals)
         if rec.status == 'draft':
@@ -384,6 +413,11 @@ class ruang_kelas(models.Model):
             if kelas and kelas.nama_kelas:
                 vals['nama_kelas'] = kelas.nama_kelas
 
+        # Keep track of old walikelas
+        old_walikelas_by_rec = {}
+        if 'walikelas_id' in vals:
+            old_walikelas_by_rec = {rec.id: rec.walikelas_id.id for rec in self if rec.walikelas_id}
+
         # Sinkronkan profil siswa SEBELUM super().write agar constraint unique_siswa_per_tahunajaran tidak terganggu
         if 'siswa_ids' in vals or 'tahunajaran_id' in vals:
             self._sync_siswa_ruang_kelas(vals=vals)
@@ -394,11 +428,36 @@ class ruang_kelas(models.Model):
         if 'siswa_ids' in vals or 'tahunajaran_id' in vals:
             self._sync_siswa_ruang_kelas()
 
+        if 'walikelas_id' in vals:
+            for rec in self:
+                old_id = old_walikelas_by_rec.get(rec.id)
+                new_id = vals.get('walikelas_id')
+                rec._sync_walikelas_roles(old_walikelas_id=old_id, new_walikelas_id=new_id)
+
         if 'status' not in vals:
             for rec in self:
                 if rec.status == 'draft':
                     rec.konfirmasi()
+        return result
 
+    def unlink(self):
+        # Keep track of walikelas before deletion
+        walikelas_ids = [rec.walikelas_id.id for rec in self if rec.walikelas_id]
+        
+        result = super(ruang_kelas, self).unlink()
+        
+        # Check and remove roles
+        role_walikelas = self.env['cdn.jenis_pegawai'].sudo().search([('code', '=', 'walikelas')], limit=1)
+        if role_walikelas and walikelas_ids:
+            for w_id in set(walikelas_ids):
+                # check if they have other classes left
+                other_classes = self.env['cdn.ruang_kelas'].search([('walikelas_id', '=', w_id)])
+                if not other_classes:
+                    employee = self.env['hr.employee'].sudo().browse(w_id)
+                    if employee and role_walikelas in employee.jns_pegawai_ids:
+                        employee.write({
+                            'jns_pegawai_ids': [(3, role_walikelas.id)]
+                        })
         return result
 
     def action_sync_all_ruang_kelas(self):

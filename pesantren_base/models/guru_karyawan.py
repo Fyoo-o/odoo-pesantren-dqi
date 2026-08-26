@@ -209,6 +209,11 @@ class hr_employee(models.Model):
             groups_to_add.append(self.env.ref(
                 'pesantren_musyrif.group_musyrif_staff'))
 
+        # Wali Kelas role
+        if 'walikelas' in role_codes:
+            groups_to_add.append(self.env.ref(
+                'pesantren_guru.group_guru_walikelas'))
+
         # Guru Akademik role
         if 'guru' in role_codes:
             groups_to_add.append(self.env.ref(
@@ -767,6 +772,31 @@ class hr_employee(models.Model):
             mails.send()
             _logger.info(
                 "Batch email aktivasi berhasil dikirim untuk %d penerima", len(emails_data))
+
+    @api.model
+    def create(self, vals):
+        employee = super(hr_employee, self).create(vals)
+        if 'jns_pegawai_ids' in vals and employee.user_id:
+            employee._sync_user_groups()
+        return employee
+
+    def write(self, vals):
+        res = super(hr_employee, self).write(vals)
+        if 'jns_pegawai_ids' in vals:
+            for employee in self:
+                if employee.user_id:
+                    employee._sync_user_groups()
+        return res
+
+    def _sync_user_groups(self):
+        self.ensure_one()
+        if not self.user_id:
+            return
+        groups_to_add = self._get_security_groups_for_roles()
+        final_group_ids = [g.id for g in groups_to_add]
+        self.user_id.sudo().write({
+            'groups_id': [(6, 0, final_group_ids)]
+        })
 
 
 class pendidikan_guru(models.Model):

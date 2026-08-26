@@ -26,5 +26,30 @@
             action="pesantren_kesantrian.action_wizard_rekap_penilaian" sequence="50" />
         <menuitem id="pengaturan_menu_categ" name="Pengaturan" parent="guru_menu_root" sequence="30"
             groups="pesantren_guru.group_guru_staff,pesantren_guruquran.group_guru_quran_staff" />
+
+        <!-- Action Window for Siswa Bimbingan -->
+        <record id="action_siswa_bimbingan_walikelas" model="ir.actions.act_window">
+            <field name="name">Siswa Bimbingan</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">cdn.siswa</field>
+            <field name="view_mode">list,form</field>
+            <field name="views">[
+                (ref('pesantren_base.view_cdn_siswa_tree'), 'list'),
+                (ref('pesantren_base.view_cdn_siswa_form'), 'form')
+            ]</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Tidak ada data siswa bimbingan.
+                </p>
+            </field>
+        </record>
+
+        <!-- Menu Item Siswa Bimbingan under Guru Menu -->
+        <menuitem id="menu_siswa_bimbingan_walikelas" 
+                  name="Siswa Bimbingan" 
+                  parent="guru_menu_root" 
+                  action="action_siswa_bimbingan_walikelas" 
+                  sequence="18" 
+                  groups="pesantren_guru.group_guru_walikelas,pesantren_guru.group_guru_manager"/>
     </data>
 </odoo>

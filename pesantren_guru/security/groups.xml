@@ -14,10 +14,15 @@
 			<field name="category_id" ref="module_category_guru" />
 			<field name="implied_ids" eval="[(4, ref('group_guru_user'))]" />
 		</record>
+		<record id="group_guru_walikelas" model="res.groups">
+			<field name="name">Wali Kelas</field>
+			<field name="category_id" ref="module_category_guru" />
+			<field name="implied_ids" eval="[(4, ref('group_guru_staff'))]" />
+		</record>
 		<record id="group_guru_manager" model="res.groups">
 			<field name="name">Manager</field>
 			<field name="category_id" ref="module_category_guru" />
-			<field name="implied_ids" eval="[(4, ref('group_guru_staff'))]" />
+			<field name="implied_ids" eval="[(4, ref('group_guru_walikelas'))]" />
 			<field name="users" eval="[(4, ref('base.user_admin'))]" />
 		</record>
 
@@ -184,11 +189,33 @@
 		</record>
 
 		<!-- Rule Siswa -->
+		<record id="cdn_siswa_rule_guru_walikelas" model="ir.rule">
+			<field name="name">Access Siswa - Wali Kelas</field>
+			<field name="model_id" ref="pesantren_base.model_cdn_siswa" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_walikelas'))]" />
+			<field name="domain_force">[('ruang_kelas_id.walikelas_id.user_id', '=', user.id)]</field>
+		</record>
+
 		<record id="cdn_siswa_rule_guru_manager" model="ir.rule">
 			<field name="name">Access All Siswa - Super Admin / Manager</field>
 			<field name="model_id" ref="pesantren_base.model_cdn_siswa" />
 			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_manager'))]" />
 			<field name="domain_force">[(1,'=',1)]</field>
+		</record>
+
+		<!-- Rule Absensi Siswa Wali Kelas -->
+		<record id="absensi_siswa_rule_guru_walikelas" model="ir.rule">
+			<field name="name">Absensi Siswa - Wali Kelas</field>
+			<field name="model_id" ref="pesantren_guru.model_cdn_absensi_siswa" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_walikelas'))]" />
+			<field name="domain_force">[('kelas_id.walikelas_id.user_id', '=', user.id)]</field>
+		</record>
+
+		<record id="absensi_siswa_line_rule_guru_walikelas" model="ir.rule">
+			<field name="name">Absensi Siswa Line - Wali Kelas</field>
+			<field name="model_id" ref="pesantren_guru.model_cdn_absensi_siswa_lines" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_walikelas'))]" />
+			<field name="domain_force">[('kelas_id.walikelas_id.user_id', '=', user.id)]</field>
 		</record>
 
 		<!-- Absensi Siswa Companies Filter -->

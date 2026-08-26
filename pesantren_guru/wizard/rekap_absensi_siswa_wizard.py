@@ -27,6 +27,19 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
     _description = 'Wizard Rekap Absensi Siswa'
     _order = 'id desc'
 
+    @api.model
+    def default_get(self, fields_list):
+        res = super(WizardRekapAbsensiSiswa, self).default_get(fields_list)
+        if 'kelas_id' in fields_list and not res.get('kelas_id'):
+            employee = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
+            if employee:
+                kelas = self.env['cdn.ruang_kelas'].search([('walikelas_id', '=', employee.id)], limit=1)
+                if kelas:
+                    res['kelas_id'] = kelas.id
+                    if 'jenjang' in fields_list and hasattr(kelas, 'jenjang'):
+                        res['jenjang'] = kelas.jenjang
+        return res
+
     tgl_awal = fields.Date(string='Tanggal Awal', required=True, default=fields.Date.context_today)
     tgl_akhir = fields.Date(string='Tanggal Akhir', required=True, default=fields.Date.context_today)
     
