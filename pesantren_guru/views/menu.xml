@@ -27,50 +27,18 @@
         <menuitem id="pengaturan_menu_categ" name="Pengaturan" parent="guru_menu_root" sequence="30"
             groups="pesantren_guru.group_guru_staff,pesantren_guruquran.group_guru_quran_staff" />
 
-        <!-- Custom Tree View for Siswa Bimbingan -->
-        <record id="view_siswa_bimbingan_tree" model="ir.ui.view">
-            <field name="name">siswa_bimbingan_tree</field>
-            <field name="model">cdn.siswa</field>
-            <field name="arch" type="xml">
-                <list create="false" delete="false" edit="false">
-                    <field name="row_number" string="#" />
-                    <field name="nis" />
-                    <field name="name" />
-                    <field name="nisn" />
-                    <field name="namapanggilan" string="Panggilan" />
-                    <field name="jns_kelamin" />
-                    <field name="tgl_lahir" />
-                </list>
-            </field>
-        </record>
-
         <!-- Action Window for Siswa Bimbingan -->
         <record id="action_siswa_bimbingan_walikelas" model="ir.actions.act_window">
             <field name="name">Siswa Bimbingan</field>
             <field name="type">ir.actions.act_window</field>
-            <field name="res_model">cdn.siswa</field>
+            <field name="res_model">cdn.ruang_kelas</field>
             <field name="view_mode">list,form</field>
-            <field name="domain">[('ruang_kelas_id.walikelas_id.user_id', '=', uid)]</field>
+            <field name="domain">[('walikelas_id.user_id', '=', uid)]</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
-                    Tidak ada data siswa bimbingan.
+                    Tidak ada data kelas bimbingan.
                 </p>
             </field>
-        </record>
-
-        <!-- Explicit View Bindings to bypass Odoo action views caching -->
-        <record id="action_siswa_bimbingan_walikelas_view_tree" model="ir.actions.act_window.view">
-            <field name="sequence" eval="1" />
-            <field name="view_mode">list</field>
-            <field name="view_id" ref="pesantren_guru.view_siswa_bimbingan_tree" />
-            <field name="act_window_id" ref="action_siswa_bimbingan_walikelas" />
-        </record>
-
-        <record id="action_siswa_bimbingan_walikelas_view_form" model="ir.actions.act_window.view">
-            <field name="sequence" eval="2" />
-            <field name="view_mode">form</field>
-            <field name="view_id" ref="pesantren_base.view_cdn_siswa_form" />
-            <field name="act_window_id" ref="action_siswa_bimbingan_walikelas" />
         </record>
 
         <!-- Menu Item Siswa Bimbingan under Guru Menu -->
