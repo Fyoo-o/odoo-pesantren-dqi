@@ -317,6 +317,41 @@ class ruang_kelas(models.Model):
 
         return added_ids, removed_ids, replaced_ids
 
+    def _get_jenjang_label(self, code):
+        if not code:
+            return '-'
+        fallback = {
+            'paud': 'PAUD',
+            'tk': 'TK/RA',
+            'sd': 'SD/MI',
+            'smp': 'SMP/MTS',
+            'sma': 'SMA/MA/SMK',
+            'nonformal': 'Non Formal',
+            'rtq': 'Rumah Tahfidz Quran'
+        }
+        field_jenjang = self.env['cdn.siswa']._fields.get('jenjang') if hasattr(self.env['cdn.siswa'], '_fields') else None
+        if field_jenjang:
+            raw_selection = field_jenjang.selection
+            if isinstance(raw_selection, (list, tuple)):
+                return dict(raw_selection).get(code, fallback.get(code, str(code).upper()))
+            elif callable(raw_selection):
+                try:
+                    res = raw_selection(self.env['cdn.siswa'])
+                    if isinstance(res, (list, tuple)):
+                        return dict(res).get(code, fallback.get(code, str(code).upper()))
+                except Exception:
+                    pass
+            elif isinstance(raw_selection, str):
+                try:
+                    method = getattr(self.env['cdn.siswa'], raw_selection, None)
+                    if callable(method):
+                        res = method()
+                        if isinstance(res, (list, tuple)):
+                            return dict(res).get(code, fallback.get(code, str(code).upper()))
+                except Exception:
+                    pass
+        return fallback.get(code, str(code).upper())
+
     def _sync_siswa_ruang_kelas(self, vals=None):
         """
         Sinkronisasi otomatis antara siswa_ids di cdn.ruang_kelas dan ruang_kelas_id di cdn.siswa
@@ -346,16 +381,14 @@ class ruang_kelas(models.Model):
             if target_added_ids:
                 added_siswa = self.env['cdn.siswa'].sudo().browse(list(target_added_ids))
 
-                jenjang_dict = dict(self.env['cdn.siswa']._fields['jenjang'].selection) if hasattr(self.env['cdn.siswa'], '_fields') and 'jenjang' in self.env['cdn.siswa']._fields else {}
-
                 for siswa in added_siswa:
                     # 1. Cek jika siswa sudah ada di kelas lain -> Buka wizard konfirmasi pemindahan dengan RedirectWarning
                     if siswa.ruang_kelas_id and siswa.ruang_kelas_id.id != record.id and not self.env.context.get('skip_pindah_confirm'):
                         old_k = siswa.ruang_kelas_id
                         old_kelas_name = old_k.name.name if (old_k.name and hasattr(old_k.name, 'name')) else (old_k.nama_kelas or '-')
                         new_kelas_name = record.name.name if (record.name and hasattr(record.name, 'name')) else (record.nama_kelas or '-')
-                        old_j_label = jenjang_dict.get(old_k.jenjang, str(old_k.jenjang or '-').upper())
-                        new_j_label = jenjang_dict.get(record.jenjang, str(record.jenjang or '-').upper())
+                        old_j_label = self._get_jenjang_label(old_k.jenjang)
+                        new_j_label = self._get_jenjang_label(record.jenjang)
 
                         # Buat wizard transient record
                         wizard = self.env['cdn.pindah_kelas_wizard'].create({
@@ -386,8 +419,8 @@ class ruang_kelas(models.Model):
 
                     # 2. Cek jika jenjang siswa tidak sesuai dengan jenjang ruang kelas ini (dan siswa belum di kelas manapun)
                     if siswa.jenjang and record.jenjang and siswa.jenjang != record.jenjang:
-                        s_j_label = jenjang_dict.get(siswa.jenjang, str(siswa.jenjang).upper())
-                        c_j_label = jenjang_dict.get(record.jenjang, str(record.jenjang).upper())
+                        s_j_label = self._get_jenjang_label(siswa.jenjang)
+                        c_j_label = self._get_jenjang_label(record.jenjang)
                         raise UserError(
                             f"⛔ Perbedaan Jenjang Sekolah!\n\n"
                             f"Santri '{siswa.name}' memiliki jenjang {s_j_label}, sedangkan Ruang Kelas ini berjenjang {c_j_label}.\n\n"
@@ -398,11 +431,11 @@ class ruang_kelas(models.Model):
                 for siswa in added_siswa:
                     if siswa.ruang_kelas_id and siswa.ruang_kelas_id.id != record.id:
                         old_kelas = siswa.ruang_kelas_id
-                        old_kelas.sudo().with_context(skip_ruang_kelas_sync=True).write({
+                        old_kelas.sudo().with_context(skip_ruang_kelas_sync=True, skip_pindah_confirm=True).write({
                             'siswa_ids': [(3, siswa.id)]
                         })
 
-                added_siswa.sudo().with_context(skip_ruang_kelas_sync=True).write({
+                added_siswa.sudo().with_context(skip_ruang_kelas_sync=True, skip_pindah_confirm=True).write({
                     'ruang_kelas_id': record.id,
                     'tahunajaran_id': record.tahunajaran_id.id if record.tahunajaran_id else False,
                 })
@@ -410,7 +443,7 @@ class ruang_kelas(models.Model):
             # Reset siswa yang dikeluarkan
             if target_removed_ids:
                 removed_siswa = self.env['cdn.siswa'].sudo().browse(list(target_removed_ids))
-                removed_siswa.sudo().with_context(skip_ruang_kelas_sync=True).write({
+                removed_siswa.sudo().with_context(skip_ruang_kelas_sync=True, skip_pindah_confirm=True).write({
                     'ruang_kelas_id': False,
                 })
 

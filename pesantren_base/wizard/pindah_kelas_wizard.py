@@ -74,15 +74,17 @@ class PindahKelasWizard(models.TransientModel):
         if not siswa or not ruang_kelas_baru:
             raise UserError(_("Data santri atau kelas tujuan tidak valid."))
 
+        ctx = dict(self.env.context, skip_ruang_kelas_sync=True, skip_pindah_confirm=True)
+
         # 1. Hapus dari kelas lama (jika ada)
         if kelas_lama and siswa.id in kelas_lama.siswa_ids.ids:
-            kelas_lama.with_context(skip_ruang_kelas_sync=True).write({
+            kelas_lama.with_context(**ctx).write({
                 'siswa_ids': [(3, siswa.id)]
             })
 
         # 2. Tambahkan ke kelas baru jika belum ada
         if siswa.id not in ruang_kelas_baru.siswa_ids.ids:
-            ruang_kelas_baru.with_context(skip_ruang_kelas_sync=True).write({
+            ruang_kelas_baru.with_context(**ctx).write({
                 'siswa_ids': [(4, siswa.id)]
             })
 
@@ -96,7 +98,7 @@ class PindahKelasWizard(models.TransientModel):
         if self.update_jenjang_siswa and ruang_kelas_baru.jenjang and siswa.jenjang != ruang_kelas_baru.jenjang:
             update_vals['jenjang'] = ruang_kelas_baru.jenjang
 
-        siswa.with_context(skip_ruang_kelas_sync=True).write(update_vals)
+        siswa.with_context(**ctx).write(update_vals)
 
         # Recalculate jml_siswa pada kedua kelas
         if kelas_lama:
@@ -106,8 +108,18 @@ class PindahKelasWizard(models.TransientModel):
         # Tampilkan wizard notifikasi sukses
         siswa_name = siswa.name or '-'
         nis_str = f" (NIS: {siswa.nis})" if siswa.nis else ""
-        kelas_lama_title = (kelas_lama.name.name if (kelas_lama and kelas_lama.name) else (kelas_lama.nama_kelas or '-')) if kelas_lama else '-'
-        kelas_baru_title = ruang_kelas_baru.name.name if (ruang_kelas_baru.name) else (ruang_kelas_baru.nama_kelas or '-')
+        
+        def _get_class_title(rec):
+            if not rec:
+                return '-'
+            if rec.name and hasattr(rec.name, 'name') and rec.name.name:
+                return rec.name.name
+            if rec.nama_kelas:
+                return rec.nama_kelas
+            return '-'
+
+        kelas_lama_title = _get_class_title(kelas_lama) if kelas_lama else '-'
+        kelas_baru_title = _get_class_title(ruang_kelas_baru)
 
         message_id = self.env['message.wizard'].create({
             'message': _(
