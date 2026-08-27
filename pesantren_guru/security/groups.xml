@@ -193,7 +193,7 @@
 			<field name="name">Access Siswa - Wali Kelas</field>
 			<field name="model_id" ref="pesantren_base.model_cdn_siswa" />
 			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_walikelas'))]" />
-			<field name="domain_force">[('ruang_kelas_id.walikelas_id.user_id', '=', user.id)]</field>
+			<field name="domain_force">['|', ('ruang_kelas_id', '=', False), ('ruang_kelas_id.walikelas_id.user_id', '=', user.id)]</field>
 		</record>
 
 		<record id="cdn_siswa_rule_guru_manager" model="ir.rule">
@@ -296,8 +296,8 @@
 			<field name="domain_force">[('walikelas_id.user_id', '=', user.id)]</field>
 			<field name="perm_read" eval="True"/>
 			<field name="perm_write" eval="True"/>
-			<field name="perm_create" eval="False"/>
-			<field name="perm_unlink" eval="False"/>
+			<field name="perm_create" eval="True"/>
+			<field name="perm_unlink" eval="True"/>
 		</record>
 
 		<record id="cdn_ruang_kelas_rule_guru_manager" model="ir.rule">
