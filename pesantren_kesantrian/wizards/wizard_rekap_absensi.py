@@ -107,7 +107,7 @@ class WizardRekapAbsensi(models.TransientModel):
         lines = []
 
         # 1. Halaqoh
-        halaqoh_lines = self.env['cdn.absen_halaqoh_line'].search([
+        halaqoh_lines = self.env['cdn.absen_halaqoh_line'].sudo().search([
             ('siswa_id', '=', self.siswa_id.id),
             ('tanggal', '>=', self.tgl_awal),
             ('tanggal', '<=', self.tgl_akhir)
@@ -130,7 +130,7 @@ class WizardRekapAbsensi(models.TransientModel):
             }))
 
         # 2. Malam
-        malam_lines = self.env['cdn.absensi_malam_line'].search([
+        malam_lines = self.env['cdn.absensi_malam_line'].sudo().search([
             ('siswa_id', '=', self.siswa_id.id),
             ('tanggal', '>=', self.tgl_awal),
             ('tanggal', '<=', self.tgl_akhir)
@@ -145,7 +145,7 @@ class WizardRekapAbsensi(models.TransientModel):
             }))
 
         # 3. Tahfidz
-        tahfidz_lines = self.env['cdn.absen_tahfidz_quran_line'].search([
+        tahfidz_lines = self.env['cdn.absen_tahfidz_quran_line'].sudo().search([
             ('siswa_id', '=', self.siswa_id.id),
             ('tanggal', '>=', self.tgl_awal),
             ('tanggal', '<=', self.tgl_akhir)
@@ -160,7 +160,7 @@ class WizardRekapAbsensi(models.TransientModel):
             }))
 
         # 4. Tahsin
-        tahsin_lines = self.env['cdn.absen_tahsin_quran_line'].search([
+        tahsin_lines = self.env['cdn.absen_tahsin_quran_line'].sudo().search([
             ('siswa_id', '=', self.siswa_id.id),
             ('tanggal', '>=', self.tgl_awal),
             ('tanggal', '<=', self.tgl_akhir)

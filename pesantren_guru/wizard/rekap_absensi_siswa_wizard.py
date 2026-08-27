@@ -134,7 +134,7 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
             if self.jenjang:
                 domain_kbm.append(('kelas_id.jenjang', '=', self.jenjang))
                 
-            kbm_lines = self.env['cdn.absensi_siswa_lines'].search(domain_kbm)
+            kbm_lines = self.env['cdn.absensi_siswa_lines'].sudo().search(domain_kbm)
             for line in kbm_lines:
                 if not line.siswa_id:
                     continue
@@ -167,7 +167,7 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
                 ('tanggal', '<=', self.tgl_akhir),
                 ('halaqoh_id', '=', self.halaqoh_id.id)
             ]
-            halaqoh_lines = self.env['cdn.absen_halaqoh_line'].search(domain_halaqoh)
+            halaqoh_lines = self.env['cdn.absen_halaqoh_line'].sudo().search(domain_halaqoh)
             for line in halaqoh_lines:
                 if not line.siswa_id:
                     continue
@@ -196,7 +196,7 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
         # Sertakan seluruh siswa yang terdaftar di kelas / halaqoh tersebut
         if self.tipe_absensi == 'kelas' and self.kelas_id:
             s_domain = [('ruang_kelas_id', '=', self.kelas_id.id)]
-            all_class_siswa = self.env['cdn.siswa'].search(s_domain)
+            all_class_siswa = self.env['cdn.siswa'].sudo().search(s_domain)
             for s in all_class_siswa:
                 if s.id not in siswa_summary:
                     siswa_summary[s.id] = init_siswa_dict(s)
@@ -253,7 +253,7 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
             ]
             if self.jenjang:
                 domain_kbm.append(('kelas_id.jenjang', '=', self.jenjang))
-            kbm_lines = self.env['cdn.absensi_siswa_lines'].search(domain_kbm)
+            kbm_lines = self.env['cdn.absensi_siswa_lines'].sudo().search(domain_kbm)
 
         elif self.tipe_absensi == 'halaqoh':
             domain_halaqoh = [
@@ -261,7 +261,7 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
                 ('tanggal', '<=', self.tgl_akhir),
                 ('halaqoh_id', '=', self.halaqoh_id.id)
             ]
-            halaqoh_lines = self.env['cdn.absen_halaqoh_line'].search(domain_halaqoh)
+            halaqoh_lines = self.env['cdn.absen_halaqoh_line'].sudo().search(domain_halaqoh)
 
         if not kbm_lines and not halaqoh_lines:
             raise UserError(_("Tidak ada data presensi pada rentang tanggal dan filter tersebut."))
@@ -358,7 +358,7 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
             sorted_siswa = sorted(list(all_siswa), key=lambda s: s.name or '')
         elif self.tipe_absensi == 'kelas' and self.kelas_id:
             s_domain = [('ruang_kelas_id', '=', self.kelas_id.id)]
-            k_siswa = set(self.env['cdn.siswa'].search(s_domain))
+            k_siswa = set(self.env['cdn.siswa'].sudo().search(s_domain))
             all_siswa = k_siswa.union(siswa_set)
             sorted_siswa = sorted(list(all_siswa), key=lambda s: s.name or '')
         else:
@@ -724,7 +724,7 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
             ]
             if self.jenjang:
                 domain_kbm.append(('kelas_id.jenjang', '=', self.jenjang))
-            kbm_lines = self.env['cdn.absensi_siswa_lines'].search(domain_kbm)
+            kbm_lines = self.env['cdn.absensi_siswa_lines'].sudo().search(domain_kbm)
 
         elif self.tipe_absensi == 'halaqoh':
             domain_halaqoh = [
@@ -732,7 +732,7 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
                 ('tanggal', '<=', self.tgl_akhir),
                 ('halaqoh_id', '=', self.halaqoh_id.id)
             ]
-            halaqoh_lines = self.env['cdn.absen_halaqoh_line'].search(domain_halaqoh)
+            halaqoh_lines = self.env['cdn.absen_halaqoh_line'].sudo().search(domain_halaqoh)
 
         if not kbm_lines and not halaqoh_lines:
             raise UserError(_("Tidak ada data presensi pada rentang tanggal dan filter tersebut."))
@@ -832,7 +832,7 @@ class WizardRekapAbsensiSiswa(models.TransientModel):
             sorted_siswa = sorted(list(all_siswa), key=lambda s: s.name or '')
         elif self.tipe_absensi == 'kelas' and self.kelas_id:
             s_domain = [('ruang_kelas_id', '=', self.kelas_id.id)]
-            k_siswa = set(self.env['cdn.siswa'].search(s_domain))
+            k_siswa = set(self.env['cdn.siswa'].sudo().search(s_domain))
             all_siswa = k_siswa.union(siswa_set)
             sorted_siswa = sorted(list(all_siswa), key=lambda s: s.name or '')
         else:
