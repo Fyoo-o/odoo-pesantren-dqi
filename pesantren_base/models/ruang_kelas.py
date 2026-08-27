@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import UserError, ValidationError, RedirectWarning
 from datetime import date, datetime
 
 
@@ -339,28 +339,78 @@ class ruang_kelas(models.Model):
             # Jika tidak dari vals (misal call manual/bulk sync), hitung dari record.siswa_ids
             if vals is None:
                 target_added_ids = set(record.siswa_ids.ids)
-                siswa_removed = self.env['cdn.siswa'].search([('ruang_kelas_id', '=', record.id)])
+                siswa_removed = self.env['cdn.siswa'].sudo().search([('ruang_kelas_id', '=', record.id)])
                 target_removed_ids = set(siswa_removed.ids) - target_added_ids
 
             # Update siswa yang ditambahkan
             if target_added_ids:
-                added_siswa = self.env['cdn.siswa'].browse(list(target_added_ids))
+                added_siswa = self.env['cdn.siswa'].sudo().browse(list(target_added_ids))
+
+                jenjang_dict = dict(self.env['cdn.siswa']._fields['jenjang'].selection) if hasattr(self.env['cdn.siswa'], '_fields') and 'jenjang' in self.env['cdn.siswa']._fields else {}
+
+                for siswa in added_siswa:
+                    # 1. Cek jika siswa sudah ada di kelas lain -> Buka wizard konfirmasi pemindahan dengan RedirectWarning
+                    if siswa.ruang_kelas_id and siswa.ruang_kelas_id.id != record.id and not self.env.context.get('skip_pindah_confirm'):
+                        old_k = siswa.ruang_kelas_id
+                        old_kelas_name = old_k.name.name if (old_k.name and hasattr(old_k.name, 'name')) else (old_k.nama_kelas or '-')
+                        new_kelas_name = record.name.name if (record.name and hasattr(record.name, 'name')) else (record.nama_kelas or '-')
+                        old_j_label = jenjang_dict.get(old_k.jenjang, str(old_k.jenjang or '-').upper())
+                        new_j_label = jenjang_dict.get(record.jenjang, str(record.jenjang or '-').upper())
+
+                        # Buat wizard transient record
+                        wizard = self.env['cdn.pindah_kelas_wizard'].create({
+                            'ruang_kelas_id': record.id,
+                            'siswa_id': siswa.id,
+                            'kelas_lama_id': old_k.id,
+                            'update_jenjang_siswa': True if (siswa.jenjang and record.jenjang and siswa.jenjang != record.jenjang) else False,
+                        })
+
+                        action_wizard = {
+                            'name': _('Konfirmasi Pemindahan Santri'),
+                            'type': 'ir.actions.act_window',
+                            'res_model': 'cdn.pindah_kelas_wizard',
+                            'res_id': wizard.id,
+                            'view_mode': 'form',
+                            'target': 'new',
+                        }
+
+                        warning_msg = (
+                            f"⚠️ SANTRI SUDAH TERDAFTAR DI KELAS LAIN!\n\n"
+                            f"Santri '{siswa.name}' (NIS: {siswa.nis or '-'}) saat ini terdaftar di:\n"
+                            f"• Kelas Lama: {old_kelas_name} (Jenjang: {old_j_label})\n"
+                            f"• Kelas Tujuan Baru: {new_kelas_name} (Jenjang: {new_j_label})\n\n"
+                            f"Apakah Anda ingin memproses pemindahan santri ini ke kelas '{new_kelas_name}'?"
+                        )
+
+                        raise RedirectWarning(warning_msg, action_wizard, _("Proses Pemindahan Santri"))
+
+                    # 2. Cek jika jenjang siswa tidak sesuai dengan jenjang ruang kelas ini (dan siswa belum di kelas manapun)
+                    if siswa.jenjang and record.jenjang and siswa.jenjang != record.jenjang:
+                        s_j_label = jenjang_dict.get(siswa.jenjang, str(siswa.jenjang).upper())
+                        c_j_label = jenjang_dict.get(record.jenjang, str(record.jenjang).upper())
+                        raise UserError(
+                            f"⛔ Perbedaan Jenjang Sekolah!\n\n"
+                            f"Santri '{siswa.name}' memiliki jenjang {s_j_label}, sedangkan Ruang Kelas ini berjenjang {c_j_label}.\n\n"
+                            f"📌 Petunjuk:\n"
+                            f"- Silakan perbarui data jenjang pada profil santri terlebih dahulu atau pilih santri dengan jenjang yang sesuai."
+                        )
+
                 for siswa in added_siswa:
                     if siswa.ruang_kelas_id and siswa.ruang_kelas_id.id != record.id:
                         old_kelas = siswa.ruang_kelas_id
-                        old_kelas.with_context(skip_ruang_kelas_sync=True).write({
+                        old_kelas.sudo().with_context(skip_ruang_kelas_sync=True).write({
                             'siswa_ids': [(3, siswa.id)]
                         })
 
-                added_siswa.with_context(skip_ruang_kelas_sync=True).write({
+                added_siswa.sudo().with_context(skip_ruang_kelas_sync=True).write({
                     'ruang_kelas_id': record.id,
                     'tahunajaran_id': record.tahunajaran_id.id if record.tahunajaran_id else False,
                 })
 
             # Reset siswa yang dikeluarkan
             if target_removed_ids:
-                removed_siswa = self.env['cdn.siswa'].browse(list(target_removed_ids))
-                removed_siswa.with_context(skip_ruang_kelas_sync=True).write({
+                removed_siswa = self.env['cdn.siswa'].sudo().browse(list(target_removed_ids))
+                removed_siswa.sudo().with_context(skip_ruang_kelas_sync=True).write({
                     'ruang_kelas_id': False,
                 })
 

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_pindah_kelas_wizard_form" model="ir.ui.view">
+            <field name="name">cdn.pindah_kelas_wizard.form</field>
+            <field name="model">cdn.pindah_kelas_wizard</field>
+            <field name="arch" type="xml">
+                <form string="Konfirmasi Pemindahan Santri">
+                    <div class="alert alert-warning" role="alert" style="margin-bottom: 15px;">
+                        <h4 class="alert-heading"><i class="fa fa-exclamation-triangle"/> Konfirmasi Pemindahan Santri</h4>
+                        <p class="mb-0">
+                            Santri ini saat ini terdaftar di kelas lain. Apakah Anda yakin ingin memindahkan santri ini ke ruang kelas baru ini?
+                        </p>
+                    </div>
+                    <group>
+                        <group string="Data Santri &amp; Kelas Lama">
+                            <field name="siswa_id" options="{'no_open': True}"/>
+                            <field name="kelas_lama_id" options="{'no_open': True}"/>
+                            <field name="jenjang_lama"/>
+                        </group>
+                        <group string="Kelas Tujuan Baru">
+                            <field name="ruang_kelas_id" options="{'no_open': True}"/>
+                            <field name="jenjang_baru"/>
+                            <field name="update_jenjang_siswa"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="catatan" placeholder="Tambahkan catatan alasan pemindahan (opsional)..."/>
+                    </group>
+                    <footer>
+                        <button name="action_confirm_pindah" string="Ya, Pindahkan Santri" type="object" class="btn-primary"/>
+                        <button string="Batal" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_pindah_kelas_wizard" model="ir.actions.act_window">
+            <field name="name">Konfirmasi Pemindahan Santri</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">cdn.pindah_kelas_wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo>

@@ -98,3 +98,4 @@ access_activation_result_wizard,activation.result.wizard,model_activation_result
 
 access_user_cdn_jenis_pegawai,access_user_cdn_jenis_pegawai,model_cdn_jenis_pegawai,pesantren_base.group_sekolah_user,1,0,0,0
 access_manager_cdn_jenis_pegawai,access_manager_cdn_jenis_pegawai,model_cdn_jenis_pegawai,pesantren_base.group_sekolah_manager,1,1,1,1
+access_cdn_pindah_kelas_wizard,access_cdn_pindah_kelas_wizard,model_cdn_pindah_kelas_wizard,base.group_user,1,1,1,1

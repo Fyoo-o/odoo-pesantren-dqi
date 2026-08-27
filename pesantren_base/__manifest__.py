@@ -92,6 +92,7 @@
         'wizard/wizard_kartu.xml',
         'wizard/kenaikan_kelas.xml',
         'wizard/pemberhentian_siswa.xml',
+        'wizard/pindah_kelas_wizard.xml',
     ],
 
     'assets': {
