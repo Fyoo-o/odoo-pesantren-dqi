@@ -55,77 +55,77 @@
         <record id="halaqoh_company_rule" model="ir.rule">
             <field name="name">Halaqoh companies</field>
             <field name="model_id" ref="model_cdn_halaqoh"/>
-            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'child_of', company_ids)]</field>
         </record>
 
         <!-- Absensi Halaqoh -->
         <record id="absen_halaqoh_company_rule" model="ir.rule">
             <field name="name">Absensi Halaqoh companies</field>
             <field name="model_id" ref="model_cdn_absen_halaqoh"/>
-            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'child_of', company_ids)]</field>
         </record>
 
         <!-- Absensi Halaqoh Line -->
         <record id="absen_halaqoh_line_company_rule" model="ir.rule">
             <field name="name">Absensi Halaqoh Line companies</field>
             <field name="model_id" ref="model_cdn_absen_halaqoh_line"/>
-            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'child_of', company_ids)]</field>
         </record>
 
         <!-- Penilaian Halaqoh -->
         <record id="penilaian_halaqoh_company_rule" model="ir.rule">
             <field name="name">Penilaian Halaqoh companies</field>
             <field name="model_id" ref="model_cdn_penilaian_quran"/>
-            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'child_of', company_ids)]</field>
         </record>
 
         <!-- Mutaba'ah Harian -->
         <record id="mutabaah_harian_company_rule" model="ir.rule">
             <field name="name">Mutaba'ah Harian companies</field>
             <field name="model_id" ref="model_cdn_mutabaah_harian"/>
-            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'child_of', company_ids)]</field>
         </record>
 
         <!-- Absensi Malam -->
         <record id="absen_malam_company_rule" model="ir.rule">
             <field name="name">Absensi Malam companies</field>
             <field name="model_id" ref="model_cdn_absensi_malam"/>
-            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'child_of', company_ids)]</field>
         </record>
 
         <!-- Absensi Malam Line -->
         <record id="absen_malam_line_company_rule" model="ir.rule">
             <field name="name">Absensi Malam Line companies</field>
             <field name="model_id" ref="model_cdn_absensi_malam_line"/>
-            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'child_of', company_ids)]</field>
         </record>
 
         <!-- Pelanggaran -->
         <record id="pelanggaran_company_rule" model="ir.rule">
             <field name="name">Pelanggaran companies</field>
             <field name="model_id" ref="model_cdn_pelanggaran"/>
-            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'child_of', company_ids)]</field>
         </record>
 
         <!-- Perijinan -->
         <record id="perijinan_company_rule" model="ir.rule">
             <field name="name">Perijinan companies</field>
             <field name="model_id" ref="model_cdn_perijinan"/>
-            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'child_of', company_ids)]</field>
         </record>
 
         <!-- Kesehatan -->
         <record id="kesehatan_company_rule" model="ir.rule">
             <field name="name">Kesehatan companies</field>
             <field name="model_id" ref="model_cdn_kesehatan"/>
-            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'child_of', company_ids)]</field>
         </record>
 
         <!-- Prestasi Siswa -->
         <record id="prestasi_siswa_company_rule" model="ir.rule">
             <field name="name">Prestasi Siswa companies</field>
             <field name="model_id" ref="model_cdn_prestasi_siswa"/>
-            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'child_of', company_ids)]</field>
         </record>
     </data>
 </odoo>

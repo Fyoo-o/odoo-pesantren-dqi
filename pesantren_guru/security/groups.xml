@@ -236,70 +236,70 @@
 		<record id="absensi_siswa_company_rule" model="ir.rule">
 			<field name="name">Absensi Siswa companies</field>
 			<field name="model_id" ref="model_cdn_absensi_siswa" />
-			<field name="domain_force">[('company_id', 'in', company_ids)]</field>
+			<field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'child_of', company_ids)]</field>
 		</record>
 
 		<!-- Absensi Siswa Line Companies Filter -->
 		<record id="absensi_siswa_line_company_rule" model="ir.rule">
 			<field name="name">Absensi Siswa Line companies</field>
 			<field name="model_id" ref="model_cdn_absensi_siswa_lines" />
-			<field name="domain_force">[('company_id', 'in', company_ids)]</field>
+			<field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'child_of', company_ids)]</field>
 		</record>
 
 		<!-- Absensi Ekskul Companies Filter -->
 		<record id="absensi_ekskul_company_rule" model="ir.rule">
 			<field name="name">Absensi Ekskul companies</field>
 			<field name="model_id" ref="model_cdn_absensi_ekskul" />
-			<field name="domain_force">[('company_id', 'in', company_ids)]</field>
+			<field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'child_of', company_ids)]</field>
 		</record>
 
 		<!-- Absensi Ekskul Line Companies Filter -->
 		<record id="absensi_ekskul_line_company_rule" model="ir.rule">
 			<field name="name">Absensi Ekskul Line companies</field>
 			<field name="model_id" ref="model_cdn_absen_ekskul_line" />
-			<field name="domain_force">[('company_id', 'in', company_ids)]</field>
+			<field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'child_of', company_ids)]</field>
 		</record>
 
 		<!-- Penugasan Companies Filter -->
 		<record id="penugasan_company_rule" model="ir.rule">
 			<field name="name">Penugasan companies</field>
 			<field name="model_id" ref="model_cdn_penugasan" />
-			<field name="domain_force">[('company_id', 'in', company_ids)]</field>
+			<field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'child_of', company_ids)]</field>
 		</record>
 
 		<!-- Penugasan Line Companies Filter -->
 		<record id="penugasan_line_company_rule" model="ir.rule">
 			<field name="name">Penugasan Line companies</field>
 			<field name="model_id" ref="model_cdn_tugas_line" />
-			<field name="domain_force">[('company_id', 'in', company_ids)]</field>
+			<field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'child_of', company_ids)]</field>
 		</record>
 
 		<!-- Penilaian Companies Filter -->
 		<record id="penilaian_company_rule" model="ir.rule">
 			<field name="name">Penilaian companies</field>
 			<field name="model_id" ref="model_cdn_penilaian" />
-			<field name="domain_force">[('company_id', 'in', company_ids)]</field>
+			<field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'child_of', company_ids)]</field>
 		</record>
 
 		<!-- Penilaian Lines Companies Filter -->
 		<record id="penilaian_lines_company_rule" model="ir.rule">
 			<field name="name">Penilaian Lines companies</field>
 			<field name="model_id" ref="model_cdn_penilaian_lines" />
-			<field name="domain_force">[('company_id', 'in', company_ids)]</field>
+			<field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'child_of', company_ids)]</field>
 		</record>
 
 		<!-- Penilaian Akhir Guru Companies Filter -->
 		<record id="penilaian_akhir_guru_company_rule" model="ir.rule">
 			<field name="name">Penilaian Akhir Guru companies</field>
 			<field name="model_id" ref="model_cdn_penilaian_akhir_guru" />
-			<field name="domain_force">[('company_id', 'in', company_ids)]</field>
+			<field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'child_of', company_ids)]</field>
 		</record>
 
 		<!-- Penilaiang Akhir Wali Kelas Companies Filter -->
 		<record id="penilaian_akhir_company_rule" model="ir.rule">
 			<field name="name">Penilaian Akhir Wali Kelas companies</field>
 			<field name="model_id" ref="model_cdn_penilaian_akhir" />
-			<field name="domain_force">[('company_id', 'in', company_ids)]</field>
+			<field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'child_of', company_ids)]</field>
 		</record>
 
 		<!-- Rule Ruang Kelas Wali Kelas -->
