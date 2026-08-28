@@ -41,7 +41,7 @@
                     <field name="is_guru_pengganti" optional="hide" />
                     <field name="tema" optional="hide" />
                     <field name="materi" optional="hide" />
-                    <field name="rpp_id" optional="hide" />
+                    <field name="rpm_id" optional="hide" />
                     <field name="company_id" optional="hide" />
                     <field name="state" optional="show" />
                 </list>
@@ -129,7 +129,7 @@
                                         <field name="catatan" />
                                     </group>
                                     <group>
-                                        <field name="rpp_id"
+                                        <field name="rpm_id"
                                             domain="[('tingkat_id', '=', tingkat_id),('matpel_id','=',mapel_id)]"
                                             options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
                                         <field name="pertemuan_ke" />

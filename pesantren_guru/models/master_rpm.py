@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import base64
 from odoo import api, fields, models
+from odoo.exceptions import UserError
 
 
-class MasterRPP(models.Model):
-    _name = 'cdn.master_rpp'
-    _description = 'Data Rencana Pelaksanaan Pembelajaran'
+class MasterRPM(models.Model):
+    _name = 'cdn.master_rpm'
+    _description = 'Data Rencana Pelaksanaan Mingguan'
 
     name = fields.Char(string='Materi', required=True,
                        help="Judul atau topik materi pembelajaran")
@@ -21,7 +23,7 @@ class MasterRPP(models.Model):
     waktu = fields.Char(string='Alokasi Waktu')
     kd = fields.Char(string='Kompentensi Dasar',
                      help="Kompetensi dasar (KD) yang menjadi acuan")
-    dokumen = fields.Binary(string='Dokumen RPP')
+    dokumen = fields.Binary(string='Dokumen RPM')
     tujuan = fields.Text(
         string='Tujuan', help="Tujuan pembelajaran yang ingin dicapai setelah materi ini disampaikan")
 
@@ -29,6 +31,11 @@ class MasterRPP(models.Model):
     def _check_dokumen(self):
         for record in self:
             if record.dokumen:
-                header_byte = record.dokumen[:4]
-                if header_byte.hex() != '4a564245':
-                    raise models.UserError('Dokumen harus berformat PDF')
+                try:
+                    doc_bytes = base64.b64decode(record.dokumen)
+                    if not doc_bytes.startswith(b'%PDF'):
+                        raise UserError('Dokumen harus berformat PDF')
+                except Exception as e:
+                    if isinstance(e, UserError):
+                        raise e
+                    raise UserError('Dokumen harus berformat PDF')

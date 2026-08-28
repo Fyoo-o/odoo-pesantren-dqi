@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from . import absensi_siswa
-from . import master_rpp
+from . import master_rpm
 from . import penugasan
 from . import penilaian
 from . import penilaian_akhir

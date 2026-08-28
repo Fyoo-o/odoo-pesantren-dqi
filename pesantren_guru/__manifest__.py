@@ -52,7 +52,7 @@
         'views/menu.xml',
         'views/absensi_siswa.xml',
         'views/absensi_ekskul.xml',
-        'views/master_rpp.xml',
+        'views/master_rpm.xml',
         'views/penilaian.xml',
         'views/penugasan.xml',
         'views/penilaian_akhir.xml',

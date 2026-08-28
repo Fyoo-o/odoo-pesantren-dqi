@@ -203,7 +203,7 @@ export class PenagihanKpiCard extends Component {
   //       [domain2, ["id", "kelas_id", "tanggal"]]
   //     );
 
-  //     let jumlahRpp = await this.orm.call("cdn.master_rpp", "search_read", [
+  //     let jumlahRpm = await this.orm.call("cdn.master_rpm", "search_read", [
   //       // [["jns_pegawai", "=", "guru"]],
   //       domain3,
   //       ["id", "name"],
@@ -221,7 +221,7 @@ export class PenagihanKpiCard extends Component {
   //       return total + record.amount_untaxed_in_currency_signed;
   //     }, 0);
   //     let absensi = absensiData.length;
-  //     let jumlahrpp = jumlahRpp.length;
+  //     let jumlahrpm = jumlahRpm.length;
   //     let kelas = kelasData.length;
 
   //     this.state.kpiData = [
@@ -242,9 +242,9 @@ export class PenagihanKpiCard extends Component {
   //       {
   //         //<i class="fa-solid "></i>
   //         name: "Total Tagihan Overdue",
-  //         value: jumlahrpp,
+  //         value: jumlahrpm,
   //         icon: "fa-exclamation-triangle",
-  //         res_model: "cdn.master_rpp",
+  //         res_model: "cdn.master_rpm",
   //         domain: domain3,
   //       }, // Ikon pengiriman cepat untuk DO
   //       {

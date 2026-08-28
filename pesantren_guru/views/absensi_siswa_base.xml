@@ -17,7 +17,7 @@
                     <field name="guru_id" optional="show" />
                     <field name="tema" optional="hide" />
                     <field name="materi" optional="hide" />
-                    <field name="rpp_id" optional="hide" />
+                    <field name="rpm_id" optional="hide" />
                     <field name="company_id" optional="hide" />
                     <field name="state" optional="show" />
                 </list>
@@ -86,7 +86,7 @@
                                         <field name="catatan" readonly="1" />
                                     </group>
                                     <group>
-                                        <field name="rpp_id" readonly="1" />
+                                        <field name="rpm_id" readonly="1" />
                                         <field name="pertemuan_ke" readonly="1" />
                                     </group>
                                 </group>
