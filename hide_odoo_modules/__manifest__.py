@@ -3,7 +3,7 @@
     'version': '18.0.1.0.0',
     'category': 'Hidden',
     'summary': 'Hide specific menus from sidebar',
-    'depends': ['base', 'pesantren_keuangan', 'account', 'point_of_sale', 'purchase', 'stock', 'hr_holidays'],
+    'depends': ['base', 'pesantren_keuangan', 'account', 'point_of_sale', 'purchase', 'stock', 'hr_holidays', 'sale', 'spreadsheet_dashboard'],
     'data': [
         'views/hide_module_menu.xml',
     ],

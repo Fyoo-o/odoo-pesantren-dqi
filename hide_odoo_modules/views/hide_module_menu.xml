@@ -52,7 +52,12 @@
 
     <!-- Hide Dashboard Menu -->
     <record id="spreadsheet_dashboard.spreadsheet_dashboard_menu_root" model="ir.ui.menu">
-        <field name="groups_id" eval="[(6, 0, [ref('base.group_system')])]"/>
+        <field name="active" eval="False"/>
+    </record>
+
+    <!-- Hide Sales (Penjualan) Menu -->
+    <record id="sale.sale_menu_root" model="ir.ui.menu">
+        <field name="active" eval="False"/>
     </record>
 
     <!-- Hide Time Off Menu -->
