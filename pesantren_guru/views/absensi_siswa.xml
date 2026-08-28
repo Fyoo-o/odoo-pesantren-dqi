@@ -135,7 +135,7 @@
                                         <field name="pertemuan_ke" />
                                     </group>
                                 </group>
-                                <field name="dokumen" widget="pdf_viewer" nolable="1" />
+                                <field name="dokumen" widget="pdf_viewer" nolabel="1" />
                             </page>
                         </notebook>
                     </sheet>

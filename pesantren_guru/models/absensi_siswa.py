@@ -77,6 +77,12 @@ class AbsensiSiswa(models.Model):
     tema = fields.Char(string='Tema', required=True)
     materi = fields.Text(string='Materi', required=True)
     catatan = fields.Text(string='Catatan')
+
+    @api.onchange('rpm_id')
+    def _onchange_rpm_id(self):
+        if self.rpm_id:
+            if not self.materi and self.rpm_id.name:
+                self.materi = self.rpm_id.name
     state = fields.Selection(
         selection=[('draft', 'Draft'), ('done', 'Done')], string='State', default='draft')
     absensi_ids = fields.One2many(
