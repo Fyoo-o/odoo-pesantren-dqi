@@ -65,6 +65,8 @@ class MasterRPM(models.Model):
                 UPDATE ir_model_fields SET name = 'rpm_id' WHERE model = 'cdn.absensi_siswa' AND name = 'rpp_id';
                 UPDATE ir_model_data SET model = 'cdn.master_rpm' WHERE model = 'cdn.master_rpp';
                 UPDATE ir_model_data SET name = REPLACE(name, 'master_rpp', 'master_rpm') WHERE name LIKE '%master_rpp%';
+                UPDATE ir_ui_view SET arch_db = REPLACE(arch_db::text, 'rpp_id', 'rpm_id')::jsonb WHERE arch_db::text LIKE '%rpp_id%';
+                UPDATE ir_ui_view SET arch_fs = REPLACE(arch_fs, 'rpp_id', 'rpm_id') WHERE arch_fs LIKE '%rpp_id%';
             END $$;
         """)
         return super()._auto_init()
