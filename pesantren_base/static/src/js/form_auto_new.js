@@ -58,14 +58,13 @@ function showCenterSavePopup(type, title, subtitle = "") {
     });
 }
 
-patch(FormController.prototype, "pesantren_base.form_auto_new", {
+patch(FormController.prototype, {
     async saveButtonClicked(params = {}) {
         let saved = false;
 
         try {
-            saved = await this.save(params);
+            saved = await super.saveButtonClicked(...arguments);
         } catch (error) {
-            // Tampilkan Popup Merah di tengah layar saat gagal simpan
             showCenterSavePopup(
                 "danger",
                 "Gagal Disimpan",
@@ -75,14 +74,12 @@ patch(FormController.prototype, "pesantren_base.form_auto_new", {
         }
 
         if (saved) {
-            // Tampilkan Popup Hijau di tengah layar saat berhasil simpan
             await showCenterSavePopup(
                 "success",
                 "Berhasil Disimpan",
                 "Form otomatis siap untuk data baru"
             );
 
-            // Reset form menjadi kosong & siap diisi data berikutnya
             try {
                 await this.createRecord();
             } catch (err) {
