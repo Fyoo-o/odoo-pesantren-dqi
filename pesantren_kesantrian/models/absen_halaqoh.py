@@ -213,13 +213,14 @@ class Absenhalaqoh(models.Model):
             ustadz_id = employee.id if employee else False
             if self.env.user.has_group('pesantren_kesantrian.group_kesantrian_manager'):
                 ustadz = halaqoh.penanggung_jawab_id | halaqoh.pengganti_ids
+                selected_ustadz = employee.id if (employee and employee.id in ustadz.ids) else (ustadz[0].id if ustadz else ustadz_id)
                 return {
                     'domain': {
                         'ustadz_id': [('id', 'in', ustadz.ids)]
                     },
                     'value': {
                         'absen_ids': absen_ids,
-                        'ustadz_id': ustadz[0].id if ustadz else False,
+                        'ustadz_id': selected_ustadz,
                         'company_id': halaqoh.company_id.id,
                     }
                 }
