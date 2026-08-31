@@ -99,6 +99,7 @@
         'web.assets_backend': [
             'pesantren_base/static/src/scss/custom_buttons.scss',
             'pesantren_base/static/src/js/nontifikasi.js',
+            'pesantren_base/static/src/js/form_auto_new.js',
         ],
     },
     "installable": True,
