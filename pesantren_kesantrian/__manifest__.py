@@ -13,7 +13,7 @@
     'author': "PT. Cendana Teknika Utama",
     'website': "https://www.cendana2000.co.id",
     'category': 'Education',
-    'version': '18.0.1.1',
+    'version': '18.0.1.2',
     'license': 'LGPL-3',
 
     'depends': ['base', 'pesantren_base'],
