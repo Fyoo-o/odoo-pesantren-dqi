@@ -62,6 +62,8 @@ function showCenterSavePopup(type, title, subtitle = "") {
  * Menyederhanakan Tombol & Judul Error Dialog Odoo ("Oh snap!") menjadi "Gagal Menyimpan" dan Single Tombol "Tutup"
  */
 function customizeErrorDialogButtons() {
+    if (typeof document === "undefined" || !document.body) return;
+
     const observer = new MutationObserver(() => {
         const dialogs = document.querySelectorAll(".modal-dialog, .o_dialog");
         dialogs.forEach((dialog) => {
@@ -107,46 +109,57 @@ function customizeErrorDialogButtons() {
     observer.observe(document.body, { childList: true, subtree: true });
 }
 
-// Jalankan observer saat modul dimuat
-if (typeof window !== "undefined" && !window._dqiDialogObserverBound) {
-    window._dqiDialogObserverBound = true;
-    customizeErrorDialogButtons();
+// Jalankan observer saat modul dimuat secara aman
+try {
+    if (typeof window !== "undefined" && !window._dqiDialogObserverBound) {
+        window._dqiDialogObserverBound = true;
+        customizeErrorDialogButtons();
+    }
+} catch (e) {
+    console.warn("Could not bind dialog observer:", e);
 }
 
-patch(FormController.prototype, {
-    async saveButtonClicked(params = {}) {
-        let saved = false;
+// Patch FormController secara aman dengan null check & try-catch
+try {
+    if (FormController && FormController.prototype) {
+        patch(FormController.prototype, {
+            async saveButtonClicked(params = {}) {
+                let saved = false;
 
-        try {
-            saved = await this.save(params);
-        } catch (error) {
-            return false;
-        }
-
-        // Pastikan record benar-benar tersimpan dan tidak lagi dirty/baru
-        const root = this.model?.root;
-        const isSuccessfullySaved = saved && root && !root.isDirty && !root.isNew;
-
-        if (isSuccessfullySaved) {
-            // Popup Hijau Berhasil Disimpan
-            await showCenterSavePopup(
-                "success",
-                "Berhasil Disimpan",
-                "Form otomatis siap untuk data baru"
-            );
-
-            // Buka form baru yang kosong
-            try {
-                if (typeof this.createRecord === "function") {
-                    await this.createRecord();
-                } else if (typeof this.onClickCreate === "function") {
-                    await this.onClickCreate();
+                try {
+                    saved = await this.save(params);
+                } catch (error) {
+                    return false;
                 }
-            } catch (err) {
-                console.warn("Auto-create record error after save:", err);
-            }
-        }
 
-        return saved;
+                // Pastikan record benar-benar tersimpan dan tidak lagi dirty/baru
+                const root = this.model?.root;
+                const isSuccessfullySaved = saved && root && !root.isDirty && !root.isNew;
+
+                if (isSuccessfullySaved) {
+                    // Popup Hijau Berhasil Disimpan
+                    await showCenterSavePopup(
+                        "success",
+                        "Berhasil Disimpan",
+                        "Form otomatis siap untuk data baru"
+                    );
+
+                    // Buka form baru yang kosong
+                    try {
+                        if (typeof this.createRecord === "function") {
+                            await this.createRecord();
+                        } else if (typeof this.onClickCreate === "function") {
+                            await this.onClickCreate();
+                        }
+                    } catch (err) {
+                        console.warn("Auto-create record error after save:", err);
+                    }
+                }
+
+                return saved;
+            }
+        });
     }
-});
+} catch (e) {
+    console.warn("Could not patch FormController safely:", e);
+}
