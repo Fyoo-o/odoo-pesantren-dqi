@@ -58,6 +58,52 @@ function showCenterSavePopup(type, title, subtitle = "") {
     });
 }
 
+/**
+ * Menyederhanakan Tombol Error Dialog Odoo ("Oh snap!") menjadi Single Tombol "Tutup"
+ */
+function customizeErrorDialogButtons() {
+    const observer = new MutationObserver(() => {
+        const dialogs = document.querySelectorAll(".modal-dialog, .o_dialog");
+        dialogs.forEach((dialog) => {
+            const footer = dialog.querySelector(".modal-footer");
+            if (!footer) return;
+
+            const buttons = footer.querySelectorAll("button");
+            if (buttons.length >= 2) {
+                let keepBtn = null;
+                let discardBtn = null;
+
+                buttons.forEach((btn) => {
+                    const txt = (btn.textContent || "").trim().toLowerCase();
+                    if (txt.includes("tunggu") || txt.includes("stay") || btn.classList.contains("btn-primary")) {
+                        keepBtn = btn;
+                    }
+                    if (txt.includes("buang") || txt.includes("discard") || btn.classList.contains("btn-secondary")) {
+                        discardBtn = btn;
+                    }
+                });
+
+                if (keepBtn && discardBtn) {
+                    // Sembunyikan tombol "Buang perubahan"
+                    discardBtn.style.display = "none";
+                    // Ubah teks tombol "Tunggu Di sini" menjadi "Tutup"
+                    keepBtn.textContent = "Tutup";
+                    keepBtn.classList.remove("btn-primary");
+                    keepBtn.classList.add("btn-secondary", "dqi-custom-tutup-btn");
+                }
+            }
+        });
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+}
+
+// Jalankan observer saat modul dimuat
+if (typeof window !== "undefined" && !window._dqiDialogObserverBound) {
+    window._dqiDialogObserverBound = true;
+    customizeErrorDialogButtons();
+}
+
 patch(FormController.prototype, {
     async saveButtonClicked(params = {}) {
         let saved = false;
@@ -65,23 +111,28 @@ patch(FormController.prototype, {
         try {
             saved = await super.saveButtonClicked(...arguments);
         } catch (error) {
-            showCenterSavePopup(
-                "danger",
-                "Gagal Disimpan",
-                "Mohon periksa kembali kelengkapan data"
-            );
-            throw error;
+            return false;
         }
 
-        if (saved) {
+        // Pastikan record benar-benar tersimpan dan tidak lagi dirty/baru
+        const root = this.model?.root;
+        const isSuccessfullySaved = saved && root && !root.isDirty && !root.isNew;
+
+        if (isSuccessfullySaved) {
+            // Popup Hijau Berhasil Disimpan
             await showCenterSavePopup(
                 "success",
                 "Berhasil Disimpan",
                 "Form otomatis siap untuk data baru"
             );
 
+            // Buka form baru yang kosong
             try {
-                await this.createRecord();
+                if (typeof this.createRecord === "function") {
+                    await this.createRecord();
+                } else if (typeof this.onClickCreate === "function") {
+                    await this.onClickCreate();
+                }
             } catch (err) {
                 console.warn("Auto-create record error after save:", err);
             }
