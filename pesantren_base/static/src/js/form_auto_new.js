@@ -118,7 +118,7 @@ patch(FormController.prototype, {
         let saved = false;
 
         try {
-            saved = await super.saveButtonClicked(...arguments);
+            saved = await this.save(params);
         } catch (error) {
             return false;
         }
