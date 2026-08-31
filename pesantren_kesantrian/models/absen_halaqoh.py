@@ -70,45 +70,21 @@ class Absenhalaqoh(models.Model):
         for index, record in enumerate(self):
             record.row_number = index + 1
 
-    def action_proses(self):
-        self.state = 'Done'
-        Penilaian = self.env['cdn.penilaian_quran'].with_context(
-            from_guru_quran=True)
-        for absen in self.absen_ids.filtered(lambda l: l.kehadiran == 'Hadir'):
-            # Cek existing untuk hindari duplikat (kombinasi unik: tanggal + siswa + halaqoh + sesi)
-            existing = Penilaian.search([
-                ('tanggal', '=', self.name),
-                ('siswa_id', '=', absen.siswa_id.id),
-                ('halaqoh_id', '=', self.halaqoh_id.id),
-                ('sesi_id', '=', self.sesi_id.id),
-                ('company_id', '=', self.company_id.id),
-            ], limit=1)
-            if not existing:
-                Penilaian.create({
-                    'tanggal': self.name,
-                    'siswa_id': absen.siswa_id.id,
-                    'halaqoh_id': self.halaqoh_id.id,  # Pastikan set halaqoh_id benar
-                    'ustadz_id': self.ustadz_id.id,
-                    'sesi_id': self.sesi_id.id,
-                    'state': 'draft',
-                    'company_id': self.company_id.id,
-                })
-
-    def action_confirm(self):
-        self.state = 'Done'
-
-    def action_draft(self):
-        self.state = 'Draft'
-
-    def action_sync_penilaian(self):
-        Penilaian = self.env['cdn.penilaian_quran'].with_context(
-            from_guru_quran=True)
+    def _sync_penilaian_records(self):
+        """Metode presisi untuk menyelaraskan data penilaian halaqoh dengan absensi:
+        1. Membuat cdn.penilaian_quran baru untuk santri yang berstatus 'Hadir' (jika belum ada).
+        2. Membersihkan cdn.penilaian_quran 'draft' yang masih kosong jika santri diubah menjadi selain 'Hadir'.
+        """
+        Penilaian = self.env['cdn.penilaian_quran'].with_context(from_guru_quran=True)
         for record in self:
+            if not record.name or not record.halaqoh_id:
+                continue
+
+            # 1. Proses santri yang HADIR
             for line in record.absen_ids.filtered(lambda l: l.kehadiran == 'Hadir'):
                 existing = Penilaian.search([
                     ('tanggal', '=', record.name),
                     ('siswa_id', '=', line.siswa_id.id),
-                    # Gunakan halaqoh_id dari absen
                     ('halaqoh_id', '=', record.halaqoh_id.id),
                     ('sesi_id', '=', record.sesi_id.id),
                     ('company_id', '=', record.company_id.id),
@@ -117,13 +93,52 @@ class Absenhalaqoh(models.Model):
                     Penilaian.create({
                         'tanggal': record.name,
                         'siswa_id': line.siswa_id.id,
-                        'halaqoh_id': record.halaqoh_id.id,  # Set benar
+                        'halaqoh_id': record.halaqoh_id.id,
                         'ustadz_id': record.ustadz_id.id,
                         'sesi_id': record.sesi_id.id,
                         'state': 'draft',
                         'company_id': record.company_id.id,
                     })
+                elif record.ustadz_id and existing.ustadz_id != record.ustadz_id:
+                    existing.with_context(from_guru_quran=True).write({
+                        'ustadz_id': record.ustadz_id.id,
+                        'state': existing.state,
+                    })
 
+            # 2. Proses santri yang TIDAK HADIR (Izin, Sakit, Alpa, Pulang, dll)
+            non_hadir_siswa_ids = record.absen_ids.filtered(lambda l: l.kehadiran != 'Hadir').mapped('siswa_id').ids
+            if non_hadir_siswa_ids:
+                orphan_penilaians = Penilaian.search([
+                    ('tanggal', '=', record.name),
+                    ('siswa_id', 'in', non_hadir_siswa_ids),
+                    ('halaqoh_id', '=', record.halaqoh_id.id),
+                    ('sesi_id', '=', record.sesi_id.id),
+                    ('company_id', '=', record.company_id.id),
+                    ('state', '=', 'draft'),
+                ])
+                for pen in orphan_penilaians:
+                    is_empty = (
+                        not pen.tahfidz_line_ids and
+                        not pen.buku_harian_id and
+                        not pen.buku_ujian_id and
+                        not pen.juz_murajaah and
+                        not pen.surah_id_ujian_tahfidz
+                    )
+                    if is_empty:
+                        pen.unlink()
+
+    def action_proses(self):
+        self.state = 'Done'
+        self._sync_penilaian_records()
+
+    def action_confirm(self):
+        self.state = 'Done'
+
+    def action_draft(self):
+        self.state = 'Draft'
+
+    def action_sync_penilaian(self):
+        self._sync_penilaian_records()
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
@@ -240,6 +255,35 @@ class Absenhalaqoh(models.Model):
 
         return res
 
+    def unlink(self):
+        """Saat dokumen Absensi Halaqoh dihapus, bersihkan record Penilaian Quran
+        yang berstatus 'draft' dan masih kosong agar tidak menjadi data mengambang (orphan data).
+        """
+        Penilaian = self.env['cdn.penilaian_quran'].with_context(from_guru_quran=True)
+        for record in self:
+            if record.name and record.halaqoh_id:
+                siswa_ids = record.absen_ids.mapped('siswa_id').ids
+                if siswa_ids:
+                    orphan_penilaians = Penilaian.search([
+                        ('tanggal', '=', record.name),
+                        ('siswa_id', 'in', siswa_ids),
+                        ('halaqoh_id', '=', record.halaqoh_id.id),
+                        ('sesi_id', '=', record.sesi_id.id),
+                        ('company_id', '=', record.company_id.id),
+                        ('state', '=', 'draft'),
+                    ])
+                    for pen in orphan_penilaians:
+                        is_empty = (
+                            not pen.tahfidz_line_ids and
+                            not pen.buku_harian_id and
+                            not pen.buku_ujian_id and
+                            not pen.juz_murajaah and
+                            not pen.surah_id_ujian_tahfidz
+                        )
+                        if is_empty:
+                            pen.unlink()
+        return super().unlink()
+
     @api.model
     def create(self, vals):
         """Membuat absensi tanpa batasan ustadz_id untuk staff."""
@@ -251,11 +295,12 @@ class Absenhalaqoh(models.Model):
 
     def write(self, vals):
         res = super().write(vals)
-        if 'state' not in vals:
-            for rec in self:
-                if rec.state in ('Draft', 'Proses'):
-                    rec.action_proses()
-                    rec.action_confirm()
+        for rec in self:
+            if rec.state in ('Draft', 'Proses'):
+                rec.action_proses()
+                rec.action_confirm()
+            else:
+                rec._sync_penilaian_records()
         return res
 
 

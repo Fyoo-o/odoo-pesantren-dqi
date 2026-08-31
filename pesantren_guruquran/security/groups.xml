@@ -401,7 +401,12 @@
 			<field name="name">User Rule Penilaian Quran</field>
 			<field name="model_id" ref="pesantren_kesantrian.model_cdn_penilaian_quran" />
 			<field name="domain_force">
-				[('ustadz_id.user_id', '=', user.id)]
+				[
+				'|', '|',
+				('ustadz_id.user_id', '=', user.id),
+				('halaqoh_id.penanggung_jawab_id.user_id', '=', user.id),
+				('halaqoh_id.pengganti_ids.user_id', '=', user.id)
+				]
 			</field>
 			<field name="groups" eval="[(4, ref('pesantren_guruquran.group_guru_quran_user'))]" />
 		</record>
@@ -409,7 +414,14 @@
 		<record id="rule_guru_penilaian_quran" model="ir.rule">
 			<field name="name">Staff Rule Penilaian Quran</field>
 			<field name="model_id" ref="pesantren_kesantrian.model_cdn_penilaian_quran" />
-			<field name="domain_force">[('ustadz_id.user_id', '=', user.id)]</field>
+			<field name="domain_force">
+				[
+				'|', '|',
+				('ustadz_id.user_id', '=', user.id),
+				('halaqoh_id.penanggung_jawab_id.user_id', '=', user.id),
+				('halaqoh_id.pengganti_ids.user_id', '=', user.id)
+				]
+			</field>
 			<field name="groups" eval="[(4, ref('pesantren_guruquran.group_guru_quran_staff'))]" />
 			<field name="perm_create" eval="True" />
 			<field name="perm_write" eval="True" />
