@@ -80,40 +80,45 @@ class Absenhalaqoh(models.Model):
             if not record.name or not record.halaqoh_id:
                 continue
 
-            # 1. Proses santri yang HADIR
-            for line in record.absen_ids.filtered(lambda l: l.kehadiran == 'Hadir'):
+            # 1. Proses santri yang HADIR (case-insensitive check)
+            hadir_lines = record.absen_ids.filtered(lambda l: (l.kehadiran or '').strip().lower() == 'hadir')
+            for line in hadir_lines:
                 existing = Penilaian.search([
                     ('tanggal', '=', record.name),
                     ('siswa_id', '=', line.siswa_id.id),
                     ('halaqoh_id', '=', record.halaqoh_id.id),
-                    ('sesi_id', '=', record.sesi_id.id),
-                    ('company_id', '=', record.company_id.id),
                 ], limit=1)
                 if not existing:
                     Penilaian.create({
                         'tanggal': record.name,
                         'siswa_id': line.siswa_id.id,
                         'halaqoh_id': record.halaqoh_id.id,
-                        'ustadz_id': record.ustadz_id.id,
-                        'sesi_id': record.sesi_id.id,
+                        'ustadz_id': record.ustadz_id.id if record.ustadz_id else False,
+                        'sesi_id': record.sesi_id.id if record.sesi_id else False,
                         'state': 'draft',
-                        'company_id': record.company_id.id,
+                        'company_id': record.company_id.id if record.company_id else False,
                     })
-                elif record.ustadz_id and existing.ustadz_id != record.ustadz_id:
-                    existing.with_context(from_guru_quran=True).write({
-                        'ustadz_id': record.ustadz_id.id,
-                        'state': existing.state,
-                    })
+                else:
+                    vals_to_update = {}
+                    if record.ustadz_id and existing.ustadz_id != record.ustadz_id:
+                        vals_to_update['ustadz_id'] = record.ustadz_id.id
+                    if record.sesi_id and existing.sesi_id != record.sesi_id:
+                        vals_to_update['sesi_id'] = record.sesi_id.id
+                    if record.company_id and existing.company_id != record.company_id:
+                        vals_to_update['company_id'] = record.company_id.id
+                    if vals_to_update:
+                        vals_to_update['state'] = existing.state
+                        existing.with_context(from_guru_quran=True).write(vals_to_update)
 
             # 2. Proses santri yang TIDAK HADIR (Izin, Sakit, Alpa, Pulang, dll)
-            non_hadir_siswa_ids = record.absen_ids.filtered(lambda l: l.kehadiran != 'Hadir').mapped('siswa_id').ids
+            non_hadir_siswa_ids = record.absen_ids.filtered(
+                lambda l: (l.kehadiran or '').strip().lower() != 'hadir'
+            ).mapped('siswa_id').ids
             if non_hadir_siswa_ids:
                 orphan_penilaians = Penilaian.search([
                     ('tanggal', '=', record.name),
                     ('siswa_id', 'in', non_hadir_siswa_ids),
                     ('halaqoh_id', '=', record.halaqoh_id.id),
-                    ('sesi_id', '=', record.sesi_id.id),
-                    ('company_id', '=', record.company_id.id),
                     ('state', '=', 'draft'),
                 ])
                 for pen in orphan_penilaians:
@@ -269,8 +274,6 @@ class Absenhalaqoh(models.Model):
                         ('tanggal', '=', record.name),
                         ('siswa_id', 'in', siswa_ids),
                         ('halaqoh_id', '=', record.halaqoh_id.id),
-                        ('sesi_id', '=', record.sesi_id.id),
-                        ('company_id', '=', record.company_id.id),
                         ('state', '=', 'draft'),
                     ])
                     for pen in orphan_penilaians:
