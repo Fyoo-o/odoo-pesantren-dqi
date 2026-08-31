@@ -481,15 +481,6 @@ class TahfidzTahsin(models.Model):
                 rec.ayat_awal = False
                 rec.ayat_akhir = False
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', '/') == '/':
-            vals['name'] = self.env['ir.sequence'].next_by_code(
-                'cdn.penilaian_quran') or '/'
-        record = super().create(vals)
-        record._compute_main_fields()  # isi surah_id, ayat_awal, ayat_akhir
-        return record
-
     @api.depends('siswa_id', 'tahfidz_line_ids.surah_id', 'tahfidz_line_ids.ayat_akhir', 'state', 'halaqoh_id')
     def _compute_last_tahfidz(self):
         for rec in self:
@@ -631,6 +622,7 @@ class TahfidzTahsin(models.Model):
             vals['name'] = self.env['ir.sequence'].next_by_code(
                 'cdn.penilaian_quran') or '/'
         rec = super().create(vals)
+        rec._compute_main_fields()  # isi surah_id, ayat_awal, ayat_akhir
         if rec.state == 'draft' and not self.env.context.get('from_guru_quran'):
             rec.action_confirm()
         return rec
