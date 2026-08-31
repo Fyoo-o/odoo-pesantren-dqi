@@ -59,12 +59,21 @@ function showCenterSavePopup(type, title, subtitle = "") {
 }
 
 /**
- * Menyederhanakan Tombol Error Dialog Odoo ("Oh snap!") menjadi Single Tombol "Tutup"
+ * Menyederhanakan Tombol & Judul Error Dialog Odoo ("Oh snap!") menjadi "Gagal Menyimpan" dan Single Tombol "Tutup"
  */
 function customizeErrorDialogButtons() {
     const observer = new MutationObserver(() => {
         const dialogs = document.querySelectorAll(".modal-dialog, .o_dialog");
         dialogs.forEach((dialog) => {
+            // Ubah Judul "Oh snap!" menjadi "Gagal Menyimpan"
+            const titleEl = dialog.querySelector(".modal-title, .o_dialog_title, h4, h5, .modal-header h4, .modal-header h5");
+            if (titleEl) {
+                const titleText = (titleEl.textContent || "").trim().toLowerCase();
+                if (titleText.includes("oh snap") || titleText.includes("snap")) {
+                    titleEl.textContent = "Gagal Menyimpan";
+                }
+            }
+
             const footer = dialog.querySelector(".modal-footer");
             if (!footer) return;
 
