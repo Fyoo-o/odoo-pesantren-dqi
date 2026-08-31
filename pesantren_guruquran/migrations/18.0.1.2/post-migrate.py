@@ -18,8 +18,8 @@ def migrate(cr, version):
         WHERE ref_id IN (
             SELECT id FROM ir_ui_view 
             WHERE model IN ('cdn.penilaian_quran', 'cdn.absen_halaqoh')
-        ) OR arch_updated ILIKE '%penilaian_quran%' 
-          OR arch_updated ILIKE '%absen_halaqoh%';
+        ) OR arch ILIKE '%penilaian_quran%' 
+          OR arch ILIKE '%absen_halaqoh%';
     """)
 
     # 2. Sync ustadz_id from cdn_absen_halaqoh to cdn_penilaian_quran if mismatched
