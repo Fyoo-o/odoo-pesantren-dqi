@@ -138,22 +138,22 @@ class AbsensiSiswa(models.Model):
             words = name_lower.split()
             if 'kb' in words or 'paud' in name_lower:
                 company_dict['paud'] = c.id
-            if 'tk' in words or 'tk ' in name_lower:
+            if 'tk' in words or 'tk' in name_lower or 'ra' in words or 'ra ' in name_lower:
                 company_dict['tk'] = c.id
-            if 'sd' in words or 'sd ' in name_lower:
+            if 'sd' in words or 'sd' in name_lower or 'mi' in words or 'mi ' in name_lower:
                 company_dict['sd'] = c.id
-            if 'smp' in words or 'smp ' in name_lower:
+            if 'smp' in words or 'smp' in name_lower or 'mts' in words or 'mts' in name_lower:
                 company_dict['smp'] = c.id
-            if 'ma' in words or 'sma' in words or 'ma ' in name_lower or 'sma ' in name_lower:
-                if 'istiqomah' not in name_lower or 'ma' in words:
+            if 'sma' in words or 'sma' in name_lower or 'smk' in name_lower or 'ma' in words:
+                if 'istiqomah' not in name_lower or 'sma' in name_lower or 'smk' in name_lower or 'ma' in words:
                     company_dict['sma'] = c.id
             if 'rumah tahf' in name_lower or 'rtq' in name_lower:
                 company_dict['rtq'] = c.id
 
         for rec in self:
-            if rec.kelas_id and rec.kelas_id.jenjang:
-                rec.company_id = company_dict.get(rec.kelas_id.jenjang, self.env.company.id)
-            else:
+            if rec.kelas_id and rec.kelas_id.jenjang and rec.kelas_id.jenjang in company_dict:
+                rec.company_id = company_dict[rec.kelas_id.jenjang]
+            elif not rec.company_id:
                 rec.company_id = self.env.company.id
 
     def action_draft(self):

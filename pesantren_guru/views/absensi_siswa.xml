@@ -75,7 +75,7 @@
                                     widget="many2many_tags" />
                                 <field name="company_id"
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"
-                                    readonly="1" />
+                                    readonly="state == 'done'" />
                             </group>
                             <group>
                                 <field name="mapel_id"
