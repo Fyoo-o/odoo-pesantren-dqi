@@ -138,7 +138,8 @@
                                         <field name="pertemuan_ke" />
                                     </group>
                                 </group>
-                                <field name="dokumen" widget="pdf_viewer" nolabel="1" invisible="not dokumen" />
+                                <field name="is_pdf" invisible="1" />
+                                <field name="dokumen" widget="pdf_viewer" nolabel="1" invisible="not dokumen or not is_pdf" />
                             </page>
                         </notebook>
                     </sheet>

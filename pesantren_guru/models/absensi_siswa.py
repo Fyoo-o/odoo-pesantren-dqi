@@ -78,6 +78,8 @@ class AbsensiSiswa(models.Model):
         string='Dokumen', related='rpm_id.dokumen', readonly=True, store=True)
     dokumen_fname = fields.Char(
         string='Nama Dokumen', related='rpm_id.dokumen_fname', readonly=True, store=True)
+    is_pdf = fields.Boolean(
+        string='Is PDF', related='rpm_id.is_pdf', readonly=True)
     tema = fields.Char(string='Tema', required=True)
     materi = fields.Text(string='Materi', required=True)
     catatan = fields.Text(string='Catatan')
