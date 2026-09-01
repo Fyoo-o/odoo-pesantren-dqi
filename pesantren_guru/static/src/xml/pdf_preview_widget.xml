@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="pesantren_guru.PdfPreviewWidget" owl="1">
+        <div class="o_pdf_preview_widget_wrapper w-100 my-2">
+            <t t-if="state.isLoading">
+                <div class="d-flex flex-column align-items-center justify-content-center p-5 bg-light border rounded shadow-sm" style="min-height: 250px;">
+                    <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <span class="fw-bold text-dark fs-5">Memuat Preview Dokumen PDF...</span>
+                    <span class="text-muted small mt-1">Mengolah berkas untuk tampilan preview</span>
+                </div>
+            </t>
+
+            <t t-if="state.pdfUrl">
+                <iframe
+                    t-att-src="state.pdfUrl"
+                    t-att-class="state.isLoading ? 'd-none' : 'w-100 border rounded shadow-sm'"
+                    style="height: 650px; border: 1px solid #ced4da;"
+                    t-on-load="onIframeLoad"
+                />
+            </t>
+            <t t-elif="!state.isLoading and state.hasError">
+                <div class="alert alert-warning text-center p-4 rounded shadow-sm mb-0">
+                    <i class="fa fa-exclamation-triangle fa-2x mb-2 text-warning"/>
+                    <div class="fw-bold">Tidak dapat memuat preview PDF.</div>
+                    <div class="small text-muted">Silakan unduh atau pastikan berkas berformat PDF yang valid.</div>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>
