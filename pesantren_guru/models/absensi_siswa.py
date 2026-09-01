@@ -76,6 +76,8 @@ class AbsensiSiswa(models.Model):
         help='Pilih kelas dan mata pelajaran terlebih dahulu jika pilihan RPM tidak muncul')
     dokumen = fields.Binary(
         string='Dokumen', related='rpm_id.dokumen', readonly=True, store=True)
+    dokumen_fname = fields.Char(
+        string='Nama Dokumen', related='rpm_id.dokumen_fname', readonly=True, store=True)
     tema = fields.Char(string='Tema', required=True)
     materi = fields.Text(string='Materi', required=True)
     catatan = fields.Text(string='Catatan')
