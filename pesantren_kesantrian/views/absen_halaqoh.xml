@@ -6,7 +6,7 @@
             <field name="name">cdn.absen_halaqoh.view.list</field>
             <field name="model">cdn.absen_halaqoh</field>
             <field name="arch" type="xml">
-                <list default_order="id desc" >
+                <list default_order="name desc, id desc">
                     <field name="row_number" string="#" />
                     <field name="name" />
                     <field name="sesi_id" />
@@ -133,8 +133,7 @@
             <field name="res_model">cdn.absen_halaqoh</field>
             <field name="view_mode">list,form</field>
             <field name="context">{
-                'from_guru_quran': True,
-                'orderby': 'halaqoh_id.name asc'
+                'from_guru_quran': True
             }</field>
         </record>
 

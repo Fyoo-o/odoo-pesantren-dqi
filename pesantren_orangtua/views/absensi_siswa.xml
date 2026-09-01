@@ -6,7 +6,7 @@
             <field name="name">cdn.absensi_siswa_lines.view.list</field>
             <field name="model">cdn.absensi_siswa_lines</field>
             <field name="arch" type="xml">
-                <list create="false" default_order="id desc">
+                <list create="false" default_order="tanggal desc, id desc">
                     <field name="absensi_id"/>
                     <field name="siswa_id"/>
                     <field name="tanggal"/>

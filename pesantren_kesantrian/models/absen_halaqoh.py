@@ -6,6 +6,17 @@ from odoo.exceptions import UserError
 class Absenhalaqoh(models.Model):
     _name = 'cdn.absen_halaqoh'
     _description = 'Tabel Halaqoh'
+    _order = 'name desc, id desc'
+
+    def _auto_init(self):
+        res = super()._auto_init()
+        self.env.cr.execute("""
+            DELETE FROM ir_ui_view_custom 
+            WHERE ref_id IN (
+                SELECT id FROM ir_ui_view WHERE model = 'cdn.absen_halaqoh'
+            );
+        """)
+        return res
 
     def _domain_halaqoh_id(self):
         """Mengembalikan domain untuk field halaqoh_id berdasarkan tahun ajaran aktif.

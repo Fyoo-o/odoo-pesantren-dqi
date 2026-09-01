@@ -6,6 +6,7 @@ from odoo.exceptions import UserError
 class AbsenTahsinQuran(models.Model):
     _name = 'cdn.absen_tahsin_quran'
     _description = 'Tabel Absen Tahsin Quran'
+    _order = 'name desc, id desc'
 
     # get domain
     def _domain_halaqoh_id(self):

@@ -6,7 +6,7 @@
             <field name="name">Perizinan Santri</field>
             <field name="model">cdn.perijinan</field>
             <field name="arch" type="xml">
-                <list default_order="id desc">
+                <list default_order="create_date desc, id desc">
                     <field name="name" string="No. Referensi" />
                     <field name="tgl_ijin" />
                     <field name="siswa_id" />

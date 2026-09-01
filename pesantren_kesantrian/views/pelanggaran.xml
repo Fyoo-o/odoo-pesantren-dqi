@@ -8,7 +8,7 @@
             <field name="name">cdn.pelanggaran.view.tree</field>
             <field name="model">cdn.pelanggaran</field>
             <field name="arch" type="xml">
-                <list default_order="id desc" >
+                <list default_order="tgl_pelanggaran desc, id desc">
                     <!-- Add your fields here -->
                     <field name="tgl_pelanggaran" />
                     <field name="siswa_id" />

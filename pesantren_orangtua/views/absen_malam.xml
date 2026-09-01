@@ -6,7 +6,7 @@
             <field name="name">cdn.absensi_malam_line.view.list.orangtua</field>
             <field name="model">cdn.absensi_malam_line</field>
             <field name="arch" type="xml">
-                <list string="Absensi Malam Santri" create="false" edit="false" delete="false" default_order="id desc">
+                <list string="Absensi Malam Santri" create="false" edit="false" delete="false" default_order="tgl desc, id desc">
                     <field name="tanggal"/>
                     <field name="name" string="Nama Santri"/>
                     <field name="nis"/>

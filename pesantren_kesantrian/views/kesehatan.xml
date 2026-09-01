@@ -6,7 +6,7 @@
       <field name="name">cdn.kesehatan.view.list</field>
       <field name="model">cdn.kesehatan</field>
       <field name="arch" type="xml">
-        <list default_order="id desc">
+        <list default_order="name desc, id desc">
           <!-- Add your fields here -->
           <field name="name"/>
           <field name="tgl_diperiksa"/>
