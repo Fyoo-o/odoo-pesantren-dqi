@@ -1,6 +1,7 @@
 /** @odoo-module **/
 
 import { registry } from "@web/core/registry";
+import { url } from "@web/core/utils/urls";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
 import { Component, useState, onWillUpdateProps, onWillDestroy } from "@odoo/owl";
 
@@ -12,78 +13,80 @@ export class PdfPreviewWidget extends Component {
 
     setup() {
         this.state = useState({
-            pdfUrl: null,
             isLoading: true,
             hasError: false,
         });
 
-        this.currentBlobUrl = null;
-        this.updatePdfUrl(this.props.value);
+        this._blobUrl = null;
+        this._viewerUrl = null;
+
+        this._buildUrl();
 
         onWillUpdateProps((nextProps) => {
-            if (nextProps.value !== this.props.value) {
-                this.updatePdfUrl(nextProps.value);
+            const curHasData = !!this.props.record.data[this.props.name];
+            const nextHasData = !!nextProps.record.data[nextProps.name];
+            const curId = this.props.record.resId;
+            const nextId = nextProps.record.resId;
+
+            if (curHasData !== nextHasData || curId !== nextId) {
+                this._buildUrl(nextProps);
             }
         });
 
         onWillDestroy(() => {
-            this.revokeCurrentBlobUrl();
+            this._revokeBlobUrl();
         });
     }
 
-    revokeCurrentBlobUrl() {
-        if (this.currentBlobUrl) {
-            URL.revokeObjectURL(this.currentBlobUrl);
-            this.currentBlobUrl = null;
+    _revokeBlobUrl() {
+        if (this._blobUrl) {
+            URL.revokeObjectURL(this._blobUrl);
+            this._blobUrl = null;
         }
     }
 
-    updatePdfUrl(value) {
-        this.revokeCurrentBlobUrl();
+    _buildUrl(props) {
+        props = props || this.props;
+        this._revokeBlobUrl();
+
         this.state.isLoading = true;
         this.state.hasError = false;
 
+        const value = props.record.data[props.name];
         if (!value) {
-            this.state.pdfUrl = null;
+            this._viewerUrl = null;
             this.state.isLoading = false;
             return;
         }
 
-        try {
-            let base64Data = value;
-            if (typeof value === "string" && value.includes(",")) {
-                base64Data = value.split(",")[1];
-            }
+        const resId = props.record.resId;
 
-            const byteCharacters = atob(base64Data);
-            const byteNumbers = new Array(byteCharacters.length);
-            for (let i = 0; i < byteCharacters.length; i++) {
-                byteNumbers[i] = byteCharacters.charCodeAt(i);
-            }
-            const byteArray = new Uint8Array(byteNumbers);
-            const blob = new Blob([byteArray], { type: "application/pdf" });
-
-            this.currentBlobUrl = URL.createObjectURL(blob);
-            this.state.pdfUrl = `/web/static/lib/pdfjs/web/viewer.html?file=${encodeURIComponent(this.currentBlobUrl)}#page=1`;
-        } catch (e) {
-            console.error("Error creating Blob URL for PDF preview:", e);
-            const resId = this.props.record.resId;
-            if (resId) {
-                const unique = Date.now();
-                const contentUrl = `/web/content?model=${this.props.record.resModel}&id=${resId}&field=${this.props.name}&unique=${unique}`;
-                this.state.pdfUrl = `/web/static/lib/pdfjs/web/viewer.html?file=${encodeURIComponent(contentUrl)}#page=1`;
-            } else {
-                this.state.hasError = true;
-            }
-        }
-
-        setTimeout(() => {
+        if (resId) {
+            const unique = Date.now();
+            const contentUrl = url("/web/content", {
+                model: props.record.resModel,
+                field: props.name,
+                id: resId,
+                unique: unique,
+            });
+            this._viewerUrl = `/web/static/lib/pdfjs/web/viewer.html?file=${encodeURIComponent(contentUrl)}#page=1`;
+        } else {
+            this._viewerUrl = null;
             this.state.isLoading = false;
-        }, 200);
+        }
+    }
+
+    get viewerUrl() {
+        return this._viewerUrl;
     }
 
     onIframeLoad() {
         this.state.isLoading = false;
+    }
+
+    onIframeError() {
+        this.state.isLoading = false;
+        this.state.hasError = true;
     }
 }
 
