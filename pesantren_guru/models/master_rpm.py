@@ -7,7 +7,7 @@ from odoo.exceptions import UserError
 
 class MasterRPM(models.Model):
     _name = 'cdn.master_rpm'
-    _description = 'Data Rencana Pelaksanaan Mingguan'
+    _description = 'Data Rencana Pembelajaran Mendalam'
 
     name = fields.Char(string='Materi', required=True,
                        help="Judul atau topik materi pembelajaran")
@@ -59,7 +59,9 @@ class MasterRPM(models.Model):
                     END IF;
                 END IF;
 
-                UPDATE ir_model SET model = 'cdn.master_rpm', name = '{"en_US": "Data Rencana Pelaksanaan Mingguan", "id_ID": "Data Rencana Pelaksanaan Mingguan"}'::jsonb WHERE model = 'cdn.master_rpp';
+                UPDATE ir_model SET model = 'cdn.master_rpm', name = '{"en_US": "Data Rencana Pembelajaran Mendalam", "id_ID": "Data Rencana Pembelajaran Mendalam"}'::jsonb WHERE model = 'cdn.master_rpp';
+                UPDATE ir_model SET name = '{"en_US": "Data Rencana Pembelajaran Mendalam", "id_ID": "Data Rencana Pembelajaran Mendalam"}'::jsonb WHERE model = 'cdn.master_rpm';
+                UPDATE ir_act_window SET name = '{"en_US": "Rencana Pembelajaran Mendalam", "id_ID": "Rencana Pembelajaran Mendalam"}'::jsonb WHERE res_model = 'cdn.master_rpm';
                 UPDATE ir_model_fields SET model = 'cdn.master_rpm' WHERE model = 'cdn.master_rpp';
                 UPDATE ir_model_fields SET relation = 'cdn.master_rpm' WHERE relation = 'cdn.master_rpp';
                 UPDATE ir_model_fields SET name = 'rpm_id' WHERE model = 'cdn.absensi_siswa' AND name = 'rpp_id';

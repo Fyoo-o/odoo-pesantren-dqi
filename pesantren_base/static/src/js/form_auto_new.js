@@ -1,8 +1,5 @@
 /** @odoo-module **/
 
-import { FormController } from "@web/views/form/form_controller";
-import { patch } from "@web/core/utils/patch";
-
 /**
  * Menampilkan Pop-Up Modal di Tengah Layar (Center Popup Modal)
  * @param {'success'|'danger'} type
@@ -50,7 +47,6 @@ function showCenterSavePopup(type, title, subtitle = "") {
         // Tutup otomatis setelah 1.4 detik
         const timer = setTimeout(closePopup, 1400);
 
-        // Pengguna bisa klik area luar untuk langsung menutup
         overlay.addEventListener("click", () => {
             clearTimeout(timer);
             closePopup();
@@ -58,35 +54,97 @@ function showCenterSavePopup(type, title, subtitle = "") {
     });
 }
 
-patch(FormController.prototype, {
-    async saveButtonClicked(params = {}) {
-        let saved = false;
+/**
+ * Customizer untuk Error Dialog ("Oh snap!") & Event Handler Simpan
+ */
+if (typeof window !== "undefined" && !window._dqiSaveHandlerBound) {
+    window._dqiSaveHandlerBound = true;
 
-        try {
-            saved = await super.saveButtonClicked(...arguments);
-        } catch (error) {
-            showCenterSavePopup(
-                "danger",
-                "Gagal Disimpan",
-                "Mohon periksa kembali kelengkapan data"
-            );
-            throw error;
-        }
+    // Observer untuk mengubah judul Error Dialog & Tombolnya
+    const setupObserver = () => {
+        if (!document.body) return;
 
-        if (saved) {
+        const observer = new MutationObserver(() => {
+            const dialogs = document.querySelectorAll(".modal-dialog, .o_dialog");
+            dialogs.forEach((dialog) => {
+                // Ubah Judul "Oh snap!" menjadi "Gagal Menyimpan"
+                const titleEl = dialog.querySelector(".modal-title, .o_dialog_title, h4, h5, .modal-header h4, .modal-header h5");
+                if (titleEl) {
+                    const titleText = (titleEl.textContent || "").trim().toLowerCase();
+                    if (titleText.includes("oh snap") || titleText.includes("snap")) {
+                        titleEl.textContent = "Gagal Menyimpan";
+                    }
+                }
+
+                const footer = dialog.querySelector(".modal-footer");
+                if (!footer) return;
+
+                const buttons = footer.querySelectorAll("button");
+                if (buttons.length >= 2) {
+                    let keepBtn = null;
+                    let discardBtn = null;
+
+                    buttons.forEach((btn) => {
+                        const txt = (btn.textContent || "").trim().toLowerCase();
+                        if (txt.includes("tunggu") || txt.includes("stay") || btn.classList.contains("btn-primary")) {
+                            keepBtn = btn;
+                        }
+                        if (txt.includes("buang") || txt.includes("discard") || btn.classList.contains("btn-secondary")) {
+                            discardBtn = btn;
+                        }
+                    });
+
+                    if (keepBtn && discardBtn) {
+                        // Sembunyikan tombol "Buang perubahan"
+                        discardBtn.style.display = "none";
+                        // Ubah teks tombol "Tunggu Di sini" menjadi "Tutup"
+                        keepBtn.textContent = "Tutup";
+                        keepBtn.classList.remove("btn-primary");
+                        keepBtn.classList.add("btn-secondary", "dqi-custom-tutup-btn");
+                    }
+                }
+            });
+        });
+
+        observer.observe(document.body, { childList: true, subtree: true });
+    };
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", setupObserver);
+    } else {
+        setupObserver();
+    }
+
+    // Event listener saat tombol Simpan diklik
+    document.addEventListener("click", (ev) => {
+        const btn = ev.target?.closest ? ev.target.closest("button.o_form_button_save, .o_form_status_indicator button.o_form_button_save, button[name='action_save']") : null;
+        if (!btn) return;
+
+        // Ambil elemen form saat ini
+        const formEl = btn.closest(".o_form_view");
+        if (!formEl) return;
+
+        // Pantau kapan proses simpan selesai di Odoo
+        setTimeout(async () => {
+            // Cek apakah ada dialog error yang muncul
+            const hasErrorDialog = document.querySelector(".modal-dialog, .o_dialog");
+            if (hasErrorDialog) {
+                // Ada error, jangan tampilkan popup sukses
+                return;
+            }
+
+            // Jika tidak ada error, tampilkan popup sukses hijau
             await showCenterSavePopup(
                 "success",
                 "Berhasil Disimpan",
                 "Form otomatis siap untuk data baru"
             );
 
-            try {
-                await this.createRecord();
-            } catch (err) {
-                console.warn("Auto-create record error after save:", err);
+            // Cari dan klik tombol "Baru" untuk otomatis membuka form baru yang kosong
+            const createBtn = document.querySelector("button.o_form_button_create");
+            if (createBtn) {
+                createBtn.click();
             }
-        }
-
-        return saved;
-    }
-});
+        }, 600);
+    });
+}
