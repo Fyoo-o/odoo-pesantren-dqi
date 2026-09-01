@@ -50,7 +50,7 @@
 
     <!-- cdn.master_rpm action window -->
     <record id="cdn_master_rpm_action" model="ir.actions.act_window">
-      <field name="name">Rencana Pelaksanaan Mingguan</field>
+      <field name="name">Rencana Pembelajaran Mendalam</field>
       <field name="type">ir.actions.act_window</field>
       <field name="res_model">cdn.master_rpm</field>
       <field name="view_mode">list,form</field>
