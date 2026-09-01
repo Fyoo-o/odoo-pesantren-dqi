@@ -23,7 +23,8 @@ class MasterRPM(models.Model):
     waktu = fields.Char(string='Alokasi Waktu')
     kd = fields.Char(string='Kompentensi Dasar',
                      help="Kompetensi dasar (KD) yang menjadi acuan")
-    dokumen = fields.Binary(string='Dokumen RPM')
+    dokumen = fields.Binary(string='Dokumen RPM (PDF)')
+    dokumen_fname = fields.Char(string='Nama Dokumen')
     tujuan = fields.Text(
         string='Tujuan', help="Tujuan pembelajaran yang ingin dicapai setelah materi ini disampaikan")
 
@@ -83,15 +84,17 @@ class MasterRPM(models.Model):
                 if record.tingkat_id and record.tingkat_id.jenjang != record.jenjang:
                     record.tingkat_id = False
 
-    @api.constrains('dokumen')
+    @api.constrains('dokumen', 'dokumen_fname')
     def _check_dokumen(self):
         for record in self:
             if record.dokumen:
+                if record.dokumen_fname and not record.dokumen_fname.lower().endswith('.pdf'):
+                    raise UserError('Dokumen RPM harus berformat PDF (.pdf)')
                 try:
                     doc_bytes = base64.b64decode(record.dokumen)
                     if not doc_bytes.startswith(b'%PDF'):
-                        raise UserError('Dokumen harus berformat PDF')
+                        raise UserError('Dokumen RPM harus berformat PDF (.pdf)')
                 except Exception as e:
                     if isinstance(e, UserError):
                         raise e
-                    raise UserError('Dokumen harus berformat PDF')
+                    raise UserError('Dokumen RPM harus berformat PDF (.pdf)')

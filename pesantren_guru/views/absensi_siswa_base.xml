@@ -93,7 +93,7 @@
                                         <field name="pertemuan_ke" readonly="1" />
                                     </group>
                                 </group>
-                                <field name="dokumen" widget="pdf_viewer" nolabel="1" readonly="1" />
+                                <field name="dokumen" widget="pdf_viewer" nolabel="1" readonly="1" invisible="not dokumen" />
                             </page>
                         </notebook>
                     </sheet>

@@ -15,6 +15,7 @@
           <field name="jurusan_id" />
           <field name="waktu" />
           <field name="kd" />
+          <field name="dokumen_fname" string="Dokumen" />
         </list>
       </field>
     </record>
@@ -23,26 +24,35 @@
       <field name="name">cdn.master_rpm.view.form</field>
       <field name="model">cdn.master_rpm</field>
       <field name="arch" type="xml">
-        <form string="">
+        <form string="Master RPM">
           <sheet>
             <group>
-              <!-- Add your fields here<field name="name"/> -->
-              <field name="name" />
-              <field name="jenjang" />
-              <field name="matpel_id" domain="[('jenjang', '=', jenjang)]" />
-              <field name="tingkat_id"
-                domain="[('jenjang', '=', jenjang)]"
-                options="{
-                      'no_create_edit':True, 
-                      'no_create':True, 
-                      'no_open': True
-                    }" />
-              <field name="jurusan_id" invisible="jenjang not in ('sma')" />
-              <field name="waktu" />
-              <field name="kd" />
-              <field name="dokumen" />
-              <field name="tujuan" />
+              <group>
+                <field name="name" />
+                <field name="jenjang" />
+                <field name="matpel_id" domain="[('jenjang', '=', jenjang)]" />
+                <field name="tingkat_id"
+                  domain="[('jenjang', '=', jenjang)]"
+                  options="{
+                        'no_create_edit':True, 
+                        'no_create':True, 
+                        'no_open': True
+                      }" />
+                <field name="jurusan_id" invisible="jenjang not in ('sma')" />
+              </group>
+              <group>
+                <field name="waktu" />
+                <field name="kd" />
+                <field name="dokumen_fname" invisible="1" />
+                <field name="dokumen" filename="dokumen_fname" widget="binary" options="{'accepted_file_extensions': '.pdf'}" />
+                <field name="tujuan" />
+              </group>
             </group>
+            <notebook invisible="not dokumen">
+              <page string="Preview Dokumen PDF">
+                <field name="dokumen" widget="pdf_viewer" nolabel="1" />
+              </page>
+            </notebook>
           </sheet>
         </form>
       </field>
