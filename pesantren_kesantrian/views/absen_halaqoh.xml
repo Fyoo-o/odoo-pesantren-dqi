@@ -26,7 +26,9 @@
             <field name="arch" type="xml">
                 <form string="Absensi Halaqoh">
                     <header>
-                        <button string="Sinkronkan Penilaian" name="action_sync_penilaian" type="object" class="oe_highlight" invisible="state == 'Draft'" context="{'from_guru_quran': True}"/>
+                        <button string="Konfirmasi" name="action_confirm" type="object" class="oe_highlight" invisible="state != 'Draft'"/>
+                        <button string="Set ke Draft" name="action_draft" type="object" invisible="state != 'Done'"/>
+                        <button string="Sinkronkan Penilaian" name="action_sync_penilaian" type="object" context="{'from_guru_quran': True}"/>
                         <field name="state" widget="statusbar" statusbar_visible="Draft,Done"/>
                     </header>
                     <sheet>

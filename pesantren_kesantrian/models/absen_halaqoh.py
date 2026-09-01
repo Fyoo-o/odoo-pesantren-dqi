@@ -133,7 +133,6 @@ class Absenhalaqoh(models.Model):
                         pen.unlink()
 
     def action_proses(self):
-        self.state = 'Done'
         self._sync_penilaian_records()
 
     def action_confirm(self):
@@ -292,19 +291,13 @@ class Absenhalaqoh(models.Model):
     def create(self, vals):
         """Membuat absensi tanpa batasan ustadz_id untuk staff."""
         rec = super().create(vals)
-        if rec.state in ('Draft', 'Proses'):
-            rec.action_proses()
-            rec.action_confirm()
+        rec._sync_penilaian_records()
         return rec
 
     def write(self, vals):
         res = super().write(vals)
         for rec in self:
-            if rec.state in ('Draft', 'Proses'):
-                rec.action_proses()
-                rec.action_confirm()
-            else:
-                rec._sync_penilaian_records()
+            rec._sync_penilaian_records()
         return res
 
 

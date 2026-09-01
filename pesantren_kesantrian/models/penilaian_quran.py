@@ -624,17 +624,10 @@ class TahfidzTahsin(models.Model):
                 'cdn.penilaian_quran') or '/'
         rec = super().create(vals)
         rec._compute_main_fields()  # isi surah_id, ayat_awal, ayat_akhir
-        if rec.state == 'draft' and not self.env.context.get('from_guru_quran'):
-            rec.action_confirm()
         return rec
 
     def write(self, vals):
-        res = super().write(vals)
-        if 'state' not in vals:
-            for rec in self:
-                if rec.state == 'draft':
-                    rec.action_confirm()
-        return res
+        return super().write(vals)
 
     def name_get(self):
         result = []
