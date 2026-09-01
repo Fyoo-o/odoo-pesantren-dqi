@@ -51,7 +51,7 @@
             </group>
             <notebook invisible="not dokumen or not is_pdf">
               <page string="Preview Dokumen PDF">
-                <field name="dokumen" widget="pdf_preview" nolabel="1" />
+                <field name="dokumen" widget="pdf_preview" nolabel="1" class="w-100 d-block" />
               </page>
             </notebook>
           </sheet>

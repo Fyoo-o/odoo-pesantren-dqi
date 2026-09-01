@@ -18,13 +18,11 @@ export class PdfPreviewWidget extends Component {
         });
 
         this.currentBlobUrl = null;
-        this.updatePdfUrl(this.props.record.data[this.props.name]);
+        this.updatePdfUrl(this.props.value);
 
         onWillUpdateProps((nextProps) => {
-            const nextValue = nextProps.record.data[nextProps.name];
-            const currentValue = this.props.record.data[this.props.name];
-            if (nextValue !== currentValue) {
-                this.updatePdfUrl(nextValue);
+            if (nextProps.value !== this.props.value) {
+                this.updatePdfUrl(nextProps.value);
             }
         });
 
@@ -66,13 +64,14 @@ export class PdfPreviewWidget extends Component {
             const blob = new Blob([byteArray], { type: "application/pdf" });
 
             this.currentBlobUrl = URL.createObjectURL(blob);
-            this.state.pdfUrl = this.currentBlobUrl;
+            this.state.pdfUrl = `/web/static/lib/pdfjs/web/viewer.html?file=${encodeURIComponent(this.currentBlobUrl)}#page=1`;
         } catch (e) {
             console.error("Error creating Blob URL for PDF preview:", e);
             const resId = this.props.record.resId;
             if (resId) {
                 const unique = Date.now();
-                this.state.pdfUrl = `/web/content?model=${this.props.record.resModel}&id=${resId}&field=${this.props.name}&unique=${unique}`;
+                const contentUrl = `/web/content?model=${this.props.record.resModel}&id=${resId}&field=${this.props.name}&unique=${unique}`;
+                this.state.pdfUrl = `/web/static/lib/pdfjs/web/viewer.html?file=${encodeURIComponent(contentUrl)}#page=1`;
             } else {
                 this.state.hasError = true;
             }
