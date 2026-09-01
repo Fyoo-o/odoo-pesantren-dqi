@@ -71,7 +71,9 @@ class AbsensiSiswa(models.Model):
         string='Pertemuan Ke', readonly=True, compute='_compute_pertemuan_ke', store=True)
     mapel_id = fields.Many2one(
         comodel_name='cdn.mata_pelajaran', string='Mata pelajaran', required=True)
-    rpm_id = fields.Many2one(comodel_name='cdn.master_rpm', string='RPM')
+    rpm_id = fields.Many2one(
+        comodel_name='cdn.master_rpm', string='RPM',
+        help='Pilih kelas dan mata pelajaran terlebih dahulu jika pilihan RPM tidak muncul')
     dokumen = fields.Binary(
         string='Dokumen', related='rpm_id.dokumen', readonly=True, store=True)
     tema = fields.Char(string='Tema', required=True)
