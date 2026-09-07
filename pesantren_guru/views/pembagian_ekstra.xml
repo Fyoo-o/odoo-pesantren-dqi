@@ -74,7 +74,7 @@
                                 <separator string="Daftar Siswa Terpilih" />
 
                                 <field name="siswa_ids" readonly="1" nolabel="1" mode="list">
-                                    <list create="false" delete="false" edit="false">
+                                    <list create="false" delete="false" edit="false" default_order="ruang_kelas_id, name">
                                         <field name="row_number" string="#" />
                                         <field name="nis" />
                                         <field name="name" />

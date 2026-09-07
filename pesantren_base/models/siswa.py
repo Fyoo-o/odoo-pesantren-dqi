@@ -27,6 +27,7 @@ class siswa(models.Model):
     _description = "Tabel siswa"
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _inherits = {"res.partner": "partner_id"}
+    _order = "ruang_kelas_id, name, id"
     _sql_constraints = [
         ('nis_unique', 'unique(nis)', 'NIS sudah terdaftar! NIS harus unik untuk setiap santri.'),
     ]
