@@ -192,12 +192,13 @@ class ReportPenilaianAkhir(models.AbstractModel):
 
             for i in range(len(columns_ekstra)):
                 fields = ['name', 'nilai', 'predikat']
+                val = ekstra_wajib[0][fields[i]] if ekstra_wajib else '-'
                 final_cells.append((
                     2 + z, save_points[0] + i + 1,
                     2 + z, save_points[0] + i + 1,
-                    ekstra_wajib[0][fields[i]]
+                    val
                 ))
-            save_point = 0
+            save_point = save_points[2]
             for j, e in enumerate(ekstra):
                 for i in range(len(columns_ekstra)):
                     fields = ['name', 'nilai', 'predikat']

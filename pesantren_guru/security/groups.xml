@@ -335,5 +335,29 @@
 			<field name="perm_create" eval="True"/>
 			<field name="perm_unlink" eval="True"/>
 		</record>
+
+		<!-- Rule Pembagian Ekskul Penanggung Jawab -->
+		<record id="pembagian_ekstra_rule_guru_staff" model="ir.rule">
+			<field name="name">Pembagian Ekskul - Penanggung Jawab</field>
+			<field name="model_id" ref="pesantren_guru.model_cdn_pembagian_ekstra" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_staff'))]" />
+			<field name="domain_force">[('penanggung_id.user_id', '=', user.id)]</field>
+			<field name="perm_read" eval="True"/>
+			<field name="perm_write" eval="True"/>
+			<field name="perm_create" eval="False"/>
+			<field name="perm_unlink" eval="False"/>
+		</record>
+
+		<!-- Rule Pembagian Ekskul Manager / Admin -->
+		<record id="pembagian_ekstra_rule_guru_manager" model="ir.rule">
+			<field name="name">Pembagian Ekskul - Manager</field>
+			<field name="model_id" ref="pesantren_guru.model_cdn_pembagian_ekstra" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_manager')), (4, ref('pesantren_base.group_sekolah_admin'))]" />
+			<field name="domain_force">[(1, '=', 1)]</field>
+			<field name="perm_read" eval="True"/>
+			<field name="perm_write" eval="True"/>
+			<field name="perm_create" eval="True"/>
+			<field name="perm_unlink" eval="True"/>
+		</record>
 	</data>
 </odoo>

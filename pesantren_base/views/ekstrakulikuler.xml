@@ -9,8 +9,6 @@
                 <list>
                     <!-- Add your fields here -->
                     <field name="name" />
-                    <field name="is_wajib" />
-                    <field name="tingkat_ids" widget="many2many_tags" />
                 </list>
             </field>
         </record>
@@ -25,8 +23,6 @@
                         <group>
                             <!-- Add your fields here -->
                             <field name="name" />
-                            <field name="is_wajib" />
-                            <field name="tingkat_ids" widget="many2many_tags" />
                         </group>
                     </sheet>
                 </form>

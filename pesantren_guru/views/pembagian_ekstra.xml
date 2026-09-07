@@ -73,8 +73,8 @@
 
                                 <separator string="Daftar Siswa Terpilih" />
 
-                                <field name="siswa_ids">
-                                    <list>
+                                <field name="siswa_ids" readonly="1" nolabel="1" mode="list">
+                                    <list create="false" delete="false" edit="false">
                                         <field name="row_number" string="#" />
                                         <field name="nis" />
                                         <field name="name" />
@@ -95,13 +95,9 @@
             <field name="type">search</field>
             <field name="arch" type="xml">
                 <search>
-                    <field name="name" string="Data"
-                        filter_domain="[
-                            '|', ('ekstra_id', 'illike', self),
-                            '|', ('name', 'illike', self),
-                            ('name', 'ilike', self),
-                        ]"
-                    />
+                    <field name="name" string="Ekstrakulikuler" />
+                    <field name="penanggung_id" string="Penanggung Jawab" />
+                    <field name="siswa_ids" string="Siswa" filter_domain="['|', ('siswa_ids.name', 'ilike', self), ('siswa_ids.nis', 'ilike', self)]" />
                 </search>
             </field>
         </record>
@@ -115,6 +111,23 @@
 
         <menuitem id="action_menu_pembagian_ekstra" name="Pembagian Ekskul"
             parent="pesantren_base.tu_opkilang" action="action_cdn_pembagian_ekstra" sequence="10" />
+
+        <!-- Action & Menu di Aplikasi Guru untuk Penanggung Jawab & Guru Manager -->
+        <record id="action_ekskul_bimbingan_guru" model="ir.actions.act_window">
+            <field name="name">Ekskul Bimbingan</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">cdn.pembagian_ekstra</field>
+            <field name="view_mode">list,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Belum ada data ekstrakurikuler yang Anda bimbing.
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_pembagian_ekstra_guru" name="Ekskul Bimbingan"
+            parent="guru_menu_root" action="action_ekskul_bimbingan_guru" sequence="19"
+            groups="pesantren_guru.group_guru_staff" />
 
     </data>
 </odoo>
