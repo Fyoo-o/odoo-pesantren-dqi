@@ -240,3 +240,8 @@ odoo-pesantren-dqi.conf
 *.pyc
 
 odools.toml
+
+# Zip & temporary locks
+*.zip
+.~lock.*
+*.xlsx~
