@@ -23,8 +23,9 @@ class MasterRPM(models.Model):
     waktu = fields.Char(string='Alokasi Waktu')
     kd = fields.Char(string='Kompentensi Dasar',
                      help="Kompetensi dasar (KD) yang menjadi acuan")
-    dokumen = fields.Binary(string='Dokumen RPM (PDF)')
+    dokumen = fields.Binary(string='Dokumen RPM')
     dokumen_fname = fields.Char(string='Nama Dokumen')
+    is_pdf = fields.Boolean(string='Is PDF', compute='_compute_is_pdf', store=True)
     tujuan = fields.Text(
         string='Tujuan', help="Tujuan pembelajaran yang ingin dicapai setelah materi ini disampaikan")
 
@@ -84,17 +85,37 @@ class MasterRPM(models.Model):
                 if record.tingkat_id and record.tingkat_id.jenjang != record.jenjang:
                     record.tingkat_id = False
 
-    @api.constrains('dokumen', 'dokumen_fname')
-    def _check_dokumen(self):
+    @api.depends('dokumen', 'dokumen_fname')
+    def _compute_is_pdf(self):
         for record in self:
-            if record.dokumen:
-                if record.dokumen_fname and not record.dokumen_fname.lower().endswith('.pdf'):
-                    raise UserError('Dokumen RPM harus berformat PDF (.pdf)')
+            if record.dokumen and record.dokumen_fname:
+                record.is_pdf = record.dokumen_fname.lower().endswith('.pdf')
+            elif record.dokumen:
                 try:
                     doc_bytes = base64.b64decode(record.dokumen)
-                    if not doc_bytes.startswith(b'%PDF'):
-                        raise UserError('Dokumen RPM harus berformat PDF (.pdf)')
+                    record.is_pdf = doc_bytes.startswith(b'%PDF')
+                except Exception:
+                    record.is_pdf = False
+            else:
+                record.is_pdf = False
+
+    @api.constrains('dokumen', 'dokumen_fname')
+    def _check_dokumen(self):
+        allowed_exts = ['pdf', 'doc', 'docx']
+        for record in self:
+            if record.dokumen:
+                if record.dokumen_fname:
+                    ext = record.dokumen_fname.lower().split('.')[-1] if '.' in record.dokumen_fname else ''
+                    if ext not in allowed_exts:
+                        raise UserError('Dokumen RPM harus berformat PDF, DOC, atau DOCX (.pdf, .doc, .docx)')
+                try:
+                    doc_bytes = base64.b64decode(record.dokumen)
+                    is_pdf = doc_bytes.startswith(b'%PDF')
+                    is_doc = doc_bytes.startswith(b'\xd0\xcf\x11\xe0')
+                    is_docx = doc_bytes.startswith(b'PK\x03\x04')
+                    if not (is_pdf or is_doc or is_docx):
+                        raise UserError('Dokumen RPM harus berformat PDF, DOC, atau DOCX (.pdf, .doc, .docx)')
                 except Exception as e:
                     if isinstance(e, UserError):
                         raise e
-                    raise UserError('Dokumen RPM harus berformat PDF (.pdf)')
+                    raise UserError('Dokumen RPM harus berformat PDF, DOC, atau DOCX (.pdf, .doc, .docx)')

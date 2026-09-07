@@ -6,7 +6,7 @@
             <field name="name">cdn.mutabaah_harian.view.list</field>
             <field name="model">cdn.mutabaah_harian</field>
             <field name="arch" type="xml">
-                <list default_order="id desc" >
+                <list default_order="tgl desc, id desc">
                     <field name="name"/>
                     <field name="tgl"/>
                     <field name="siswa_id"/>

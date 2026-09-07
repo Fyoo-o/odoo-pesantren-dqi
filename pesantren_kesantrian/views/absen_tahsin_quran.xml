@@ -6,7 +6,7 @@
             <field name="name">cdn.absen_tahsin_quran.view.list</field>
             <field name="model">cdn.absen_tahsin_quran</field>
             <field name="arch" type="xml">
-                <list default_order="id desc" >
+                <list default_order="name desc, id desc">
                     <field name="name" />
                     <field name="sesi_id"/>
                     <field name="halaqoh_id" string="Halaqah" />

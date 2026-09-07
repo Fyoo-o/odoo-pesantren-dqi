@@ -43,14 +43,15 @@
               <group>
                 <field name="waktu" />
                 <field name="kd" />
+                <field name="is_pdf" invisible="1" />
                 <field name="dokumen_fname" invisible="1" />
-                <field name="dokumen" filename="dokumen_fname" widget="binary" options="{'accepted_file_extensions': '.pdf'}" />
+                <field name="dokumen" filename="dokumen_fname" widget="binary" options="{'accepted_file_extensions': '.pdf,.doc,.docx'}" />
                 <field name="tujuan" />
               </group>
             </group>
-            <notebook invisible="not dokumen">
+            <notebook invisible="not dokumen or not is_pdf">
               <page string="Preview Dokumen PDF">
-                <field name="dokumen" widget="pdf_viewer" nolabel="1" />
+                <field name="dokumen" widget="pdf_preview" nolabel="1" class="w-100 d-block" />
               </page>
             </notebook>
           </sheet>

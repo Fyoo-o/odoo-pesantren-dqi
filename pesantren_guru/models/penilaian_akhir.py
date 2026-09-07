@@ -142,7 +142,7 @@ class PenilaianAkhir(models.Model):
         for ekstra in self.siswa_id.ekstrakulikuler_ids:
             ekstrakulikuler.append((0, 0, {
                 'name': ekstra.name,
-                'is_wajib': ekstra.is_wajib,
+                'is_wajib': getattr(ekstra, 'is_wajib', False),
             }))
         for o in self.siswa_id.partner_id.organisasi_ids:
             organisasi.append(

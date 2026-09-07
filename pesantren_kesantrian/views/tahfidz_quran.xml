@@ -6,7 +6,7 @@
             <field name="name">cdn.tahfidz_quran.view.list</field>
             <field name="model">cdn.tahfidz_quran</field>
             <field name="arch" type="xml">
-                <list default_order="id desc" create="false" >
+                <list default_order="tanggal desc, id desc" create="false">
                     <field name="tanggal" />
                     <field name="sesi_tahfidz_id" />
                     <field name="siswa_id" />

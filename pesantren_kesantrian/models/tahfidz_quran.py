@@ -210,6 +210,7 @@ from datetime import date, datetime
 
 class TahfidzQuran(models.Model):
     _name = 'cdn.tahfidz_quran'
+    _order = 'tanggal desc, id desc'
  
     name            = fields.Char(string='No Referensi', readonly=True)
     tanggal         = fields.Date(string='Tgl Tahfidz', required=True)

@@ -26,6 +26,8 @@
                         invisible="states != 'Done'" class="btn-secondary" />
                     <button name="action_done" string="Selesai" type="object"
                         invisible="states != 'Proses'" class="btn-primary" />
+                    <button name="action_load_siswa" string="Tarik Daftar Santri" type="object"
+                        invisible="states != 'Proses'" class="btn-secondary" />
                     <field name="states" widget="statusbar" />
                 </header>
                 <sheet>
@@ -100,5 +102,6 @@
     </record>
 
     <menuitem id="absensi_ekskul_menu" name="Absensi Ekskul" parent="absensi_pengajar"
-        action="absensi_ekskul_action" sequence="20" groups="pesantren_guru.group_guru_staff" />
+        action="absensi_ekskul_action" sequence="20"
+        groups="pesantren_guru.group_guru_user,pesantren_guru.group_guru_staff,pesantren_guru.group_guru_manager,pesantren_guruquran.group_guru_quran_user,pesantren_guruquran.group_guru_quran_staff,pesantren_guruquran.group_guru_quran_manager" />
 </odoo>

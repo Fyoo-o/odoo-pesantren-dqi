@@ -6,7 +6,7 @@
             <field name="name">cdn.absen_tahfidz_quran.view.tree</field>
             <field name="model">cdn.absen_tahfidz_quran</field>
             <field name="arch" type="xml">
-                <list default_order="id desc" >
+                <list default_order="name desc, id desc">
                     <!-- Add your fields here -->
                     <field name="name" />
                     <field name="sesi_id" />

@@ -7,7 +7,7 @@
                 <field name="name">cdn.prestasi_siswa.view.list</field>
                 <field name="model">cdn.prestasi_siswa</field>
                 <field name="arch" type="xml">
-                    <list default_order="id desc" >
+                    <list default_order="tgl_prestasi desc, id desc">
                         <field name="name"/>
                         <field name="tgl_prestasi"/>
                         <field name="siswa_id"/>

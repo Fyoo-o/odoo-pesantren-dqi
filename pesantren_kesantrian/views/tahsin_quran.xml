@@ -6,7 +6,7 @@
             <field name="name">cdn.tahsin_quran.view.list</field>
             <field name="model">cdn.tahsin_quran</field>
             <field name="arch" type="xml">
-                <list default_order="id desc" create="false">
+                <list default_order="tanggal desc, id desc" create="false">
                     <!-- Add your fields here -->
                     <field name="tanggal" />
                     <field name="sesi_tahsin_id"/>

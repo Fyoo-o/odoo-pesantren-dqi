@@ -91,6 +91,13 @@
 			<field name="domain_force">[('guru.user_id', '=', user.id)]</field>
 		</record>
 
+		<record id="absensi_ekskul_line_rule_guru_staff" model="ir.rule">
+			<field name="name">Absensi Ekskul Line - Guru Akademik Staff </field>
+			<field name="model_id" ref="pesantren_guru.model_cdn_absen_ekskul_line" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_staff'))]" />
+			<field name="domain_force">[('guru.user_id', '=', user.id)]</field>
+		</record>
+
 		<record id="absensi_ekskul_rule_guru_manager" model="ir.rule">
 			<field name="name">Absensi Ekskul - Guru Akademik Manager </field>
 			<field name="model_id" ref="pesantren_guru.model_cdn_absensi_ekskul" />
@@ -329,6 +336,30 @@
 			<field name="name">Access Classroom - Manager</field>
 			<field name="model_id" ref="pesantren_base.model_cdn_ruang_kelas" />
 			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_manager'))]" />
+			<field name="domain_force">[(1, '=', 1)]</field>
+			<field name="perm_read" eval="True"/>
+			<field name="perm_write" eval="True"/>
+			<field name="perm_create" eval="True"/>
+			<field name="perm_unlink" eval="True"/>
+		</record>
+
+		<!-- Rule Pembagian Ekskul Penanggung Jawab -->
+		<record id="pembagian_ekstra_rule_guru_staff" model="ir.rule">
+			<field name="name">Pembagian Ekskul - Penanggung Jawab</field>
+			<field name="model_id" ref="pesantren_guru.model_cdn_pembagian_ekstra" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_user')), (4, ref('pesantren_guru.group_guru_staff'))]" />
+			<field name="domain_force">[('penanggung_id.user_id', '=', user.id)]</field>
+			<field name="perm_read" eval="True"/>
+			<field name="perm_write" eval="True"/>
+			<field name="perm_create" eval="False"/>
+			<field name="perm_unlink" eval="False"/>
+		</record>
+
+		<!-- Rule Pembagian Ekskul Manager / Admin -->
+		<record id="pembagian_ekstra_rule_guru_manager" model="ir.rule">
+			<field name="name">Pembagian Ekskul - Manager</field>
+			<field name="model_id" ref="pesantren_guru.model_cdn_pembagian_ekstra" />
+			<field name="groups" eval="[(4, ref('pesantren_guru.group_guru_manager')), (4, ref('pesantren_base.group_sekolah_admin'))]" />
 			<field name="domain_force">[(1, '=', 1)]</field>
 			<field name="perm_read" eval="True"/>
 			<field name="perm_write" eval="True"/>

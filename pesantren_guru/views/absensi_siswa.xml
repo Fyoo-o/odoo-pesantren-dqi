@@ -12,7 +12,7 @@
                     <page string="KBM" name="kbm_samtri">
                         <!-- You can add other modifications or elements here -->
                         <field name="kbm_id">
-                            <list default_order="id desc" create="false">
+                            <list default_order="tanggal desc, id desc" create="false">
                                 <field name="name" />
                                 <field name="tanggal" />
                                 <field name="kelas_id" />
@@ -29,7 +29,7 @@
             <field name="name">cdn.absensi_siswa.view.list</field>
             <field name="model">cdn.absensi_siswa</field>
             <field name="arch" type="xml">
-                <list>
+                <list default_order="tanggal desc, id desc">
                     <field name="row_number" string="#" />
                     <field name="name" optional="show" />
                     <field name="tanggal" optional="show" />
@@ -138,7 +138,8 @@
                                         <field name="pertemuan_ke" />
                                     </group>
                                 </group>
-                                <field name="dokumen" widget="pdf_viewer" nolabel="1" invisible="not dokumen" />
+                                <field name="is_pdf" invisible="1" />
+                                <field name="dokumen" widget="pdf_preview" nolabel="1" class="w-100 d-block" invisible="not dokumen or not is_pdf" />
                             </page>
                         </notebook>
                     </sheet>
