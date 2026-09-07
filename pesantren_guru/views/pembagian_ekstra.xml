@@ -127,7 +127,7 @@
 
         <menuitem id="menu_pembagian_ekstra_guru" name="Ekskul Bimbingan"
             parent="guru_menu_root" action="action_ekskul_bimbingan_guru" sequence="19"
-            groups="pesantren_guru.group_guru_staff" />
+            groups="pesantren_guru.group_guru_staff,pesantren_guruquran.group_guru_quran_staff" />
 
     </data>
 </odoo>

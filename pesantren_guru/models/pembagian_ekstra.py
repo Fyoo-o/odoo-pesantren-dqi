@@ -12,7 +12,7 @@ class PembagianEkstra(models.Model):
         return [
             '|',
             ('user_id', 'in', admin_user_ids),
-            ('jns_pegawai_ids.code', 'in', ['guru', 'walikelas', 'superadmin'])
+            ('jns_pegawai_ids.code', 'in', ['guru', 'guruquran', 'musyrif', 'walikelas', 'superadmin'])
         ]
 
     name = fields.Many2one("cdn.ekstrakulikuler", string="Ekstrakulikuler", required=True)

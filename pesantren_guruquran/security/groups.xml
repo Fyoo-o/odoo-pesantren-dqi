@@ -442,5 +442,17 @@
 			<field name="model_id" ref="model_cdn_penilaian_santri_lines" />
 			<field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'child_of', company_ids)]</field>
 		</record>
+
+		<!-- Rule Pembagian Ekskul untuk Guru Quran Penanggung Jawab -->
+		<record id="pembagian_ekstra_rule_guruquran_staff" model="ir.rule">
+			<field name="name">Pembagian Ekskul - Guru Quran Penanggung Jawab</field>
+			<field name="model_id" ref="pesantren_guru.model_cdn_pembagian_ekstra" />
+			<field name="groups" eval="[(4, ref('pesantren_guruquran.group_guru_quran_staff'))]" />
+			<field name="domain_force">[('penanggung_id.user_id', '=', user.id)]</field>
+			<field name="perm_read" eval="True"/>
+			<field name="perm_write" eval="True"/>
+			<field name="perm_create" eval="False"/>
+			<field name="perm_unlink" eval="False"/>
+		</record>
 	</data>
 </odoo>

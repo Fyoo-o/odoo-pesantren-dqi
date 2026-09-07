@@ -18,7 +18,10 @@ class AbsensiEkskul(models.Model):
             employee = self.env['hr.employee'].search(
                 [('user_id', '=', user.id)], limit=1)
             return employee.id if employee else False
-        if user.has_group('pesantren_guru.group_guru_staff') or user.has_group('pesantren_guru.group_guru_manager'):
+        if (user.has_group('pesantren_guru.group_guru_staff') or 
+            user.has_group('pesantren_guru.group_guru_manager') or 
+            user.has_group('pesantren_guruquran.group_guru_quran_staff') or
+            user.has_group('pesantren_musyrif.group_musyrif_staff')):
             employee = self.env['hr.employee'].search(
                 [('user_id', '=', user.id)], limit=1)
             if not employee:
@@ -68,7 +71,7 @@ class AbsensiEkskul(models.Model):
         return [
             '|',
             ('user_id', 'in', admin_user_ids),
-            ('jns_pegawai_ids.code', 'in', ['guru', 'walikelas', 'superadmin'])
+            ('jns_pegawai_ids.code', 'in', ['guru', 'guruquran', 'musyrif', 'walikelas', 'superadmin'])
         ]
 
     @api.depends('ekskul_id')
