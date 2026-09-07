@@ -75,6 +75,7 @@
                                 <group string="Akademik">
                                     <group>
                                         <field name="nis"/>
+                                        <field name="tanggal_daftar" string="Tanggal Daftar / Masuk"/>
                                         <field name="tahunajaran_id" />
                                         <field name="jenjang" />
                                         <field name="nama_sekolah" />
@@ -464,6 +465,17 @@
             <field name="state">code</field>
             <field name="code">
                 action = records.action_generate_nis()
+            </field>
+        </record>
+
+        <record id="action_reset_nis_mass" model="ir.actions.server">
+            <field name="name">Reset / Hapus NIS</field>
+            <field name="model_id" ref="model_cdn_siswa" />
+            <field name="binding_model_id" ref="model_cdn_siswa" />
+            <field name="binding_view_types">list,form</field>
+            <field name="state">code</field>
+            <field name="code">
+                action = records.action_reset_nis()
             </field>
         </record>
 

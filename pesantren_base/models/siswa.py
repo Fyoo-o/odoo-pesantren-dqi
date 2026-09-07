@@ -10,6 +10,9 @@ import qrcode
 from odoo.exceptions import ValidationError
 import random
 
+import os
+import re
+from datetime import date
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -445,8 +448,8 @@ class siswa(models.Model):
         if 'nis' in vals and vals.get('nis'):
             vals['nis'] = str(vals['nis']).strip()
 
-        # Validasi: NIS tidak boleh dikosongkan jika sebelumnya sudah terisi
-        if 'nis' in vals:
+        # Validasi: NIS tidak boleh dikosongkan jika sebelumnya sudah terisi (kecuali context allow_reset_nis=True)
+        if 'nis' in vals and not self._context.get('allow_reset_nis'):
             nis_val = vals.get('nis')
             if not nis_val or not str(nis_val).strip():
                 for record in self:
@@ -720,13 +723,119 @@ class siswa(models.Model):
         partner_model = self.env['res.partner']
         return partner_model.action_recharge()
 
+    def _get_excel_nis_map(self):
+        possible_paths = [
+            os.path.join(os.path.dirname(__file__), '..', '..', 'Nomor Induk Santri-Siswa (NIS) YPI DQI - Update 2026.xlsx'),
+            os.path.expanduser('~/developer/odoo/pesantren-client/Pesantren/Nomor Induk Santri-Siswa (NIS) YPI DQI - Update 2026.xlsx'),
+            '/home/adi-purwanto/developer/odoo/pesantren-client/Pesantren/Nomor Induk Santri-Siswa (NIS) YPI DQI - Update 2026.xlsx',
+        ]
+        excel_path = None
+        for p in possible_paths:
+            if os.path.exists(p):
+                excel_path = p
+                break
+        
+        if not excel_path:
+            return {}
+
+        try:
+            import openpyxl
+        except ImportError:
+            return {}
+
+        lembaga_map_dict = {
+            'KB TAHFIZH BABY-QU': '01',
+            'TK TAHFIZH BABY-QU': '02',
+            'SD TAHFIZH BILINGUAL': '03',
+            'SD TAHFIZH BILINGUAL NON BOARDING': '03',
+            'SD TAHFIZH BILINGUAL NON BOARDING DAN RTQ': '03',
+            'SANTRI SD TAHFIZH BILINGUAL NON BOARDING DAN RTQ': '03',
+            'SMP TAHFIZH BILINGUAL': '04',
+            'MA TAHFIZH BILINGUAL': '05',
+            "RUMAH TAHFIZH QUR'AN": '06',
+            "RUMAH TAHFIZH QURAN": '06',
+            'PONDOK SHIGOR': '09',
+            'ASRAMA SHIGOR': '09',
+        }
+
+        try:
+            wb = openpyxl.load_workbook(excel_path, read_only=True, data_only=True)
+            sheet = wb.active
+
+            excel_map = {}
+            for i, row in enumerate(sheet.iter_rows(values_only=True)):
+                if i == 0 or not row or not row[1]:
+                    continue
+                nama_raw = str(row[1]).strip()
+                nama_norm = re.sub(r'\s+', ' ', re.sub(r'[^A-Z0-9\s]', '', nama_raw.upper())).strip()
+                if not nama_norm:
+                    continue
+
+                nama_lembaga = str(row[4]).strip().upper() if row[4] else ''
+                thn_masuk = row[5]
+                kode_lembaga = row[6]
+                no_urut = row[8]
+                nis_col = str(row[9]).strip() if row[9] and str(row[9]).strip() != 'None' else None
+
+                kode_str = None
+                if kode_lembaga and str(kode_lembaga).isdigit():
+                    kode_str = str(int(kode_lembaga)).zfill(2)
+                elif nama_lembaga in lembaga_map_dict:
+                    kode_str = lembaga_map_dict[nama_lembaga]
+                else:
+                    for k, v in lembaga_map_dict.items():
+                        if k in nama_lembaga:
+                            kode_str = v
+                            break
+                if not kode_str:
+                    kode_str = '03'
+
+                try:
+                    thn_val = int(thn_masuk) if thn_masuk else 2026
+                    thn_str = str(thn_val)[-2:]
+                except Exception:
+                    thn_val = 2026
+                    thn_str = '26'
+
+                try:
+                    no_urut_str = str(int(no_urut)).zfill(6) if no_urut is not None else None
+                except Exception:
+                    no_urut_str = None
+
+                nis_built = nis_col or (f'{kode_str}.{thn_str}.{no_urut_str}' if no_urut_str else None)
+                if not nis_built:
+                    continue
+
+                entry = {
+                    'nis': nis_built,
+                    'thn_masuk': thn_val,
+                    'kode_lembaga': kode_str,
+                    'nama_lembaga': nama_lembaga,
+                    'no_urut': int(no_urut_str) if no_urut_str else 0,
+                    'row': i
+                }
+
+                # Simpan histori pendaftaran PERTAMA (tahun paling awal, atau baris paling atas di histori)
+                if nama_norm not in excel_map:
+                    excel_map[nama_norm] = entry
+                else:
+                    curr = excel_map[nama_norm]
+                    if entry['thn_masuk'] < curr['thn_masuk'] or (entry['thn_masuk'] == curr['thn_masuk'] and entry['row'] < curr['row']):
+                        excel_map[nama_norm] = entry
+            return excel_map
+        except Exception as e:
+            _logger.warning("Gagal membaca Excel NIS master: %s", str(e))
+            return {}
+
     def action_generate_nis(self):
+        excel_map = self._get_excel_nis_map()
+
         # Pre-compute global max nomor urut sekali untuk batch
         all_records = self.env['cdn.siswa'].sudo().with_context(active_test=False).search([
             ('nis', '!=', False),
             ('nis', '!=', ''),
         ])
-        max_seq = 0
+        max_seq = 1469
         for rec in all_records:
             if rec.nis:
                 clean_nis = "".join(filter(str.isdigit, rec.nis))
@@ -737,32 +846,119 @@ class siswa(models.Model):
                         if seq > max_seq:
                             max_seq = seq
 
-        # Mapping jenjang ke kode lembaga YPI DQI
         lembaga_map = {
-            'paud': '01', 'tk': '02',
+            'paud': '01', 'kb': '01',
+            'tk': '02',
             'sd': '03', 'sdmi': '03',
             'smp': '04', 'smpmts': '04',
-            'sma': '05', 'smama': '05', 'smk': '05',
+            'sma': '05', 'smama': '05', 'smk': '05', 'ma': '05',
             'nonformal': '06', 'rtq': '06',
         }
 
         count = 0
         for rec in self:
-            jenjang = rec.jenjang
-            if not jenjang and rec.ruang_kelas_id and rec.ruang_kelas_id.name:
-                jenjang = rec.ruang_kelas_id.name.jenjang
+            if rec.nis:
+                # NIS yayasan bersifat permanen dari awal masuk sampai alumni
+                continue
 
-            tgl = rec.tanggal_daftar or fields.Date.today()
+            # Prioritas 0: Pencarian di Master Excel NIS YPI DQI
+            rec_name_norm = re.sub(r'\s+', ' ', re.sub(r'[^A-Z0-9\s]', '', str(rec.name or '').upper())).strip()
+            if rec_name_norm in excel_map:
+                info = excel_map[rec_name_norm]
+                target_nis = info['nis']
+                
+                # Bebaskan NIS jika dipakai oleh record duplikat/nonaktif lain
+                if target_nis:
+                    dups = self.env['cdn.siswa'].sudo().with_context(active_test=False).search([
+                        ('nis', '=', target_nis),
+                        ('id', '!=', rec.id)
+                    ])
+                    if dups:
+                        dups.with_context(allow_reset_nis=True).write({'nis': False})
+
+                    rec.nis = target_nis
+
+                # Set tanggal daftar dari tahun pertama masuk di histori Excel
+                if info.get('thn_masuk'):
+                    try:
+                        rec.tanggal_daftar = date(info['thn_masuk'], 7, 1)
+                    except Exception:
+                        pass
+
+                # Set jenjang dari histori pendaftaran pertama di Excel
+                kode_to_jenjang = {
+                    '01': 'paud',
+                    '02': 'tk',
+                    '03': 'sd',
+                    '04': 'smp',
+                    '05': 'sma',
+                    '06': 'rtq',
+                    '09': 'nonformal',
+                }
+                first_jenjang = kode_to_jenjang.get(info.get('kode_lembaga'))
+                if first_jenjang:
+                    rec.jenjang = first_jenjang
+
+                count += 1
+                continue
+
+            # Prioritas 1: Cari histori pendaftaran pertama (ubig.pendaftaran)
+            initial_jenjang = None
+            tgl_masuk = None
+
             try:
-                tahun_daftar = tgl.strftime('%Y')[-2:]
+                pdef = self.env['ubig.pendaftaran'].sudo().search(
+                    [('siswa_id', '=', rec.id)],
+                    order='id asc',
+                    limit=1
+                )
+
+                if not pdef and rec.nisn:
+                    pdef = self.env['ubig.pendaftaran'].sudo().search(
+                        [('nisn', '=', rec.nisn)],
+                        order='id asc',
+                        limit=1
+                    )
+
+                if not pdef and rec.name:
+                    pdef = self.env['ubig.pendaftaran'].sudo().search(
+                        [('name', '=', rec.name)],
+                        order='id asc',
+                        limit=1
+                    )
+
+                if pdef:
+                    if pdef.jenjang_id and pdef.jenjang_id.jenjang:
+                        initial_jenjang = pdef.jenjang_id.jenjang
+                    elif pdef.jenjang:
+                        initial_jenjang = pdef.jenjang
+
+                    tgl_masuk = pdef.tanggal_daftar or pdef.create_date
+
+            except Exception:
+                pass
+
+            # Prioritas 2: Fallback ke data cdn.siswa
+            if not tgl_masuk:
+                tgl_masuk = rec.tanggal_daftar or rec.create_date or fields.Date.today()
+
+            if not initial_jenjang:
+                initial_jenjang = rec.jenjang
+                if not initial_jenjang and rec.ruang_kelas_id and rec.ruang_kelas_id.name:
+                    initial_jenjang = rec.ruang_kelas_id.name.jenjang
+
+            # Prioritas 3: Hitung tahun & nomor urut baru
+            try:
+                tahun_daftar = tgl_masuk.strftime('%Y')[-2:]
             except AttributeError:
                 tahun_daftar = fields.Date.today().strftime('%Y')[-2:]
 
-            lembaga = lembaga_map.get(jenjang, '03')
+            lembaga = lembaga_map.get(str(initial_jenjang).lower() if initial_jenjang else '', '03')
             max_seq += 1
             nomor_urut = str(max_seq).zfill(6)
             rec.nis = f"{lembaga}.{tahun_daftar}.{nomor_urut}"
             count += 1
+
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
@@ -770,6 +966,24 @@ class siswa(models.Model):
                 'title': '✅ Generate NIS Berhasil',
                 'message': f'Berhasil membuat NIS untuk {count} santri.',
                 'type': 'success',
+                'sticky': False,
+                'next': {'type': 'ir.actions.client', 'tag': 'reload'},
+            }
+        }
+
+    def action_reset_nis(self):
+        count = 0
+        for rec in self:
+            if rec.nis:
+                rec.with_context(allow_reset_nis=True).write({'nis': False})
+                count += 1
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': 'Reset NIS',
+                'message': f'Berhasil menghapus NIS untuk {count} santri.',
+                'type': 'warning',
                 'sticky': False,
             }
         }
