@@ -14,28 +14,21 @@ class AbsensiEkskul(models.Model):
     # Default & Domain Helper
     def _get_default_guru(self):
         user = self.env.user
-        if user.has_group('base.group_system'):
-            employee = self.env['hr.employee'].search(
-                [('user_id', '=', user.id)], limit=1)
-            return employee.id if employee else False
-        if (user.has_group('pesantren_guru.group_guru_staff') or 
-            user.has_group('pesantren_guru.group_guru_manager') or 
-            user.has_group('pesantren_guruquran.group_guru_quran_staff') or
-            user.has_group('pesantren_musyrif.group_musyrif_staff')):
-            employee = self.env['hr.employee'].search(
-                [('user_id', '=', user.id)], limit=1)
-            if not employee:
-                raise UserError(
-                    "Akun Anda tidak terkait dengan data Guru. Silakan hubungi administrator.")
+        employee = self.env['hr.employee'].search(
+            [('user_id', '=', user.id)], limit=1)
+        if employee:
             return employee.id
+        if user.has_group('base.group_system') or user.has_group('pesantren_guru.group_guru_manager') or user.has_group('pesantren_guruquran.group_guru_quran_manager'):
+            return False
         raise UserError(
-            "Anda tidak memiliki izin untuk membuat absensi ekstrakurikuler.")
+            "Akun Anda tidak terkait dengan data Guru / Pegawai. Silakan hubungi administrator.")
 
     def _get_domain_ekskul(self):
-        if self.env.user.has_group('base.group_system'):
+        user = self.env.user
+        if user.has_group('base.group_system') or user.has_group('pesantren_guru.group_guru_manager') or user.has_group('pesantren_guruquran.group_guru_quran_manager'):
             return []  # No filter, access all ekskul records
         employee = self.env['hr.employee'].search(
-            [('user_id', '=', self.env.uid)], limit=1)
+            [('user_id', '=', user.id)], limit=1)
         return [('penanggung_id', '=', employee.id)] if employee else [('id', '=', False)]
 
     # Fields
@@ -202,21 +195,73 @@ class AbsensiEkskul(models.Model):
             return {'value': {'absen_ids': absen_list}}
         return {}
 
-    # Override create to ensure guru is set and auto-confirm
-    @api.model
-    def create(self, vals):
-        if 'ekskul_id' in vals:
-            ekskul = self.env['cdn.pembagian_ekstra'].browse(vals['ekskul_id'])
-            if not ekskul.penanggung_id:
-                raise UserError(
-                    "Ekstrakurikuler yang dipilih tidak memiliki Penanggung Jawab.")
-            vals['guru'] = ekskul.penanggung_id.id
-            vals['penanggung_id'] = ekskul.penanggung_id.id
-        elif 'guru' not in vals or not vals['guru']:
-            raise UserError("Guru Pengampu harus diisi.")
-        if 'states' not in vals or vals.get('states') == 'Proses':
-            vals['states'] = 'Done'
-        return super(AbsensiEkskul, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if 'ekskul_id' in vals and vals['ekskul_id']:
+                ekskul = self.env['cdn.pembagian_ekstra'].browse(vals['ekskul_id'])
+                if not ekskul.penanggung_id:
+                    raise UserError(
+                        "Ekstrakurikuler yang dipilih tidak memiliki Penanggung Jawab.")
+                vals['guru'] = ekskul.penanggung_id.id
+                vals['penanggung_id'] = ekskul.penanggung_id.id
+            elif 'guru' not in vals or not vals['guru']:
+                emp = self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1)
+                if emp:
+                    vals['guru'] = emp.id
+                else:
+                    raise UserError("Guru Pengampu harus diisi.")
+            if 'states' not in vals:
+                vals['states'] = 'Proses'
+        return super().create(vals_list)
+
+    def action_load_siswa(self):
+        """Memuat daftar santri peserta ekskul ke dalam tabel absensi jika belum ada."""
+        for rec in self:
+            if rec.states == 'Done':
+                raise UserError("Absensi sudah berstatus Selesai. Silakan klik tombol 'Proses' terlebih dahulu untuk memuat santri.")
+            if not rec.ekskul_id:
+                raise UserError("Silakan pilih Ekstrakurikuler terlebih dahulu.")
+            if not rec.ekskul_id.siswa_ids:
+                raise UserError("Tidak ada santri yang terdaftar pada ekstrakurikuler ini.")
+            
+            existing_siswa_ids = set(rec.absen_ids.mapped('siswa_id.id'))
+            new_lines = []
+            for siswa in rec.ekskul_id.siswa_ids:
+                if siswa.id not in existing_siswa_ids:
+                    permission = self.env['cdn.perijinan'].search([
+                        ('siswa_id', '=', siswa.id),
+                        ('state', '=', 'Permission')
+                    ], limit=1)
+                    if permission:
+                        keperluan_name = permission.keperluan.name if permission.keperluan else 'Tidak ada keterangan'
+                        waktu_keluar = self.format_datetime_indonesia(
+                            permission.waktu_keluar) if permission.waktu_keluar else 'Tidak tercatat'
+                        message = f"Santri Keluar pada {waktu_keluar}, karena {keperluan_name}"
+                        foto_bukti = False
+                        try:
+                            if permission.foto_bukti:
+                                base64.b64decode(permission.foto_bukti, validate=True)
+                                foto_bukti = permission.foto_bukti
+                        except Exception:
+                            foto_bukti = False
+                        nama_file = permission.foto_bukti_filename or (f"Bukti_Izin_{siswa.nis}_{siswa.name}_{permission.name}.jpg" if foto_bukti else False)
+                        new_lines.append((0, 0, {
+                            'siswa_id': siswa.id,
+                            'kehadiran': 'keluar',
+                            'keterangan': message,
+                            'keterangan_izin': foto_bukti,
+                            'keterangan_izin_filename': nama_file,
+                            'company_id': rec.company_id.id,
+                        }))
+                    else:
+                        new_lines.append((0, 0, {
+                            'siswa_id': siswa.id,
+                            'kehadiran': 'Hadir',
+                            'company_id': rec.company_id.id,
+                        }))
+            if new_lines:
+                rec.write({'absen_ids': new_lines})
 
     # Button Actions
     def action_proses(self):
@@ -225,18 +270,13 @@ class AbsensiEkskul(models.Model):
     def action_done(self):
         self.states = 'Done'
 
-    # Opsional: Cegah edit jika sudah Done
+    # Cegah edit ekskul jika sudah Done
     def write(self, vals):
         for rec in self:
             if rec.states == 'Done' and any(field in vals for field in ['ekskul_id', 'absen_ids']) and 'states' not in vals:
                 raise UserError(
-                    "Tidak dapat mengubah absensi yang sudah Selesai.")
-        res = super(AbsensiEkskul, self).write(vals)
-        if 'states' not in vals:
-            proses_recs = self.filtered(lambda r: r.states == 'Proses')
-            if proses_recs:
-                proses_recs.write({'states': 'Done'})
-        return res
+                    "Tidak dapat mengubah data absensi yang sudah Selesai. Silakan klik tombol 'Proses' terlebih dahulu.")
+        return super(AbsensiEkskul, self).write(vals)
 
     @staticmethod
     def format_datetime_indonesia(dt):
