@@ -200,7 +200,7 @@ class AbsensiSiswa(models.Model):
             if rec.tanggal:
                 for line in rec.absensi_ids:
                     if line.kehadiran == 'Hadir' and line.siswa_id:
-                        malam_line = self.env['cdn.absensi_malam_line'].search([
+                        malam_line = self.env['cdn.absensi_malam_line'].sudo().search([
                             ('siswa_id', '=', line.siswa_id.id),
                             ('tanggal', '=', rec.tanggal)
                         ], limit=1)
@@ -264,7 +264,7 @@ class AbsensiSiswa(models.Model):
                     }))
                 else:
                     tgl_absen = self.tanggal or fields.Date.today()
-                    malam_line = self.env['cdn.absensi_malam_line'].search([
+                    malam_line = self.env['cdn.absensi_malam_line'].sudo().search([
                         ('siswa_id', '=', siswa.id),
                         ('tanggal', '=', tgl_absen)
                     ], limit=1)
@@ -420,7 +420,7 @@ class AbsensiSiswaLine(models.Model):
                     permission.waktu_keluar) if permission.waktu_keluar else 'Tidak tercatat'
                 self.keterangan = f"Santri Keluar pada {waktu_keluar}, karena {keperluan_name}"
             else:
-                malam_line = self.env['cdn.absensi_malam_line'].search([
+                malam_line = self.env['cdn.absensi_malam_line'].sudo().search([
                     ('siswa_id', '=', self.siswa_id.id),
                     ('tanggal', '=', self.tanggal)
                 ], limit=1)

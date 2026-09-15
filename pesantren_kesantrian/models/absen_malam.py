@@ -485,7 +485,7 @@ class AbsensiMalamLine(models.Model):
             if not line.siswa_id or not line.tanggal:
                 continue
             if line.kehadiran_absen != 'Hadir':
-                kelas_lines = self.env['cdn.absensi_siswa_lines'].search([
+                kelas_lines = self.env['cdn.absensi_siswa_lines'].sudo().search([
                     ('siswa_id', '=', line.siswa_id.id),
                     ('tanggal', '=', line.tanggal),
                     ('absensi_id.state', '=', 'draft')
