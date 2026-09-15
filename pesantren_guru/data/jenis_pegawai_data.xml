@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="jenis_pegawai_walikelas" model="cdn.jenis_pegawai">
+            <field name="name">Wali Kelas</field>
+            <field name="code">walikelas</field>
+            <field name="description">Wali Kelas - Wali kelas bimbingan</field>
+            <field name="sequence">25</field>
+            <field name="active">True</field>
+        </record>
+    </data>
+</odoo>
