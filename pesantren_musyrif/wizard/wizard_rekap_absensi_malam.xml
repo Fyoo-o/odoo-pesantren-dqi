@@ -26,10 +26,10 @@
         <field name="name">cdn.wizard_rekap_absensi_malam.form</field>
         <field name="model">cdn.wizard_rekap_absensi_malam</field>
         <field name="arch" type="xml">
-            <form string="Rekap Absensi Malam">
+            <form string="Rekap Absensi Kamar">
                 <sheet>
                     <div class="oe_title">
-                        <h1>Rekap Absensi Malam Santri</h1>
+                        <h1>Rekap Absensi Kamar Santri</h1>
                     </div>
                     <group>
                         <group name="pencarian" string="Filter Data">
@@ -81,7 +81,7 @@
 
     <!-- Action Window -->
     <record id="action_wizard_rekap_absensi_malam" model="ir.actions.act_window">
-        <field name="name">Rekap Absensi Malam</field>
+        <field name="name">Rekap Absensi Kamar</field>
         <field name="res_model">cdn.wizard_rekap_absensi_malam</field>
         <field name="view_mode" eval="'form'" />
         <field name="target" eval="'new'" />
@@ -89,14 +89,14 @@
 
     <!-- Menu Item for Musyrif Module -->
     <menuitem id="menu_musyrif_rekap_absensi_malam"
-        name="Rekap Absensi Malam"
+        name="Rekap Absensi Kamar"
         parent="pesantren_musyrif.musyrif_aktivitas_menu_categ"
         action="action_wizard_rekap_absensi_malam"
         sequence="55" />
 
     <!-- Menu Item for Kesantrian Module -->
     <menuitem id="menu_kesantrian_rekap_absensi_malam"
-        name="Rekap Absensi Malam"
+        name="Rekap Absensi Kamar"
         parent="pesantren_kesantrian.kepesantrenan_rekap_menu_categ"
         action="action_wizard_rekap_absensi_malam"
         sequence="25" />

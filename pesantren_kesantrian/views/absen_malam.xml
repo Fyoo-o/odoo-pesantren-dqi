@@ -47,15 +47,15 @@
             <field name="name">cdn.absensi_malam.view.form</field>
             <field name="model">cdn.absensi_malam</field>
             <field name="arch" type="xml">
-                <form string="Absensi Malam Santri">
+                <form string="Absensi Kamar Santri">
                     <header>
                         <button string="Done" name="action_proses" type="object" class="oe_highlight" invisible="state == 'done'"/>
                         <button string="Ubah ke Draft" name="action_draft" type="object" class="btn btn-secondary" invisible="state == 'draft'"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
                     </header>
                     <sheet>
-                        <!-- Filter Absensi Malam -->
-                        <group string="Absensi Malam">
+                        <!-- Filter Absensi Kamar -->
+                        <group string="Absensi Kamar">
                             <group>
                                 <field name="tgl" readonly="state == 'done'"/>
                                 <field name="fiscalyear_id" readonly="1"/>
@@ -101,7 +101,7 @@
 
         <!-- Sequence -->
         <record id="sequence_absensi_malam" model="ir.sequence">
-            <field name="name">Absensi Malam Santri</field>
+            <field name="name">Absensi Kamar Santri</field>
             <field name="code">cdn.absensi_malam</field>
             <field name="prefix">AM/%(y)s.%(month)s/</field>
             <field name="padding">4</field>
@@ -111,21 +111,21 @@
 
         <!-- Action Window -->
         <record id="cdn_absensi_malam_action" model="ir.actions.act_window">
-            <field name="name">Absensi Malam Santri</field>
+            <field name="name">Absensi Kamar Santri</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.absensi_malam</field>
             <field name="view_mode">list,form</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
-                    Klik untuk membuat absensi malam santri baru.
+                    Klik untuk membuat absensi kamar santri baru.
                 </p>
                 <p>
-                    Catat kehadiran santri setiap malam secara massal berdasarkan Kamar, Halaqoh, atau Kelas.
+                    Catat kehadiran santri per kamar secara massal.
                 </p>
             </field>
         </record>
 
         <!-- Menu -->
-        <menuitem id="absensi_malam_menu_act" name="Absensi Malam Santri" parent="kepesantrenan_kepengasuhan_menu_categ" action="cdn_absensi_malam_action" sequence="11"/>
+        <menuitem id="absensi_malam_menu_act" name="Absensi Kamar Santri" parent="kepesantrenan_kepengasuhan_menu_categ" action="cdn_absensi_malam_action" sequence="11"/>
     </data>
 </odoo>

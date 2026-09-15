@@ -193,6 +193,24 @@ class AbsensiSiswa(models.Model):
         if not self._origin.guru_id and self.guru_id:
             pass
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super(AbsensiSiswa, self).create(vals_list)
+        for rec in records:
+            if rec.tanggal:
+                for line in rec.absensi_ids:
+                    if line.kehadiran == 'Hadir' and line.siswa_id:
+                        malam_line = self.env['cdn.absensi_malam_line'].search([
+                            ('siswa_id', '=', line.siswa_id.id),
+                            ('tanggal', '=', rec.tanggal)
+                        ], limit=1)
+                        if malam_line and malam_line.kehadiran_absen != 'Hadir':
+                            sync_val = malam_line.kehadiran_absen
+                            if sync_val in dict(line._fields['kehadiran'].selection):
+                                msg = malam_line.keterangan or f"Absen Kamar ({sync_val})"
+                                line.write({'kehadiran': sync_val, 'keterangan': msg})
+        return records
+
     @api.onchange('kelas_id')
     def _onchange_kelas_id(self):
         """Mengisi absensi_ids berdasarkan kelas, hanya jika absensi_ids kosong atau kelas berubah."""
@@ -245,11 +263,25 @@ class AbsensiSiswa(models.Model):
                         'company_id': self.company_id.id,
                     }))
                 else:
-                    absensi_ids.append((0, 0, {
-                        'siswa_id': siswa.id,
-                        'kehadiran': 'Hadir',
-                        'company_id': self.company_id.id,
-                    }))
+                    tgl_absen = self.tanggal or fields.Date.today()
+                    malam_line = self.env['cdn.absensi_malam_line'].search([
+                        ('siswa_id', '=', siswa.id),
+                        ('tanggal', '=', tgl_absen)
+                    ], limit=1)
+                    if malam_line and malam_line.kehadiran_absen != 'Hadir':
+                        msg_kamar = malam_line.keterangan or f"Absen Kamar ({malam_line.kehadiran_absen})"
+                        absensi_ids.append((0, 0, {
+                            'siswa_id': siswa.id,
+                            'kehadiran': malam_line.kehadiran_absen,
+                            'keterangan': msg_kamar,
+                            'company_id': self.company_id.id,
+                        }))
+                    else:
+                        absensi_ids.append((0, 0, {
+                            'siswa_id': siswa.id,
+                            'kehadiran': 'Hadir',
+                            'company_id': self.company_id.id,
+                        }))
             return {'value': {'absensi_ids': absensi_ids}}
         return {}
 
@@ -375,7 +407,7 @@ class AbsensiSiswaLine(models.Model):
 
     @api.onchange('siswa_id')
     def _onchange_siswa_id(self):
-        """Check permission when student is selected"""
+        """Check permission and absen kamar when student is selected"""
         if self.siswa_id and self.tanggal:
             permission = self.env['cdn.perijinan'].search([
                 ('siswa_id', '=', self.siswa_id.id),
@@ -388,8 +420,16 @@ class AbsensiSiswaLine(models.Model):
                     permission.waktu_keluar) if permission.waktu_keluar else 'Tidak tercatat'
                 self.keterangan = f"Santri Keluar pada {waktu_keluar}, karena {keperluan_name}"
             else:
-                self.kehadiran = 'Hadir'
-                self.keterangan = False
+                malam_line = self.env['cdn.absensi_malam_line'].search([
+                    ('siswa_id', '=', self.siswa_id.id),
+                    ('tanggal', '=', self.tanggal)
+                ], limit=1)
+                if malam_line and malam_line.kehadiran_absen != 'Hadir':
+                    self.kehadiran = malam_line.kehadiran_absen
+                    self.keterangan = malam_line.keterangan or f"Absen Kamar ({malam_line.kehadiran_absen})"
+                else:
+                    self.kehadiran = 'Hadir'
+                    self.keterangan = False
 
     def action_view_permission(self):
         """Open permission form for this student"""

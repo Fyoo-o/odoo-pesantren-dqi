@@ -26,9 +26,9 @@
             </field>
         </record>
 
-        <!-- Action window untuk Absensi Malam -->
+        <!-- Action window untuk Absensi Kamar -->
         <record id="musyrif_absensi_malam_action" model="ir.actions.act_window">
-            <field name="name">Absensi Malam</field>
+            <field name="name">Absensi Kamar</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.absensi_malam</field>
             <field name="view_mode">list,form</field>
@@ -46,9 +46,9 @@
             <field name="context">{'from_musyrif': True}</field>
         </record>
 
-        <!-- Menu Musyrif > Aktivitas > Absensi Malam -->
+        <!-- Menu Musyrif > Aktivitas > Absensi Kamar -->
         <menuitem id="cdn_absensi_malam_menu_musyrif"
-                  name="Absensi Malam"
+                  name="Absensi Kamar"
                   parent="musyrif_aktivitas_menu_categ"
                   action="musyrif_absensi_malam_action"
                   sequence="50"/>

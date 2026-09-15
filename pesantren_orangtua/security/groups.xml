@@ -131,9 +131,9 @@
 			<field name="domain_force">[(1, '=', 1)]</field>
 		</record>
 
-		<!-- Absensi Malam -->
+		<!-- Absensi Kamar -->
 		<record id="rule_absensi_malam_orangtua" model="ir.rule">
-			<field name="name">Absensi Malam Orang Tua</field>
+			<field name="name">Absensi Kamar Orang Tua</field>
 			<field name="model_id" ref="pesantren_kesantrian.model_cdn_absensi_malam_line" />
 			<field name="groups"
 				eval="[(4, ref('pesantren_kesantrian.group_kesantrian_orang_tua'))]" />
@@ -146,7 +146,7 @@
 		</record>
 
 		<record id="rule_absensi_malam_manager" model="ir.rule">
-			<field name="name">Absensi Malam Manager</field>
+			<field name="name">Absensi Kamar Manager</field>
 			<field name="model_id" ref="pesantren_kesantrian.model_cdn_absensi_malam_line" />
 			<field name="groups" eval="[(4, ref('base.group_system'))]" />
 			<field name="domain_force">[(1, '=', 1)]</field>

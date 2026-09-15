@@ -104,7 +104,7 @@ from odoo.exceptions import UserError
 
 class AbsensiMalam(models.Model):
     _name = 'cdn.absensi_malam'
-    _description = 'Absensi Malam Santri'
+    _description = 'Absensi Kamar Santri'
     _order = 'tgl desc, id desc'
 
     name            = fields.Char(string='No. Referensi', readonly=True)
@@ -151,10 +151,10 @@ class AbsensiMalam(models.Model):
                     musyrif_name = existing.musyrif_id.name if existing.musyrif_id else 'Tidak diketahui'
                     ref_no = existing.name or '-'
                     raise UserError(
-                        f"⛔ Absensi Malam untuk Kamar '{kamar_name}' pada tanggal {tgl_str} sudah pernah dibuat!\n\n"
+                        f"⛔ Absensi Kamar untuk Kamar '{kamar_name}' pada tanggal {tgl_str} sudah pernah dibuat!\n\n"
                         f"• No. Referensi: {ref_no}\n"
                         f"• Musyrif Pengabsen: {musyrif_name}\n\n"
-                        f"Absensi Malam dibatasi hanya 1 kali sehari per Kamar untuk mencegah duplikasi data."
+                        f"Absensi Kamar dibatasi hanya 1 kali sehari per Kamar untuk mencegah duplikasi data."
                     )
 
     @api.onchange('kamar_id', 'tgl')
@@ -172,9 +172,9 @@ class AbsensiMalam(models.Model):
                 ref_no = existing.name or '-'
                 return {
                     'warning': {
-                        'title': "⚠️ Absensi Malam Sudah Ada!",
+                        'title': "⚠️ Absensi Kamar Sudah Ada!",
                         'message': (
-                            f"Absensi Malam untuk Kamar '{kamar_name}' pada tanggal {tgl_str} sudah pernah dibuat ({ref_no} oleh {musyrif_name}).\n"
+                            f"Absensi Kamar untuk Kamar '{kamar_name}' pada tanggal {tgl_str} sudah pernah dibuat ({ref_no} oleh {musyrif_name}).\n"
                             f"Mohon periksa data absensi yang sudah ada."
                         )
                     }
@@ -433,7 +433,7 @@ class AbsensiMalam(models.Model):
 
 class AbsensiMalamLine(models.Model):
     _name           = 'cdn.absensi_malam_line'
-    _description    = 'Detail Absensi Malam Santri'
+    _description    = 'Detail Absensi Kamar Santri'
     _order          = 'name asc, id asc'
 
     absen_id    = fields.Many2one('cdn.absensi_malam', string='Absen', ondelete='cascade', required=True)
@@ -449,6 +449,9 @@ class AbsensiMalamLine(models.Model):
     
     kehadiran_absen = fields.Selection([
         ('Hadir', 'Hadir'),
+        ('Sakit', 'Sakit'),
+        ('Izin', 'Izin'),
+        ('Alpa', 'Alpa'),
         ('Pulang-Sakit', 'Pulang-Sakit'),
         ('Pulang-Izin', 'Pulang-Izin'),
         ('Pulang-Alpa', 'Pulang-Alpa'),
@@ -463,6 +466,40 @@ class AbsensiMalamLine(models.Model):
     def _compute_row_number(self):
         for index, record in enumerate(self):
             record.row_number = index + 1
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super(AbsensiMalamLine, self).create(vals_list)
+        records._sync_to_absensi_kelas()
+        return records
+
+    def write(self, vals):
+        res = super(AbsensiMalamLine, self).write(vals)
+        if 'kehadiran_absen' in vals or 'keterangan' in vals:
+            self._sync_to_absensi_kelas()
+        return res
+
+    def _sync_to_absensi_kelas(self):
+        """Sinkronkan kehadiran absen kamar ke draft absen kelas untuk santri & tanggal tersebut."""
+        for line in self:
+            if not line.siswa_id or not line.tanggal:
+                continue
+            if line.kehadiran_absen != 'Hadir':
+                kelas_lines = self.env['cdn.absensi_siswa_lines'].search([
+                    ('siswa_id', '=', line.siswa_id.id),
+                    ('tanggal', '=', line.tanggal),
+                    ('absensi_id.state', '=', 'draft')
+                ])
+                if kelas_lines:
+                    sync_val = line.kehadiran_absen
+                    for k_line in kelas_lines:
+                        if sync_val in dict(k_line._fields['kehadiran'].selection):
+                            update_vals = {'kehadiran': sync_val}
+                            if line.keterangan:
+                                update_vals['keterangan'] = line.keterangan
+                            else:
+                                update_vals['keterangan'] = f"Absen Kamar ({sync_val})"
+                            k_line.write(update_vals)
 
     def action_view_permission(self):
         """Buka form perijinan untuk santri ini"""

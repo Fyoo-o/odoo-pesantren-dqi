@@ -86,16 +86,16 @@
             <field name="domain_force">[('company_id', 'in', company_ids)]</field>
         </record>
 
-        <!-- Absensi Malam -->
+        <!-- Absensi Kamar -->
         <record id="absen_malam_company_rule" model="ir.rule">
-            <field name="name">Absensi Malam companies</field>
+            <field name="name">Absensi Kamar companies</field>
             <field name="model_id" ref="model_cdn_absensi_malam"/>
             <field name="domain_force">[('company_id', 'in', company_ids)]</field>
         </record>
 
-        <!-- Absensi Malam Line -->
+        <!-- Absensi Kamar Line -->
         <record id="absen_malam_line_company_rule" model="ir.rule">
-            <field name="name">Absensi Malam Line companies</field>
+            <field name="name">Absensi Kamar Line companies</field>
             <field name="model_id" ref="model_cdn_absensi_malam_line"/>
             <field name="domain_force">[('company_id', 'in', company_ids)]</field>
         </record>

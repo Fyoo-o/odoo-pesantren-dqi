@@ -6,7 +6,7 @@
             <field name="name">cdn.absensi_malam_line.view.list.orangtua</field>
             <field name="model">cdn.absensi_malam_line</field>
             <field name="arch" type="xml">
-                <list string="Absensi Malam Santri" create="false" edit="false" delete="false" default_order="id desc">
+                <list string="Absensi Kamar Santri" create="false" edit="false" delete="false" default_order="id desc">
                     <field name="tanggal"/>
                     <field name="name" string="Nama Santri"/>
                     <field name="nis"/>
@@ -31,7 +31,7 @@
             <field name="name">cdn.absensi_malam_line.view.form.orangtua</field>
             <field name="model">cdn.absensi_malam_line</field>
             <field name="arch" type="xml">
-                <form string="Detail Absensi Malam" create="false" edit="false" delete="false">
+                <form string="Detail Absensi Kamar" create="false" edit="false" delete="false">
                     <sheet>
                         <group string="Data Santri">
                             <group>
@@ -78,7 +78,7 @@
             <field name="name">cdn.absensi_malam_line.view.search.orangtua</field>
             <field name="model">cdn.absensi_malam_line</field>
             <field name="arch" type="xml">
-                <search string="Cari Absensi Malam">
+                <search string="Cari Absensi Kamar">
                     <field name="name" string="Nama Santri"/>
                     <field name="nis"/>
                     <field name="tanggal"/>
@@ -96,6 +96,7 @@
 
                     <separator/>
                     <filter string="Hadir" name="filter_hadir" domain="[('kehadiran_absen', '=', 'Hadir')]"/>
+                    <filter string="Sakit" name="filter_sakit" domain="[('kehadiran_absen', '=', 'Sakit')]"/>
                     <filter string="Pulang-Sakit" name="filter_pulang_sakit" domain="[('kehadiran_absen', '=', 'Pulang-Sakit')]"/>
                     <filter string="Pulang-Izin" name="filter_pulang_izin" domain="[('kehadiran_absen', '=', 'Pulang-Izin')]"/>
                     <filter string="Pulang-Alpa" name="filter_pulang_alpa" domain="[('kehadiran_absen', '=', 'Pulang-Alpa')]"/>
@@ -111,7 +112,7 @@
 
         <!-- Action untuk Absensi Malam Line (Orang Tua) -->
         <record id="cdn_absensi_malam_line_action_orangtua" model="ir.actions.act_window">
-            <field name="name">Absensi Malam Santri</field>
+            <field name="name">Absensi Kamar Santri</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.absensi_malam_line</field>
             <field name="view_mode">list,form</field>
@@ -123,10 +124,10 @@
             <field name="domain">[]</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
-                    Belum ada data absensi malam untuk santri Anda
+                    Belum ada data absensi kamar untuk santri Anda
                 </p>
                 <p>
-                    Data absensi malam akan muncul setelah musyrif melakukan absensi.
+                    Data absensi kamar akan muncul setelah musyrif melakukan absensi.
                 </p>
             </field>
         </record>
@@ -148,6 +149,6 @@
         </record>
 
         <!-- Menu di bawah menu Orang Tua > Kesantrian -->
-        <menuitem id="cdn_absensi_malam_menu_orangtua" name="Absensi Malam" parent="kesantrian_menu_categ" action="cdn_absensi_malam_line_action_orangtua" sequence="15"/>
+        <menuitem id="cdn_absensi_malam_menu_orangtua" name="Absensi Kamar" parent="kesantrian_menu_categ" action="cdn_absensi_malam_line_action_orangtua" sequence="15"/>
     </data>
 </odoo>

@@ -19,7 +19,7 @@ except ImportError:
 
 class WizardRekapAbsensiMalam(models.TransientModel):
     _name = 'cdn.wizard_rekap_absensi_malam'
-    _description = 'Wizard Rekap Absensi Malam (Musyrif)'
+    _description = 'Wizard Rekap Absensi Kamar (Musyrif)'
 
     def _default_musyrif_id(self):
         employee = self.env['hr.employee'].search(
@@ -249,7 +249,7 @@ class WizardRekapAbsensiMalam(models.TransientModel):
         writer = csv.writer(output, delimiter=',',
                             quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-        writer.writerow(['REKAP ABSENSI MALAM SANTRI'])
+        writer.writerow(['REKAP ABSENSI KAMAR SANTRI'])
         writer.writerow([self.env.user.company_id.name or ''])
         writer.writerow([f'Musyrif: {self.musyrif_id.name or "Semua"}'])
         writer.writerow([f'Kamar: {self.kamar_id.display_name or "Semua"}'])
@@ -278,7 +278,7 @@ class WizardRekapAbsensiMalam(models.TransientModel):
 
         csv_data = output.getvalue().encode('utf-8')
         kamar_str = self.kamar_id.display_name if self.kamar_id else 'Semua'
-        file_name = f"Rekap_Absensi_Malam_{kamar_str}_{self.tgl_awal}_sd_{self.tgl_akhir}.csv"
+        file_name = f"Rekap_Absensi_Kamar_{kamar_str}_{self.tgl_awal}_sd_{self.tgl_akhir}.csv"
 
         self.write({
             'data_file': base64.b64encode(csv_data),
@@ -315,7 +315,7 @@ class WizardRekapAbsensiMalam(models.TransientModel):
         p_title = doc.add_paragraph()
         p_title.alignment = WD_ALIGN_PARAGRAPH.CENTER
         p_title.paragraph_format.space_after = Pt(0)
-        r_title = p_title.add_run('LAPORAN REKAP ABSENSI MALAM SANTRI')
+        r_title = p_title.add_run('LAPORAN REKAP ABSENSI KAMAR SANTRI')
         r_title.bold = True
         r_title.font.size = Pt(14)
         r_title.font.name = 'Times New Roman'
@@ -531,7 +531,7 @@ class WizardRekapAbsensiMalam(models.TransientModel):
         docx_data = output.read()
 
         kamar_str = self.kamar_id.display_name if self.kamar_id else 'Semua'
-        file_name = f"Rekap_Absensi_Malam_{kamar_str}_{self.tgl_awal}_sd_{self.tgl_akhir}.docx"
+        file_name = f"Rekap_Absensi_Kamar_{kamar_str}_{self.tgl_awal}_sd_{self.tgl_akhir}.docx"
 
         self.write({
             'data_file': base64.b64encode(docx_data),
@@ -547,7 +547,7 @@ class WizardRekapAbsensiMalam(models.TransientModel):
 
 class WizardRekapAbsensiMalamLine(models.TransientModel):
     _name = 'cdn.wizard_rekap_absensi_malam_line'
-    _description = 'Line Rekap Absensi Malam'
+    _description = 'Line Rekap Absensi Kamar'
 
     wizard_id = fields.Many2one(
         'cdn.wizard_rekap_absensi_malam', string='Wizard', ondelete='cascade')
