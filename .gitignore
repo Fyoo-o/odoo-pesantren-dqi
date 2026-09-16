@@ -240,3 +240,9 @@ odoo-pesantren-dqi.conf
 *.pyc
 
 odools.toml
+
+# Local data and scripts
+data/
+scratch/
+odoo.bat
+odoo_run.py

@@ -8,6 +8,7 @@ _logger = logging.getLogger(__name__)
 class TahfidzTahsin(models.Model):
     _name = 'cdn.penilaian_quran'
     _description = 'Rekam absensi per Santri'
+    _order = 'tanggal desc, id desc'
 
     def _get_default_ustadz(self):
         user = self.env.user

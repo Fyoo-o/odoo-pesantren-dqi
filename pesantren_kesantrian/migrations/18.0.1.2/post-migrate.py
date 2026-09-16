@@ -33,3 +33,13 @@ def migrate(cr, version):
           AND pq.ustadz_id IS DISTINCT FROM ah.ustadz_id;
     """)
     _logger.info("Synced ustadz_id from Absensi to Penilaian records.")
+
+    # 3. Update saved filter sort order from 'name desc' to 'tanggal desc, id desc'
+    cr.execute("""
+        UPDATE ir_filters 
+        SET sort = '["tanggal desc", "id desc"]' 
+        WHERE model_id = 'cdn.penilaian_quran' 
+          AND (sort = '["name desc"]' OR sort LIKE '%name desc%');
+    """)
+    _logger.info("Updated ir_filters sort order for cdn.penilaian_quran.")
+
