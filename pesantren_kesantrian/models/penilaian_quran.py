@@ -16,6 +16,55 @@ class TahfidzTahsin(models.Model):
             orderby = ', '.join(f"{gb} desc" if gb.startswith('tanggal') else gb for gb in groupby)
         return super()._web_read_group(domain, fields, groupby, limit=limit, offset=offset, orderby=orderby, lazy=lazy)
 
+    @api.model
+    def _sanitize_penilaian_order(self, order):
+        if not order:
+            return 'tanggal desc, id desc'
+        if 'name' not in order:
+            return order
+        parts = []
+        for part in order.split(','):
+            p = part.strip()
+            if p in ('name desc', 'name'):
+                parts.extend(['tanggal desc', 'id desc'])
+            elif p == 'name asc':
+                parts.extend(['tanggal asc', 'id asc'])
+            else:
+                parts.append(p)
+        seen = set()
+        return ', '.join([p for p in parts if not (p in seen or seen.add(p))])
+
+    @api.model
+    def _search(self, domain, offset=0, limit=None, order=None):
+        if order and 'name' in order:
+            order = self._sanitize_penilaian_order(order)
+        return super()._search(domain, offset=offset, limit=limit, order=order)
+
+    @api.model
+    def web_search_read(self, domain, specification, offset=0, limit=None, order=None, count_limit=None):
+        order = self._sanitize_penilaian_order(order)
+        return super().web_search_read(domain, specification, offset=offset, limit=limit, order=order, count_limit=count_limit)
+
+    def _register_hook(self):
+        super()._register_hook()
+        try:
+            # 1. Update ir_filters sort order for cdn.penilaian_quran
+            self.env.cr.execute("""
+                UPDATE ir_filters 
+                SET sort = '["tanggal desc", "id desc"]' 
+                WHERE model_id = 'cdn.penilaian_quran' 
+                  AND (sort = '["name desc"]' OR sort LIKE '%name desc%');
+            """)
+            # 2. Update view arch_db if it still has default_order="name desc"
+            self.env.cr.execute("""
+                UPDATE ir_ui_view 
+                SET arch_db = jsonb_set(arch_db, '{en_US}', to_jsonb(replace(arch_db->>'en_US', 'default_order="name desc"', 'default_order="tanggal desc, id desc"')))
+                WHERE name = 'cdn.penilaian_quran.tree' 
+                  AND arch_db->>'en_US' LIKE '%default_order="name desc"%';
+            """)
+        except Exception as e:
+            _logger.warning("Failed to auto-update view/filter sort order in _register_hook: %s", e)
+
     def _get_default_ustadz(self):
         user = self.env.user
         employee = self.env['hr.employee'].search(

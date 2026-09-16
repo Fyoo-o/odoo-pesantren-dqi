@@ -43,3 +43,12 @@ def migrate(cr, version):
     """)
     _logger.info("Updated ir_filters sort order for cdn.penilaian_quran.")
 
+    # 4. Update view arch_db if it still has default_order="name desc"
+    cr.execute("""
+        UPDATE ir_ui_view 
+        SET arch_db = jsonb_set(arch_db, '{en_US}', to_jsonb(replace(arch_db->>'en_US', 'default_order="name desc"', 'default_order="tanggal desc, id desc"')))
+        WHERE name = 'cdn.penilaian_quran.tree' 
+          AND arch_db->>'en_US' LIKE '%default_order="name desc"%';
+    """)
+    _logger.info("Updated ir_ui_view default_order for cdn.penilaian_quran.")
+
