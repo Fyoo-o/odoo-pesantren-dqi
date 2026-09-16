@@ -520,7 +520,7 @@
 
                 <group expand="0" string="Group By">
                     <filter name="group_siswa" string="Santri" context="{'group_by': 'siswa_id'}" />
-                    <filter name="group_tanggal" string="Tanggal" context="{'group_by': 'tanggal'}" />
+                    <filter name="group_tanggal" string="Tanggal" context="{'group_by': 'tanggal', 'orderby': 'tanggal desc'}" />
                     <filter name="group_halaqoh" string="Halaqoh"
                         context="{'group_by': 'halaqoh_id'}" />
                     <filter name="group_state" string="Status" context="{'group_by': 'state'}" />

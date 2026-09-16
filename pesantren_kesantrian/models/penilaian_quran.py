@@ -10,6 +10,12 @@ class TahfidzTahsin(models.Model):
     _description = 'Rekam absensi per Santri'
     _order = 'tanggal desc, id desc'
 
+    @api.model
+    def _web_read_group(self, domain, fields, groupby, limit=None, offset=0, orderby=False, lazy=True):
+        if groupby and any(gb.startswith('tanggal') for gb in groupby) and not orderby:
+            orderby = ', '.join(f"{gb} desc" if gb.startswith('tanggal') else gb for gb in groupby)
+        return super()._web_read_group(domain, fields, groupby, limit=limit, offset=offset, orderby=orderby, lazy=lazy)
+
     def _get_default_ustadz(self):
         user = self.env.user
         employee = self.env['hr.employee'].search(
