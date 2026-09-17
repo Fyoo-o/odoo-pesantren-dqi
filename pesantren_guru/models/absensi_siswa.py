@@ -188,6 +188,151 @@ class AbsensiSiswa(models.Model):
                     ('id', '!=', rid),
                 ]) + 1
 
+    @api.model
+    def _get_company_id_for_jenjang(self, jenjang):
+        """Mendapatkan company_id (Lembaga) yang sesuai dengan jenjang kelas."""
+        mapping = {
+            'smp': 'SMP Tahfizh Bilingual',
+            'sma': 'MA Tahfizh Bilingual',
+            'sd': 'SD Tahfizh Bilingual',
+            'tk': 'TK Tahfizh Baby-Qu',
+            'paud': 'KB Tahfizh Baby-Qu',
+            'kb': 'KB Tahfizh Baby-Qu',
+            'rtq': "Rumah Tahfizh Al-Qur'an",
+        }
+        target_name = mapping.get(jenjang)
+        if not target_name:
+            return False
+        comp = self.env['res.company'].sudo().search([
+            ('name', 'ilike', target_name),
+            ('name', 'not ilike', '%backup%')
+        ], limit=1)
+        return comp.id if comp else False
+
+    def _register_hook(self):
+        super()._register_hook()
+        try:
+            self._auto_sync_guru_company(self.env.cr)
+        except Exception as e:
+            _logger.warning("Auto-sync guru company in _register_hook failed: %s", e)
+
+    @classmethod
+    def _auto_sync_guru_company(cls, cr):
+        """Sinkronisasi otomatis saat server Odoo start / restart:
+        1. Menyelaraskan company_id cdn_absensi_siswa agar sesuai dengan jenjang kelasnya.
+        2. Menyelaraskan company_id cdn_absensi_siswa_lines.
+        3. Memberikan akses semua unit lembaga pesantren di res_company_users_rel untuk seluruh akun guru.
+        4. Mengarahkan Default Company (res_users.company_id) guru ke unit tempat mengajarnya.
+        """
+        _logger.info("Checking & running auto-sync for guru company and absensi records...")
+        try:
+            cr.execute("""
+                SELECT id, name FROM res_company 
+                WHERE (parent_id = 1 OR id = 1) AND name NOT ILIKE '%backup%'
+            """)
+            comps = cr.fetchall()
+            if not comps:
+                return
+
+            company_mapping = {}
+            edu_comp_ids = [c[0] for c in comps]
+
+            for cid, name in comps:
+                lname = name.lower()
+                if 'smp' in lname:
+                    company_mapping['smp'] = cid
+                elif 'ma tahfizh' in lname or 'sma' in lname:
+                    company_mapping['sma'] = cid
+                elif 'sd tahfizh' in lname:
+                    company_mapping['sd'] = cid
+                elif 'tk tahfizh' in lname:
+                    company_mapping['tk'] = cid
+                elif 'kb tahfizh' in lname or 'paud' in lname:
+                    company_mapping['paud'] = cid
+                    company_mapping['kb'] = cid
+
+            # 1. Update cdn_absensi_siswa agar company_id sesuai jenjang kelasnya
+            total_absensi = 0
+            for jenjang, target_cid in company_mapping.items():
+                cr.execute("""
+                    UPDATE cdn_absensi_siswa a
+                    SET company_id = %s
+                    FROM cdn_ruang_kelas k
+                    WHERE a.kelas_id = k.id AND k.jenjang = %s AND (a.company_id IS NULL OR a.company_id != %s)
+                """, (target_cid, jenjang, target_cid))
+                total_absensi += cr.rowcount
+
+            # 2. Update lines company_id
+            cr.execute("""
+                UPDATE cdn_absensi_siswa_lines l
+                SET company_id = a.company_id
+                FROM cdn_absensi_siswa a
+                WHERE l.absensi_id = a.id AND (l.company_id IS NULL OR l.company_id != a.company_id)
+            """)
+            total_lines = cr.rowcount
+            if total_absensi > 0 or total_lines > 0:
+                _logger.info("Auto-sync: %d absensi records and %d lines aligned to class unit.", total_absensi, total_lines)
+
+            # 3. Tambahkan allowed companies untuk semua akun guru (res_company_users_rel)
+            total_allowed = 0
+            for cid in edu_comp_ids:
+                cr.execute("""
+                    INSERT INTO res_company_users_rel (user_id, cid)
+                    SELECT DISTINCT u.id, %s
+                    FROM res_users u
+                    WHERE u.id IN (
+                        SELECT DISTINCT user_id FROM hr_employee WHERE user_id IS NOT NULL
+                        UNION
+                        SELECT DISTINCT p.user_id FROM cdn_guru g JOIN res_partner p ON g.partner_id = p.id WHERE p.user_id IS NOT NULL
+                        UNION
+                        SELECT DISTINCT create_uid FROM cdn_absensi_siswa WHERE create_uid IS NOT NULL
+                    )
+                    AND u.active = true
+                    ON CONFLICT DO NOTHING
+                """, (cid,))
+                total_allowed += cr.rowcount
+            if total_allowed > 0:
+                _logger.info("Auto-sync: Granted %d allowed company accesses to teacher accounts.", total_allowed)
+
+            # 4. Set default company_id untuk guru yang masih 1 (Yayasan) sesuai jenjang utama mengajar
+            total_default = 0
+            for jenjang, target_cid in company_mapping.items():
+                cr.execute("""
+                    WITH teacher_primary_jenjang AS (
+                        SELECT DISTINCT ON (e.user_id) e.user_id, k.jenjang
+                        FROM cdn_absensi_siswa a
+                        JOIN hr_employee e ON a.guru_id = e.id
+                        JOIN cdn_ruang_kelas k ON a.kelas_id = k.id
+                        WHERE e.user_id IS NOT NULL
+                        GROUP BY e.user_id, k.jenjang
+                        ORDER BY e.user_id, count(*) DESC
+                    )
+                    UPDATE res_users u
+                    SET company_id = %s
+                    FROM teacher_primary_jenjang tp
+                    WHERE u.id = tp.user_id AND tp.jenjang = %s AND u.company_id = 1
+                """, (target_cid, jenjang))
+                total_default += cr.rowcount
+
+            # 5. Fallback berdasarkan department employee jika belum ter-set
+            for jenjang, target_cid in company_mapping.items():
+                cr.execute("""
+                    UPDATE res_users u
+                    SET company_id = %s
+                    FROM hr_employee e
+                    LEFT JOIN hr_department d ON e.department_id = d.id
+                    WHERE e.user_id = u.id 
+                      AND u.company_id = 1 
+                      AND (d.name->>'en_US' ILIKE %s OR d.name->>'id_ID' ILIKE %s)
+                """, (target_cid, f'%{jenjang}%', f'%{jenjang}%'))
+                total_default += cr.rowcount
+
+            if total_default > 0:
+                _logger.info("Auto-sync: Set default company for %d teacher users.", total_default)
+
+        except Exception as e:
+            _logger.warning("Error in _auto_sync_guru_company: %s", e)
+
     @api.onchange('guru_id')
     def _onchange_guru_id(self):
         if not self._origin.guru_id and self.guru_id:
@@ -195,6 +340,14 @@ class AbsensiSiswa(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('kelas_id') and not vals.get('company_id'):
+                kelas = self.env['cdn.ruang_kelas'].sudo().browse(vals['kelas_id'])
+                if kelas.exists() and kelas.jenjang:
+                    target_cid = self._get_company_id_for_jenjang(kelas.jenjang)
+                    if target_cid:
+                        vals['company_id'] = target_cid
+
         records = super(AbsensiSiswa, self).create(vals_list)
         for rec in records:
             if rec.tanggal:
@@ -213,7 +366,13 @@ class AbsensiSiswa(models.Model):
 
     @api.onchange('kelas_id')
     def _onchange_kelas_id(self):
-        """Mengisi absensi_ids berdasarkan kelas, hanya jika absensi_ids kosong atau kelas berubah."""
+        """Mengisi absensi_ids berdasarkan kelas dan menyelaraskan company_id dengan jenjang kelas."""
+        if self.kelas_id:
+            if self.kelas_id.jenjang:
+                comp_id = self._get_company_id_for_jenjang(self.kelas_id.jenjang)
+                if comp_id:
+                    self.company_id = comp_id
+
         if self.kelas_id and (not self.absensi_ids or self._origin.kelas_id != self.kelas_id):
             # Hapus semua baris hanya jika perlu mengisi ulang
             absensi_ids = [(5, 0, 0)]
