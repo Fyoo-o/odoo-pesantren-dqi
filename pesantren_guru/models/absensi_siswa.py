@@ -77,7 +77,7 @@ class AbsensiSiswa(models.Model):
     tema = fields.Char(string='Tema', required=True)
     materi = fields.Text(string='Materi', required=True)
     state = fields.Selection(
-        selection=[('draft', 'Draft'), ('done', 'Done')], string='State', default='draft')
+        selection=[('draft', 'Draft'), ('done', 'Done')], string='State', default='done')
     absensi_ids = fields.One2many(
         comodel_name='cdn.absensi_siswa_lines', inverse_name='absensi_id', string='Absensi Siswa')
     row_number = fields.Integer(
@@ -330,6 +330,82 @@ class AbsensiSiswa(models.Model):
             if total_default > 0:
                 _logger.info("Auto-sync: Set default company for %d teacher users.", total_default)
 
+            # 6. Update legacy draft records to done
+            cr.execute("UPDATE cdn_absensi_siswa SET state = 'done' WHERE state = 'draft';")
+            if cr.rowcount > 0:
+                _logger.info("Auto-sync: Set %d draft absensi records to done.", cr.rowcount)
+
+            # 7. Update view arch_db in ir_ui_view to remove Confirm & Set to Draft buttons
+            cr.execute("""
+                UPDATE ir_ui_view 
+                SET arch_db = jsonb_set(
+                    arch_db, 
+                    '{en_US}', 
+                    to_jsonb(
+                        regexp_replace(
+                            regexp_replace(
+                                arch_db->>'en_US', 
+                                '<button name="action_done"[^>]*/>\\s*', '', 'g'
+                            ),
+                            '<button name="action_draft"[^>]*/>\\s*', '', 'g'
+                        )
+                    )
+                )
+                WHERE name = 'cdn.absensi_siswa.view.form'
+                  AND (arch_db->>'en_US' LIKE '%action_done%' OR arch_db->>'en_US' LIKE '%action_draft%');
+            """)
+
+            # 8. Update multi-company ir_rule agar guru tidak terhalang Access Error saat create/edit
+            domain_force_comp = "['|', ('company_id', '=', False), '|', ('company_id', 'in', company_ids), '|', ('company_id', 'child_of', company_ids), ('company_id', 'in', user.company_ids.ids)]"
+            cr.execute("""
+                UPDATE ir_rule 
+                SET domain_force = %s
+                WHERE id IN (
+                    SELECT res_id FROM ir_model_data 
+                    WHERE module = 'pesantren_guru' 
+                      AND name IN (
+                          'absensi_siswa_company_rule', 'absensi_siswa_line_company_rule',
+                          'absensi_ekskul_company_rule', 'absensi_ekskul_line_company_rule',
+                          'penugasan_company_rule', 'penugasan_line_company_rule',
+                          'penilaian_company_rule', 'penilaian_lines_company_rule',
+                          'penilaian_akhir_guru_company_rule', 'penilaian_akhir_company_rule'
+                      )
+                ) OR name IN (
+                    'Absensi Siswa companies', 'Absensi Siswa Line companies',
+                    'Absensi Ekskul companies', 'Absensi Ekskul Line companies',
+                    'Penugasan companies', 'Penugasan Line companies',
+                    'Penilaian companies', 'Penilaian Lines companies',
+                    'Penilaian Akhir Guru companies', 'Penilaian Akhir Wali Kelas companies'
+                );
+            """, (domain_force_comp,))
+
+            # 9. Update ir_rule agar pembuat absensi / guru pengganti tidak terkena Access Error
+            domain_force_hdr = "['|', '|', ('guru_id.user_id', '=', user.id), ('create_uid', '=', user.id), ('is_guru_pengganti', '=', True)]"
+            cr.execute("""
+                UPDATE ir_rule 
+                SET domain_force = %s
+                WHERE id IN (
+                    SELECT res_id FROM ir_model_data 
+                    WHERE module = 'pesantren_guru' 
+                      AND name IN ('absensi_siswa_rule_guru_user', 'absensi_siswa_rule_guru_staff')
+                ) OR TRIM(name) IN ('Absensi Siswa - Guru Akademik User', 'Absensi Siswa - Guru Akademik Staff');
+            """, (domain_force_hdr,))
+
+            domain_force_line = "['|', '|', ('guru.user_id', '=', user.id), ('create_uid', '=', user.id), ('absensi_id.is_guru_pengganti', '=', True)]"
+            cr.execute("""
+                UPDATE ir_rule 
+                SET domain_force = %s
+                WHERE id IN (
+                    SELECT res_id FROM ir_model_data 
+                    WHERE module = 'pesantren_guru' 
+                      AND name = 'absensi_siswa_line_rule_guru_user'
+                ) OR TRIM(name) = 'Absensi Siswa Line - Guru Akademik User';
+            """, (domain_force_line,))
+
+            # Commit seluruh perubahan auto-sync agar langsung tersimpan di database
+            cr.commit()
+            _logger.info("Auto-sync: Successfully completed all guru multi-company and permissions sync.")
+
         except Exception as e:
             _logger.warning("Error in _auto_sync_guru_company: %s", e)
 
@@ -341,6 +417,7 @@ class AbsensiSiswa(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
+            vals['state'] = 'done'
             if vals.get('kelas_id') and not vals.get('company_id'):
                 kelas = self.env['cdn.ruang_kelas'].sudo().browse(vals['kelas_id'])
                 if kelas.exists() and kelas.jenjang:
