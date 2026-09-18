@@ -101,6 +101,9 @@
 from odoo import api, fields, models
 from datetime import date
 from odoo.exceptions import UserError
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class AbsensiMalam(models.Model):
     _name = 'cdn.absensi_malam'
@@ -450,11 +453,9 @@ class AbsensiMalamLine(models.Model):
     kehadiran_absen = fields.Selection([
         ('Hadir', 'Hadir'),
         ('Sakit', 'Sakit'),
-        ('Izin', 'Izin'),
-        ('Alpa', 'Alpa'),
-        ('Pulang-Sakit', 'Pulang-Sakit'),
-        ('Pulang-Izin', 'Pulang-Izin'),
-        ('Pulang-Alpa', 'Pulang-Alpa'),
+        ('Pulang-Sakit', 'Pulang - Sakit'),
+        ('Pulang-Izin', 'Pulang - Izin'),
+        ('Pulang-Alpa', 'Pulang - Alpa'),
     ], string='Kehadiran', default="Hadir", required=True)
     
     keterangan                  = fields.Char(string='Keterangan')
@@ -462,6 +463,57 @@ class AbsensiMalamLine(models.Model):
     keterangan_izin_filename    = fields.Char(string="Nama File Foto")
     company_id                  = fields.Many2one('res.company', string='Lembaga', related='absen_id.company_id', readonly=True, store=True)
     row_number                  = fields.Integer(string='No', compute='_compute_row_number', store=False)
+
+    def _register_hook(self):
+        super()._register_hook()
+        try:
+            cr = self.env.cr
+            # 1. Update data lama yang masih bernilai 'Izin' -> 'Pulang-Izin' dan 'Alpa' -> 'Pulang-Alpa'
+            cr.execute("""
+                UPDATE cdn_absensi_malam_line SET kehadiran_absen = 'Pulang-Izin' WHERE kehadiran_absen = 'Izin';
+                UPDATE cdn_absensi_malam_line SET kehadiran_absen = 'Pulang-Alpa' WHERE kehadiran_absen = 'Alpa';
+            """)
+
+            # 2. Hapus pilihan 'Izin' dan 'Alpa' dari ir_model_fields_selection agar tidak muncul di UI
+            cr.execute("""
+                DELETE FROM ir_model_fields_selection 
+                WHERE field_id IN (
+                    SELECT id FROM ir_model_fields 
+                    WHERE model = 'cdn.absensi_malam_line' AND name = 'kehadiran_absen'
+                ) AND value IN ('Izin', 'Alpa');
+            """)
+
+            # 3. Update label dan urutan di ir_model_fields_selection
+            cr.execute("""
+                UPDATE ir_model_fields_selection
+                SET name = jsonb_set(name, '{en_US}', '"Pulang - Sakit"'), sequence = 3
+                WHERE field_id IN (SELECT id FROM ir_model_fields WHERE model = 'cdn.absensi_malam_line' AND name = 'kehadiran_absen')
+                  AND value = 'Pulang-Sakit';
+
+                UPDATE ir_model_fields_selection
+                SET name = jsonb_set(name, '{en_US}', '"Pulang - Izin"'), sequence = 4
+                WHERE field_id IN (SELECT id FROM ir_model_fields WHERE model = 'cdn.absensi_malam_line' AND name = 'kehadiran_absen')
+                  AND value = 'Pulang-Izin';
+
+                UPDATE ir_model_fields_selection
+                SET name = jsonb_set(name, '{en_US}', '"Pulang - Alpa"'), sequence = 5
+                WHERE field_id IN (SELECT id FROM ir_model_fields WHERE model = 'cdn.absensi_malam_line' AND name = 'kehadiran_absen')
+                  AND value = 'Pulang-Alpa';
+
+                UPDATE ir_model_fields_selection
+                SET sequence = 1
+                WHERE field_id IN (SELECT id FROM ir_model_fields WHERE model = 'cdn.absensi_malam_line' AND name = 'kehadiran_absen')
+                  AND value = 'Hadir';
+
+                UPDATE ir_model_fields_selection
+                SET sequence = 2
+                WHERE field_id IN (SELECT id FROM ir_model_fields WHERE model = 'cdn.absensi_malam_line' AND name = 'kehadiran_absen')
+                  AND value = 'Sakit';
+            """)
+            cr.commit()
+            _logger.info("Auto-sync: Successfully updated cdn.absensi_malam_line selection options.")
+        except Exception as e:
+            _logger.warning("Error in AbsensiMalamLine._register_hook: %s", e)
 
     def _compute_row_number(self):
         for index, record in enumerate(self):

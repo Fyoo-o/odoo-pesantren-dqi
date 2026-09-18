@@ -559,9 +559,10 @@ class WizardRekapAbsensiMalamLine(models.TransientModel):
     nama = fields.Char(string='Nama Santri')
     kehadiran = fields.Selection([
         ('Hadir', 'Hadir'),
-        ('Izin', 'Izin'),
-        ('keluar', 'Izin Keluar'),
         ('Sakit', 'Sakit'),
-        ('Alpa', 'Alpa'),
+        ('Pulang-Sakit', 'Pulang - Sakit'),
+        ('Pulang-Izin', 'Pulang - Izin'),
+        ('Pulang-Alpa', 'Pulang - Alpa'),
+        ('keluar', 'Izin Keluar'),
     ], string='Kehadiran')
     keterangan = fields.Char(string='Keterangan')
