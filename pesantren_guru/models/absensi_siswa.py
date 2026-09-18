@@ -355,8 +355,8 @@ class AbsensiSiswa(models.Model):
                   AND (arch_db->>'en_US' LIKE '%action_done%' OR arch_db->>'en_US' LIKE '%action_draft%');
             """)
 
-            # 8. Update multi-company ir_rule agar guru tidak terhalang Access Error saat create/edit
-            domain_force_comp = "['|', ('company_id', '=', False), '|', ('company_id', 'in', company_ids), '|', ('company_id', 'child_of', company_ids), ('company_id', 'in', user.company_ids.ids)]"
+            # 8. Update multi-company ir_rule agar mematuhi company selector (KB hanya tampil KB, dsb)
+            domain_force_comp = "['|', ('company_id', '=', False), ('company_id', 'child_of', company_ids)]"
             cr.execute("""
                 UPDATE ir_rule 
                 SET domain_force = %s
@@ -379,8 +379,8 @@ class AbsensiSiswa(models.Model):
                 );
             """, (domain_force_comp,))
 
-            # 9. Update ir_rule agar pembuat absensi / guru pengganti tidak terkena Access Error
-            domain_force_hdr = "['|', '|', ('guru_id.user_id', '=', user.id), ('create_uid', '=', user.id), ('is_guru_pengganti', '=', True)]"
+            # 9. Update ir_rule agar guru hanya melihat absensi miliknya atau yang dibuatnya (guru pengganti)
+            domain_force_hdr = "['|', ('guru_id.user_id', '=', user.id), ('create_uid', '=', user.id)]"
             cr.execute("""
                 UPDATE ir_rule 
                 SET domain_force = %s
@@ -391,7 +391,7 @@ class AbsensiSiswa(models.Model):
                 ) OR TRIM(name) IN ('Absensi Siswa - Guru Akademik User', 'Absensi Siswa - Guru Akademik Staff');
             """, (domain_force_hdr,))
 
-            domain_force_line = "['|', '|', ('guru.user_id', '=', user.id), ('create_uid', '=', user.id), ('absensi_id.is_guru_pengganti', '=', True)]"
+            domain_force_line = "['|', ('guru.user_id', '=', user.id), ('create_uid', '=', user.id)]"
             cr.execute("""
                 UPDATE ir_rule 
                 SET domain_force = %s
