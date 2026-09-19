@@ -88,7 +88,7 @@
                                     <field name="is_guru_pengganti" nolabel="1" style="margin: 0 8px 0 0; flex-shrink: 0;"/>
                                     <small class="text-muted fst-italic">Centang kotak disamping jika anda sebagai guru pengganti</small>
                                 </div>
-                                <field name="keterangan" placeholder="Alasan penggantian / catatan absensi..." />
+                                <field name="keterangan" string="Catatan" placeholder="Alasan penggantian / catatan absensi..." />
                             </group>
                         </group>
                         <notebook>

@@ -106,7 +106,7 @@ class AbsensiSiswa(models.Model):
         default=False,
         help='Centang jika Anda bertindak sebagai guru pengganti'
     )
-    keterangan = fields.Char(string='Keterangan')
+    keterangan = fields.Char(string='Catatan')
 
     def _domain_guru(self):
         admin_user_ids = self.env.ref('base.group_system').users.ids
@@ -401,6 +401,31 @@ class AbsensiSiswa(models.Model):
                       AND name = 'absensi_siswa_line_rule_guru_user'
                 ) OR TRIM(name) = 'Absensi Siswa Line - Guru Akademik User';
             """, (domain_force_line,))
+
+            # 10. Update string label baris keterangan -> Catatan pada form view absensi_siswa
+            cr.execute("""
+                UPDATE ir_ui_view
+                SET arch_db = jsonb_set(
+                    arch_db,
+                    '{en_US}',
+                    to_jsonb(
+                        replace(
+                            arch_db->>'en_US',
+                            '<field name="keterangan" placeholder="Alasan penggantian',
+                            '<field name="keterangan" string="Catatan" placeholder="Alasan penggantian'
+                        )
+                    )
+                )
+                WHERE name = 'cdn.absensi_siswa.view.form'
+                  AND arch_db->>'en_US' LIKE '%<field name="keterangan" placeholder="Alasan penggantian%'
+                  AND arch_db->>'en_US' NOT LIKE '%string="Catatan"%';
+            """)
+            cr.execute("""
+                UPDATE ir_model_fields 
+                SET field_description = jsonb_set(field_description, '{en_US}', '"Catatan"')
+                WHERE model = 'cdn.absensi_siswa' AND name = 'keterangan' 
+                  AND pg_typeof(field_description) = 'jsonb'::regtype;
+            """)
 
             # Commit seluruh perubahan auto-sync agar langsung tersimpan di database
             cr.commit()
