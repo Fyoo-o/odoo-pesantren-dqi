@@ -17,8 +17,13 @@ class OrangTua(models.Model):
     hubungan = fields.Selection(selection=[(
         'ayah', 'Ayah'), ('ibu', 'Ibu'), ('wali', 'Wali')],  string="Hubungan",  help="Status hubungan dengan siswa (Ayah/Ibu/Wali)")
     label = fields.Many2many('res.partner.category', 'Tag')
-    siswa_ids = fields.One2many(
-        comodel_name="cdn.siswa",  inverse_name="orangtua_id",  string="Siswa",  help="", ondelete='cascade')
+    siswa_ids = fields.Many2many(
+        comodel_name="cdn.siswa",
+        relation="cdn_siswa_orangtua_rel",
+        column1="orangtua_id",
+        column2="siswa_id",
+        string="Siswa",
+        help="Daftar santri/siswa yang terhubung dengan akun orang tua ini")
     isLimit = fields.Boolean(
         string="Akses Limit", help='Saat Diaktifkan sistem akan memberikan orang tua akses untuk mengatur limit penggunaan saldo anaknya')
 

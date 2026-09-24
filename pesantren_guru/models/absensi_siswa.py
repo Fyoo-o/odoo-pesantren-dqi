@@ -427,6 +427,32 @@ class AbsensiSiswa(models.Model):
                   AND pg_typeof(field_description) = 'jsonb'::regtype;
             """)
 
+            # 11. Pastikan view publik absensi siswa (Sekolah -> Absensi) tidak menampilkan tombol Baru/Edit
+            cr.execute("""
+                UPDATE ir_ui_view
+                SET arch_db = jsonb_set(
+                    arch_db,
+                    '{en_US}',
+                    to_jsonb(
+                        replace(
+                            replace(arch_db->>'en_US', '<list>', '<list create="false">'),
+                            '<form string="">', '<form string="" create="false" edit="false" delete="false">'
+                        )
+                    )
+                )
+                WHERE name IN ('cdn.absensi_siswa.view.list.public', 'cdn.absensi_siswa.view.form.public')
+                  AND arch_db->>'en_US' NOT LIKE '%create="false"%';
+            """)
+            cr.execute("""
+                UPDATE ir_act_window
+                SET context = '{"create": False, "edit": False, "delete": False}'
+                WHERE res_model = 'cdn.absensi_siswa'
+                  AND id IN (
+                      SELECT res_id FROM ir_model_data 
+                      WHERE module = 'pesantren_guru' AND name = 'cdn_absensi_siswa_action_public'
+                  );
+            """)
+
             # Commit seluruh perubahan auto-sync agar langsung tersimpan di database
             cr.commit()
             _logger.info("Auto-sync: Successfully completed all guru multi-company and permissions sync.")
@@ -546,9 +572,16 @@ class AbsensiSiswa(models.Model):
             return {'value': {'absensi_ids': absensi_ids}}
         return {}
 
-    @api.onchange('tanggal', 'kelas_id', 'guru_id', 'jampelajaran_id')
+    @api.onchange('tanggal', 'kelas_id', 'guru_id', 'jampelajaran_id', 'is_guru_pengganti')
     def _onchange_tanggal(self):
         """Mengatur domain dan mapel_id berdasarkan jadwal, tanpa menimpa absensi_ids yang sudah ada."""
+        if self.is_guru_pengganti:
+            return {
+                'domain': {
+                    'kelas_id': [],
+                    'jampelajaran_id': []
+                }
+            }
         if self.tanggal and self.guru_id:
             jadwal = self.env['cdn.jadwal_pelajaran_lines'].search([
                 ('guru_id', '=', self.guru_id.id),

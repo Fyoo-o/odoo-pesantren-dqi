@@ -646,6 +646,7 @@ class DataPendaftaran(models.Model):
                 # 'jenjang_id'            : record.jenjang_id,
                 'kewarganegaraan': record.kewarganegaraan,
                 'orangtua_id': record.orangtua_id.id,
+                'orangtua_ids': [(4, record.orangtua_id.id)] if record.orangtua_id else False,
                 'tgl_lahir': record.tanggal_lahir,
                 'jns_kelamin': record.gender,
                 'tmp_lahir': record.kota_lahir,

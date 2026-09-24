@@ -80,7 +80,7 @@ class Penilaian(models.Model):
         ]
 
     @api.depends('tipe')
-    def _compute_name(self):
+    def _compute_name(self):    
         for rec in self:
             rec.name = f"{rec.tipe}" if rec.tipe else "Penilaian Santri"
 

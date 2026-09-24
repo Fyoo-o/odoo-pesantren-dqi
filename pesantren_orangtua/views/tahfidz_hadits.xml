@@ -8,7 +8,7 @@
             <field name="res_model">cdn.tahfidz_hadits</field>
             <field name="view_mode">list,form</field>
             <field name="view_id" ref="pesantren_kesantrian.cdn_tahfidz_hadits_view_tree" />
-            <field name="domain">[]</field>
+            <field name="domain">[('state', '=', 'done')]</field>
         </record>
         <record id="action_tree_view_cdn_tahfidz_hadits" model="ir.actions.act_window.view">
             <field name="sequence" eval="2" />
@@ -23,6 +23,6 @@
             <field name="act_window_id" ref="cdn_tahfidz_hadits_action" />
         </record>
         <!-- This Menu Item must have a parent and an action -->
-        <!-- <menuitem id="cdn_tahfidz_hadits_menu_act" name="Tahfidz Hadits" parent="tahfidz_menu_categ" action="cdn_tahfidz_hadits_action" sequence="20"/> -->
+        <menuitem id="cdn_tahfidz_hadits_menu_act" name="Tahfidz Hadits" parent="tahfidz_menu_categ" action="cdn_tahfidz_hadits_action" sequence="20"/>
     </data>
 </odoo>

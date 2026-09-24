@@ -1,39 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <!-- List View untuk Orang Tua (cdn.penilaian_santri_lines) -->
+        <record id="cdn_penilaian_santri_lines_view_list_orangtua" model="ir.ui.view">
+            <field name="name">cdn.penilaian_santri_lines.view.list.orangtua</field>
+            <field name="model">cdn.penilaian_santri_lines</field>
+            <field name="arch" type="xml">
+                <list string="Penilaian Al-Qur'an Santri" create="false" edit="false" delete="false" default_order="id desc">
+                    <field name="santri_id" string="Nama Santri"/>
+                    <field name="panggilan" string="Panggilan"/>
+                    <field name="kategori_penilaian" string="Kategori"/>
+                    <field name="tipe" string="Tipe Ujian"/>
+                    <field name="juz" string="Juz"/>
+                    <field name="nilai" widget="integer" string="Nilai"/>
+                    <field name="predikat" string="Predikat"/>
+                    <field name="state" widget="badge" 
+                           decoration-success="state == 'done'" 
+                           decoration-info="state == 'draft'" 
+                           string="Status"/>
+                </list>
+            </field>
+        </record>
 
-        <!-- Action untuk Penilaian Santri (Orang Tua hanya lihat) -->
+        <!-- Form View untuk Orang Tua (cdn.penilaian_santri_lines) -->
+        <record id="cdn_penilaian_santri_lines_view_form_orangtua" model="ir.ui.view">
+            <field name="name">cdn.penilaian_santri_lines.view.form.orangtua</field>
+            <field name="model">cdn.penilaian_santri_lines</field>
+            <field name="arch" type="xml">
+                <form string="Detail Penilaian Santri" create="false" edit="false" delete="false">
+                    <sheet>
+                        <group string="Data Santri">
+                            <group>
+                                <field name="santri_id" readonly="1"/>
+                                <field name="panggilan" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="kategori_penilaian" readonly="1"/>
+                                <field name="tipe" readonly="1"/>
+                            </group>
+                        </group>
+                        <group string="Hasil Ujian">
+                            <group>
+                                <field name="juz" readonly="1"/>
+                                <field name="nilai" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="predikat" readonly="1"/>
+                                <field name="state" widget="badge" 
+                                       decoration-success="state == 'done'" 
+                                       decoration-info="state == 'draft'" 
+                                       readonly="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Search View untuk Orang Tua -->
+        <record id="cdn_penilaian_santri_lines_view_search_orangtua" model="ir.ui.view">
+            <field name="name">cdn.penilaian_santri_lines.view.search.orangtua</field>
+            <field name="model">cdn.penilaian_santri_lines</field>
+            <field name="arch" type="xml">
+                <search string="Cari Penilaian Santri">
+                    <field name="santri_id" string="Nama Santri"/>
+                    <field name="tipe" string="Tipe Ujian"/>
+                    <field name="kategori_penilaian" string="Kategori"/>
+                    <field name="juz" string="Juz"/>
+                    <filter string="Tahfidz" name="filter_tahfidz" domain="[('kategori_penilaian', '=', 'tahfidz')]"/>
+                    <filter string="Tahsin" name="filter_tahsin" domain="[('kategori_penilaian', '=', 'tahsin')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Santri" name="group_santri" context="{'group_by': 'santri_id'}"/>
+                        <filter string="Kategori" name="group_kategori" context="{'group_by': 'kategori_penilaian'}"/>
+                        <filter string="Tipe Ujian" name="group_tipe" context="{'group_by': 'tipe'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action untuk Penilaian Santri Lines (Orang Tua) -->
         <record id="cdn_penilaian_santri_action_orangtua" model="ir.actions.act_window">
             <field name="name">Penilaian Santri</field>
             <field name="type">ir.actions.act_window</field>
-            <field name="res_model">cdn.penilaian_santri</field>
+            <field name="res_model">cdn.penilaian_santri_lines</field>
             <field name="view_mode">list,form</field>
-            
-            <!-- pakai tree view dari modul guru quran -->
-            <field name="view_id" ref="pesantren_guruquran.cdn_penilaian_santri_view_tree"/>
-
-            <!-- filter data hanya untuk anak dari user login -->
-            <field name="domain">[]</field>
+            <field name="search_view_id" ref="cdn_penilaian_santri_lines_view_search_orangtua"/>
+            <field name="domain">[('state', '=', 'done')]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Belum ada data penilaian santri untuk anak Anda
+                </p>
+            </field>
         </record>
 
         <!-- Tree View link ke action -->
         <record id="action_tree_view_cdn_penilaian_santri_orangtua" model="ir.actions.act_window.view">
-            <field name="sequence" eval="2"/>
+            <field name="sequence" eval="1"/>
             <field name="view_mode">list</field>
-            <field name="view_id" ref="pesantren_guruquran.cdn_penilaian_santri_view_tree"/>
+            <field name="view_id" ref="cdn_penilaian_santri_lines_view_list_orangtua"/>
             <field name="act_window_id" ref="cdn_penilaian_santri_action_orangtua"/>
         </record>
 
         <!-- Form View link ke action -->
         <record id="action_form_view_cdn_penilaian_santri_orangtua" model="ir.actions.act_window.view">
-            <field name="sequence" eval="3"/>
+            <field name="sequence" eval="2"/>
             <field name="view_mode">form</field>
-            <field name="view_id" ref="pesantren_guruquran.cdn_penilaian_santri_view_form"/>
+            <field name="view_id" ref="cdn_penilaian_santri_lines_view_form_orangtua"/>
             <field name="act_window_id" ref="cdn_penilaian_santri_action_orangtua"/>
         </record>
-          <!-- <menuitem id="cdn_penilaian_santri_menu_orangtua" name="Penilaian Santri" parent="aktivitas_menu_categ" action="cdn_penilaian_santri_action_orangtua" sequence="20"/> -->
 
-        <!-- Menu di bawah menu Orang Tua -->
+        <!-- Menu di bawah menu Orang Tua > Aktivitas -->
         <menuitem id="cdn_penilaian_santri_menu_orangtua"
                   name="Penilaian Santri"
                   parent="aktivitas_menu_categ"

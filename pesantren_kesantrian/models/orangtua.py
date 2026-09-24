@@ -54,15 +54,19 @@ class OrangTua(models.Model):
                 })
                 return res
 
+        login_str = res.email or res.no_hp
+        if not login_str:
+            return res
+
         # VALIDASI & SET DEFAULT PASSWORD (FIX ERROR BOOLEAN)
         if not res.password or not isinstance(res.password, str):
             # Set default password (bisa dari email atau fixed)
             # Ambil 8 char pertama email, atau default
-            res.password = res.email[:8] if res.email else 'default123'
+            res.password = login_str[:8] if login_str else 'default123'
 
-        # Membuat user baru dengan login berbasis email dan password default
+        # Membuat user baru dengan login berbasis email/hp dan password default
         user = self.env['res.users'].with_context(no_reset_password=True).sudo().create({
-            'login': res.email,  # Menggunakan email dari field model
+            'login': login_str,  # Menggunakan email atau no hp
             'name': res.name,  # Nama pengguna
             # Mengatur perusahaan default
             'company_id': self.env.ref('base.main_company').id,

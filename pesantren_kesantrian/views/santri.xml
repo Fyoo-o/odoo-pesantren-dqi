@@ -154,7 +154,8 @@
 
                             <page name="ortu" string="Orang Tua">
                                 <group string="Akun Orang Tua">
-                                    <field name="orangtua_id" options="{'no_create_edit': True}" placeholder="Pilih orang tua atau isi data akun di bawah"/>
+                                    <field name="orangtua_ids" widget="many2many_tags" options="{'no_create_edit': True}" placeholder="Pilih akun orang tua yang terhubung (Ayah, Ibu, Wali)..."/>
+                                    <field name="orangtua_id" options="{'no_create_edit': True}" placeholder="Pilih orang tua utama (penanggung jawab)"/>
                                 </group>
                                 <group string="Identitas Ayah">
                                     <group>

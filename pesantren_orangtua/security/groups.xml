@@ -1,18 +1,20 @@
 <odoo>
 	<data>
-		<!-- Rules Perijinan -->
+		<!-- Rules Siswa / Santri -->
 		<record id="group_orangtua_siswa_rule_perijinan" model="ir.rule">
-			<field name="name">Siswa Rule Perijinan</field>
+			<field name="name">Siswa Orang Tua</field>
 			<field name="model_id" ref="pesantren_base.model_cdn_siswa" />
 			<field name="domain_force">[
-				('orangtua_id.partner_id', '=', user.partner_id.id),
-				]</field>
+				'|',
+				('orangtua_ids.partner_id', '=', user.partner_id.id),
+				('orangtua_id.partner_id', '=', user.partner_id.id)
+			]</field>
 			<field name="groups"
 				eval="[(4, ref('pesantren_kesantrian.group_kesantrian_orang_tua'))]" />
 		</record>
 
 		<record id="group_manager_siswa_rule_perijinan" model="ir.rule">
-			<field name="name">Siswa Rule Perijinan</field>
+			<field name="name">Siswa Rule Manager</field>
 			<field name="model_id" ref="pesantren_base.model_cdn_siswa" />
 			<field name="domain_force">[(1, '=', 1)]</field>
 			<field name="groups" eval="[(4, ref('base.group_system'))]" />
@@ -24,7 +26,11 @@
 			<field name="model_id" ref="pesantren_guru.model_cdn_penilaian" />
 			<field name="groups"
 				eval="[(4, ref('pesantren_kesantrian.group_kesantrian_orang_tua'))]" />
-			<field name="domain_force">[(1, '=', 1)]</field>
+			<field name="domain_force">[
+				'|',
+				('penilaian_ids.siswa_id.orangtua_ids.partner_id', '=', user.partner_id.id),
+				('penilaian_ids.siswa_id.orangtua_id.partner_id', '=', user.partner_id.id)
+			]</field>
 		</record>
 
 		<record id="rule_penilaian_manager" model="ir.rule">
@@ -35,16 +41,16 @@
 		</record>
 
 		<record id="rule_nilai_siswa_orangtua" model="ir.rule">
-			<field name="name">Nilai Siswa Orang Tua</field>
+			<field name="name">Nilai Siswa Lines Orang Tua</field>
 			<field name="model_id" ref="pesantren_guru.model_cdn_penilaian_lines" />
 			<field name="groups"
 				eval="[(4, ref('pesantren_kesantrian.group_kesantrian_orang_tua'))]" />
-			<field name="domain_force">
-				[
+			<field name="domain_force">[
+				'|',
+				('siswa_id.orangtua_ids.partner_id', '=', user.partner_id.id),
 				('siswa_id.orangtua_id.partner_id', '=', user.partner_id.id),
 				('state', '=', 'done')
-				]
-			</field>
+			]</field>
 		</record>
 
 		<record id="rule_nilai_siswa_manager" model="ir.rule">
@@ -60,7 +66,11 @@
 			<field name="model_id" ref="pesantren_guru.model_cdn_absensi_siswa" />
 			<field name="groups"
 				eval="[(4, ref('pesantren_kesantrian.group_kesantrian_orang_tua'))]" />
-			<field name="domain_force">[(1, '=', 1)]</field>
+			<field name="domain_force">[
+				'|',
+				('absensi_ids.siswa_id.orangtua_ids.partner_id', '=', user.partner_id.id),
+				('absensi_ids.siswa_id.orangtua_id.partner_id', '=', user.partner_id.id)
+			]</field>
 		</record>
 
 		<record id="rule_absensi_siswa_manager" model="ir.rule">
@@ -75,12 +85,12 @@
 			<field name="model_id" ref="pesantren_guru.model_cdn_absensi_siswa_lines" />
 			<field name="groups"
 				eval="[(4, ref('pesantren_kesantrian.group_kesantrian_orang_tua'))]" />
-			<field name="domain_force">
-				[
+			<field name="domain_force">[
+				'|',
+				('siswa_id.orangtua_ids.partner_id', '=', user.partner_id.id),
 				('siswa_id.orangtua_id.partner_id', '=', user.partner_id.id),
 				('absensi_id.state', '=', 'done')
-				]
-			</field>
+			]</field>
 		</record>
 
 		<record id="rule_absensi_siswa_lines_manager" model="ir.rule">
@@ -96,11 +106,11 @@
 			<field name="model_id" ref="pesantren_kesantrian.model_cdn_perijinan" />
 			<field name="groups"
 				eval="[(4, ref('pesantren_kesantrian.group_kesantrian_orang_tua'))]" />
-			<field name="domain_force">
-				[
+			<field name="domain_force">[
+				'|',
+				('siswa_id.orangtua_ids.partner_id', '=', user.partner_id.id),
 				('siswa_id.orangtua_id.partner_id', '=', user.partner_id.id)
-				]
-			</field>
+			]</field>
 		</record>
 
 		<record id="rule_pengajuan_izin_manager" model="ir.rule">
@@ -116,12 +126,12 @@
 			<field name="model_id" ref="pesantren_kesantrian.model_cdn_mutabaah_harian" />
 			<field name="groups"
 				eval="[(4, ref('pesantren_kesantrian.group_kesantrian_orang_tua'))]" />
-			<field name="domain_force">
-				[
+			<field name="domain_force">[
+				'|',
+				('siswa_id.orangtua_ids.partner_id', '=', user.partner_id.id),
 				('siswa_id.orangtua_id.partner_id', '=', user.partner_id.id),
 				('state','=','Done')
-				]
-			</field>
+			]</field>
 		</record>
 
 		<record id="rule_mutabaah_harian_manager" model="ir.rule">
@@ -137,12 +147,12 @@
 			<field name="model_id" ref="pesantren_kesantrian.model_cdn_absensi_malam_line" />
 			<field name="groups"
 				eval="[(4, ref('pesantren_kesantrian.group_kesantrian_orang_tua'))]" />
-			<field name="domain_force">
-				[
+			<field name="domain_force">[
+				'|',
+				('siswa_id.orangtua_ids.partner_id', '=', user.partner_id.id),
 				('siswa_id.orangtua_id.partner_id', '=', user.partner_id.id),
 				('absen_id.state', '=', 'done')
-				]
-			</field>
+			]</field>
 		</record>
 
 		<record id="rule_absensi_malam_manager" model="ir.rule">
@@ -158,12 +168,12 @@
 			<field name="model_id" ref="pesantren_kesantrian.model_cdn_penilaian_quran" />
 			<field name="groups"
 				eval="[(4, ref('pesantren_kesantrian.group_kesantrian_orang_tua'))]" />
-			<field name="domain_force">
-				[
+			<field name="domain_force">[
+				'|',
+				('siswa_id.orangtua_ids.partner_id', '=', user.partner_id.id),
 				('siswa_id.orangtua_id.partner_id', '=', user.partner_id.id),
 				('state','=','done')
-				]
-			</field>
+			]</field>
 		</record>
 
 		<record id="rule_penilaian_halaqoh_manager" model="ir.rule">
@@ -173,18 +183,32 @@
 			<field name="domain_force">[(1, '=', 1)]</field>
 		</record>
 
-		<!-- Penilaian Santri -->
+		<!-- Penilaian Santri Lines (Per-Santri) -->
+		<record id="rule_penilaian_santri_lines_orangtua" model="ir.rule">
+			<field name="name">Penilaian Santri Lines Orang Tua</field>
+			<field name="model_id" ref="pesantren_guruquran.model_cdn_penilaian_santri_lines" />
+			<field name="groups"
+				eval="[(4, ref('pesantren_kesantrian.group_kesantrian_orang_tua'))]" />
+			<field name="domain_force">[
+				'|',
+				('santri_id.orangtua_ids.partner_id', '=', user.partner_id.id),
+				('santri_id.orangtua_id.partner_id', '=', user.partner_id.id),
+				('state','=','done')
+			]</field>
+		</record>
+
+		<!-- Penilaian Santri Header -->
 		<record id="rule_penilaian_santri_orangtua" model="ir.rule">
 			<field name="name">Penilaian Santri Orang Tua</field>
 			<field name="model_id" ref="pesantren_guruquran.model_cdn_penilaian_santri" />
 			<field name="groups"
 				eval="[(4, ref('pesantren_kesantrian.group_kesantrian_orang_tua'))]" />
-			<field name="domain_force">
-				[
+			<field name="domain_force">[
+				'|',
+				('penilaian_santri_ids.santri_id.orangtua_ids.partner_id', '=', user.partner_id.id),
 				('penilaian_santri_ids.santri_id.orangtua_id.partner_id', '=', user.partner_id.id),
 				('state','=','done')
-				]
-			</field>
+			]</field>
 		</record>
 
 		<record id="rule_penilaian_santri_manager" model="ir.rule">
@@ -200,12 +224,12 @@
 			<field name="model_id" ref="pesantren_kesantrian.model_cdn_pelanggaran" />
 			<field name="groups"
 				eval="[(4, ref('pesantren_kesantrian.group_kesantrian_orang_tua'))]" />
-			<field name="domain_force">
-				[
+			<field name="domain_force">[
+				'|',
+				('siswa_id.orangtua_ids.partner_id', '=', user.partner_id.id),
 				('siswa_id.orangtua_id.partner_id', '=', user.partner_id.id),
 				('state','=','approved')
-				]
-			</field>
+			]</field>
 		</record>
 
 		<record id="rule_pelanggaran_santri_manager" model="ir.rule">
@@ -221,11 +245,11 @@
 			<field name="model_id" ref="pesantren_kesantrian.model_cdn_kesehatan" />
 			<field name="groups"
 				eval="[(4, ref('pesantren_kesantrian.group_kesantrian_orang_tua'))]" />
-			<field name="domain_force">
-				[
+			<field name="domain_force">[
+				'|',
+				('siswa_id.orangtua_ids.partner_id', '=', user.partner_id.id),
 				('siswa_id.orangtua_id.partner_id', '=', user.partner_id.id)
-				]
-			</field>
+			]</field>
 		</record>
 
 		<record id="rule_kesehatan_santri_manager" model="ir.rule">
@@ -241,11 +265,11 @@
 			<field name="model_id" ref="pesantren_kesantrian.model_cdn_prestasi_siswa" />
 			<field name="groups"
 				eval="[(4, ref('pesantren_kesantrian.group_kesantrian_orang_tua'))]" />
-			<field name="domain_force">
-				[
+			<field name="domain_force">[
+				'|',
+				('siswa_id.orangtua_ids.partner_id', '=', user.partner_id.id),
 				('siswa_id.orangtua_id.partner_id', '=', user.partner_id.id)
-				]
-			</field>
+			]</field>
 		</record>
 
 		<record id="rule_prestasi_siswa_manager" model="ir.rule">
@@ -260,12 +284,12 @@
 			<field name="name">Tahfidz Al-Qur'an Orang Tua</field>
 			<field name="model_id" ref="pesantren_kesantrian.model_cdn_tahfidz_quran"/>
 			<field name="groups" eval="[(4, ref('pesantren_kesantrian.group_kesantrian_orang_tua'))]"/>
-			<field name="domain_force">
-				[
-					('siswa_id.orangtua_id.partner_id', '=', user.partner_id.id),
-					('state','=','done')
-				]
-			</field>
+			<field name="domain_force">[
+				'|',
+				('siswa_id.orangtua_ids.partner_id', '=', user.partner_id.id),
+				('siswa_id.orangtua_id.partner_id', '=', user.partner_id.id),
+				('state','=','done')
+			]</field>
 		</record>
 
 		<!-- Tahfidz Hadits -->
@@ -273,12 +297,12 @@
 			<field name="name">Tahfidz Hadits Orang Tua</field>
 			<field name="model_id" ref="pesantren_kesantrian.model_cdn_tahfidz_hadits"/>
 			<field name="groups" eval="[(4, ref('pesantren_kesantrian.group_kesantrian_orang_tua'))]"/>
-			<field name="domain_force">
-				[
-					('siswa_id.orangtua_id.partner_id', '=', user.partner_id.id),
-					('state','=','done')
-				]
-			</field>
+			<field name="domain_force">[
+				'|',
+				('siswa_id.orangtua_ids.partner_id', '=', user.partner_id.id),
+				('siswa_id.orangtua_id.partner_id', '=', user.partner_id.id),
+				('state','=','done')
+			]</field>
 		</record>
 
 		<!-- Tahsin Al-Qur'an -->
@@ -286,12 +310,12 @@
 			<field name="name">Tahsin Al-Qur'an Orang Tua</field>
 			<field name="model_id" ref="pesantren_kesantrian.model_cdn_tahsin_quran"/>
 			<field name="groups" eval="[(4, ref('pesantren_kesantrian.group_kesantrian_orang_tua'))]"/>
-			<field name="domain_force">
-				[
-					('siswa_id.orangtua_id.partner_id', '=', user.partner_id.id),
-					('state','=','done')
-				]
-			</field>
+			<field name="domain_force">[
+				'|',
+				('siswa_id.orangtua_ids.partner_id', '=', user.partner_id.id),
+				('siswa_id.orangtua_id.partner_id', '=', user.partner_id.id),
+				('state','=','done')
+			]</field>
 		</record>
 
 		<!-- Tagihan / Invoice -->
@@ -299,12 +323,12 @@
 			<field name="name">Tagihan Orang Tua</field>
 			<field name="model_id" ref="account.model_account_move"/>
 			<field name="groups" eval="[(4, ref('pesantren_kesantrian.group_kesantrian_orang_tua'))]"/>
-			<field name="domain_force">
-				[
-					('orangtua_id.partner_id', '=', user.partner_id.id),
-					('move_type', '=', 'out_invoice')
-				]
-			</field>
+			<field name="domain_force">[
+				'|',
+				('siswa_id.orangtua_ids.partner_id', '=', user.partner_id.id),
+				('orangtua_id.partner_id', '=', user.partner_id.id),
+				('move_type', '=', 'out_invoice')
+			]</field>
 		</record>
 
 		<!-- Pembayaran -->
@@ -312,24 +336,22 @@
 			<field name="name">Pembayaran Orang Tua</field>
 			<field name="model_id" ref="account.model_account_payment"/>
 			<field name="groups" eval="[(4, ref('pesantren_kesantrian.group_kesantrian_orang_tua'))]"/>
-			<field name="domain_force">
-				[
-					('siswa_id.orangtua_id.partner_id', '=', user.partner_id.id)
-				]
-			</field>
+			<field name="domain_force">[
+				'|',
+				('siswa_id.orangtua_ids.partner_id', '=', user.partner_id.id),
+				('siswa_id.orangtua_id.partner_id', '=', user.partner_id.id)
+			]</field>
 		</record>
 
-		<!-- Data Orang Tua -->
+		<!-- Data Orang Tua (Hanya Akun Sendiri) -->
 		<record id="rule_data_orangtua" model="ir.rule">
 			<field name="name">Data Orang Tua</field>
 			<field name="model_id" ref="pesantren_base.model_cdn_orangtua" />
 			<field name="groups"
 				eval="[(4, ref('pesantren_kesantrian.group_kesantrian_orang_tua'))]" />
-			<field name="domain_force">
-				[
-				('partner_id.id','=',user.partner_id.id)
-				]
-			</field>
+			<field name="domain_force">[
+				('partner_id', '=', user.partner_id.id)
+			]</field>
 		</record>
 
 		<record id="rule_data_orangtua_manager" model="ir.rule">

@@ -6,7 +6,7 @@
             <field name="name">cdn.absensi_siswa.view.list.public</field>
             <field name="model">cdn.absensi_siswa</field>
             <field name="arch" type="xml">
-                <list>
+                <list create="false">
                     <field name="row_number" string="#" />
                     <field name="name" optional="show" />
                     <field name="tanggal" optional="show" />
@@ -29,7 +29,7 @@
             <field name="name">cdn.absensi_siswa.view.form.public</field>
             <field name="model">cdn.absensi_siswa</field>
             <field name="arch" type="xml">
-                <form string="">
+                <form string="" create="false" edit="false" delete="false">
                     <header>
                         <field name="state" widget="statusbar" />
                     </header>
@@ -172,7 +172,7 @@
                 (0, 0, {'view_mode': 'form', 'view_id': ref('cdn_absensi_siswa_view_form_public')})]" />
             <field name="search_view_id" ref="cdn_absensi_siswa_search_public" />
             <field name="domain">[]</field>
-            <field name="context">{}</field>
+            <field name="context">{'create': False, 'edit': False, 'delete': False}</field>
         </record>
         <!-- Tambahkan action tombol di tree view -->
         <record id="action_absensi_filter_wizard_server" model="ir.actions.server">

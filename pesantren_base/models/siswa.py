@@ -279,6 +279,7 @@ class siswa(models.Model):
 
             # Link ke siswa
             self.orangtua_id = orangtua.id
+            self.orangtua_ids = [(4, orangtua.id)]
 
             _logger.info(f"Orangtua baru dibuat untuk siswa {self.name}")
             return orangtua
@@ -366,6 +367,12 @@ class siswa(models.Model):
         self._validate_nama_nis(vals, record=None)
         res = super(siswa, self).create(vals)
 
+        # Sinkronisasi orangtua_id ke orangtua_ids jika diisi
+        if res.orangtua_id and res.orangtua_id not in res.orangtua_ids:
+            res.orangtua_ids = [(4, res.orangtua_id.id)]
+        elif res.orangtua_ids and not res.orangtua_id:
+            res.orangtua_id = res.orangtua_ids[0].id
+
         # Create orangtua jika data akun diisi tapi orangtua_id kosong
         if (vals.get('email') or vals.get('nomor_login')) and not vals.get('orangtua_id'):
             res._create_orangtua_from_akun()
@@ -412,6 +419,14 @@ class siswa(models.Model):
                 vals['tanggal_keluar'] = False
 
         res = super(siswa, self).write(vals)
+
+        # Sinkronisasi orangtua_id dan orangtua_ids
+        if 'orangtua_id' in vals or 'orangtua_ids' in vals:
+            for record in self:
+                if record.orangtua_id and record.orangtua_id not in record.orangtua_ids:
+                    record.orangtua_ids = [(4, record.orangtua_id.id)]
+                elif record.orangtua_ids and not record.orangtua_id:
+                    record.orangtua_id = record.orangtua_ids[0].id
 
         # Jika edit akun tapi belum ada orangtua, buat baru
         akun_fields = ['email', 'nomor_login', 'password']
@@ -467,7 +482,15 @@ class siswa(models.Model):
     wali_hubungan = fields.Char(string="Hubungan dengan Siswa",  help="")
 
     orangtua_id = fields.Many2one(
-        comodel_name="cdn.orangtua",  string="Orangtua",  help="")
+        comodel_name="cdn.orangtua",  string="Orang Tua Utama",  help="Akun orang tua utama (penanggung jawab)")
+    orangtua_ids = fields.Many2many(
+        comodel_name="cdn.orangtua",
+        relation="cdn_siswa_orangtua_rel",
+        column1="siswa_id",
+        column2="orangtua_id",
+        string="Akun Orang Tua / Wali",
+        help="Daftar akun orang tua (ayah, ibu, wali) yang terhubung dengan santri ini"
+    )
     tahunajaran_id = fields.Many2one(
         comodel_name="cdn.ref_tahunajaran",  string="Tahun Ajaran",  help="")
     ruang_kelas_id = fields.Many2one(
@@ -716,4 +739,26 @@ class siswa(models.Model):
                     f"Saran: Ubah status santri menjadi Non-Aktif / Keluar / Alumni."
                 )
         return super(siswa, self).unlink()
+
+    def init(self):
+        super().init()
+        # Migrasi data: pastikan semua data orangtua_id yang sudah ada tercatat di relasi Many2many cdn_siswa_orangtua_rel
+        try:
+            self._cr.execute("""
+                CREATE TABLE IF NOT EXISTS cdn_siswa_orangtua_rel (
+                    siswa_id INTEGER NOT NULL,
+                    orangtua_id INTEGER NOT NULL,
+                    PRIMARY KEY (siswa_id, orangtua_id)
+                );
+                INSERT INTO cdn_siswa_orangtua_rel (siswa_id, orangtua_id)
+                SELECT s.id, s.orangtua_id 
+                FROM cdn_siswa s
+                WHERE s.orangtua_id IS NOT NULL
+                  AND NOT EXISTS (
+                      SELECT 1 FROM cdn_siswa_orangtua_rel r 
+                      WHERE r.siswa_id = s.id AND r.orangtua_id = s.orangtua_id
+                  );
+            """)
+        except Exception as e:
+            _logger.warning("Auto-migration cdn_siswa_orangtua_rel failed: %s", e)
 
