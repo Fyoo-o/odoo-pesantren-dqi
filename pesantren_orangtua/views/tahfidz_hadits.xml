@@ -23,6 +23,6 @@
             <field name="act_window_id" ref="cdn_tahfidz_hadits_action" />
         </record>
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="cdn_tahfidz_hadits_menu_act" name="Tahfidz Hadits" parent="tahfidz_menu_categ" action="cdn_tahfidz_hadits_action" sequence="20"/>
+        <menuitem id="cdn_tahfidz_hadits_menu_act" name="Tahfidz Hadits" parent="kesantrian_menu_categ" action="cdn_tahfidz_hadits_action" sequence="25"/>
     </data>
 </odoo>

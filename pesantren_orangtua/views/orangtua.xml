@@ -18,11 +18,8 @@
             </field>
         </record>
 
-        <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="ortu_orangtua_menu_act" name="Orang Tua" parent="informasi_menu_categ" action="ortu_cdn_orangtua_action" sequence="5"/>
-    
-        
-    
+        <!-- Menu Data Orang Tua: Dapat diakses oleh Admin / Manager, tersembunyi dari POV Orang Tua -->
+        <menuitem id="ortu_orangtua_menu_act" name="Data Orang Tua" parent="orangtua_menu_root" action="ortu_cdn_orangtua_action" sequence="60" groups="pesantren_base.group_sekolah_admin,pesantren_kesantrian.group_kesantrian_manager"/>
     </data>
     
 </odoo>

@@ -27,6 +27,6 @@
             <field name="act_window_id" ref="cdn_tahfidz_quran_action" />
         </record>
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="cdn_tahfidz_quran_menu_act" name="Tahfidz Al-Qur'an" parent="tahfidz_menu_categ" action="cdn_tahfidz_quran_action" sequence="10"/>
+        <menuitem id="cdn_tahfidz_quran_menu_act" name="Tahfidz Al-Qur'an" parent="kesantrian_menu_categ" action="cdn_tahfidz_quran_action" sequence="20"/>
     </data>
 </odoo>

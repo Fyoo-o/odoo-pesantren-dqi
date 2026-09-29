@@ -150,7 +150,16 @@ class SiswaInherit(models.Model):
 
     def action_setlimit(self):
         context = dict(self.env.context)
-        active_ids = context.get('active_ids', [])
+        active_ids = context.get('active_ids', self.ids)
+        target_id = self.id if len(self) == 1 else (active_ids[0] if active_ids else False)
+
+        ctx = {
+            'default_partner_ids': active_ids,
+            'active_model': 'cdn.siswa',
+        }
+        if target_id:
+            ctx['default_santri_id'] = target_id
+            ctx['active_id'] = target_id
 
         return {
             'name': 'Atur Limit Penggunaan Saldo',
@@ -158,7 +167,7 @@ class SiswaInherit(models.Model):
             'res_model': 'set.limit.santri',
             'view_mode': 'form',
             'target': 'new',
-            'context': {'default_partner_ids': active_ids}
+            'context': ctx
         }
 
 

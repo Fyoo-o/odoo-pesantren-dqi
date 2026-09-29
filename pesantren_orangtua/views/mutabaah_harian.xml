@@ -23,6 +23,6 @@
             <field name="act_window_id" ref="cdn_mutabaah_harian_action" />
         </record>
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="cdn_mutabaah_harian_menu_act" name="Mutaba'ah Harian" parent="kesantrian_menu_categ" action="cdn_mutabaah_harian_action" sequence="15"/>
+        <menuitem id="cdn_mutabaah_harian_menu_act" name="Mutaba'ah Harian" parent="kesantrian_menu_categ" action="cdn_mutabaah_harian_action" sequence="40"/>
     </data>
 </odoo>

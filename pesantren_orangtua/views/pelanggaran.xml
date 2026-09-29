@@ -23,6 +23,6 @@
             <field name="act_window_id" ref="cdn_pelanggaran_action" />
         </record>
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="cdn_pelanggaran_menu_act" name="Pelanggaran" parent="aktivitas_menu_categ" action="cdn_pelanggaran_action" sequence="10"/>
+        <menuitem id="cdn_pelanggaran_menu_act" name="Pelanggaran" parent="aktivitas_menu_categ" action="cdn_pelanggaran_action" sequence="20"/>
     </data>
 </odoo>

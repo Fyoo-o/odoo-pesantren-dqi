@@ -23,6 +23,6 @@
             <field name="act_window_id" ref="cdn_kesehatan_action" />
         </record>
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="cdn_kesehatan_menu_act" name="Kesehatan" parent="aktivitas_menu_categ" action="cdn_kesehatan_action" sequence="20"/>
+        <menuitem id="cdn_kesehatan_menu_act" name="Kesehatan" parent="aktivitas_menu_categ" action="cdn_kesehatan_action" sequence="30"/>
     </data>
 </odoo>

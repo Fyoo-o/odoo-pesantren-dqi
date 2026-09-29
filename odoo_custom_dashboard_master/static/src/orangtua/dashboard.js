@@ -3,6 +3,7 @@ import { registry } from "@web/core/registry";
 import { OrangtuaChartRenderer } from "./chart_renderer/chart_renderer";
 import { OrangtuaKpiCard } from "./kpi_card/kpi_card";
 import { OrangtuaCardList1, OrangtuaCardList2 } from "./card_list/card_list";
+import { OrangtuaPengumumanCard } from "./pengumuman_card/pengumuman_card";
 import { Component, useState, useRef, onMounted, onWillUnmount } from "@odoo/owl";
 
 class OwlOrangtuaDashboard extends Component {
@@ -233,6 +234,7 @@ OwlOrangtuaDashboard.components = {
   OrangtuaKpiCard,
   OrangtuaCardList1,
   OrangtuaCardList2,
+  OrangtuaPengumumanCard,
 };
 
 registry

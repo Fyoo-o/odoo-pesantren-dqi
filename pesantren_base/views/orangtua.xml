@@ -47,7 +47,7 @@
                                 <field name="hubungan" />
                                 <field name="label" widget="many2many_tags"
                                     options="{'color_field': 'color'}" />
-                                <field name="isLimit" widget="boolean_toogle" />
+                                <field name="isLimit" widget="boolean_toggle" />
                             </group>
                         </group>
                         <notebook>

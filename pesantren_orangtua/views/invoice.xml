@@ -121,7 +121,7 @@
             </field>
         </record>
 
-        <!-- Menu Item -->
-        <menuitem id="tagihan_orangtua_menu_act" name="Tagihan" parent="keuangan_menu_categ" action="tagihan_orangtua_action" sequence="10"/>
+        <!-- Menu Item (Di-hide untuk POV Orang Tua) -->
+        <menuitem id="tagihan_orangtua_menu_act" name="Tagihan" parent="keuangan_menu_categ" action="tagihan_orangtua_action" sequence="10" groups="base.group_no_one"/>
     </data>
 </odoo>

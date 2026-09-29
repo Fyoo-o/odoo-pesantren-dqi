@@ -23,6 +23,6 @@
             <field name="act_window_id" ref="cdn_penilaian_quran_action" />
         </record>
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="cdn_penilaian_quran_menu_act" name="Penilaian Halaqoh" parent="halaqoh_menu_categ" action="cdn_penilaian_quran_action" sequence="10"/>
+        <menuitem id="cdn_penilaian_quran_menu_act" name="Penilaian Halaqoh" parent="kesantrian_menu_categ" action="cdn_penilaian_quran_action" sequence="32"/>
     </data>
 </odoo>

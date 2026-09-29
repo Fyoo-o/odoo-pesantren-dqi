@@ -27,6 +27,6 @@
             <field name="act_window_id" ref="cdn_tahsin_quran_action" />
         </record>
         <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="cdn_tahsin_quran_menu_act" name="Tahsin Al-Qur'an" parent="tahsin_menu_categ" action="cdn_tahsin_quran_action" sequence="10"/>
+        <menuitem id="cdn_tahsin_quran_menu_act" name="Tahsin Al-Qur'an" parent="kesantrian_menu_categ" action="cdn_tahsin_quran_action" sequence="30"/>
     </data>
 </odoo>

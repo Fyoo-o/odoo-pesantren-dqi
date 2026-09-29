@@ -149,6 +149,6 @@
         </record>
 
         <!-- Menu di bawah menu Orang Tua > Kesantrian -->
-        <menuitem id="cdn_absensi_malam_menu_orangtua" name="Absensi Kamar" parent="kesantrian_menu_categ" action="cdn_absensi_malam_line_action_orangtua" sequence="15"/>
+        <menuitem id="cdn_absensi_malam_menu_orangtua" name="Absensi Kamar" parent="kesantrian_menu_categ" action="cdn_absensi_malam_line_action_orangtua" sequence="50"/>
     </data>
 </odoo>

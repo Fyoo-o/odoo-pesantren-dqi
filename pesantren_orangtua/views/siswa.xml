@@ -17,8 +17,8 @@
                 </p>
             </field>
         </record>
-        <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="ortu_siswa_menu_act" name="Santri" parent="informasi_menu_categ" action="ortu_cdn_siswa_action" sequence="2"/>
+        <!-- Menu Data Santri di bawah Kesantrian (urutan pertama) -->
+        <menuitem id="ortu_siswa_menu_act" name="Data Santri" parent="kesantrian_menu_categ" action="ortu_cdn_siswa_action" sequence="10"/>
     
         
     

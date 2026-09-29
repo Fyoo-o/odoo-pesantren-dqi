@@ -50,7 +50,7 @@
             </field>
         </record>
 
-        <!-- This Menu Item must have a parent and an action -->
-        <menuitem id="pengumuman_menu_act" name="Pengumuman" parent="informasi_menu_categ" action="cdn_pengumuman_action" sequence="60"/>
+        <!-- Menu Pengumuman langsung di root Orang Tua (Top-level navbar) -->
+        <menuitem id="pengumuman_menu_act" name="Pengumuman" parent="orangtua_menu_root" action="cdn_pengumuman_action" sequence="50"/>
     </data>
 </odoo>

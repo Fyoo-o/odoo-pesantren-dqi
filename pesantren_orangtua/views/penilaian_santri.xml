@@ -109,11 +109,11 @@
             <field name="act_window_id" ref="cdn_penilaian_santri_action_orangtua"/>
         </record>
 
-        <!-- Menu di bawah menu Orang Tua > Aktivitas -->
+        <!-- Menu Penilaian Santri (Ujian Tahfidz) di bawah Kesantrian -->
         <menuitem id="cdn_penilaian_santri_menu_orangtua"
                   name="Penilaian Santri"
-                  parent="aktivitas_menu_categ"
+                  parent="kesantrian_menu_categ"
                   action="cdn_penilaian_santri_action_orangtua"
-                  sequence="5"/>
+                  sequence="35"/>
     </data>
 </odoo>

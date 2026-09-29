@@ -291,12 +291,10 @@
         />
       </div>
 
-      <!-- Bar Chart -->
+      <!-- Pengumuman Pesantren Card -->
       <div class="row mx-0 my-3">
         <div class="col-lg-12 col-md-12 col-sm-12 m-0 p-2">
-          <div class="shadow-sm border p-4 bg-white h-100">
-            <OrangtuaChartRenderer type="'bar'" title="'Tagihan Santri'" startDate="state.selectedDateRange?.start" endDate="state.selectedDateRange?.end" />
-          </div>
+          <OrangtuaPengumumanCard />
         </div>
       </div>
 

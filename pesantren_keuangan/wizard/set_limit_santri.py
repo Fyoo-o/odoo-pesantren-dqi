@@ -12,6 +12,8 @@ class SetLimitSantri(models.TransientModel):
 
     def _get_partner_id(self):
         context = self._context or {}
+        if context.get('default_santri_id'):
+            return context.get('default_santri_id')
         active_id = context.get('active_id', False)
         model = self._context.get('active_model')
         if not active_id:
@@ -24,7 +26,7 @@ class SetLimitSantri(models.TransientModel):
             if not Siswa:
                 _logger.error(f"Tidak ditemukan partner_id untuk siswa {active_id}")
                 return False
-            partner_id = Siswa
+            partner_id = Siswa.id
             _logger.info("Id Dari Partner %s", partner_id)
         return partner_id
         

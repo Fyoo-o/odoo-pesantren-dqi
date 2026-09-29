@@ -40,6 +40,10 @@ class OrangTua(models.Model):
                     self.env.ref('pesantren_keuangan.group_keuangan_user').id,
                     self.env.ref('account.group_account_readonly').id,
                 ]
+                group_limit = self.env.ref(
+                    'pesantren_kesantrian.group_kesantrian_orang_tua_acces_limit', raise_if_not_found=False)
+                if res.isLimit and group_limit:
+                    group_ids.append(group_limit.id)
 
                 commands = []
                 if group_portal:
@@ -52,6 +56,7 @@ class OrangTua(models.Model):
                 existing_user.sudo().write({
                     'groups_id': commands
                 })
+                res._update_user_group_limit()
                 return res
 
         login_str = res.email or res.no_hp
@@ -64,6 +69,27 @@ class OrangTua(models.Model):
             # Ambil 8 char pertama email, atau default
             res.password = login_str[:8] if login_str else 'default123'
 
+        user_groups = [
+            # Assign grup internal user (standard)
+            self.env.ref('base.group_user').id,
+            # Assign grup orang tua
+            self.env.ref(
+                'pesantren_kesantrian.group_kesantrian_orang_tua').id,
+            # Assign grup sekolah user
+            self.env.ref('pesantren_base.group_sekolah_user').id,
+            # Assign grup sekolah user
+            self.env.ref('pesantren_kesantrian.group_kesantrian_user').id,
+            # Assign grup guru user
+            self.env.ref('pesantren_guru.group_guru_user').id,
+            # Assign grup keuangan user
+            self.env.ref('pesantren_keuangan.group_keuangan_user').id,
+            self.env.ref('account.group_account_readonly').id,
+        ]
+        group_limit = self.env.ref(
+            'pesantren_kesantrian.group_kesantrian_orang_tua_acces_limit', raise_if_not_found=False)
+        if res.isLimit and group_limit:
+            user_groups.append(group_limit.id)
+
         # Membuat user baru dengan login berbasis email/hp dan password default
         user = self.env['res.users'].with_context(no_reset_password=True).sudo().create({
             'login': login_str,  # Menggunakan email atau no hp
@@ -73,28 +99,15 @@ class OrangTua(models.Model):
             'partner_id': res.partner_id.id,  # Hubungkan dengan partner terkait
             # Password default (sekarang pasti string)
             'password': res.password,
-            'groups_id': [(6, 0, [
-                # Assign grup internal user (standard)
-                self.env.ref('base.group_user').id,
-                # Assign grup orang tua
-                self.env.ref(
-                    'pesantren_kesantrian.group_kesantrian_orang_tua').id,
-                # Assign grup sekolah user
-                self.env.ref('pesantren_base.group_sekolah_user').id,
-                # Assign grup sekolah user
-                self.env.ref('pesantren_kesantrian.group_kesantrian_user').id,
-                # Assign grup guru user
-                self.env.ref('pesantren_guru.group_guru_user').id,
-                # Assign grup keuangan user
-                self.env.ref('pesantren_keuangan.group_keuangan_user').id,
-                self.env.ref('account.group_account_readonly').id,
-            ])]
+            'groups_id': [(6, 0, user_groups)]
         })
 
         res.user_id = user.id
 
         if res.partner_id:
             res.partner_id.user_id = user.id
+
+        res._update_user_group_limit()
 
         return res
 
@@ -120,6 +133,8 @@ class OrangTua(models.Model):
             self.env.ref('account.group_account_readonly', raise_if_not_found=False),
         ]
         group_ids = [g.id for g in group_ids if g]
+        group_limit = self.env.ref(
+            'pesantren_kesantrian.group_kesantrian_orang_tua_acces_limit', raise_if_not_found=False)
 
         # Batch find users
         users = self.mapped('user_id')
@@ -135,6 +150,16 @@ class OrangTua(models.Model):
             users.sudo().write({
                 'groups_id': [(4, gid) for gid in group_ids]
             })
+            if group_limit:
+                for rec in self:
+                    rec_users = rec.user_id | (rec.partner_id.user_ids if rec.partner_id else self.env['res.users'])
+                    if not rec_users and rec.email:
+                        rec_users = self.env['res.users'].sudo().search([('login', '=', rec.email)])
+                    for u in rec_users:
+                        if rec.isLimit:
+                            u.sudo().write({'groups_id': [(4, group_limit.id)]})
+                        else:
+                            u.sudo().write({'groups_id': [(3, group_limit.id)]})
 
         return {
             'type': 'ir.actions.client',
