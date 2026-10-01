@@ -1,27 +1,109 @@
 <?xml version='1.0' encoding='utf-8'?>
 <odoo>
     <data>
-        <!-- cdn.siswa action window -->
+        <!-- Tree View Santri Khusus Orang Tua -->
+        <record id="ortu_siswa_view_tree" model="ir.ui.view">
+            <field name="name">ortu.cdn.siswa.view.list</field>
+            <field name="model">cdn.siswa</field>
+            <field name="priority">20</field>
+            <field name="arch" type="xml">
+                <list create="false" edit="false" delete="false">
+                    <field name="nis" string="NIS"/>
+                    <field name="name" string="Nama Santri"/>
+                    <field name="namapanggilan" string="Panggilan"/>
+                    <field name="jns_kelamin" string="Jenis Kelamin"/>
+                    <field name="jenjang" string="Jenjang"/>
+                    <field name="ruang_kelas_id" string="Ruang Kelas"/>
+                    <field name="kamar_id" string="Kamar Asrama"/>
+                    <field name="musyrif_id" string="Musyrif"/>
+                    <field name="saldo_uang_saku" string="Saldo Uang Saku"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form View Santri Khusus Orang Tua (Clean & Read-Only) -->
+        <record id="ortu_siswa_view_form" model="ir.ui.view">
+            <field name="name">ortu.cdn.siswa.view.form</field>
+            <field name="model">cdn.siswa</field>
+            <field name="priority">20</field>
+            <field name="arch" type="xml">
+                <form string="Profil Santri" create="false" edit="false" delete="false">
+                    <sheet>
+                        <field name="image_1920" widget="image" class="oe_avatar" options="{'preview_image': 'image_128'}"/>
+                        <div class="oe_title">
+                            <label for="name" string="Nama Santri"/>
+                            <h1><field name="name" readonly="1"/></h1>
+                            <h3>
+                                <span class="text-muted">NIS: </span><field name="nis" readonly="1" class="oe_inline"/>
+                                <span class="text-muted" invisible="not nisn"> | NISN: </span><field name="nisn" readonly="1" class="oe_inline" invisible="not nisn"/>
+                            </h3>
+                        </div>
+                        <group>
+                            <group string="Data Akademik &amp; Asrama">
+                                <field name="jenjang" readonly="1"/>
+                                <field name="ruang_kelas_id" readonly="1" options="{'no_open': True}"/>
+                                <field name="kamar_id" readonly="1" options="{'no_open': True}"/>
+                                <field name="musyrif_id" readonly="1" options="{'no_open': True}"/>
+                                <field name="halaqoh_id" readonly="1" options="{'no_open': True}"/>
+                                <field name="penanggung_jawab_id" readonly="1" options="{'no_open': True}"/>
+                                <field name="saldo_uang_saku" readonly="1"/>
+                            </group>
+                            <group string="Data Pribadi">
+                                <field name="namapanggilan" readonly="1"/>
+                                <field name="jns_kelamin" readonly="1"/>
+                                <field name="tmp_lahir" readonly="1"/>
+                                <field name="tgl_lahir" readonly="1"/>
+                                <field name="gol_darah" readonly="1"/>
+                                <field name="anak_ke" readonly="1"/>
+                                <field name="jml_saudara_kandung" readonly="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Informasi Orang Tua">
+                                <group>
+                                    <group string="Data Ayah">
+                                        <field name="ayah_nama" readonly="1"/>
+                                        <field name="ayah_telp" readonly="1"/>
+                                        <field name="ayah_pekerjaan_id" readonly="1" options="{'no_open': True}"/>
+                                    </group>
+                                    <group string="Data Ibu">
+                                        <field name="ibu_nama" readonly="1"/>
+                                        <field name="ibu_telp" readonly="1"/>
+                                        <field name="ibu_pekerjaan_id" readonly="1" options="{'no_open': True}"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Alamat Tempat Tinggal">
+                                <group>
+                                    <field name="street" readonly="1"/>
+                                    <field name="kota_id" readonly="1" options="{'no_open': True}"/>
+                                    <field name="propinsi_id" readonly="1" options="{'no_open': True}"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- cdn.siswa action window khusus Orang Tua -->
         <record id="ortu_cdn_siswa_action" model="ir.actions.act_window">
-            <field name="name">Data Siswa</field>
+            <field name="name">Data Santri</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.siswa</field>
             <field name="view_mode">list,form</field>
             <field name="domain">[]</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'list', 'view_id': ref('ortu_siswa_view_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('ortu_siswa_view_form')})]"/>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
-                    <!-- Add Text Here -->
-                </p><p>
-                    <!-- More detaccount.payment<ails about what a user can do with this object will be OK --> 
-                
+                    Belum ada data santri yang terhubung dengan akun Anda.
                 </p>
             </field>
         </record>
+
         <!-- Menu Data Santri di bawah Kesantrian (urutan pertama) -->
         <menuitem id="ortu_siswa_menu_act" name="Data Santri" parent="kesantrian_menu_categ" action="ortu_cdn_siswa_action" sequence="10"/>
-    
-        
-    
     </data>
-    
 </odoo>

@@ -153,85 +153,90 @@
                             </page>
 
                             <page name="ortu" string="Orang Tua">
-                                <group string="Akun Orang Tua">
-                                    <field name="orangtua_ids" widget="many2many_tags" options="{'no_create_edit': True}" placeholder="Pilih akun orang tua yang terhubung (Ayah, Ibu, Wali)..."/>
-                                    <field name="orangtua_id" options="{'no_create_edit': True}" placeholder="Pilih orang tua utama (penanggung jawab)"/>
+                                <!-- BARIS AKUN TERHUBUNG DI ATAS SENDIRI -->
+                                <group>
+                                    <field name="orangtua_ids" widget="many2many_tags" options="{'no_create_edit': True}" 
+                                           string="Akun Terhubung" 
+                                           placeholder="Pilih atau cari akun orang tua/wali yang terhubung..."/>
+                                    <field name="orangtua_id" invisible="1"/>
                                 </group>
+
+                                <!-- NOTE PANDUAN PENGGUNAAN & SINKRONISASI -->
+                                <div class="alert alert-info d-flex align-items-start mb-3" role="alert">
+                                    <i class="fa fa-info-circle fa-2x me-3 text-info mt-1"/>
+                                    <div>
+                                        <strong class="d-block mb-1">Catatan Penggunaan &amp; Sinkronisasi Akun Terhubung:</strong>
+                                        <div class="text-muted small">
+                                            • <strong>Sinkronisasi Otomatis:</strong> Akun yang dipilih atau dibuat pada formulir <em>Identitas Ayah</em>, <em>Identitas Ibu</em>, dan <em>Identitas Wali</em> di bawah akan otomatis terdaftar pada baris <strong>Akun Terhubung</strong> di atas.<br/>
+                                            • <strong>Penambahan Manual:</strong> Anda juga dapat menambahkan akun secara manual langsung pada baris <strong>Akun Terhubung</strong> di atas jika santri memiliki wali atau penanggung jawab tambahan (misal: paman, kakek, dsb).<br/>
+                                            • <strong>Hak Akses Portal:</strong> Seluruh akun yang terdaftar pada <em>Akun Terhubung</em> dapat login ke portal wali santri untuk memantau data, kehadiran, tahfidz, dan tagihan santri ini.<br/>
+                                            • <strong>Pembuatan Akun Baru:</strong> Jika orang tua belum memiliki akun, cukup lengkapi data identitas di bawah dan centang <em>"Buat Akun Portal"</em>, akun akan otomatis dibuat dan terhubung saat disimpan.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- DATA AYAH -->
                                 <group string="Identitas Ayah">
                                     <group>
-                                        <field name="ayah_nama"/>
-                                        <field name="ayah_tgl_lahir"/>
-                                        <field name="ayah_telp"/>
-                                        <field name="ayah_pekerjaan_id"/>
-                                        <field name="ayah_kantor"/>
-                                        <field name="ayah_agama"/>
+                                        <field name="ayah_id" options="{'no_create_edit': True}" placeholder="Pilih akun Ayah jika sudah terdaftar..." />
+                                        <field name="ayah_nama" />
+                                        <field name="ayah_telp" string="No Telepon/HP (WhatsApp)" />
+                                        <field name="ayah_email" string="Email" widget="email" />
+                                        <field name="ayah_pekerjaan_id" string="Pekerjaan" />
+                                        <field name="ayah_kantor" string="Alamat Kantor" />
                                     </group>
                                     <group>
-                                        <field name="ayah_tmp_lahir"/>
-                                        <field name="ayah_warganegara"/>
-                                        <field name="ayah_email" widget="email"/>
-                                        <field name="ayah_pendidikan_id"/>
-                                        <field name="ayah_penghasilan"/>
+                                        <field name="ayah_tmp_lahir" string="Tempat Lahir" />
+                                        <field name="ayah_tgl_lahir" string="Tgl Lahir" />
+                                        <field name="ayah_agama" string="Agama" />
+                                        <field name="ayah_warganegara" string="Kewarganegaraan" />
+                                        <field name="ayah_pendidikan_id" string="Pendidikan" />
+                                        <field name="ayah_penghasilan" string="Penghasilan/bln" />
+                                        <field name="ayah_user_id" string="User Login Portal" invisible="not ayah_user_id" readonly="1" />
+                                        <field name="ayah_create_user" invisible="ayah_id or ayah_user_id" />
+                                        <field name="ayah_password" string="Password Akun Ayah" widget="password_toggle" invisible="ayah_id or not ayah_create_user" placeholder="Password untuk login portal" />
                                     </group>
                                 </group>
+
+                                <!-- DATA IBU -->
                                 <group string="Identitas Ibu">
                                     <group>
-                                        <field name="ibu_nama"/>
-                                        <field name="ibu_tgl_lahir"/>
-                                        <field name="ibu_telp"/>
-                                        <field name="ibu_pekerjaan_id"/>
-                                        <field name="ibu_kantor"/>
-                                        <field name="ibu_agama"/>
+                                        <field name="ibu_id" options="{'no_create_edit': True}" placeholder="Pilih akun Ibu jika sudah terdaftar..." />
+                                        <field name="ibu_nama" />
+                                        <field name="ibu_telp" string="No Telepon/HP (WhatsApp)" />
+                                        <field name="ibu_email" string="Email" widget="email" />
+                                        <field name="ibu_pekerjaan_id" string="Pekerjaan" />
+                                        <field name="ibu_kantor" string="Alamat Kantor" />
                                     </group>
                                     <group>
-                                        <field name="ibu_tmp_lahir"/>
-                                        <field name="ibu_warganegara"/>
-                                        <field name="ibu_email" widget="email"/>
-                                        <field name="ibu_pendidikan_id"/>
-                                        <field name="ibu_penghasilan"/>
+                                        <field name="ibu_tmp_lahir" string="Tempat Lahir" />
+                                        <field name="ibu_tgl_lahir" string="Tgl Lahir" />
+                                        <field name="ibu_agama" string="Agama" />
+                                        <field name="ibu_warganegara" string="Kewarganegaraan" />
+                                        <field name="ibu_pendidikan_id" string="Pendidikan" />
+                                        <field name="ibu_penghasilan" string="Penghasilan/bln" />
+                                        <field name="ibu_user_id" string="User Login Portal" invisible="not ibu_user_id" readonly="1" />
+                                        <field name="ibu_create_user" invisible="ibu_id or ibu_user_id" />
+                                        <field name="ibu_password" string="Password Akun Ibu" widget="password_toggle" invisible="ibu_id or not ibu_create_user" placeholder="Password untuk login portal" />
                                     </group>
                                 </group>
-                                <group string="Identitas Wali">
-                                    <group>
-                                        <field name="wali_nama"/>
-                                        <field name="wali_tgl_lahir"/>
-                                        <field name="wali_email" widget="email"/>
-                                        <field name="wali_hubungan"/>
-                                    </group>
-                                    <group>
-                                        <field name="wali_tmp_lahir"/>
-                                        <field name="wali_telp"/>
-                                        <field name="wali_agama"/>
-                                    </group>
-                                </group>
-                            </page>
 
-                            <!-- TAB AKUN LOGIN (sama) -->
-                            <page string="Akun">
-                                <!-- sama seperti di siswa.xml -->
-                                <group string="Akun Login" class="o_group">
-                                    <group colspan="2" style="margin-bottom: 8px;">
-                                        <div class="alert alert-info" role="alert">
-                                            <i class="fa fa-info-circle me-1"/> 
-                                            <strong>Info:</strong> Jika belum memilih Orang Tua, 
-                                            data akun yang diisi akan otomatis membuat record Orang Tua baru.
-                                        </div>
-                                    </group>
-                                    <group colspan="2" style="margin-top: -8px;" invisible="not orangtua_id">
-                                        <div class="alert alert-warning" role="alert">
-                                            <i class="fa fa-warning me-1"/> 
-                                            <strong>Perhatian:</strong> Perubahan data akun akan otomatis 
-                                            meng-update data Orang Tua yang terhubung.
-                                        </div>
+                                <!-- DATA WALI -->
+                                <group string="Identitas Wali (Opsional)">
+                                    <group>
+                                        <field name="wali_id" options="{'no_create_edit': True}" placeholder="Pilih akun Wali jika sudah terdaftar..." />
+                                        <field name="wali_nama" />
+                                        <field name="wali_hubungan" string="Hubungan dg Siswa" />
+                                        <field name="wali_telp" string="No Telepon/HP" />
+                                        <field name="wali_email" string="Email" widget="email" />
                                     </group>
                                     <group>
-                                        <field name="email" placeholder="Email login"/>
-                                    </group>
-                                    <group>
-                                        <field name="nomor_login" placeholder="Nomor HP/WA"/>
-                                    </group>
-                                    <group>
-                                        <field name="password" widget="password_toggle" placeholder="Kata sandi"/>
+                                        <field name="wali_tmp_lahir" string="Tempat Lahir" />
+                                        <field name="wali_tgl_lahir" string="Tgl Lahir" />
+                                        <field name="wali_agama" string="Agama" />
+                                        <field name="wali_user_id" string="User Login Portal" invisible="not wali_user_id" readonly="1" />
+                                        <field name="wali_create_user" invisible="wali_id or wali_user_id" />
+                                        <field name="wali_password" string="Password Akun Wali" widget="password_toggle" invisible="wali_id or not wali_create_user" placeholder="Password untuk login portal" />
                                     </group>
                                 </group>
                             </page>

@@ -34,11 +34,13 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
-.card {
-    border: none;
-    border-radius: 12px;
-}
-.card-header {
-   background: linear-gradient(135deg, #00a65a, #008d4c);
-    border-radius: 12px 12px 0 0;
+.musyrif-dashboard {
+  .card {
+      border: none;
+      border-radius: 12px;
+  }
+  .card-header {
+     background: linear-gradient(135deg, #00a65a, #008d4c);
+      border-radius: 12px 12px 0 0;
+  }
 }

@@ -7,6 +7,66 @@ class OrangTua(models.Model):
     _inherit = 'cdn.orangtua'
 
     password = fields.Char(store=True)
+    santri_count = fields.Integer(string="Jumlah Santri", compute="_compute_santri_count")
+
+    @api.depends('siswa_ids')
+    def _compute_santri_count(self):
+        for rec in self:
+            rec.santri_count = len(rec.siswa_ids)
+
+    def action_view_santri(self):
+        self.ensure_one()
+        return {
+            'name': _('Santri'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'cdn.siswa',
+            'view_mode': 'list,form',
+            'domain': [('id', 'in', self.siswa_ids.ids)],
+            'context': {'default_orangtua_ids': [(4, self.id)]},
+        }
+
+    def _sync_to_santri(self):
+        """Menyelaraskan data orang tua ke data identitas santri (Ayah/Ibu/Wali)"""
+        for record in self:
+            if not record.siswa_ids or not record.hubungan:
+                continue
+            for santri in record.siswa_ids:
+                vals_santri = {}
+                if record.hubungan == 'ayah':
+                    if not santri.ayah_id:
+                        vals_santri['ayah_id'] = record.id
+                    if not santri.ayah_nama:
+                        vals_santri['ayah_nama'] = record.name
+                    if not santri.ayah_telp:
+                        vals_santri['ayah_telp'] = record.mobile or record.phone
+                    if not santri.ayah_email:
+                        vals_santri['ayah_email'] = record.email
+                elif record.hubungan == 'ibu':
+                    if not santri.ibu_id:
+                        vals_santri['ibu_id'] = record.id
+                    if not santri.ibu_nama:
+                        vals_santri['ibu_nama'] = record.name
+                    if not santri.ibu_telp:
+                        vals_santri['ibu_telp'] = record.mobile or record.phone
+                    if not santri.ibu_email:
+                        vals_santri['ibu_email'] = record.email
+                elif record.hubungan == 'wali':
+                    if not santri.wali_id:
+                        vals_santri['wali_id'] = record.id
+                    if not santri.wali_nama:
+                        vals_santri['wali_nama'] = record.name
+                    if not santri.wali_telp:
+                        vals_santri['wali_telp'] = record.mobile or record.phone
+                    if not santri.wali_email:
+                        vals_santri['wali_email'] = record.email
+
+                # Pastikan orangtua_ids pada santri memuat record ini
+                cur_parent_ids = santri.orangtua_ids.ids
+                if record.id not in cur_parent_ids:
+                    vals_santri['orangtua_ids'] = [(4, record.id)]
+
+                if vals_santri:
+                    santri.with_context(skip_sync_orangtua=True).sudo().write(vals_santri)
 
     @api.model
     def create(self, vals):
@@ -57,9 +117,10 @@ class OrangTua(models.Model):
                     'groups_id': commands
                 })
                 res._update_user_group_limit()
+                res._sync_to_santri()
                 return res
 
-        login_str = res.email or res.no_hp
+        login_str = res.email or res.mobile or res.phone
         if not login_str:
             return res
 
@@ -108,6 +169,7 @@ class OrangTua(models.Model):
             res.partner_id.user_id = user.id
 
         res._update_user_group_limit()
+        res._sync_to_santri()
 
         return res
 
@@ -215,5 +277,23 @@ class OrangTua(models.Model):
             for record in self:
                 if record.partner_id:
                     record.partner_id.sudo().write({'user_id': record.user_id.id})
+
+        # Update user login jika email diubah
+        if 'email' in vals and vals.get('email'):
+            for record in self:
+                if record.user_id and record.user_id.login != vals['email']:
+                    conflict = self.env['res.users'].sudo().search([('login', '=', vals['email']), ('id', '!=', record.user_id.id)], limit=1)
+                    if not conflict:
+                        record.user_id.sudo().write({'login': vals['email'], 'email': vals['email']})
+
+        # Update nama user jika nama diubah
+        if 'name' in vals and vals.get('name'):
+            for record in self:
+                if record.user_id and record.user_id.name != vals['name']:
+                    record.user_id.sudo().write({'name': vals['name']})
+
+        # Sinkronisasi ke santri jika ada penambahan santri atau perubahan hubungan
+        if 'siswa_ids' in vals or 'hubungan' in vals:
+            self._sync_to_santri()
 
         return res

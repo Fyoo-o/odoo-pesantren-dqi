@@ -13,6 +13,7 @@ class OrangTua(models.Model):
 
     partner_id = fields.Many2one(
         'res.partner', 'Partner', required=True, ondelete="cascade")
+    name = fields.Char(related="partner_id.name", inherited=True, readonly=False, string="Nama Lengkap", store=True)
     nik = fields.Char(string="NIK",  help="Nomor Induk Kependudukan Orang Tua/Wali")
     hubungan = fields.Selection(selection=[(
         'ayah', 'Ayah'), ('ibu', 'Ibu'), ('wali', 'Wali')],  string="Hubungan",  help="Status hubungan dengan siswa (Ayah/Ibu/Wali)")
@@ -22,7 +23,7 @@ class OrangTua(models.Model):
         relation="cdn_siswa_orangtua_rel",
         column1="orangtua_id",
         column2="siswa_id",
-        string="Siswa",
+        string="Santri",
         help="Daftar santri/siswa yang terhubung dengan akun orang tua ini")
     isLimit = fields.Boolean(
         string="Akses Limit",

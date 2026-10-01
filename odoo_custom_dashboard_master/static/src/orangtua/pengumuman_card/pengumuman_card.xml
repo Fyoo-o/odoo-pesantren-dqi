@@ -2,24 +2,28 @@
 <templates xml:space="preserve">
   <t t-name="owl.OrangtuaPengumumanCard" owl="1">
     <div class="card shadow-sm border-0 rounded-3 h-100 pengumuman-card">
-      <div class="card-header bg-white border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center gap-2">
-          <div class="p-2 rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; background-color: #fef3c7;">
-            <i class="fa fa-bullhorn" style="font-size: 16px; color: #d97706;"></i>
+      <div class="card-header border-0 py-3 px-4 d-flex justify-content-between align-items-center"
+           style="background: linear-gradient(135deg, #00a65a, #008d4c); border-radius: 12px 12px 0 0;">
+        <div class="d-flex align-items-center gap-3">
+          <div class="p-2 rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+               style="width: 40px; height: 40px; background-color: rgba(255, 255, 255, 0.2); backdrop-filter: blur(4px);">
+            <i class="fa fa-bullhorn text-white" style="font-size: 17px;"></i>
           </div>
           <div>
-            <h5 class="mb-0 fw-bold text-dark" style="font-size: 1.05rem;">Pengumuman Pesantren</h5>
-            <small class="text-muted">Informasi dan edaran resmi dari pihak pesantren</small>
+            <h5 class="mb-0 fw-bold text-white" style="font-size: 1.1rem; letter-spacing: 0.2px;">Pengumuman Pesantren</h5>
+            <small style="color: rgba(255, 255, 255, 0.85); font-size: 0.85rem;">Informasi dan edaran resmi dari pihak pesantren</small>
           </div>
         </div>
-        <button class="btn btn-sm btn-outline-primary rounded-pill px-3" t-on-click="openAllPengumuman">
+        <button class="btn btn-sm btn-light rounded-pill px-3 shadow-sm fw-semibold"
+                t-on-click="openAllPengumuman"
+                style="color: #007a48; border: none; transition: all 0.2s ease;">
           <i class="fa fa-list me-1"></i> Lihat Semua
         </button>
       </div>
-      <div class="card-body p-4">
+      <div class="card-body p-4 bg-white" style="border-radius: 0 0 12px 12px;">
         <t t-if="state.isLoading">
           <div class="d-flex align-items-center justify-content-center py-5">
-            <i class="fa fa-spinner fa-spin text-primary me-2"></i>
+            <i class="fa fa-spinner fa-spin text-success me-2"></i>
             <span class="text-muted">Memuat pengumuman...</span>
           </div>
         </t>
@@ -27,18 +31,20 @@
           <div class="row g-3">
             <t t-foreach="state.pengumumanList" t-as="p" t-key="p.id">
               <div class="col-12 col-md-6 col-lg-4">
-                <div class="p-3 border rounded-3 h-100 pengumuman-item"
+                <div class="p-3 border rounded-3 h-100 pengumuman-item shadow-sm"
                      t-on-click="() => this.onPengumumanClick(p.id)"
-                     style="transition: all 0.2s ease; cursor: pointer; border-left: 4px solid #0d9488 !important; background-color: #fafafa;">
+                     style="transition: all 0.2s ease; cursor: pointer; border-left: 4px solid #00a65a !important; background-color: #ffffff;">
                   <div class="d-flex justify-content-between align-items-start mb-2">
-                    <span class="badge bg-secondary-subtle text-dark fw-normal px-2 py-1" style="font-size: 0.75rem;">
-                      <i class="fa fa-calendar-alt me-1 text-primary"></i> <t t-esc="p.date"/>
+                    <span class="badge rounded-pill px-2 py-1 text-white shadow-sm pengumuman-date-badge"
+                          style="font-size: 0.75rem; background: linear-gradient(135deg, #00a65a, #008d4c); color: #ffffff !important; font-weight: 500;">
+                      <i class="fa fa-calendar-alt me-1 text-white" style="color: #ffffff !important;"></i>
+                      <span style="color: #ffffff !important;"><t t-esc="p.date"/></span>
                     </span>
                   </div>
-                  <h6 class="fw-bold text-dark mb-1 text-truncate" t-att-title="p.name">
+                  <h6 class="fw-bold mb-1 text-truncate" t-att-title="p.name" style="font-size: 0.95rem; color: #1e293b !important;">
                     <t t-esc="p.name"/>
                   </h6>
-                  <p class="text-secondary small mb-0" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 0.85rem; line-height: 1.4;">
+                  <p class="small mb-0" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 0.85rem; line-height: 1.45; color: #64748b !important;">
                     <t t-esc="p.preview"/>
                   </p>
                 </div>

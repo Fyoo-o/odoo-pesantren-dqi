@@ -239,54 +239,158 @@ class siswa(models.Model):
         return res
 
     def _create_orangtua_from_akun(self):
-        """Buat record orangtua baru dari data akun siswa"""
-        self.ensure_one()
+        """Legacy helper: sekarang didelegasikan ke _sync_orangtua_accounts"""
+        return self._sync_orangtua_accounts()
 
-        if self.orangtua_id:
-            return  # Sudah ada orangtua
+    def _sync_orangtua_accounts(self):
+        """Sinkronisasi data orang tua (Ayah, Ibu, Wali) dan pembuatan akun portal secara terpadu."""
+        OrangTua = self.env['cdn.orangtua'].sudo()
+        for record in self:
+            vals_update = {}
+            current_parent_ids = list(record.orangtua_ids.ids)
+            parent_ids = list(current_parent_ids)
 
-        # Validasi: minimal harus ada email atau nomor_login
-        if not self.email and not self.nomor_login:
-            return
+            # Sinkronisasi dua arah: Jika orangtua_ids memiliki akun yang belum terisi di field identitas
+            if not record.ayah_id:
+                ayah_in_tags = record.orangtua_ids.filtered(lambda p: p.hubungan == 'ayah')
+                if ayah_in_tags:
+                    vals_update['ayah_id'] = ayah_in_tags[0].id
+            if not record.ibu_id:
+                ibu_in_tags = record.orangtua_ids.filtered(lambda p: p.hubungan == 'ibu')
+                if ibu_in_tags:
+                    vals_update['ibu_id'] = ibu_in_tags[0].id
+            if not record.wali_id:
+                wali_in_tags = record.orangtua_ids.filtered(lambda p: p.hubungan == 'wali')
+                if wali_in_tags:
+                    vals_update['wali_id'] = wali_in_tags[0].id
 
-        # Siapkan data untuk membuat orangtua
-        orangtua_vals = {
-            'name': f"Orang Tua {self.name}",
-            'email': self.email or False,
-            'mobile': self.nomor_login or False,
-            'phone': self.nomor_login or False,
-            'password': self.password or (self.email[:8] if self.email else 'default123'),
-        }
+            # --- 1. AYAH ---
+            ayah = (vals_update.get('ayah_id') and OrangTua.browse(vals_update['ayah_id'])) or record.ayah_id
+            if not ayah and record.ayah_nama:
+                domain = [('hubungan', '=', 'ayah')]
+                match_conditions = []
+                if record.ayah_email and str(record.ayah_email).strip():
+                    match_conditions.append(('email', '=', str(record.ayah_email).strip()))
+                if record.ayah_telp and str(record.ayah_telp).strip():
+                    telp = str(record.ayah_telp).strip()
+                    match_conditions.extend([('mobile', '=', telp), ('phone', '=', telp)])
 
-        # Tambahkan data ayah/ibu jika ada
-        if self.ayah_nama:
-            orangtua_vals.update({
-                'ayah_nama': self.ayah_nama,
-                'ayah_telp': self.ayah_telp,
-                'ayah_email': self.ayah_email
-            })
+                if match_conditions:
+                    existing = OrangTua.search(domain + ['|'] * (len(match_conditions) - 1) + match_conditions, limit=1)
+                    if existing:
+                        ayah = existing
+                        vals_update['ayah_id'] = ayah.id
+                        vals_update['ayah_create_user'] = False
 
-        if self.ibu_nama:
-            orangtua_vals.update({
-                'ibu_nama': self.ibu_nama,
-                'ibu_telp': self.ibu_telp,
-                'ibu_email': self.ibu_email
-            })
+                if not ayah and record.ayah_create_user:
+                    login_val = record.ayah_email or record.ayah_telp
+                    new_ayah = OrangTua.create({
+                        'name': record.ayah_nama,
+                        'hubungan': 'ayah',
+                        'email': str(record.ayah_email).strip() if record.ayah_email else False,
+                        'phone': str(record.ayah_telp).strip() if record.ayah_telp else False,
+                        'mobile': str(record.ayah_telp).strip() if record.ayah_telp else False,
+                        'password': record.ayah_password or (str(login_val)[:8] if login_val else '123456'),
+                    })
+                    ayah = new_ayah
+                    vals_update['ayah_id'] = ayah.id
+                    vals_update['ayah_create_user'] = False
 
-        try:
-            # Buat record orangtua baru
-            orangtua = self.env['cdn.orangtua'].sudo().create(orangtua_vals)
+            if ayah:
+                if ayah.id not in parent_ids:
+                    parent_ids.append(ayah.id)
+                if record.ayah_password and ayah.password != record.ayah_password:
+                    ayah.write({'password': record.ayah_password})
 
-            # Link ke siswa
-            self.orangtua_id = orangtua.id
-            self.orangtua_ids = [(4, orangtua.id)]
+            # --- 2. IBU ---
+            ibu = (vals_update.get('ibu_id') and OrangTua.browse(vals_update['ibu_id'])) or record.ibu_id
+            if not ibu and record.ibu_nama:
+                domain = [('hubungan', '=', 'ibu')]
+                match_conditions = []
+                if record.ibu_email and str(record.ibu_email).strip():
+                    match_conditions.append(('email', '=', str(record.ibu_email).strip()))
+                if record.ibu_telp and str(record.ibu_telp).strip():
+                    telp = str(record.ibu_telp).strip()
+                    match_conditions.extend([('mobile', '=', telp), ('phone', '=', telp)])
 
-            _logger.info(f"Orangtua baru dibuat untuk siswa {self.name}")
-            return orangtua
+                if match_conditions:
+                    existing = OrangTua.search(domain + ['|'] * (len(match_conditions) - 1) + match_conditions, limit=1)
+                    if existing:
+                        ibu = existing
+                        vals_update['ibu_id'] = ibu.id
+                        vals_update['ibu_create_user'] = False
 
-        except Exception as e:
-            _logger.error(f"Error creating orangtua: {str(e)}")
-            raise UserError(f"Gagal membuat akun orang tua: {str(e)}")
+                if not ibu and record.ibu_create_user:
+                    login_val = record.ibu_email or record.ibu_telp
+                    new_ibu = OrangTua.create({
+                        'name': record.ibu_nama,
+                        'hubungan': 'ibu',
+                        'email': str(record.ibu_email).strip() if record.ibu_email else False,
+                        'phone': str(record.ibu_telp).strip() if record.ibu_telp else False,
+                        'mobile': str(record.ibu_telp).strip() if record.ibu_telp else False,
+                        'password': record.ibu_password or (str(login_val)[:8] if login_val else '123456'),
+                    })
+                    ibu = new_ibu
+                    vals_update['ibu_id'] = ibu.id
+                    vals_update['ibu_create_user'] = False
+
+            if ibu:
+                if ibu.id not in parent_ids:
+                    parent_ids.append(ibu.id)
+                if record.ibu_password and ibu.password != record.ibu_password:
+                    ibu.write({'password': record.ibu_password})
+
+            # --- 3. WALI ---
+            wali = (vals_update.get('wali_id') and OrangTua.browse(vals_update['wali_id'])) or record.wali_id
+            if not wali and record.wali_nama and getattr(record, 'wali_create_user', False):
+                domain = [('hubungan', '=', 'wali')]
+                match_conditions = []
+                if record.wali_email and str(record.wali_email).strip():
+                    match_conditions.append(('email', '=', str(record.wali_email).strip()))
+                if record.wali_telp and str(record.wali_telp).strip():
+                    telp = str(record.wali_telp).strip()
+                    match_conditions.extend([('mobile', '=', telp), ('phone', '=', telp)])
+
+                if match_conditions:
+                    existing = OrangTua.search(domain + ['|'] * (len(match_conditions) - 1) + match_conditions, limit=1)
+                    if existing:
+                        wali = existing
+                        vals_update['wali_id'] = wali.id
+                        vals_update['wali_create_user'] = False
+
+                if not wali and getattr(record, 'wali_create_user', False):
+                    login_val = record.wali_email or record.wali_telp
+                    new_wali = OrangTua.create({
+                        'name': record.wali_nama,
+                        'hubungan': 'wali',
+                        'email': str(record.wali_email).strip() if record.wali_email else False,
+                        'phone': str(record.wali_telp).strip() if record.wali_telp else False,
+                        'mobile': str(record.wali_telp).strip() if record.wali_telp else False,
+                        'password': getattr(record, 'wali_password', False) or (str(login_val)[:8] if login_val else '123456'),
+                    })
+                    wali = new_wali
+                    vals_update['wali_id'] = wali.id
+                    vals_update['wali_create_user'] = False
+
+            if wali:
+                if wali.id not in parent_ids:
+                    parent_ids.append(wali.id)
+                if getattr(record, 'wali_password', False) and wali.password != record.wali_password:
+                    wali.write({'password': record.wali_password})
+
+            # --- 4. SINKRONISASI RELASI MANY2MANY orangtua_ids & orangtua_id UTAMA ---
+            if set(parent_ids) != set(current_parent_ids):
+                vals_update['orangtua_ids'] = [(6, 0, parent_ids)]
+
+            primary_ortu = ayah or ibu or wali or record.orangtua_id
+            if not primary_ortu and parent_ids:
+                primary_ortu = OrangTua.browse(parent_ids[0])
+
+            if primary_ortu and record.orangtua_id != primary_ortu:
+                vals_update['orangtua_id'] = primary_ortu.id
+
+            if vals_update:
+                record.with_context(skip_sync_orangtua=True).sudo().write(vals_update)
 
     def _generate_auto_nis(self, vals=None):
         vals = vals or {}
@@ -373,9 +477,8 @@ class siswa(models.Model):
         elif res.orangtua_ids and not res.orangtua_id:
             res.orangtua_id = res.orangtua_ids[0].id
 
-        # Create orangtua jika data akun diisi tapi orangtua_id kosong
-        if (vals.get('email') or vals.get('nomor_login')) and not vals.get('orangtua_id'):
-            res._create_orangtua_from_akun()
+        # Sinkronisasi dan pembuatan akun orang tua
+        res._sync_orangtua_accounts()
 
         return res
 
@@ -423,23 +526,198 @@ class siswa(models.Model):
         # Sinkronisasi orangtua_id dan orangtua_ids
         if 'orangtua_id' in vals or 'orangtua_ids' in vals:
             for record in self:
-                if record.orangtua_id and record.orangtua_id not in record.orangtua_ids:
+                if record.orangtua_ids:
+                    if not record.orangtua_id or record.orangtua_id not in record.orangtua_ids:
+                        record.orangtua_id = record.orangtua_ids[0].id
+                elif record.orangtua_id:
                     record.orangtua_ids = [(4, record.orangtua_id.id)]
-                elif record.orangtua_ids and not record.orangtua_id:
-                    record.orangtua_id = record.orangtua_ids[0].id
 
-        # Jika edit akun tapi belum ada orangtua, buat baru
-        akun_fields = ['email', 'nomor_login', 'password']
-        has_akun_changes = any(field in vals for field in akun_fields)
-
-        if has_akun_changes:
-            for record in self:
-                if not record.orangtua_id and (record.email or record.nomor_login):
-                    record._create_orangtua_from_akun()
+        relevant_sync_fields = {
+            'ayah_id', 'ibu_id', 'wali_id',
+            'ayah_nama', 'ayah_telp', 'ayah_email',
+            'ibu_nama', 'ibu_telp', 'ibu_email',
+            'wali_nama', 'wali_telp', 'wali_email',
+            'ayah_create_user', 'ibu_create_user', 'wali_create_user',
+            'ayah_password', 'ibu_password', 'wali_password',
+            'orangtua_id', 'orangtua_ids', 'email', 'nomor_login', 'password'
+        }
+        if not self.env.context.get('skip_sync_orangtua') and any(f in vals for f in relevant_sync_fields):
+            self.with_context(skip_sync_orangtua=True)._sync_orangtua_accounts()
 
         return res
 
-    # Data Orang Tua
+    # ========================================================
+    # Data Akun & Relasi Orang Tua Terpadu
+    # ========================================================
+    ayah_id = fields.Many2one(
+        comodel_name="cdn.orangtua",
+        string="Akun Ayah",
+        domain="[('hubungan', '=', 'ayah')]",
+        help="Pilih akun orang tua (Ayah) jika sudah terdaftar",
+        tracking=True
+    )
+    ayah_create_user = fields.Boolean(
+        string="Buat Akun Portal Ayah",
+        default=True,
+        help="Centang untuk membuat akun login portal jika Ayah belum memiliki akun terdaftar"
+    )
+    ayah_password = fields.Char(
+        string="Password Login Ayah",
+        default="123456",
+        help="Password login portal untuk Ayah"
+    )
+    ayah_user_id = fields.Many2one(
+        comodel_name="res.users",
+        string="User Login Ayah",
+        compute="_compute_parent_users",
+        store=True,
+        readonly=True
+    )
+
+    ibu_id = fields.Many2one(
+        comodel_name="cdn.orangtua",
+        string="Akun Ibu",
+        domain="[('hubungan', '=', 'ibu')]",
+        help="Pilih akun orang tua (Ibu) jika sudah terdaftar",
+        tracking=True
+    )
+    ibu_create_user = fields.Boolean(
+        string="Buat Akun Portal Ibu",
+        default=False,
+        help="Centang untuk membuat akun login portal jika Ibu belum memiliki akun terdaftar"
+    )
+    ibu_password = fields.Char(
+        string="Password Login Ibu",
+        default="123456",
+        help="Password login portal untuk Ibu"
+    )
+    ibu_user_id = fields.Many2one(
+        comodel_name="res.users",
+        string="User Login Ibu",
+        compute="_compute_parent_users",
+        store=True,
+        readonly=True
+    )
+
+    wali_id = fields.Many2one(
+        comodel_name="cdn.orangtua",
+        string="Akun Wali",
+        domain="[('hubungan', '=', 'wali')]",
+        help="Pilih akun wali jika sudah terdaftar",
+        tracking=True
+    )
+    wali_create_user = fields.Boolean(
+        string="Buat Akun Portal Wali",
+        default=False,
+        help="Centang untuk membuat akun login portal jika Wali belum memiliki akun terdaftar"
+    )
+    wali_password = fields.Char(
+        string="Password Login Wali",
+        default="123456",
+        help="Password login portal untuk Wali"
+    )
+    wali_user_id = fields.Many2one(
+        comodel_name="res.users",
+        string="User Login Wali",
+        compute="_compute_parent_users",
+        store=True,
+        readonly=True
+    )
+
+    @api.depends('ayah_id.user_id', 'ibu_id.user_id', 'wali_id.user_id')
+    def _compute_parent_users(self):
+        for rec in self:
+            rec.ayah_user_id = rec.ayah_id.user_id.id if rec.ayah_id and rec.ayah_id.user_id else False
+            rec.ibu_user_id = rec.ibu_id.user_id.id if rec.ibu_id and rec.ibu_id.user_id else False
+            rec.wali_user_id = rec.wali_id.user_id.id if rec.wali_id and rec.wali_id.user_id else False
+
+    @api.onchange('ayah_id')
+    def _onchange_ayah_id(self):
+        old_ayah_id = self._origin.ayah_id.id if self._origin.ayah_id else False
+        current_ayah_id = self.ayah_id._origin.id or (self.ayah_id.id if isinstance(self.ayah_id.id, int) else False)
+        if old_ayah_id and old_ayah_id != current_ayah_id:
+            self.orangtua_ids = [(3, old_ayah_id)]
+        if self.ayah_id:
+            self.ayah_nama = self.ayah_id.name
+            self.ayah_telp = self.ayah_id.mobile or self.ayah_id.phone
+            self.ayah_email = self.ayah_id.email
+            self.ayah_create_user = False
+            cur_ids = {p._origin.id or p.id for p in self.orangtua_ids if (p._origin.id or isinstance(p.id, int))}
+            if current_ayah_id and current_ayah_id not in cur_ids:
+                self.orangtua_ids = [(4, current_ayah_id)]
+
+    @api.onchange('ibu_id')
+    def _onchange_ibu_id(self):
+        old_ibu_id = self._origin.ibu_id.id if self._origin.ibu_id else False
+        current_ibu_id = self.ibu_id._origin.id or (self.ibu_id.id if isinstance(self.ibu_id.id, int) else False)
+        if old_ibu_id and old_ibu_id != current_ibu_id:
+            self.orangtua_ids = [(3, old_ibu_id)]
+        if self.ibu_id:
+            self.ibu_nama = self.ibu_id.name
+            self.ibu_telp = self.ibu_id.mobile or self.ibu_id.phone
+            self.ibu_email = self.ibu_id.email
+            self.ibu_create_user = False
+            cur_ids = {p._origin.id or p.id for p in self.orangtua_ids if (p._origin.id or isinstance(p.id, int))}
+            if current_ibu_id and current_ibu_id not in cur_ids:
+                self.orangtua_ids = [(4, current_ibu_id)]
+
+    @api.onchange('wali_id')
+    def _onchange_wali_id(self):
+        old_wali_id = self._origin.wali_id.id if self._origin.wali_id else False
+        current_wali_id = self.wali_id._origin.id or (self.wali_id.id if isinstance(self.wali_id.id, int) else False)
+        if old_wali_id and old_wali_id != current_wali_id:
+            self.orangtua_ids = [(3, old_wali_id)]
+        if self.wali_id:
+            self.wali_nama = self.wali_id.name
+            self.wali_telp = self.wali_id.mobile or self.wali_id.phone
+            self.wali_email = self.wali_id.email
+            self.wali_create_user = False
+            cur_ids = {p._origin.id or p.id for p in self.orangtua_ids if (p._origin.id or isinstance(p.id, int))}
+            if current_wali_id and current_wali_id not in cur_ids:
+                self.orangtua_ids = [(4, current_wali_id)]
+
+    @api.onchange('orangtua_ids')
+    def _onchange_orangtua_ids(self):
+        parent_ids = {p._origin.id or p.id for p in self.orangtua_ids if (p._origin.id or isinstance(p.id, int))}
+
+        # 1. Sinkronisasi dari orangtua_ids ke identitas jika akun yang ditambahkan memiliki status hubungan dan field masih kosong
+        for parent in self.orangtua_ids:
+            p_id = parent._origin.id or (parent.id if isinstance(parent.id, int) else False)
+            if not p_id:
+                continue
+            if parent.hubungan == 'ayah' and not self.ayah_id:
+                self.ayah_id = p_id
+                self.ayah_nama = parent.name
+                self.ayah_telp = parent.mobile or parent.phone
+                self.ayah_email = parent.email
+                self.ayah_create_user = False
+            elif parent.hubungan == 'ibu' and not self.ibu_id:
+                self.ibu_id = p_id
+                self.ibu_nama = parent.name
+                self.ibu_telp = parent.mobile or parent.phone
+                self.ibu_email = parent.email
+                self.ibu_create_user = False
+            elif parent.hubungan == 'wali' and not self.wali_id:
+                self.wali_id = p_id
+                self.wali_nama = parent.name
+                self.wali_telp = parent.mobile or parent.phone
+                self.wali_email = parent.email
+                self.wali_create_user = False
+
+        # 2. Jika akun di identitas dihapus dari baris orangtua_ids, kosongkan field akun terkait
+        ayah_real_id = self.ayah_id._origin.id or (self.ayah_id.id if isinstance(self.ayah_id.id, int) else False)
+        if ayah_real_id and ayah_real_id not in parent_ids:
+            self.ayah_id = False
+
+        ibu_real_id = self.ibu_id._origin.id or (self.ibu_id.id if isinstance(self.ibu_id.id, int) else False)
+        if ibu_real_id and ibu_real_id not in parent_ids:
+            self.ibu_id = False
+
+        wali_real_id = self.wali_id._origin.id or (self.wali_id.id if isinstance(self.wali_id.id, int) else False)
+        if wali_real_id and wali_real_id not in parent_ids:
+            self.wali_id = False
+
+    # Data Biodata Orang Tua
     ayah_nama = fields.Char(string="Nama Ayah",  help="")
     ayah_tmp_lahir = fields.Char(string="Tmp Lahir (Ayah)",  help="")
     ayah_tgl_lahir = fields.Date(string="Tgl Lahir (Ayah)",  help="")

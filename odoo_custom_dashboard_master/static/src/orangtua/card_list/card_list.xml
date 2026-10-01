@@ -45,8 +45,9 @@
                     </div>
                 </t>
                 <t t-else="">
-                    <div class="d-flex align-items-center justify-content-center h-100">
-                        <p class="text-muted mb-0">Belum ada data yang bisa ditampilkan.</p>
+                    <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted">
+                        <i class="fa fa-clipboard-list fs-2 mb-2 opacity-50 text-secondary"></i>
+                        <p class="mb-0 small fw-medium">Belum ada data yang bisa ditampilkan</p>
                     </div>
                 </t>
             </div>
@@ -103,8 +104,9 @@
                     </div>
                 </t>
                 <t t-else="">
-                    <div class="d-flex align-items-center justify-content-center h-100">
-                        <p class="text-muted mb-0">Belum ada data yang bisa ditampilkan.</p>
+                    <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted">
+                        <i class="fa fa-book-open fs-2 mb-2 opacity-50 text-secondary"></i>
+                        <p class="mb-0 small fw-medium">Belum ada data yang bisa ditampilkan</p>
                     </div>
                 </t>
             </div>

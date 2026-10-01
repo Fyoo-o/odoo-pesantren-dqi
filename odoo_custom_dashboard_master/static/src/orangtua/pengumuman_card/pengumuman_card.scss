@@ -1,7 +1,60 @@
 .pengumuman-card {
-  .pengumuman-item:hover {
-    background-color: #f1f5f9 !important;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-    transform: translateY(-2px);
+  border-radius: 12px;
+  overflow: hidden;
+
+  .card-header {
+    background: linear-gradient(135deg, #00a65a, #008d4c) !important;
+    border-radius: 12px 12px 0 0 !important;
+
+    h5 {
+      color: #ffffff !important;
+    }
+
+    small {
+      color: rgba(255, 255, 255, 0.85) !important;
+    }
+
+    .btn-light {
+      background-color: #ffffff !important;
+      color: #007a48 !important;
+      border: none !important;
+
+      &:hover {
+        background-color: #f0fdf4 !important;
+        color: #005a30 !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15) !important;
+      }
+    }
+  }
+
+  .pengumuman-item {
+    transition: all 0.2s ease-in-out;
+    border: 1px solid #e2e8f0;
+
+    &:hover {
+      background-color: #f8fafc !important;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08) !important;
+      transform: translateY(-2px);
+      border-color: #cbd5e1;
+    }
+
+    h6 {
+      color: #1e293b !important;
+    }
+
+    p {
+      color: #64748b !important;
+    }
+
+    .pengumuman-date-badge {
+      background: linear-gradient(135deg, #00a65a, #008d4c) !important;
+      color: #ffffff !important;
+
+      * {
+        color: #ffffff !important;
+      }
+    }
   }
 }
+

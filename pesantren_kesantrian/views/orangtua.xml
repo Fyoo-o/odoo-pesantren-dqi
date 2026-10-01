@@ -25,27 +25,16 @@
             <field name="model">cdn.orangtua</field>
             <field name="inherit_id" ref="pesantren_base.view_cdn_orangtua_form" />
             <field name="arch" type="xml">
-                <field name="name" position="attributes">
-                    <attribute name="required">1</attribute>
-                </field>
-                <field name="email" position="attributes">
-                    <attribute name="required">1</attribute>
-                </field>
-                <field name="hubungan" position="attributes">
-                    <attribute name="required">1</attribute>
-                </field>
-                <xpath expr="//header" position="inside">
-                    <button name="update_user_groups" string="Perbaiki Akses" type="object"
-                        class="oe_highlight" groups="pesantren_base.group_sekolah_manager" />
-                    <button name="action_sync_user_id" string="Sinkronkan User ID" type="object"
-                        groups="pesantren_base.group_sekolah_manager" />
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <field name="santri_count" invisible="1" />
+                    <button name="action_view_santri" type="object" class="oe_stat_button" icon="fa-users" invisible="santri_count == 0">
+                        <field name="santri_count" widget="statinfo" string="Santri" />
+                    </button>
                 </xpath>
-                <xpath expr="//sheet/group[1]/group[1]" position="inside">
-                    <field name="user_id" groups="pesantren_base.group_sekolah_manager" />
-                    <field name="partner_id" readonly="1"
-                        groups="pesantren_base.group_sekolah_manager" />
+                <xpath expr="//group[@name='group_portal_account']" position="inside">
+                    <field name="user_id" readonly="1" invisible="not user_id" groups="pesantren_base.group_sekolah_manager" />
+                    <field name="partner_id" readonly="1" invisible="1" groups="pesantren_base.group_sekolah_manager" />
                 </xpath>
-
             </field>
         </record>
 

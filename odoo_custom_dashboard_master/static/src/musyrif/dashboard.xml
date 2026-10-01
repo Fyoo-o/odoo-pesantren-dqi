@@ -42,7 +42,7 @@
        }
       
     </style>
-        <div class="container-fluid vh-100">
+        <div class="container-fluid vh-100 musyrif-dashboard">
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
             <!-- Header Full Width -->
             <div class="mx-2 my-1">

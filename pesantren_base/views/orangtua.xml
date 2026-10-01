@@ -8,16 +8,22 @@
             <field name="type">list</field>
             <field name="priority" eval="8" />
             <field name="arch" type="xml">
-                <list string="Orangtua">
-                    <field name="name" />
-                    <field name="nik" />
-                    <field name="street" string="Alamat" />
-                    <field name="phone" string="No. Telepon" />
-                    <field name="email" />
-                    <field name="hubungan" />
+                <list string="Orang Tua">
+                    <field name="name" string="Nama Orang Tua" />
+                    <field name="hubungan" widget="badge"
+                        decoration-info="hubungan == 'ayah'"
+                        decoration-success="hubungan == 'ibu'"
+                        decoration-warning="hubungan == 'wali'" />
+                    <field name="phone" string="No. Telepon / WA" />
+                    <field name="email" string="Email Login" />
+                    <field name="siswa_ids" widget="many2many_tags" string="Santri Asuhan" />
+                    <field name="city" string="Kota" optional="show" />
+                    <field name="nik" optional="hide" />
+                    <field name="user_id" string="User Akun" optional="hide" />
                 </list>
             </field>
         </record>
+
         <!-- form view -->
         <record id="view_cdn_orangtua_form" model="ir.ui.view">
             <field name="name">cdn_orangtua_form</field>
@@ -25,58 +31,95 @@
             <field name="type">form</field>
             <field name="priority" eval="8" />
             <field name="arch" type="xml">
-                <form string="Orangtua">
+                <form string="Orang Tua">
                     <header>
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box"></div>
-                        <group string="Data Orang Tua">
-                            <group>
-                                <field name="name" />
-                                <field name="email" string="Email" />
-                                <field name="password" string="Password" widget="password_toggle" />
-                                <field name="phone" string="No. Telepon" />
-                                <field name="nik" />
-                                <field name="jns_partner" readonly="1" string="Kategori Pengguna" />
+                        <field name="image_1920" widget="image" class="oe_avatar"
+                            options="{'preview_image': 'image_128'}" />
+                        <div class="oe_title">
+                            <label for="name" string="Nama Lengkap" />
+                            <h1>
+                                <field name="name" placeholder="Contoh: H. Ahmad Dahlan, S.Pd." required="1" />
+                            </h1>
+                            <div class="o_row mt-2">
+                                <span class="badge text-bg-light border px-2 py-1 fs-6">
+                                    <i class="fa fa-user-circle me-1"/> Hubungan:
+                                </span>
+                                <field name="hubungan" required="1" class="oe_inline fw-bold" placeholder="Pilih Hubungan..." />
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info d-flex align-items-start my-3" role="alert">
+                            <i class="fa fa-info-circle fa-2x me-3 text-info mt-1"/>
+                            <div>
+                                <strong class="d-block mb-1">Informasi Akun Portal Wali Santri:</strong>
+                                <div class="text-muted small">
+                                    • Email dan password di bawah digunakan untuk login ke portal web / aplikasi mobile wali santri.<br/>
+                                    • Hubungkan santri pada tab <strong>Santri Terhubung</strong> di bawah agar orang tua otomatis memiliki akses melihat nilai, tahfidz, kehadiran, dan tagihan santri tersebut.
+                                </div>
+                            </div>
+                        </div>
+
+                        <group>
+                            <group string="Akun &amp; Akses Portal" name="group_portal_account">
+                                <field name="email" string="Email Login" required="1" placeholder="email@contoh.com" />
+                                <field name="password" string="Password Login" widget="password_toggle" placeholder="Minimal 8 karakter" />
+                                <field name="phone" string="No. Telepon / WA" placeholder="08xxxxxxxxxx" />
+                                <field name="mobile" string="No. HP Alternatif" invisible="1" />
+                                <field name="isLimit" widget="boolean_toggle" string="Akses Limit Uang Saku" />
+                                <field name="jns_partner" invisible="1" />
                             </group>
 
-                            <group>
-                                <field name="street" string="Alamat" />
-                                <field name="city" string="Kota" />
-                                <field name="street2" string="RT/RW" />
-                                <field name="hubungan" />
-                                <field name="label" widget="many2many_tags"
-                                    options="{'color_field': 'color'}" />
-                                <field name="isLimit" widget="boolean_toggle" />
+                            <group string="Identitas &amp; Domisili" name="group_personal_info">
+                                <field name="nik" string="NIK" placeholder="16 digit NIK KTP" />
+                                <label for="street" string="Alamat Domisili" />
+                                <div class="o_address_format">
+                                    <field name="street" placeholder="Nama Jalan / Dusun / No. Rumah" class="o_address_street" />
+                                    <field name="street2" placeholder="RT / RW" class="o_address_street" />
+                                    <field name="city" placeholder="Kota / Kabupaten" class="o_address_city" />
+                                </div>
                             </group>
                         </group>
+
                         <notebook>
-                            <page string="Santri">
+                            <page string="Santri Terhubung" name="santri_page">
                                 <field name="siswa_ids" nolabel="1">
-                                    <list create="false" edit="false" delete="false">
-                                        <field name="nis" />
-                                        <field name="name" />
-                                        <field name="jns_kelamin" />
-                                        <field name="tmp_lahir" />
-                                        <field name="tgl_lahir" />
-                                        <field name="tahunajaran_id" />
-                                        <!-- <field name="orangtua_id" invisible="1"/> -->
+                                    <list create="false" edit="false" delete="true">
+                                        <field name="nis" string="NIS" />
+                                        <field name="name" string="Nama Santri" />
+                                        <field name="jns_kelamin" string="L/P" />
+                                        <field name="ruang_kelas_id" string="Kelas" />
+                                        <field name="kamar_id" string="Kamar" />
+                                        <field name="status_akun" widget="badge"
+                                            decoration-success="status_akun == 'aktif'"
+                                            decoration-warning="status_akun == 'nonaktif'"
+                                            decoration-danger="status_akun == 'blokir'" />
                                     </list>
                                 </field>
                             </page>
                         </notebook>
                     </sheet>
+                    <div class="oe_chatter" groups="pesantren_base.group_sekolah_manager">
+                        <chatter>
+                            <field name="message_follower_ids" widget="mail_followers" />
+                            <field name="activity_ids" widget="mail_activity" />
+                            <field name="message_ids" widget="mail_thread"
+                                options="{'display_log_button': True}" />
+                        </chatter>
+                    </div>
                 </form>
             </field>
         </record>
+
         <!-- search -->
         <record id="view_cdn_orangtua_search" model="ir.ui.view">
             <field name="name">cdn_orangtua</field>
             <field name="model">cdn.orangtua</field>
             <field name="arch" type="xml">
-                <search string="Orangtua">
-
-                    <field name="name" string="Data"
+                <search string="Orang Tua">
+                    <field name="name" string="Pencarian"
                         filter_domain="[
                             '|', ('name', 'ilike', self), 
                             '|', ('nik', 'ilike', self),
@@ -86,28 +129,37 @@
                             '|', ('street2', 'ilike', self),
                             '|', ('email', 'ilike', self),
                             '|', ('phone', 'ilike', self),
-                            '|', ('user_id', 'ilike', self),
-                            '|', ('partner_id', 'ilike', self),
                             ('hubungan', 'ilike', self)
                         ]" />
-                    <!-- </group> -->
+                    <field name="hubungan" />
+                    <field name="siswa_ids" string="Santri" />
+                    <filter string="Ayah" name="filter_ayah" domain="[('hubungan', '=', 'ayah')]" />
+                    <filter string="Ibu" name="filter_ibu" domain="[('hubungan', '=', 'ibu')]" />
+                    <filter string="Wali" name="filter_wali" domain="[('hubungan', '=', 'wali')]" />
+                    <separator />
+                    <filter string="Memiliki Santri" name="has_santri" domain="[('siswa_ids', '!=', False)]" />
+                    <filter string="Belum Terhubung Santri" name="no_santri" domain="[('siswa_ids', '=', False)]" />
+                    <group expand="0" string="Group By">
+                        <filter string="Hubungan" name="group_hubungan" domain="[]" context="{'group_by': 'hubungan'}" />
+                        <filter string="Kota" name="group_city" domain="[]" context="{'group_by': 'city'}" />
+                    </group>
                 </search>
             </field>
         </record>
 
         <!-- action window -->
         <record id="action_cdn_orangtua" model="ir.actions.act_window">
-            <field name="name">Orangtua</field>
+            <field name="name">Orang Tua</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">cdn.orangtua</field>
             <field name="view_mode">list,form</field>
-            <field name="context">{"search_default_fieldname":1}</field>
+            <field name="context">{}</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
-                    Click to add a new Orangtua
+                    Klik tombol Buat Baru untuk menambahkan akun Orang Tua / Wali Santri.
                 </p>
                 <p>
-                    Click the Create button to add a new Orangtua
+                    Akun ini digunakan untuk login portal wali santri dan memantau perkembangan santri asuhan.
                 </p>
             </field>
         </record>
