@@ -6,7 +6,7 @@
             <field name="name">cdn.ref_jam_pelajaran.view.list</field>
             <field name="model">cdn.ref_jam_pelajaran</field>
             <field name="arch" type="xml">
-                <list default_order="start_time asc, end_time asc, name asc">
+                <list default_order="name asc">
                     <field name="name" />
                     <field name="start_time" widget="float_time" />
                     <field name="end_time" widget="float_time" />

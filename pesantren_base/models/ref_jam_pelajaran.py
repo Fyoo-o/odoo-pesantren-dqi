@@ -6,7 +6,7 @@ from odoo import api, fields, models
 class JamPelajaran(models.Model):
     _name = 'cdn.ref_jam_pelajaran'
     _description = 'Data Jam Pelajaran'
-    _order = 'start_time asc, end_time asc, name asc'
+    _order = 'name asc'
 
     name = fields.Char(string='Nama', required=True)
     start_time = fields.Float(string='Jam Mulai', required=True)
