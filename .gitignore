@@ -245,4 +245,9 @@ odools.toml
 data/
 scratch/
 odoo.bat
-odoo_run.py
+odoo_run.py
+
+# Non-code assets & report screenshots
+screenshot_laporan/
+Template_Import_Data_OrangTua_DQI.xlsx
+RENCANA_INTEGRASI_WA_GATEWAY.md
