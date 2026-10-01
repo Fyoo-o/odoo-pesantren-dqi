@@ -433,14 +433,14 @@
 		<record id="penilaian_santri_company_rule" model="ir.rule">
 			<field name="name">Penilaian Santri companies</field>
 			<field name="model_id" ref="model_cdn_penilaian_santri" />
-			<field name="domain_force">[('company_id', 'in', company_ids)]</field>
+			<field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'child_of', company_ids)]</field>
 		</record>
 
 		<!-- Penilaian Santri Line Companies Filter -->
 		<record id="penilaian_santri_line_company_rule" model="ir.rule">
 			<field name="name">Penilaian Santri Line companies</field>
 			<field name="model_id" ref="model_cdn_penilaian_santri_lines" />
-			<field name="domain_force">[('company_id', 'in', company_ids)]</field>
+			<field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'child_of', company_ids)]</field>
 		</record>
 	</data>
 </odoo>
