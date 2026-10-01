@@ -31,7 +31,7 @@
     'author': "PT. Cendana Teknika Utama",
     'website': "https://www.cendana2000.co.id",
     'category': 'Education',
-    'version': '18.0.1.1',
+    'version': '18.0.1.2',
     'license': 'LGPL-3',
 
     'depends': ['base', 'l10n_id', 'l10n_id_efaktur', 'mail', 'hr', 'sale', 'account', 'muk_web_theme', 'hr_attendance', 'hr_holidays', 'web_password_toggle', 'web_progress', 'queue_job'],
