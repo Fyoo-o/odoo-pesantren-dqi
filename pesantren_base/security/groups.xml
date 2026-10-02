@@ -26,5 +26,13 @@
 			<field name="implied_ids" eval="[(4, ref('group_sekolah_admin'))]" />
 			<field name="users" eval="[(4, ref('base.user_admin'))]" />
 		</record>
+
+		<!-- Jam Pelajaran Multi-Company Rule -->
+		<record id="cdn_ref_jam_pelajaran_company_rule" model="ir.rule">
+			<field name="name">Jam Pelajaran Multi-Company</field>
+			<field name="model_id" ref="model_cdn_ref_jam_pelajaran" />
+			<field name="global" eval="True" />
+			<field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+		</record>
 	</data>
 </odoo>

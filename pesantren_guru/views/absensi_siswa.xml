@@ -72,7 +72,8 @@
                                 <field name="hari" />
                                 <field name="jampelajaran_id"
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"
-                                    widget="many2many_tags" />
+                                    widget="many2many_tags"
+                                    domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]" />
                                 <field name="company_id"
                                     options="{'no_create_edit':True, 'no_create':True, 'no_open': True}"
                                     readonly="1" />

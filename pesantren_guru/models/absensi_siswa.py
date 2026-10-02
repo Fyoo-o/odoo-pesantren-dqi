@@ -45,7 +45,11 @@ class AbsensiSiswa(models.Model):
         ('7', 'Minggu'),
     ], string='Hari', readonly=True, compute='_compute_hari', store=True)
     jampelajaran_id = fields.Many2many(
-        comodel_name='cdn.ref_jam_pelajaran', string='Jam Ke', required=True)
+        comodel_name='cdn.ref_jam_pelajaran',
+        string='Jam Ke',
+        required=True,
+        domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]"
+    )
     start_time = fields.Float(
         string='Start Time', related='jampelajaran_id.start_time', readonly=True, store=True)
     end_time = fields.Float(
@@ -215,6 +219,16 @@ class AbsensiSiswa(models.Model):
             self._auto_sync_guru_company(self.env.cr)
         except Exception as e:
             _logger.warning("Auto-sync guru company in _register_hook failed: %s", e)
+
+        try:
+            from odoo.tools import convert_file
+            import os
+            base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+            xml_view = os.path.join(base_dir, 'views', 'absensi_siswa.xml')
+            if os.path.exists(xml_view):
+                convert_file(self.env.cr, 'pesantren_guru', 'views/absensi_siswa.xml', idref={}, mode='update', noupdate=False, kind='data')
+        except Exception as ex_view:
+            _logger.debug("Auto reload view absensi_siswa skipped/failed: %s", ex_view)
 
     @classmethod
     def _auto_sync_guru_company(cls, cr):
@@ -575,11 +589,12 @@ class AbsensiSiswa(models.Model):
     @api.onchange('tanggal', 'kelas_id', 'guru_id', 'jampelajaran_id', 'is_guru_pengganti')
     def _onchange_tanggal(self):
         """Mengatur domain dan mapel_id berdasarkan jadwal, tanpa menimpa absensi_ids yang sudah ada."""
+        company_domain = ['|', ('company_id', '=', False), ('company_id', '=', self.company_id.id)] if self.company_id else []
         if self.is_guru_pengganti:
             return {
                 'domain': {
                     'kelas_id': [],
-                    'jampelajaran_id': []
+                    'jampelajaran_id': company_domain
                 }
             }
         if self.tanggal and self.guru_id:
@@ -606,7 +621,13 @@ class AbsensiSiswa(models.Model):
                         'mapel_id': mapel,
                     }
                 }
-        return {}
+            else:
+                return {
+                    'domain': {
+                        'jampelajaran_id': company_domain
+                    }
+                }
+        return {'domain': {'jampelajaran_id': company_domain}}
 
     @api.onchange('kelas_id', 'tanggal')
     def _onchange_guru_domain(self):
