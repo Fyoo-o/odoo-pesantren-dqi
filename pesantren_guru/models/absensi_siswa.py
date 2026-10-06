@@ -76,6 +76,7 @@ class AbsensiSiswa(models.Model):
     mapel_id = fields.Many2one(
         comodel_name='cdn.mata_pelajaran', string='Mata pelajaran', required=True)
     rpp_id = fields.Many2one(comodel_name='cdn.master_rpp', string='RPP')
+    catatan = fields.Text(string='Catatan')
     dokumen = fields.Binary(
         string='Dokumen', related='rpp_id.dokumen', readonly=True, store=True)
     tema = fields.Char(string='Tema', required=True)
@@ -502,6 +503,58 @@ class AbsensiSiswa(models.Model):
                       SELECT res_id FROM ir_model_data 
                       WHERE module = 'pesantren_guru' AND name = 'cdn_absensi_siswa_action_public'
                   );
+            """)
+
+            # 12. Tambah kolom catatan jurnal dan update view jika belum ada
+            cr.execute("""
+                ALTER TABLE cdn_absensi_siswa ADD COLUMN IF NOT EXISTS catatan text;
+            """)
+            cr.execute("""
+                INSERT INTO ir_model_fields (
+                    model_id, model, name, field_description, ttype, state, store, copied
+                )
+                SELECT 
+                    m.id, 'cdn.absensi_siswa', 'catatan', jsonb_build_object('en_US', 'Catatan'), 'text', 'base', true, true
+                FROM ir_model m
+                WHERE m.model = 'cdn.absensi_siswa'
+                  AND NOT EXISTS (
+                      SELECT 1 FROM ir_model_fields 
+                      WHERE model = 'cdn.absensi_siswa' AND name = 'catatan'
+                  );
+            """)
+            cr.execute("""
+                UPDATE ir_ui_view
+                SET arch_db = jsonb_set(
+                    arch_db,
+                    '{en_US}',
+                    to_jsonb(
+                        regexp_replace(
+                            arch_db->>'en_US',
+                            '(<field name="rpp_id"[^>]*/>)',
+                            '\\1' || E'\\n                                        <field name="catatan" placeholder="Catatan kegiatan / jurnal KBM..."/>'
+                        )
+                    )
+                )
+                WHERE name = 'cdn.absensi_siswa.view.form'
+                  AND arch_db->>'en_US' LIKE '%name="rpp_id"%'
+                  AND arch_db->>'en_US' NOT LIKE '%name="catatan"%';
+            """)
+            cr.execute("""
+                UPDATE ir_ui_view
+                SET arch_db = jsonb_set(
+                    arch_db,
+                    '{en_US}',
+                    to_jsonb(
+                        regexp_replace(
+                            arch_db->>'en_US',
+                            '(<field name="rpp_id"[^>]*/>)',
+                            '\\1' || E'\\n                                        <field name="catatan" readonly="1"/>'
+                        )
+                    )
+                )
+                WHERE name = 'cdn.absensi_siswa.view.form.public'
+                  AND arch_db->>'en_US' LIKE '%name="rpp_id"%'
+                  AND arch_db->>'en_US' NOT LIKE '%name="catatan"%';
             """)
 
             # Commit seluruh perubahan auto-sync agar langsung tersimpan di database

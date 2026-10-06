@@ -42,6 +42,7 @@
                     <field name="tema" optional="hide" />
                     <field name="materi" optional="hide" />
                     <field name="rpp_id" optional="hide" />
+                    <field name="catatan" optional="hide" />
                     <field name="company_id" optional="hide" />
                     <field name="state" optional="show" />
                 </list>
@@ -132,6 +133,7 @@
                                         <field name="rpp_id"
                                             domain="[('tingkat_id', '=', tingkat_id),('matpel_id','=',mapel_id)]"
                                             options="{'no_create_edit':True, 'no_create':True, 'no_open': True}" />
+                                        <field name="catatan" placeholder="Catatan kegiatan / jurnal KBM..." />
                                         <field name="pertemuan_ke" />
                                     </group>
                                 </group>

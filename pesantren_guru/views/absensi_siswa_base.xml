@@ -87,6 +87,7 @@
                                     </group>
                                     <group>
                                         <field name="rpp_id" readonly="1" />
+                                        <field name="catatan" readonly="1" />
                                         <field name="pertemuan_ke" readonly="1" />
                                     </group>
                                 </group>
