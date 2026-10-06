@@ -80,6 +80,35 @@ class hr_employee(models.Model):
             else:
                 record.password = ''
 
+    @api.onchange('lembaga')
+    def _onchange_lembaga(self):
+        for record in self:
+            if record.lembaga:
+                comp_id = record._get_company_for_lembaga(record.lembaga)
+                if comp_id:
+                    record.company_id = comp_id
+
+    @api.model
+    def _get_company_for_lembaga(self, lembaga):
+        mapping = {
+            'smpmts': 'SMP Tahfizh Bilingual',
+            'smama': 'MA Tahfizh Bilingual',
+            'sdmi': 'SD Tahfizh Bilingual',
+            'tk': 'TK Tahfizh Baby-Qu',
+            'paud': 'KB Tahfizh Baby-Qu',
+            'rtq': "Rumah Tahfizh Al-Qur'an",
+            'pondokputra': 'Pesantren Tahfizh Putra',
+            'pondokputri': 'Pesantren Tahfizh Putri',
+        }
+        target_name = mapping.get(lembaga)
+        if not target_name:
+            return False
+        comp = self.env['res.company'].sudo().search([
+            ('name', 'ilike', target_name),
+            ('name', 'not ilike', '%backup%')
+        ], limit=1)
+        return comp.id if comp else False
+
     @api.depends('jns_pegawai_ids.code')
     def _compute_jns_pegawai_legacy(self):
         """
@@ -405,11 +434,15 @@ class hr_employee(models.Model):
         masked_password = new_password[:2] + '*' * \
             (len(new_password) - 4) + new_password[-2:]
 
-        user.write({
+        vals_user = {
             'password': new_password,
             'login': self.work_email,
-            'email': self.work_email
-        })
+            'email': self.work_email,
+        }
+        if self.company_id:
+            vals_user['company_id'] = self.company_id.id
+            vals_user['company_ids'] = [(4, self.company_id.id)]
+        user.write(vals_user)
 
         email_values = {
             'subject': "Akun Diaktifkan",

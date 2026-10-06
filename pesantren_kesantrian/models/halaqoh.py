@@ -61,15 +61,15 @@ class Halaqoh(models.Model):
         for rec in self:
             for siswa in rec.siswa_ids:
                 # Hapus relasi M2M
-                siswa.halaqoh_ids = [(3, rec.id)]
+                siswa.sudo().halaqoh_ids = [(3, rec.id)]
                 
                 # Reset Many2one jika mengarah ke halaqah ini
                 if siswa.halaqoh_id == rec:
                     # Cari halaqah lain yang aktif
-                    other_halaqoh = siswa.halaqoh_ids.filtered(lambda h: h.status == 'konfirm')
+                    other_halaqoh = siswa.sudo().halaqoh_ids.filtered(lambda h: h.status == 'konfirm')
                     # Prioritaskan yang tahun ajarannya sama
                     same_year = other_halaqoh.filtered(lambda h: h.fiscalyear_id == rec.fiscalyear_id)
-                    siswa.halaqoh_id = same_year[0] if same_year else (other_halaqoh[0] if other_halaqoh else False)
+                    siswa.sudo().halaqoh_id = same_year[0] if same_year else (other_halaqoh[0] if other_halaqoh else False)
         
         return super().unlink()
     # def konfirmasi(self):
@@ -134,25 +134,30 @@ class Halaqoh(models.Model):
                 continue
             conflicting_students = []
             for siswa in rec.siswa_ids:
-                other_halaqohs = siswa.halaqoh_ids.filtered(
+                other_halaqohs = siswa.sudo().halaqoh_ids.filtered(
                     lambda h: h.id != rec.id and h.fiscalyear_id == rec.fiscalyear_id
                 )
                 if not other_halaqohs:
                     continue
 
-                # Cek apakah santri berjenjang Rumah Tahfidz Quran (RTQ)
-                is_rtq = (siswa.jenjang == 'rtq') or (
-                    siswa.ruang_kelas_id and siswa.ruang_kelas_id.name and siswa.ruang_kelas_id.name.jenjang == 'rtq'
+                # Cek apakah santri berjenjang Rumah Tahfidz Quran (RTQ), TK, atau PAUD
+                is_multi_allowed = (siswa.jenjang in ('rtq', 'tk', 'paud')) or (
+                    siswa.ruang_kelas_id and siswa.ruang_kelas_id.name and siswa.ruang_kelas_id.name.jenjang in ('rtq', 'tk', 'paud')
                 )
 
-                max_allowed = 2 if is_rtq else 1
+                max_allowed = 2 if is_multi_allowed else 1
                 total_halaqoh = len(other_halaqohs) + 1
 
                 if total_halaqoh > max_allowed:
-                    h_names = ", ".join(other_halaqohs.mapped('name'))
-                    if is_rtq:
+                    h_names = ", ".join(other_halaqohs.sudo().mapped('name'))
+                    if is_multi_allowed:
+                        jenjang_label = {
+                            'rtq': 'Rumah Tahfidz Quran',
+                            'tk': 'TK/RA',
+                            'paud': 'PAUD',
+                        }.get(siswa.jenjang, 'TK/PAUD/RTQ')
                         conflicting_students.append(
-                            f"• {siswa.name} [Rumah Tahfidz Quran] (sudah terdaftar di {len(other_halaqohs)} halaqoh: {h_names})"
+                            f"• {siswa.name} [{jenjang_label}] (sudah terdaftar di {len(other_halaqohs)} halaqoh: {h_names})"
                         )
                     else:
                         conflicting_students.append(
@@ -164,8 +169,8 @@ class Halaqoh(models.Model):
                 raise UserError(
                     f"⛔ Batas Maksimal Halaqoh per Santri Terlampaui (Tahun Ajaran {rec.fiscalyear_id.name}):\n\n{msg}\n\n"
                     f"Catatan Aturan:\n"
-                    f"- Santri Reguler: Maksimal 1 Halaqoh per Tahun Ajaran.\n"
-                    f"- Santri Rumah Tahfidz Quran (RTQ): Maksimal 2 Halaqoh per Tahun Ajaran.\n\n"
+                    f"- Santri Reguler (SD/SMP/SMA): Maksimal 1 Halaqoh per Tahun Ajaran.\n"
+                    f"- Santri TK / PAUD / RTQ: Maksimal 2 Halaqoh per Tahun Ajaran.\n\n"
                     f"Silakan hapus/keluarkan santri dari halaqoh lama terlebih dahulu."
                 )
 
@@ -173,20 +178,20 @@ class Halaqoh(models.Model):
         for rec in self:
             rec.status = 'konfirm'
             for siswa in rec.siswa_ids:
-                if rec.id not in siswa.halaqoh_ids.ids:
-                    siswa.halaqoh_ids = [(4, rec.id)]
-                siswa.halaqoh_id = rec.id
+                if rec.id not in siswa.sudo().halaqoh_ids.ids:
+                    siswa.sudo().halaqoh_ids = [(4, rec.id)]
+                siswa.sudo().halaqoh_id = rec.id
 
     def draft(self):
         for rec in self:
             rec.status = 'draft'
             for siswa in rec.siswa_ids:
                 if siswa.halaqoh_id == rec:
-                    other_confirmed = siswa.halaqoh_ids.filtered(
+                    other_confirmed = siswa.sudo().halaqoh_ids.filtered(
                         lambda h: h.id != rec.id and h.status == 'konfirm'
                     )
                     same_year = other_confirmed.filtered(lambda h: h.fiscalyear_id == rec.fiscalyear_id)
-                    siswa.halaqoh_id = same_year[0] if same_year else (other_confirmed[0] if other_confirmed else False)
+                    siswa.sudo().halaqoh_id = same_year[0] if same_year else (other_confirmed[0] if other_confirmed else False)
     
     # @api.depends('siswa_ids')
     # def _compute_jml_siswa(self):

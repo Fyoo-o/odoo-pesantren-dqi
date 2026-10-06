@@ -255,15 +255,20 @@ class AbsensiSiswa(models.Model):
                 lname = name.lower()
                 if 'smp' in lname:
                     company_mapping['smp'] = cid
+                    company_mapping['smpmts'] = cid
                 elif 'ma tahfizh' in lname or 'sma' in lname:
                     company_mapping['sma'] = cid
+                    company_mapping['smama'] = cid
                 elif 'sd tahfizh' in lname:
                     company_mapping['sd'] = cid
+                    company_mapping['sdmi'] = cid
                 elif 'tk tahfizh' in lname:
                     company_mapping['tk'] = cid
                 elif 'kb tahfizh' in lname or 'paud' in lname:
                     company_mapping['paud'] = cid
                     company_mapping['kb'] = cid
+                elif 'rumah tahf' in lname or 'rtq' in lname:
+                    company_mapping['rtq'] = cid
 
             # 1. Update cdn_absensi_siswa agar company_id sesuai jenjang kelasnya
             total_absensi = 0
@@ -287,7 +292,32 @@ class AbsensiSiswa(models.Model):
             if total_absensi > 0 or total_lines > 0:
                 _logger.info("Auto-sync: %d absensi records and %d lines aligned to class unit.", total_absensi, total_lines)
 
-            # 3. Tambahkan allowed companies untuk semua akun guru (res_company_users_rel)
+            # 3. Sinkronisasi hr_employee.company_id dan res_users.company_id (Default Company) berdasarkan hr_employee.lembaga
+            total_emp_lembaga = 0
+            total_user_lembaga = 0
+            for lemb, target_cid in company_mapping.items():
+                cr.execute("""
+                    UPDATE hr_employee
+                    SET company_id = %s
+                    WHERE (lembaga = %s OR lembaga ILIKE %s) 
+                      AND (company_id IS NULL OR company_id != %s)
+                """, (target_cid, lemb, lemb, target_cid))
+                total_emp_lembaga += cr.rowcount
+
+                cr.execute("""
+                    UPDATE res_users u
+                    SET company_id = %s
+                    FROM hr_employee e
+                    WHERE e.user_id = u.id 
+                      AND (e.lembaga = %s OR e.lembaga ILIKE %s)
+                      AND (u.company_id = 1 OR u.company_id IS NULL OR u.company_id != %s)
+                """, (target_cid, lemb, lemb, target_cid))
+                total_user_lembaga += cr.rowcount
+
+            if total_emp_lembaga > 0 or total_user_lembaga > 0:
+                _logger.info("Auto-sync: Set company for %d employees and default company for %d users based on hr_employee.lembaga.", total_emp_lembaga, total_user_lembaga)
+
+            # 4. Tambahkan allowed companies untuk semua akun guru (res_company_users_rel)
             total_allowed = 0
             for cid in edu_comp_ids:
                 cr.execute("""
@@ -305,10 +335,17 @@ class AbsensiSiswa(models.Model):
                     ON CONFLICT DO NOTHING
                 """, (cid,))
                 total_allowed += cr.rowcount
-            if total_allowed > 0:
-                _logger.info("Auto-sync: Granted %d allowed company accesses to teacher accounts.", total_allowed)
 
-            # 4. Set default company_id untuk guru yang masih 1 (Yayasan) sesuai jenjang utama mengajar
+            # Pastikan default company masing-masing user juga ada di res_company_users_rel
+            cr.execute("""
+                INSERT INTO res_company_users_rel (user_id, cid)
+                SELECT DISTINCT id, company_id
+                FROM res_users
+                WHERE company_id IS NOT NULL AND active = true
+                ON CONFLICT DO NOTHING;
+            """)
+
+            # 5. Fallback: Set default company_id untuk guru yang masih 1 (Yayasan) sesuai jenjang utama mengajar di absensi
             total_default = 0
             for jenjang, target_cid in company_mapping.items():
                 cr.execute("""
@@ -328,7 +365,7 @@ class AbsensiSiswa(models.Model):
                 """, (target_cid, jenjang))
                 total_default += cr.rowcount
 
-            # 5. Fallback berdasarkan department employee jika belum ter-set
+            # 6. Fallback berdasarkan department employee jika belum ter-set
             for jenjang, target_cid in company_mapping.items():
                 cr.execute("""
                     UPDATE res_users u
@@ -342,7 +379,7 @@ class AbsensiSiswa(models.Model):
                 total_default += cr.rowcount
 
             if total_default > 0:
-                _logger.info("Auto-sync: Set default company for %d teacher users.", total_default)
+                _logger.info("Auto-sync: Set default company for %d teacher users via fallback.", total_default)
 
             # 6. Update legacy draft records to done
             cr.execute("UPDATE cdn_absensi_siswa SET state = 'done' WHERE state = 'draft';")

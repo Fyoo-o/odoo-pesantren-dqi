@@ -250,4 +250,9 @@ odoo_run.py
 # Non-code assets & report screenshots
 screenshot_laporan/
 Template_Import_Data_OrangTua_DQI.xlsx
-RENCANA_INTEGRASI_WA_GATEWAY.md
+RENCANA_INTEGRASI_WA_GATEWAY.md
+Daftar_Santri_Lebih_Dari_1_Halaqoh.xlsx
+
+# Office temporary & lock files
+~$*
+*.tmp
